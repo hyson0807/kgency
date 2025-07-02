@@ -4,8 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosError } from 'axios';
 import {jwtDecode} from "jwt-decode";
 import {router} from "expo-router";
-import {supabase} from "@/lib/supabase";
-
 
 // 타입 정의
 interface User {
@@ -19,28 +17,9 @@ interface LoginResult {
     error?: string;
 }
 
-interface Profile {
-    id: string;
-    user_type: 'user' | 'company';
-    name: string;
-    phone_number: string;
-    visa: string;
-    age: number;
-    gender: string;
-    korean_level: string;
-    how_long: string;
-    description: string;
-    website: string;
-    address: string;
-    onboarding_completed: boolean;
-
-
-}
-
 interface AuthContextType {
     // 상태
     user: User | null;
-    profile: Profile | null;
     isLoading: boolean;
     isAuthenticated: boolean;
     onboardingCompleted: boolean;
@@ -54,8 +33,6 @@ interface AuthContextType {
         url: string,
         data?: any
     ) => Promise<T>;
-    fetchProfile: () => Promise<void>;
-    updateProfile: (updates: Partial<Profile>) => Promise<boolean>;
 
     // 유틸리티
     userType: 'user' | 'company' | null;
@@ -86,7 +63,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [onboardingCompleted, setOnboardingCompleted] = useState<boolean>(false);
-    const [profile, setProfile] = useState<Profile | null>(null);
 
     // 앱 시작 시 자동으로 세션 확인
     useEffect(() => {
@@ -129,7 +105,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             await AsyncStorage.setItem('authToken', token);
             await AsyncStorage.setItem('userData', JSON.stringify(userData));
             await AsyncStorage.setItem('onboardingStatus', JSON.stringify(onboardingStatus));
-            await fetchProfile();
 
             // 상태 업데이트
             setUser(userData);
@@ -156,6 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // 로컬 스토리지만 삭제
         await AsyncStorage.removeItem('authToken');
         await AsyncStorage.removeItem('userData');
+        await AsyncStorage.removeItem('userProfile');
         delete axios.defaults.headers.common['Authorization'];
 
         setUser(null);
@@ -169,62 +145,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const clearAuth = async (): Promise<void> => {
         await AsyncStorage.removeItem('authToken');
         await AsyncStorage.removeItem('userData');
+        await AsyncStorage.removeItem('userProfile');
         delete axios.defaults.headers.common['Authorization'];
         setUser(null);
         setIsAuthenticated(false);
-    };
-
-    const fetchProfile = async () => {
-        if (!user) return;
-
-        try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.userId)
-                .single();
-
-            if (data) {
-                setProfile(data);
-                // AsyncStorage에도 저장
-                await AsyncStorage.setItem('userProfile', JSON.stringify(data));
-            }
-        } catch (error) {
-            console.error('프로필 조회 실패:', error);
-        }
-    };
-
-    // 프로필 업데이트 함수
-    const updateProfile = async (updates: Partial<Profile>): Promise<boolean> => {
-        if (!user) {
-            console.error('로그인이 필요합니다');
-            return false;
-        }
-
-        try {
-            // 1. Supabase에 업데이트
-            const { data, error } = await supabase
-                .from('profiles')
-                .update(updates)
-                .eq('id', user.userId)
-                .select()
-                .single();
-
-            if (error) throw error;
-
-            // 2. 로컬 상태 업데이트
-            setProfile(data);
-
-            // 3. AsyncStorage 업데이트
-            await AsyncStorage.setItem('userProfile', JSON.stringify(data));
-
-            console.log('프로필 업데이트 성공');
-            return true;
-
-        } catch (error) {
-            console.error('프로필 업데이트 실패:', error);
-            return false;
-        }
     };
 
     // API 요청 헬퍼 (자동으로 토큰 포함)
@@ -285,15 +209,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isLoading,
         isAuthenticated,
         onboardingCompleted,
-        profile,
 
         // 함수
         login,
         logout,
         checkAuthState,
         authenticatedRequest,
-        fetchProfile,
-        updateProfile,
 
         // 유틸리티
         userType: user?.userType || null,

@@ -12,9 +12,8 @@ interface Keyword {
 
 interface UserKeyword {
     keyword_id: number;
-    keyword: Keyword[];
+    keyword: Keyword;  // 단일 객체로 수정
 }
-
 
 export const useUserKeywords = () => {
     const { user } = useAuth();
@@ -23,8 +22,7 @@ export const useUserKeywords = () => {
     const [loading, setLoading] = useState(true);
 
     const fetchKeywords = async () => {
-        if (!user) return;
-
+        // user 체크 제거 - 키워드는 모든 사용자가 볼 수 있어야 함
         try {
             const { data, error } = await supabase
                 .from('keyword')
@@ -32,7 +30,10 @@ export const useUserKeywords = () => {
                 .order('keyword', { ascending: true });
 
             if (error) throw error;
-            if(data) setKeywords(data);
+            if(data) {
+                setKeywords(data);
+                console.log('Fetched keywords:', data); // 디버깅용
+            }
 
         } catch (error) {
             console.error('Error fetching keywords:', error);
@@ -55,7 +56,13 @@ export const useUserKeywords = () => {
                 `)
                 .eq('user_id', user.userId);
 
-            if (data) setUser_keywords(data);
+            if (error) throw error;
+            if (data) {
+                // 타입 캐스팅을 통해 명확하게 처리
+                const typedData = data as unknown as UserKeyword[];
+                setUser_keywords(typedData);
+                console.log('Fetched user keywords:', typedData); // 디버깅용
+            }
         } catch (error) {
             console.error('키워드 조회 실패:', error);
         } finally {
@@ -93,9 +100,19 @@ export const useUserKeywords = () => {
         }
     };
 
+    // 컴포넌트 마운트 시 키워드 목록 가져오기
     useEffect(() => {
-        fetchUserKeywords();
+        fetchKeywords();
+    }, []);
+
+    // user가 있을 때 user의 키워드 가져오기
+    useEffect(() => {
+        if (user) {
+            fetchUserKeywords();
+        } else {
+            setLoading(false);
+        }
     }, [user]);
 
-    return { keywords, user_keywords, loading, fetchKeywords,fetchUserKeywords, updateKeywords };
+    return { keywords, user_keywords, loading, fetchKeywords, fetchUserKeywords, updateKeywords };
 };
