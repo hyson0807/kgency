@@ -153,6 +153,21 @@ const Info = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 20 }}
                 >
+
+                    {/* 희망직종 섹션 */}
+                    <JobPreferencesSelector
+                        jobs={jobKeywords}
+                        selectedJobs={selectedJobs}
+                        onToggle={toggleJob}
+                    />
+
+                    {/* 근무조건 섹션 */}
+                    <WorkConditionsSelector
+                        conditions={conditionKeywords}
+                        selectedConditions={selectedConditions}
+                        onToggle={toggleCondition}
+                    />
+
                     {/* 거주지 & 이동 가능 섹션 */}
                     <View className="p-6">
                         <Text className="text-2xl font-bold mb-4">거주지 & 이동 가능</Text>
@@ -216,19 +231,7 @@ const Info = () => {
                         </View>
                     </View>
 
-                    {/* 희망직종 섹션 */}
-                    <JobPreferencesSelector
-                        jobs={jobKeywords}
-                        selectedJobs={selectedJobs}
-                        onToggle={toggleJob}
-                    />
 
-                    {/* 근무조건 섹션 */}
-                    <WorkConditionsSelector
-                        conditions={conditionKeywords}
-                        selectedConditions={selectedConditions}
-                        onToggle={toggleCondition}
-                    />
 
                     {/* 저장 버튼 */}
                     <View className="p-6">
@@ -240,9 +243,7 @@ const Info = () => {
                         </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity onPress={logout} className="p-4">
-                        <Text className="text-center text-gray-500">로그아웃</Text>
-                    </TouchableOpacity>
+
                 </ScrollView>
             </View>
         </SafeAreaView>

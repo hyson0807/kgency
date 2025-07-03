@@ -32,7 +32,6 @@ export const useUserKeywords = () => {
             if (error) throw error;
             if(data) {
                 setKeywords(data);
-                console.log('Fetched keywords:', data); // 디버깅용
             }
 
         } catch (error) {
@@ -61,7 +60,6 @@ export const useUserKeywords = () => {
                 // 타입 캐스팅을 통해 명확하게 처리
                 const typedData = data as unknown as UserKeyword[];
                 setUser_keywords(typedData);
-                console.log('Fetched user keywords:', typedData); // 디버깅용
             }
         } catch (error) {
             console.error('키워드 조회 실패:', error);
