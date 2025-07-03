@@ -27,7 +27,7 @@ const user_Layout = () => {
             />
 
             <Tabs.Screen
-                name="info"
+                name="inbox"
                 options={{
                     tabBarIcon: ({size, color}) => <Entypo name="v-card" size={size} color={color} />
                 }}

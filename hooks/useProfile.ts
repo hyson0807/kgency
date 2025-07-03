@@ -10,22 +10,55 @@ interface Profile {
     user_type: 'user' | 'company';
     name: string;
     phone_number: string;
-    visa?: string;
-    age?: number;
-    gender?: string;
-    korean_level?: string;
-    how_long?: string;
-    description?: string;
-    website?: string;
+    email?: string;
     address?: string;
+    description?: string;
     onboarding_completed: boolean;
     created_at?: string;
-    experience?: string;
 }
+
+interface UserInfo {
+    id: string;
+    user_id: string;
+    age?: number;
+    gender?: string;
+    nationality?: string;
+    visa?: string;
+    visa_expiry_date?: string;
+    korean_level?: string;
+    how_long?: string;
+    experience?: string;
+    education?: string;
+    has_car?: boolean;
+    has_license?: boolean;
+}
+
+interface CompanyInfo {
+    id: string;
+    company_id: string;
+    website?: string;
+    business_number?: string;
+    business_type?: string;
+    established_year?: number;
+    employee_count?: string;
+    working_hours?: string;
+    break_time?: string;
+    holiday_system?: string;
+    salary_range?: string;
+    insurance?: string[];
+    benefits?: string[];
+    hiring_process?: string;
+    required_documents?: string[];
+}
+
+type FullProfile = Profile & {
+    user_info?: UserInfo;
+    company_info?: CompanyInfo;
+};
 
 export const useProfile = () => {
     const { user } = useAuth();
-    const [profile, setProfile] = useState<Profile | null>(null);
+    const [profile, setProfile] = useState<FullProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -38,19 +71,47 @@ export const useProfile = () => {
 
         try {
             setError(null);
-            const { data, error } = await supabase
+
+            // 기본 프로필 정보 가져오기
+            const { data: profileData, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', user.userId)
                 .single();
 
-            if (error) throw error;
+            if (profileError) throw profileError;
 
-            if (data) {
-                setProfile(data);
-                // AsyncStorage에도 저장
-                await AsyncStorage.setItem('userProfile', JSON.stringify(data));
+            let fullProfile: FullProfile = profileData;
+
+            // user 타입인 경우 user_info 가져오기
+            if (profileData.user_type === 'user') {
+                const { data: userInfo, error: userInfoError } = await supabase
+                    .from('user_info')
+                    .select('*')
+                    .eq('user_id', user.userId)
+                    .single();
+
+                if (!userInfoError && userInfo) {
+                    fullProfile.user_info = userInfo;
+                }
             }
+            // company 타입인 경우 company_info 가져오기
+            else if (profileData.user_type === 'company') {
+                const { data: companyInfo, error: companyInfoError } = await supabase
+                    .from('company_info')
+                    .select('*')
+                    .eq('company_id', user.userId)
+                    .single();
+
+                if (!companyInfoError && companyInfo) {
+                    fullProfile.company_info = companyInfo;
+                }
+            }
+
+            setProfile(fullProfile);
+            // AsyncStorage에도 저장
+            await AsyncStorage.setItem('userProfile', JSON.stringify(fullProfile));
+
         } catch (error) {
             console.error('프로필 조회 실패:', error);
             setError('프로필을 불러오는데 실패했습니다.');
@@ -60,8 +121,12 @@ export const useProfile = () => {
     };
 
     // 프로필 업데이트
-    const updateProfile = async (updates: Partial<Profile>): Promise<boolean> => {
-        if (!user) {
+    const updateProfile = async (updates: {
+        profile?: Partial<Profile>;
+        userInfo?: Partial<UserInfo>;
+        companyInfo?: Partial<CompanyInfo>;
+    }): Promise<boolean> => {
+        if (!user || !profile) {
             console.error('로그인이 필요합니다');
             return false;
         }
@@ -69,21 +134,75 @@ export const useProfile = () => {
         try {
             setError(null);
 
-            // 1. Supabase에 업데이트
-            const { data, error } = await supabase
-                .from('profiles')
-                .update(updates)
-                .eq('id', user.userId)
-                .select()
-                .single();
+            // 1. profiles 테이블 업데이트
+            if (updates.profile) {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update(updates.profile)
+                    .eq('id', user.userId);
 
-            if (error) throw error;
+                if (error) throw error;
+            }
 
-            // 2. 로컬 상태 업데이트
-            setProfile(data);
+            // 2. user_info 테이블 업데이트
+            if (updates.userInfo && profile.user_type === 'user') {
+                // user_info가 이미 있는지 확인
+                const { data: existing } = await supabase
+                    .from('user_info')
+                    .select('id')
+                    .eq('user_id', user.userId)
+                    .single();
 
-            // 3. AsyncStorage 업데이트
-            await AsyncStorage.setItem('userProfile', JSON.stringify(data));
+                if (existing) {
+                    // 업데이트
+                    const { error } = await supabase
+                        .from('user_info')
+                        .update(updates.userInfo)
+                        .eq('user_id', user.userId);
+
+                    if (error) throw error;
+                } else {
+                    // 새로 생성
+                    const { error } = await supabase
+                        .from('user_info')
+                        .insert({
+                            ...updates.userInfo,
+                            user_id: user.userId
+                        });
+
+                    if (error) throw error;
+                }
+            }
+
+            // 3. company_info 테이블 업데이트
+            if (updates.companyInfo && profile.user_type === 'company') {
+                const { data: existing } = await supabase
+                    .from('company_info')
+                    .select('id')
+                    .eq('company_id', user.userId)
+                    .single();
+
+                if (existing) {
+                    const { error } = await supabase
+                        .from('company_info')
+                        .update(updates.companyInfo)
+                        .eq('company_id', user.userId);
+
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase
+                        .from('company_info')
+                        .insert({
+                            ...updates.companyInfo,
+                            company_id: user.userId
+                        });
+
+                    if (error) throw error;
+                }
+            }
+
+            // 4. 다시 가져오기
+            await fetchProfile();
 
             console.log('프로필 업데이트 성공');
             return true;

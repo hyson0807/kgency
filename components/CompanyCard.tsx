@@ -16,25 +16,35 @@ interface CompanyCardProps {
         conditions: string[];
     };
     onPress?: () => void;
+    hasApplied?: boolean;
 }
 
 const CompanyCard: React.FC<CompanyCardProps> = ({
                                                      company,
                                                      matchedCount,
                                                      matchedKeywords,
-                                                     onPress
+                                                     onPress,
+                                                     hasApplied = false
                                                  }) => {
     const hasMatches = matchedCount > 0;
 
     return (
         <TouchableOpacity
             onPress={onPress}
-            className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
+            className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm relative"
             activeOpacity={0.7}
         >
+            {/* 지원 완료 뱃지 - 추가된 부분 */}
+            {hasApplied && (
+                <View className="absolute top-4 right-4 bg-green-500 px-3 py-1 rounded-full flex-row items-center">
+                    <Ionicons name="checkmark-circle" size={16} color="white" />
+                    <Text className="text-white text-xs font-medium ml-1">지원완료</Text>
+                </View>
+            )}
+
             {/* 회사 정보 */}
             <View className="mb-3">
-                <Text className="text-lg font-bold text-gray-800">
+                <Text className="text-lg font-bold text-gray-800 pr-20">
                     {company.name}
                 </Text>
                 {company.address && (

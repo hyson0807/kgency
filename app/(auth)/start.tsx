@@ -29,7 +29,10 @@ const Start = () => {
                     <TouchableOpacity>
                         <MaterialIcons name="language" size={30} color="white" />
                     </TouchableOpacity>
-                    <TouchableOpacity className="border rounded-full p-2">
+                    <TouchableOpacity
+                        className="border rounded-full p-2"
+                        onPress={() => router.push('/company_login')}
+                    >
                         <Text>구인자 로그인</Text>
                     </TouchableOpacity>
                 </View>
