@@ -24,36 +24,17 @@ interface UserInfo {
     gender?: string;
     nationality?: string;
     visa?: string;
-    visa_expiry_date?: string;
     korean_level?: string;
     how_long?: string;
     experience?: string;
-    education?: string;
-    has_car?: boolean;
-    has_license?: boolean;
+    topic?: string;
+    experience_content?: string;
 }
 
-interface CompanyInfo {
-    id: string;
-    company_id: string;
-    website?: string;
-    business_number?: string;
-    business_type?: string;
-    established_year?: number;
-    employee_count?: string;
-    working_hours?: string;
-    break_time?: string;
-    holiday_system?: string;
-    salary_range?: string;
-    insurance?: string[];
-    benefits?: string[];
-    hiring_process?: string;
-    required_documents?: string[];
-}
+
 
 type FullProfile = Profile & {
     user_info?: UserInfo;
-    company_info?: CompanyInfo;
 };
 
 export const useProfile = () => {
@@ -95,18 +76,7 @@ export const useProfile = () => {
                     fullProfile.user_info = userInfo;
                 }
             }
-            // company 타입인 경우 company_info 가져오기
-            else if (profileData.user_type === 'company') {
-                const { data: companyInfo, error: companyInfoError } = await supabase
-                    .from('company_info')
-                    .select('*')
-                    .eq('company_id', user.userId)
-                    .single();
 
-                if (!companyInfoError && companyInfo) {
-                    fullProfile.company_info = companyInfo;
-                }
-            }
 
             setProfile(fullProfile);
             // AsyncStorage에도 저장
@@ -124,7 +94,6 @@ export const useProfile = () => {
     const updateProfile = async (updates: {
         profile?: Partial<Profile>;
         userInfo?: Partial<UserInfo>;
-        companyInfo?: Partial<CompanyInfo>;
     }): Promise<boolean> => {
         if (!user || !profile) {
             console.error('로그인이 필요합니다');
@@ -174,32 +143,7 @@ export const useProfile = () => {
                 }
             }
 
-            // 3. company_info 테이블 업데이트
-            if (updates.companyInfo && profile.user_type === 'company') {
-                const { data: existing } = await supabase
-                    .from('company_info')
-                    .select('id')
-                    .eq('company_id', user.userId)
-                    .single();
 
-                if (existing) {
-                    const { error } = await supabase
-                        .from('company_info')
-                        .update(updates.companyInfo)
-                        .eq('company_id', user.userId);
-
-                    if (error) throw error;
-                } else {
-                    const { error } = await supabase
-                        .from('company_info')
-                        .insert({
-                            ...updates.companyInfo,
-                            company_id: user.userId
-                        });
-
-                    if (error) throw error;
-                }
-            }
 
             // 4. 다시 가져오기
             await fetchProfile();

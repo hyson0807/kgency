@@ -7,29 +7,14 @@ interface Company {
     id: string;
     name: string;
     description?: string;
+    website?: string;
     address?: string;
     phone_number?: string;
     user_type: 'company';
     created_at: string;
-    company_info?: {
-        id: string;
-        website?: string;
-        business_number?: string;
-        business_type?: string;
-        established_year?: number;
-        employee_count?: string;
-        working_hours?: string;
-        break_time?: string;
-        holiday_system?: string;
-        salary_range?: string;
-        insurance?: string[];
-        benefits?: string[];
-        hiring_process?: string;
-        required_documents?: string[];
-    };
 }
 
-interface   CompanyWithKeywords extends Company {
+interface CompanyWithKeywords extends Company {
     company_keywords?: {
         keyword_id: number;
         keyword: {
@@ -64,22 +49,6 @@ export const useCompanies = (options?: UseCompaniesOptions) => {
                     .from('profiles')
                     .select(`
                         *,
-                        company_info!company_info_company_id_fkey(
-                            id,
-                            website,
-                            business_number,
-                            business_type,
-                            established_year,
-                            employee_count,
-                            working_hours,
-                            break_time,
-                            holiday_system,
-                            salary_range,
-                            insurance,
-                            benefits,
-                            hiring_process,
-                            required_documents
-                        ),
                         company_keywords:company_keyword(
                             keyword_id,
                             keyword:keyword_id(
@@ -161,22 +130,6 @@ export const useCompanies = (options?: UseCompaniesOptions) => {
                 .from('profiles')
                 .select(`
                     *,
-                    company_info!company_info_company_id_fkey(
-                        id,
-                        website,
-                        business_number,
-                        business_type,
-                        established_year,
-                        employee_count,
-                        working_hours,
-                        break_time,
-                        holiday_system,
-                        salary_range,
-                        insurance,
-                        benefits,
-                        hiring_process,
-                        required_documents
-                    ),
                     company_keywords:company_keyword(
                         keyword_id,
                         keyword:keyword_id(

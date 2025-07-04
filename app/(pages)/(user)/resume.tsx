@@ -1,37 +1,37 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
-import React, { useState, useEffect } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useLocalSearchParams, router } from 'expo-router'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { SafeAreaView } from "react-native-safe-area-context"
+import { Ionicons } from '@expo/vector-icons'
+import { router, useLocalSearchParams } from 'expo-router'
+import Back from '@/components/back'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
-import Back from '@/components/back'
-import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 
 export default function Resume() {
     const params = useLocalSearchParams();
     // params가 배열일 수 있으므로 첫 번째 값을 가져옴
+    const jobPostingId = Array.isArray(params.jobPostingId) ? params.jobPostingId[0] : params.jobPostingId;
     const companyId = Array.isArray(params.companyId) ? params.companyId[0] : params.companyId;
     const companyName = Array.isArray(params.companyName) ? params.companyName[0] : params.companyName;
+    const jobTitle = Array.isArray(params.jobTitle) ? params.jobTitle[0] : params.jobTitle;
     const { user } = useAuth();
 
-    const [resume, setResume] = useState<string>('');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [sending, setSending] = useState(false);
-
-    // 파라미터 확인
-    useEffect(() => {
-        console.log('Resume 페이지 params:', params);
-        console.log('companyId:', companyId);
-        console.log('companyName:', companyName);
-        console.log('user:', user);
-    }, [params, companyId, companyName, user]);
+    const [resume, setResume] = useState('')
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [isEditing, setIsEditing] = useState(false)
+    const [editedResume, setEditedResume] = useState('')
+    const [sending, setSending] = useState(false)
+    const [regenerating, setRegenerating] = useState(false)
 
     // 컴포넌트 마운트 시 AI 이력서 생성
     useEffect(() => {
-        if (companyId && user) {
+        if (jobPostingId && companyId && user) {
             generateResume();
+        } else if (!jobPostingId) {
+            setError('공고 정보가 없습니다.');
+            setLoading(false);
         } else if (!companyId) {
             setError('회사 정보가 없습니다.');
             setLoading(false);
@@ -39,50 +39,52 @@ export default function Resume() {
             setError('로그인이 필요합니다.');
             setLoading(false);
         }
-    }, [companyId, user]);
+    }, [jobPostingId, companyId, user]);
 
     const generateResume = async () => {
-        if (!user) {
-            setError('로그인이 필요합니다.');
-            setLoading(false);
-            return;
-        }
+        setLoading(true);
+        setError(null);
 
         try {
-            setLoading(true);
-            setError(null);
-
             // 디버깅을 위한 로그
             console.log('AI 이력서 생성 요청:', {
-                user_id: user.userId,
+                user_id: user?.userId,
+                job_posting_id: jobPostingId,
                 company_id: companyId
             });
 
-            // AI 이력서 생성 API 호출
-            const response = await axios.post('https://1232-production.up.railway.app/generate-resume', {
-                user_id: user.userId,
+            // AI 이력서 생성 API 호출 (job_posting_id 추가)
+            const response = await axios.post('https://1232-production.up.railway.app/generate-resume-for-posting', {
+                user_id: user?.userId,
+                job_posting_id: jobPostingId,
                 company_id: companyId
             });
 
-            if (response.data.success) {
+            console.log('AI 이력서 생성 응답:', response.data);
+
+            if (response.data.success && response.data.resume) {
                 setResume(response.data.resume);
+                setEditedResume(response.data.resume);
             } else {
-                setError(response.data.error || '이력서 생성에 실패했습니다.');
+                throw new Error(response.data.error || 'AI 이력서 생성에 실패했습니다.');
             }
         } catch (error: any) {
-            console.error('이력서 생성 오류:', error);
-            console.error('에러 상세:', error.response?.data);
+            console.error('AI 이력서 생성 오류:', error);
+            setError(error.response?.data?.error || error.message || 'AI 이력서 생성 중 오류가 발생했습니다.');
 
-            // 에러 메시지 개선
-            if (error.response?.status === 400) {
-                setError(error.response.data?.error || '요청 데이터가 올바르지 않습니다.');
-            } else if (error.response?.status === 404) {
-                setError('사용자 또는 회사 정보를 찾을 수 없습니다.');
-            } else if (error.response?.status === 500) {
-                setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-            } else {
-                setError('이력서를 생성하는 중 문제가 발생했습니다.');
-            }
+            // 오류 발생 시 기본 이력서 템플릿 제공
+            const fallbackResume = `안녕하세요, ${companyName} 채용 담당자님
+
+${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
+
+저는 성실하고 책임감 있는 지원자로서, 귀사에서 열심히 일할 준비가 되어 있습니다.
+
+주어진 업무를 성실히 수행하며, 동료들과 협력하여 회사의 발전에 기여하고 싶습니다.
+
+감사합니다.`;
+
+            setResume(fallbackResume);
+            setEditedResume(fallbackResume);
         } finally {
             setLoading(false);
         }
@@ -91,7 +93,7 @@ export default function Resume() {
     const handleSend = async () => {
         Alert.alert(
             '이력서 전송',
-            `${companyName}에 이력서를 전송하시겠습니까?`,
+            `${jobTitle || '채용 공고'}에 이력서를 전송하시겠습니까?`,
             [
                 { text: '취소', style: 'cancel' },
                 {
@@ -104,13 +106,13 @@ export default function Resume() {
                                 .from('applications')
                                 .select('id')
                                 .eq('user_id', user?.userId)
-                                .eq('company_id', companyId)
+                                .eq('job_posting_id', jobPostingId)
                                 .maybeSingle();
 
                             if (existingApp) {
                                 Alert.alert(
                                     '이미 지원함',
-                                    '이 회사에는 이미 지원하셨습니다.',
+                                    '이 공고에는 이미 지원하셨습니다.',
                                     [
                                         {
                                             text: '확인',
@@ -128,58 +130,40 @@ export default function Resume() {
                                 .insert({
                                     sender_id: user?.userId,
                                     receiver_id: companyId,
-                                    subject: `입사 지원서`,
-                                    content: resume
+                                    subject: `[${jobTitle}] 입사 지원서`,
+                                    content: isEditing ? editedResume : resume
                                 })
                                 .select()
                                 .single();
 
                             if (messageError) throw messageError;
 
-                            // 지원 내역 저장
+                            // 지원 내역 저장 (job_posting_id 추가)
                             const { error: applicationError } = await supabase
                                 .from('applications')
                                 .insert({
                                     user_id: user?.userId,
                                     company_id: companyId,
+                                    job_posting_id: jobPostingId,
                                     message_id: messageData.id,
                                     status: 'pending'
                                 });
 
-                            if (applicationError) {
-                                // 중복 지원 에러인 경우
-                                if (applicationError.code === '23505') {
-                                    Alert.alert(
-                                        '이미 지원함',
-                                        '이 회사에는 이미 지원하셨습니다.',
-                                        [
-                                            {
-                                                text: '확인',
-                                                onPress: () => router.replace('/(user)/home')
-                                            }
-                                        ]
-                                    );
-                                } else {
-                                    throw applicationError;
-                                }
-                            } else {
-                                Alert.alert(
-                                    '전송 완료',
-                                    '이력서가 성공적으로 전송되었습니다!',
-                                    [
-                                        {
-                                            text: '확인',
-                                            onPress: () => {
-                                                router.replace('/(user)/home');
-                                            }
-                                        }
-                                    ]
-                                );
-                            }
+                            if (applicationError) throw applicationError;
 
-                        } catch (error: any) {
-                            console.error('이력서 전송 실패:', error);
-                            Alert.alert('오류', '이력서 전송에 실패했습니다.');
+                            Alert.alert(
+                                '전송 완료',
+                                '이력서가 성공적으로 전송되었습니다!',
+                                [
+                                    {
+                                        text: '확인',
+                                        onPress: () => router.replace('/(user)/home')
+                                    }
+                                ]
+                            );
+                        } catch (error) {
+                            console.error('이력서 전송 오류:', error);
+                            Alert.alert('오류', '이력서 전송 중 문제가 발생했습니다.');
                         } finally {
                             setSending(false);
                         }
@@ -190,61 +174,44 @@ export default function Resume() {
     };
 
     const handleEdit = () => {
-        // Apply 페이지로 돌아가서 정보 수정
-        router.back();
+        if (isEditing) {
+            // 저장
+            setResume(editedResume);
+        } else {
+            // 편집 시작
+            setEditedResume(resume);
+        }
+        setIsEditing(!isEditing);
     };
 
-    const handleRegenerate = () => {
+    const handleRegenerate = async () => {
         Alert.alert(
-            '이력서 재생성',
-            '새로운 이력서를 생성하시겠습니까?',
+            'AI 이력서 재생성',
+            '현재 작성된 내용이 사라집니다. 계속하시겠습니까?',
             [
                 { text: '취소', style: 'cancel' },
-                { text: '재생성', onPress: generateResume }
+                {
+                    text: '재생성',
+                    onPress: async () => {
+                        setRegenerating(true);
+                        await generateResume();
+                        setRegenerating(false);
+                        setIsEditing(false);
+                    }
+                }
             ]
         );
     };
 
-    // 로딩 화면
     if (loading) {
         return (
-            <SafeAreaView className="flex-1 bg-white">
-                <View className="flex-row items-center p-4 border-b border-gray-200">
-                    <Back />
-                    <Text className="text-lg font-bold ml-4">AI 이력서</Text>
-                </View>
-                <View className="flex-1 justify-center items-center">
-                    <ActivityIndicator size="large" color="#3b82f6" />
-                    <Text className="mt-4 text-gray-600">AI가 이력서를 작성하고 있습니다...</Text>
-                    <Text className="mt-2 text-sm text-gray-500">잠시만 기다려주세요</Text>
-                </View>
+            <SafeAreaView className="flex-1 bg-white justify-center items-center">
+                <ActivityIndicator size="large" color="#3b82f6" />
+                <Text className="mt-4 text-gray-600">AI가 이력서를 작성 중입니다...</Text>
             </SafeAreaView>
         );
     }
 
-    // 에러 화면
-    if (error) {
-        return (
-            <SafeAreaView className="flex-1 bg-white">
-                <View className="flex-row items-center p-4 border-b border-gray-200">
-                    <Back />
-                    <Text className="text-lg font-bold ml-4">AI 이력서</Text>
-                </View>
-                <View className="flex-1 justify-center items-center p-6">
-                    <Ionicons name="alert-circle" size={80} color="#ef4444" />
-                    <Text className="mt-4 text-lg text-gray-800 text-center">{error}</Text>
-                    <TouchableOpacity
-                        onPress={generateResume}
-                        className="mt-6 bg-blue-500 px-6 py-3 rounded-xl"
-                    >
-                        <Text className="text-white font-medium">다시 시도</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-        );
-    }
-
-    // 이력서 화면
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
@@ -253,34 +220,77 @@ export default function Resume() {
                     <Back />
                     <Text className="text-lg font-bold ml-4">AI 이력서</Text>
                 </View>
-                <TouchableOpacity onPress={handleRegenerate}>
-                    <Ionicons name="refresh" size={24} color="#3b82f6" />
-                </TouchableOpacity>
+                <View className="flex-row gap-2">
+                    <TouchableOpacity
+                        onPress={handleRegenerate}
+                        disabled={regenerating}
+                        className="px-3 py-1 rounded-lg bg-gray-100"
+                    >
+                        <Ionicons
+                            name="refresh"
+                            size={20}
+                            color={regenerating ? "#9ca3af" : "#374151"}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={handleEdit}
+                        className={`px-3 py-1 rounded-lg ${isEditing ? 'bg-blue-500' : 'bg-gray-100'}`}
+                    >
+                        <Ionicons
+                            name={isEditing ? "checkmark" : "create"}
+                            size={20}
+                            color={isEditing ? "white" : "#374151"}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
 
-            {/* 회사 정보 */}
-            <View className="bg-blue-50 mx-4 mt-4 p-4 rounded-xl">
-                <View className="flex-row items-center">
-                    <Ionicons name="business" size={20} color="#1e40af" />
-                    <Text className="text-lg font-bold text-blue-900 ml-2">
-                        {companyName}
-                    </Text>
-                </View>
-                <Text className="text-sm text-blue-700 mt-1">
-                    AI가 작성한 맞춤형 이력서
-                </Text>
-            </View>
-
-            {/* 이력서 내용 */}
-            <ScrollView className="flex-1 px-4 py-4">
-                <View className="bg-gray-50 p-6 rounded-xl">
-                    <Text className="text-base text-gray-800 leading-7">
-                        {resume}
+            <ScrollView className="flex-1">
+                {/* 공고 정보 */}
+                <View className="bg-blue-50 mx-4 mt-4 p-4 rounded-xl">
+                    <View className="flex-row items-center">
+                        <Ionicons name="document-text" size={20} color="#1e40af" />
+                        <Text className="text-lg font-bold text-blue-900 ml-2">
+                            {jobTitle || '채용 공고'}
+                        </Text>
+                    </View>
+                    <Text className="text-sm text-blue-700 mt-1">
+                        {companyName} | AI가 작성한 맞춤형 이력서
                     </Text>
                 </View>
 
-                {/* AI 생성 안내 */}
-                <View className="mt-4 mb-6 p-4 bg-amber-50 rounded-xl">
+                {/* 에러 메시지 */}
+                {error && (
+                    <View className="bg-red-50 mx-4 mt-4 p-4 rounded-xl">
+                        <View className="flex-row items-start">
+                            <Ionicons name="alert-circle" size={20} color="#dc2626" />
+                            <Text className="text-sm text-red-700 ml-2 flex-1">{error}</Text>
+                        </View>
+                    </View>
+                )}
+
+                {/* 이력서 내용 */}
+                <View className="p-4">
+                    {isEditing ? (
+                        <TextInput
+                            className="bg-gray-50 p-4 rounded-xl text-base min-h-[400px]"
+                            multiline
+                            value={editedResume}
+                            onChangeText={setEditedResume}
+                            placeholder="이력서 내용을 입력하세요..."
+                            textAlignVertical="top"
+                        />
+                    ) : (
+                        <View className="bg-gray-50 p-4 rounded-xl">
+                            <Text className="text-base text-gray-800 leading-7">
+                                {resume}
+                            </Text>
+                        </View>
+                    )}
+                </View>
+
+                {/* AI 안내 */}
+                <View className="mx-4 mb-4 p-4 bg-amber-50 rounded-xl">
                     <View className="flex-row items-start">
                         <Ionicons name="information-circle" size={20} color="#f59e0b" />
                         <View className="ml-2 flex-1">
@@ -288,8 +298,8 @@ export default function Resume() {
                                 AI가 작성한 이력서입니다
                             </Text>
                             <Text className="text-xs text-amber-700 mt-1">
-                                프로필 정보를 기반으로 회사에 맞춤 작성되었습니다.
-                                내용이 마음에 들지 않으면 재생성하거나 프로필을 수정해주세요.
+                                내용을 검토하고 필요시 수정할 수 있습니다.
+                                수정하려면 상단의 편집 버튼을 누르세요.
                             </Text>
                         </View>
                     </View>
@@ -297,45 +307,18 @@ export default function Resume() {
             </ScrollView>
 
             {/* 하단 버튼 */}
-            <View className="px-4 pb-4">
+            <View className="p-4 border-t border-gray-200">
                 <TouchableOpacity
                     onPress={handleSend}
-                    disabled={sending}
-                    className={`py-4 rounded-xl items-center ${
-                        sending ? 'bg-gray-400' : 'bg-blue-500'
+                    disabled={sending || isEditing}
+                    className={`py-4 rounded-xl ${
+                        sending || isEditing ? 'bg-gray-400' : 'bg-blue-500'
                     }`}
                 >
-                    {sending ? (
-                        <Text className="text-white font-bold text-lg">전송 중...</Text>
-                    ) : (
-                        <View className="flex-row items-center">
-                            <Ionicons name="send" size={20} color="white" />
-                            <Text className="text-white font-bold text-lg ml-2">
-                                이력서 전송하기
-                            </Text>
-                        </View>
-                    )}
+                    <Text className="text-center text-white font-bold text-lg">
+                        {sending ? '전송 중...' : isEditing ? '편집을 완료하세요' : '이력서 전송'}
+                    </Text>
                 </TouchableOpacity>
-
-                <View className="flex-row gap-3 mt-3">
-                    <TouchableOpacity
-                        onPress={handleEdit}
-                        className="flex-1 py-3 rounded-xl border border-gray-300"
-                    >
-                        <Text className="text-center text-gray-700 font-medium">
-                            프로필 수정
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={handleRegenerate}
-                        className="flex-1 py-3 rounded-xl border border-blue-500"
-                    >
-                        <Text className="text-center text-blue-500 font-medium">
-                            다시 생성
-                        </Text>
-                    </TouchableOpacity>
-                </View>
             </View>
         </SafeAreaView>
     );
