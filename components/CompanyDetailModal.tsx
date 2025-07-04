@@ -266,7 +266,7 @@ const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({ visible, compan
                                     onClose(); // 모달 닫기
                                     // 이력서 작성 페이지로 이동하면서 회사 정보 전달
                                     router.push({
-                                        pathname: '/(pages)/apply',
+                                        pathname: '/(pages)/(user)/apply',
                                         params: {
                                             companyId: company.id,
                                             companyName: company.name
