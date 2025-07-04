@@ -29,7 +29,7 @@ interface Company {
     };
 }
 
-interface CompanyWithKeywords extends Company {
+interface   CompanyWithKeywords extends Company {
     company_keywords?: {
         keyword_id: number;
         keyword: {

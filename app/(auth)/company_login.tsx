@@ -67,7 +67,15 @@ const CompanyLogin = () => {
 
                 if (result.success) {
                     Alert.alert('성공', '로그인되었습니다!');
-                    router.replace('/(company)/home');
+
+                    if (response.data.onboardingStatus.completed) {
+                        // 온보딩 완료된 유저 → 홈으로
+                        router.replace('/(company)/home');
+                    } else {
+                        // 온보딩 미완료 유저 → info 페이지로
+                        router.replace('/(pages)/(company)/info');
+                    }
+
                 } else {
                     Alert.alert('오류', '로그인 처리 중 오류가 발생했습니다');
                 }
