@@ -155,7 +155,6 @@ export default function Apply() {
             // 값이 있는 경우에만 추가
             if (age) userInfoData.age = parseInt(age);
             if (gender) userInfoData.gender = gender;
-            if (nationality) userInfoData.nationality = nationality;
             if (visa) userInfoData.visa = visa;
             if (koreanLevel) userInfoData.korean_level = koreanLevel;
             if (topic) userInfoData.topic = topic;

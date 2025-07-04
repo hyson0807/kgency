@@ -54,7 +54,7 @@ export default function Resume() {
             });
 
             // AI 이력서 생성 API 호출 (job_posting_id 추가)
-            const response = await axios.post('https://1232-production.up.railway.app/generate-resume-for-posting', {
+            const response = await axios.post('https://kgencyserver-production.up.railway.app/generate-resume-for-posting', {
                 user_id: user?.userId,
                 job_posting_id: jobPostingId,
                 company_id: companyId
