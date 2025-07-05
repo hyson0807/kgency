@@ -9,6 +9,7 @@ import Back from '@/components/back'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 import { useUserKeywords } from '@/hooks/useUserKeywords'
+import {Dropdown} from "react-native-element-dropdown";
 
 //채용공고 등록 페이지
 const Info = () => {
@@ -29,6 +30,8 @@ const Info = () => {
     const [selectedCountries, setSelectedCountries] = useState<number[]>([])
     const [selectedJobs, setSelectedJobs] = useState<number[]>([])
     const [selectedConditions, setSelectedConditions] = useState<number[]>([])
+    const [selectedLocation, setSelectedLocation] = useState<number>();
+
 
     // 공고 활성화 상태
     const [isPostingActive, setIsPostingActive] = useState(true)
@@ -44,6 +47,13 @@ const Info = () => {
     const countryKeywords = keywords.filter(k => k.category === '국가')
     const jobKeywords = keywords.filter(k => k.category === '직종')
     const conditionKeywords = keywords.filter(k => k.category === '근무조건')
+
+    const locationOptions = keywords
+        .filter(k => k.category === '지역')
+        .map(location => ({
+            label: location.keyword,
+            value: location.id
+        }))
 
     // 요일 데이터
     const weekDays = [
@@ -137,6 +147,8 @@ const Info = () => {
                             setSelectedJobs(prev => [...prev, keyword.id])
                         } else if (keyword.category === '근무조건') {
                             setSelectedConditions(prev => [...prev, keyword.id])
+                        } else if (keyword.category === '지역') {
+                            setSelectedLocation(prev => keyword.id)
                         }
                     }
                 })
@@ -312,6 +324,48 @@ const Info = () => {
                             numberOfLines={4}
                             textAlignVertical="top"
                         />
+                    </View>
+
+                    <View className="mb-4">
+                        <Text className="text-2xl font-bold mb-4">지역</Text>
+                        <View className="p-4 bg-gray-50 rounded-xl">
+                            <Dropdown
+                                style={{
+                                    height: 50,
+                                    borderColor: '#d1d5db',
+                                    borderWidth: 2,
+                                    borderRadius: 12,
+                                    paddingHorizontal: 16,
+                                    backgroundColor: 'white',
+                                }}
+                                placeholderStyle={{
+                                    fontSize: 16,
+                                    color: '#9ca3af'
+                                }}
+                                selectedTextStyle={{
+                                    fontSize: 16,
+                                }}
+                                inputSearchStyle={{
+                                    height: 40,
+                                    fontSize: 16,
+                                }}
+                                iconStyle={{
+                                    width: 20,
+                                    height: 20,
+                                }}
+                                data={locationOptions}
+                                search
+                                maxHeight={300}
+                                labelField="label"
+                                valueField="value"
+                                placeholder="일하는 지역을 선택하세요"
+                                searchPlaceholder="검색..."
+                                value={selectedLocation}
+                                onChange={item => {
+                                    setSelectedLocation(item.value);
+                                }}
+                            />
+                        </View>
                     </View>
 
                     <View className="mb-4">

@@ -8,12 +8,14 @@ interface JobPosting {
     title: string;
     description?: string;
     salary_range?: string;
+    salary_type?: string;
     working_hours?: string;
-    break_time?: string;
+    working_hours_negotiable?: boolean;
+    working_days?: string[];
     holiday_system?: string;
-    benefits?: string[];
-    requirements?: string;
     hiring_count: number;
+    per_day?: string;
+    pay_day_negotiable?: boolean;
     is_active: boolean;
     created_at: string;
     company: {
