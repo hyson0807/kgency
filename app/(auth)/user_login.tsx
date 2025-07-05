@@ -27,7 +27,7 @@ const UserLogin = () => {
             const cleanPhone = phone.replace(/-/g, '');
             const formattedPhone = `+82${cleanPhone.slice(1)}`;
 
-            const response = await axios.post('https://1232-production.up.railway.app/send-otp', {phone: formattedPhone})
+            const response = await axios.post('https://kgencyserver-production.up.railway.app/send-otp', {phone: formattedPhone})
             if (response.data.success) {
                 Alert.alert('성공', 'OTP가 전송되었습니다');
                 setInputOtp(true);
