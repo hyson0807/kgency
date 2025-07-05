@@ -1,4 +1,4 @@
-import {View, Text, ScrollView, TextInput, Switch, TouchableOpacity, Alert} from 'react-native'
+import {View, Text, ScrollView, TouchableOpacity, Alert} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useAuth} from "@/contexts/AuthContext";
@@ -9,19 +9,27 @@ import WorkConditionsSelector from "@/components/WorkConditionsSelector";
 import JobPreferencesSelector from "@/components/JobPreferencesSelector";
 import { Dropdown } from 'react-native-element-dropdown';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 const Info = () => {
     const {logout} = useAuth();
     const {profile, updateProfile} = useProfile();
-    const [address, setAddress] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
+    const [selectedMoveable, setSelectedMoveable] = useState<number | null>(null);
     const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
-    const [isLocationFlexible, setIsLocationFlexible] = useState(false);
     const [selectedJobs, setSelectedJobs] = useState<number[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<number[]>([]);
 
     const { keywords, user_keywords, loading, fetchKeywords, updateKeywords } = useUserKeywords();
 
     // 카테고리별 키워드 필터링
+    const locationOptions = keywords
+        .filter(k => k.category === '지역')
+        .map(location => ({
+            label: location.keyword,
+            value: location.id,
+        }));
+
     const countryOptions = keywords
         .filter(k => k.category === '국가')
         .map(country => ({
@@ -29,15 +37,10 @@ const Info = () => {
             value: country.id
         }));
 
+    // 지역이동 가능 키워드 찾기 (단일 키워드)
+    const moveableKeyword = keywords.find(k => k.category === '지역이동');
     const jobKeywords = keywords.filter(k => k.category === '직종');
     const conditionKeywords = keywords.filter(k => k.category === '근무조건');
-
-    // 프로필이 로드되면 주소 설정
-    useEffect(() => {
-        if (profile?.address) {
-            setAddress(profile.address);
-        }
-    }, [profile]);
 
     // 컴포넌트 마운트 시 키워드 목록 가져오기
     useEffect(() => {
@@ -47,6 +50,22 @@ const Info = () => {
     // 기존에 선택된 키워드들 설정
     useEffect(() => {
         if (user_keywords.length > 0) {
+            // 지역이동 가능
+            const existingMoveable = user_keywords.find(uk =>
+                uk.keyword && uk.keyword.category === '지역이동'
+            );
+            if(existingMoveable && moveableKeyword) {
+                setSelectedMoveable(existingMoveable.keyword_id);
+            }
+
+            // 지역
+            const existingLocation = user_keywords.find(uk =>
+                uk.keyword && uk.keyword.category === '지역'
+            );
+            if(existingLocation) {
+                setSelectedLocation(existingLocation.keyword_id);
+            }
+
             // 국가
             const existingCountry = user_keywords.find(uk =>
                 uk.keyword && uk.keyword.category === '국가'
@@ -67,7 +86,7 @@ const Info = () => {
                 .map(uk => uk.keyword_id);
             setSelectedConditions(existingConditions);
         }
-    }, [user_keywords]);
+    }, [user_keywords, moveableKeyword]);
 
     // 직종 선택/해제 토글
     const toggleJob = (jobId: number) => {
@@ -87,24 +106,34 @@ const Info = () => {
         );
     };
 
+    // 지역이동 가능 토글
+    const toggleMoveable = () => {
+        if (moveableKeyword) {
+            if (selectedMoveable === moveableKeyword.id) {
+                setSelectedMoveable(null);
+            } else {
+                setSelectedMoveable(moveableKeyword.id);
+            }
+        }
+    };
+
     const handleSaveAndNext = async () => {
+        // 지역 선택 확인
+        if (!selectedLocation) {
+            Alert.alert('알림', '지역을 선택해주세요');
+            return;
+        }
+
         // 국가 선택 확인
         if (!selectedCountry) {
             Alert.alert('알림', '국가를 선택해주세요.');
             return;
         }
 
-        // 주소 입력 확인
-        if (!address.trim()) {
-            Alert.alert('알림', '거주지를 입력해주세요.');
-            return;
-        }
-
         try {
-            // 1. 프로필 업데이트 (주소와 온보딩 상태)
+            // 1. 프로필 업데이트 (온보딩 상태만)
             const profileUpdated = await updateProfile({
                 profile: {
-                    address,
                     onboarding_completed: true
                 }
             });
@@ -116,10 +145,16 @@ const Info = () => {
 
             // 2. 모든 선택된 키워드 ID 모으기
             const allSelectedKeywords = [
+                selectedLocation,
                 selectedCountry,
                 ...selectedJobs,
                 ...selectedConditions
-            ];
+            ].filter(Boolean); // null 값 제거
+
+            // 지역이동 가능이 선택되었으면 추가
+            if (selectedMoveable) {
+                allSelectedKeywords.push(selectedMoveable);
+            }
 
             // 3. 키워드 업데이트
             const keywordsUpdated = await updateKeywords(allSelectedKeywords);
@@ -155,23 +190,67 @@ const Info = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 20 }}
                 >
-                    {/* 거주지 & 이동 가능 섹션 */}
+                    {/* 지역 선택 섹션 */}
                     <View className="p-6">
-                        <Text className="text-2xl font-bold mb-4">거주지 & 이동 가능</Text>
-                        <View className="p-4 gap-4 bg-gray-50 rounded-xl">
-                            <TextInput
-                                className="w-full border-2 border-gray-300 p-4 rounded-xl bg-white"
-                                placeholder="현재 거주지 입력(예: 서울 강남구)"
-                                value={address}
-                                onChangeText={setAddress}
+                        <Text className="text-2xl font-bold mb-4">희망 근무 지역</Text>
+                        <View className="p-4 bg-gray-50 rounded-xl">
+                            <Dropdown
+                                style={{
+                                    height: 50,
+                                    borderColor: '#d1d5db',
+                                    borderWidth: 2,
+                                    borderRadius: 12,
+                                    paddingHorizontal: 16,
+                                    backgroundColor: 'white',
+                                }}
+                                placeholderStyle={{
+                                    fontSize: 16,
+                                    color: '#9ca3af'
+                                }}
+                                selectedTextStyle={{
+                                    fontSize: 16,
+                                }}
+                                inputSearchStyle={{
+                                    height: 40,
+                                    fontSize: 16,
+                                }}
+                                iconStyle={{
+                                    width: 20,
+                                    height: 20,
+                                }}
+                                data={locationOptions}
+                                search
+                                maxHeight={300}
+                                labelField="label"
+                                valueField="value"
+                                placeholder="지역을 선택하세요"
+                                searchPlaceholder="검색..."
+                                value={selectedLocation}
+                                onChange={item => {
+                                    setSelectedLocation(item.value);
+                                }}
                             />
-                            <View className="flex-row items-center justify-between">
-                                <Text className="text-lg">지역이동 가능</Text>
-                                <Switch
-                                    value={isLocationFlexible}
-                                    onValueChange={setIsLocationFlexible}
-                                />
-                            </View>
+
+                            {/* 지역이동 가능 토글 */}
+                            {moveableKeyword && (
+                                <TouchableOpacity
+                                    onPress={toggleMoveable}
+                                    className="mt-4 flex-row items-center justify-between p-4 bg-white rounded-xl border-2 border-gray-200"
+                                >
+                                    <Text className="text-base text-gray-700">
+                                        {moveableKeyword.keyword}
+                                    </Text>
+                                    <View className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
+                                        selectedMoveable === moveableKeyword.id
+                                            ? 'bg-blue-500 border-blue-500'
+                                            : 'bg-white border-gray-300'
+                                    }`}>
+                                        {selectedMoveable === moveableKeyword.id && (
+                                            <Ionicons name="checkmark" size={16} color="white" />
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
+                            )}
                         </View>
                     </View>
 

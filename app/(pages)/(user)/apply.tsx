@@ -72,7 +72,6 @@ export default function Apply() {
             if (profile.user_info) {
                 setAge(profile.user_info.age?.toString() || '')
                 setGender(profile.user_info.gender || null)
-                setNationality(profile.user_info.nationality || '')
                 setVisa(profile.user_info.visa || null)
                 setKoreanLevel(profile.user_info.korean_level || null)
                 setTopic(profile.user_info.topic || null)

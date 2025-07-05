@@ -11,8 +11,8 @@ import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 import { useUserKeywords } from '@/hooks/useUserKeywords'
 import { Dropdown } from 'react-native-element-dropdown'
 
+//채용공고 등록 페이지
 const Info = () => {
-    const { profile, updateProfile } = useProfile()
     const { user } = useAuth()
     const { keywords, loading: keywordsLoading } = useUserKeywords()
     const params = useLocalSearchParams()

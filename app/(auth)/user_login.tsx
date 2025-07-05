@@ -78,7 +78,7 @@ const UserLogin = () => {
                         router.replace('/(user)/home');
                     } else {
                         // 온보딩 미완료 유저 → info 페이지로
-                        router.replace('/(user)/info');
+                        router.replace('/(pages)/(user)/info');
                     }
                 } else {
                     Alert.alert('오류', '로그인 처리 중 오류가 발생했습니다');

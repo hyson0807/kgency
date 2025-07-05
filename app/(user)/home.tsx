@@ -357,7 +357,7 @@ const Home = () => {
                             매칭되는 공고가 없습니다
                         </Text>
                         <TouchableOpacity
-                            onPress={() => router.replace('/(user)/info')}
+                            onPress={() => router.replace('/(pages)/(user)/info')}
                             className="mt-4 px-6 py-3 bg-blue-500 rounded-xl"
                         >
                             <Text className="text-white font-medium">조건 설정하기</Text>
@@ -369,7 +369,7 @@ const Home = () => {
             <View className="absolute bottom-4 right-4 gap-2">
                 <TouchableOpacity
                     className="bg-gray-800 px-4 py-2 rounded-full shadow-lg"
-                    onPress={() => router.replace('/(user)/info')}
+                    onPress={() => router.replace('/(pages)/(user)/info')}
                 >
                     <Text className="text-white">조건 수정</Text>
                 </TouchableOpacity>

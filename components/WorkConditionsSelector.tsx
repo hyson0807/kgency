@@ -19,7 +19,7 @@ const WorkConditionsSelector: React.FC<WorkConditionsSelectorProps> = ({
                conditions,
                selectedConditions,
                onToggle,
-               title = "근무조건"
+               title = "원하는 혜택"
 }) => {
     return (
         <View className="p-6">
