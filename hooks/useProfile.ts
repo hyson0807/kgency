@@ -22,7 +22,6 @@ interface UserInfo {
     user_id: string;
     age?: number;
     gender?: string;
-    nationality?: string;
     visa?: string;
     korean_level?: string;
     how_long?: string;
@@ -91,10 +90,7 @@ export const useProfile = () => {
     };
 
     // 프로필 업데이트
-    const updateProfile = async (updates: {
-        profile?: Partial<Profile>;
-        userInfo?: Partial<UserInfo>;
-    }): Promise<boolean> => {
+    const updateProfile = async (updates: { profile?: Partial<Profile>; userInfo?: Partial<UserInfo>; }): Promise<boolean> => {
         if (!user || !profile) {
             console.error('로그인이 필요합니다');
             return false;

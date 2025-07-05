@@ -10,7 +10,6 @@ import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 import { useUserKeywords } from '@/hooks/useUserKeywords'
 import { Dropdown } from 'react-native-element-dropdown'
-import { Ionicons } from '@expo/vector-icons'
 
 const Info = () => {
     const { profile, updateProfile } = useProfile()
@@ -19,10 +18,7 @@ const Info = () => {
     const params = useLocalSearchParams()
     const jobPostingId = params.jobPostingId as string | undefined
 
-    // 회사 정보 상태
-    const [companyName, setCompanyName] = useState('')
-    const [address, setAddress] = useState('')
-    const [description, setDescription] = useState('')
+
 
     // 공고 정보 상태
     const [jobTitle, setJobTitle] = useState('')
@@ -56,14 +52,7 @@ const Info = () => {
     const jobKeywords = keywords.filter(k => k.category === '직종')
     const conditionKeywords = keywords.filter(k => k.category === '근무조건')
 
-    // 프로필 정보 로드
-    useEffect(() => {
-        if (profile) {
-            setCompanyName(profile.name || '')
-            setAddress(profile.address || '')
-            setDescription(profile.description || '')
-        }
-    }, [profile])
+
 
     // 수정 모드인 경우 기존 공고 데이터 로드
     useEffect(() => {
@@ -153,30 +142,14 @@ const Info = () => {
     // 공고 저장
     const handleSave = async () => {
         // 유효성 검사
-        if (!companyName || !address || !jobTitle || !selectedCountry || selectedJobs.length === 0) {
+        if (!jobTitle || !selectedCountry || selectedJobs.length === 0) {
             Alert.alert('알림', '필수 정보를 모두 입력해주세요.')
             return
         }
 
         setLoading(true)
         try {
-            // 1. 회사 프로필 업데이트 (필요한 경우)
-            if (!profile?.onboarding_completed) {
-                const profileUpdated = await updateProfile({
-                    profile: {
-                        name: companyName,
-                        address: address,
-                        description: description,
-                        onboarding_completed: true
-                    }
-                })
-
-                if (!profileUpdated) {
-                    throw new Error('프로필 업데이트 실패')
-                }
-            }
-
-            // 2. 공고 저장/업데이트
+            // 공고 저장/업데이트
             const jobPostingData = {
                 company_id: user?.userId,
                 title: jobTitle,
@@ -282,45 +255,7 @@ const Info = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 100 }}
             >
-                {/* 회사 기본 정보 (수정 모드가 아닐 때만 표시) */}
-                {!isEditMode && (
-                    <View className="p-6 border-b border-gray-100">
-                        <Text className="text-xl font-bold mb-4">회사 정보</Text>
 
-                        <View className="mb-4">
-                            <Text className="text-gray-700 mb-2">회사명 *</Text>
-                            <TextInput
-                                className="border border-gray-300 rounded-lg p-3"
-                                placeholder="회사명을 입력하세요"
-                                value={companyName}
-                                onChangeText={setCompanyName}
-                            />
-                        </View>
-
-                        <View className="mb-4">
-                            <Text className="text-gray-700 mb-2">주소 *</Text>
-                            <TextInput
-                                className="border border-gray-300 rounded-lg p-3"
-                                placeholder="예: 서울시 강남구"
-                                value={address}
-                                onChangeText={setAddress}
-                            />
-                        </View>
-
-                        <View className="mb-4">
-                            <Text className="text-gray-700 mb-2">회사 소개</Text>
-                            <TextInput
-                                className="border border-gray-300 rounded-lg p-3"
-                                placeholder="회사를 소개해주세요"
-                                value={description}
-                                onChangeText={setDescription}
-                                multiline
-                                numberOfLines={4}
-                                textAlignVertical="top"
-                            />
-                        </View>
-                    </View>
-                )}
 
                 {/* 채용 정보 */}
                 <View className="p-6 border-b border-gray-100">
@@ -490,11 +425,11 @@ const Info = () => {
             </ScrollView>
 
             {/* 하단 버튼 */}
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+            <View className="absolute bottom-4 left-2 right-2 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
                     onPress={handleSave}
                     disabled={loading}
-                    className={`py-4 rounded-xl ${
+                    className={`py-4 rounded-2xl ${
                         loading ? 'bg-gray-400' : 'bg-blue-500'
                     }`}
                 >

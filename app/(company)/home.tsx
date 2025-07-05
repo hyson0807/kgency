@@ -289,6 +289,7 @@ const Home = () => {
                     />
                 }
             />
+            <Text onPress={() => router.push('/register')}>register</Text>
 
             {/* 플로팅 버튼 */}
             {postings.length > 0 && (

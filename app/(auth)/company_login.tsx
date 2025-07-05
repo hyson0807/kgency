@@ -73,7 +73,7 @@ const CompanyLogin = () => {
                         router.replace('/(company)/home');
                     } else {
                         // 온보딩 미완료 유저 → info 페이지로
-                        router.replace('/(pages)/(company)/info');
+                        router.replace('/(pages)/(company)/register');
                     }
 
                 } else {
