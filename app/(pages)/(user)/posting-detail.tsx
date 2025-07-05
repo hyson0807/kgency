@@ -150,29 +150,9 @@ export default function PostingDetail() {
                         </View>
                     )}
 
-                    {posting.break_time && (
-                        <View className="flex-row items-center mb-3">
-                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="cafe-outline" size={18} color="#3b82f6" />
-                            </View>
-                            <View className="ml-3">
-                                <Text className="text-xs text-gray-500">휴게시간</Text>
-                                <Text className="text-base text-gray-800">{posting.break_time}</Text>
-                            </View>
-                        </View>
-                    )}
 
-                    {posting.holiday_system && (
-                        <View className="flex-row items-center mb-3">
-                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="calendar-outline" size={18} color="#3b82f6" />
-                            </View>
-                            <View className="ml-3">
-                                <Text className="text-xs text-gray-500">휴무</Text>
-                                <Text className="text-base text-gray-800">{posting.holiday_system}</Text>
-                            </View>
-                        </View>
-                    )}
+
+
 
                     {posting.hiring_count && (
                         <View className="flex-row items-center">
@@ -201,19 +181,31 @@ export default function PostingDetail() {
                     </View>
                 )}
 
+
+
+                {/* 자격요건 */}
+                {posting.requirements && (
+                    <View className="p-6 border-b border-gray-100">
+                        <Text className="text-lg font-semibold mb-4">회사의 강점!</Text>
+                        {keywords.conditions.length > 0 && (
+                            <View>
+                                <View className="flex-row flex-wrap gap-2">
+                                    {keywords.conditions.map((keyword) => (
+                                        <View key={keyword.id} className="bg-teal-100 px-3 py-1 rounded-full">
+                                            <Text className="text-teal-700 text-sm">{keyword.keyword}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </View>
+                        )}
+                    </View>
+                )}
+
                 {/* 상세 설명 */}
                 {posting.description && (
                     <View className="p-6 border-b border-gray-100">
                         <Text className="text-lg font-semibold mb-4">상세 설명</Text>
                         <Text className="text-gray-700 leading-6">{posting.description}</Text>
-                    </View>
-                )}
-
-                {/* 자격요건 */}
-                {posting.requirements && (
-                    <View className="p-6 border-b border-gray-100">
-                        <Text className="text-lg font-semibold mb-4">자격요건</Text>
-                        <Text className="text-gray-700 leading-6">{posting.requirements}</Text>
                     </View>
                 )}
 
@@ -256,18 +248,7 @@ export default function PostingDetail() {
                             </View>
                         )}
 
-                        {keywords.conditions.length > 0 && (
-                            <View>
-                                <Text className="text-gray-600 font-medium mb-2">제공 조건</Text>
-                                <View className="flex-row flex-wrap gap-2">
-                                    {keywords.conditions.map((keyword) => (
-                                        <View key={keyword.id} className="bg-teal-100 px-3 py-1 rounded-full">
-                                            <Text className="text-teal-700 text-sm">{keyword.keyword}</Text>
-                                        </View>
-                                    ))}
-                                </View>
-                            </View>
-                        )}
+
                     </View>
                 )}
             </ScrollView>

@@ -15,6 +15,7 @@ export default function Resume() {
     const companyId = Array.isArray(params.companyId) ? params.companyId[0] : params.companyId;
     const companyName = Array.isArray(params.companyName) ? params.companyName[0] : params.companyName;
     const jobTitle = Array.isArray(params.jobTitle) ? params.jobTitle[0] : params.jobTitle;
+    const question = Array.isArray(params.question) ? params.question[0] : params.question;
     const { user } = useAuth();
 
     const [resume, setResume] = useState('')
@@ -57,7 +58,8 @@ export default function Resume() {
             const response = await axios.post('https://kgencyserver-production.up.railway.app/generate-resume-for-posting', {
                 user_id: user?.userId,
                 job_posting_id: jobPostingId,
-                company_id: companyId
+                company_id: companyId,
+                question: question,
             });
 
             console.log('AI 이력서 생성 응답:', response.data);

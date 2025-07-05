@@ -29,6 +29,7 @@ export default function Apply() {
     const [experienceContent, setExperienceContent] = useState('')
     const [hasApplied, setHasApplied] = useState(false)
     const [saving, setSaving] = useState(false)
+    const [question, setQuestion] = useState('')
 
     // 드롭다운 옵션들
     const genderOptions = [
@@ -51,8 +52,8 @@ export default function Apply() {
 
     const koreanLevelOptions = ['초급', '중급', '고급']
     const topicOptions = ['1급', '2급', '3급이상']
-    const workPeriodOptions = ['3개월', '6개월', '1년', '장기']
-    const experienceOptions = ['처음', '6개월', '1년', '3년이상']
+    const workPeriodOptions = ['1개월', '3개월', '6개월', '1년', '장기']
+    const experienceOptions = ['처음','1개월', '6개월', '1년', '3년이상']
 
     const educationOptions = [
         { label: '중학교 졸업', value: '중학교 졸업' },
@@ -177,7 +178,8 @@ export default function Apply() {
                         jobPostingId: String(jobPostingId),
                         companyId: String(companyId),
                         companyName: String(companyName),
-                        jobTitle: String(jobTitle)
+                        jobTitle: String(jobTitle),
+                        question: String(question)
                     }
                 });
             } else {
@@ -395,6 +397,19 @@ export default function Apply() {
                                 ))}
                             </View>
                         </View>
+
+                        {/* 경력 내용 */}
+                        <View className="mb-4">
+                            <Text className="text-gray-700 mb-2">사장님께 물어보고 싶은 내용</Text>
+                            <TextInput
+                                className="border border-gray-300 rounded-lg p-3 h-24"
+                                placeholder="질문사항"
+                                value={question}
+                                onChangeText={setQuestion}
+                                multiline
+                                textAlignVertical="top"
+                            />
+                        </View>
                     </View>
                 </View>
             </ScrollView>
@@ -407,7 +422,7 @@ export default function Apply() {
                     className={`py-4 rounded-xl ${saving ? 'bg-gray-400' : 'bg-blue-500'}`}
                 >
                     <Text className="text-center text-white font-bold text-lg">
-                        {saving ? '저장 중...' : '다음 단계 (이력서 작성)'}
+                        {saving ? '저장 중...' : '이력서 자동으로 만들어줄게!'}
                     </Text>
                 </TouchableOpacity>
             </View>

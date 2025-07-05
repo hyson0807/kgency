@@ -18,16 +18,12 @@ const Info = () => {
     const params = useLocalSearchParams()
     const jobPostingId = params.jobPostingId as string | undefined
 
-
-
     // 공고 정보 상태
     const [jobTitle, setJobTitle] = useState('')
     const [jobDescription, setJobDescription] = useState('')
     const [workingHours, setWorkingHours] = useState('')
-    const [breakTime, setBreakTime] = useState('')
+    const [workingDays, setWorkingDays] = useState<string[]>([])
     const [salaryRange, setSalaryRange] = useState('')
-    const [holidaySystem, setHolidaySystem] = useState('')
-    const [benefits, setBenefits] = useState('')
     const [requirements, setRequirements] = useState('')
     const [hiringCount, setHiringCount] = useState('1')
 
@@ -52,7 +48,25 @@ const Info = () => {
     const jobKeywords = keywords.filter(k => k.category === '직종')
     const conditionKeywords = keywords.filter(k => k.category === '근무조건')
 
+    // 요일 데이터
+    const weekDays = [
+        { label: '월', value: '월' },
+        { label: '화', value: '화' },
+        { label: '수', value: '수' },
+        { label: '목', value: '목' },
+        { label: '금', value: '금' },
+        { label: '토', value: '토' },
+        { label: '일', value: '일' }
+    ]
 
+    // 요일 선택/해제 토글
+    const toggleWorkingDay = (day: string) => {
+        setWorkingDays(prev =>
+            prev.includes(day)
+                ? prev.filter(d => d !== day)
+                : [...prev, day]
+        )
+    }
 
     // 수정 모드인 경우 기존 공고 데이터 로드
     useEffect(() => {
@@ -81,14 +95,11 @@ const Info = () => {
                 setRequirements(posting.requirements || '')
                 setHiringCount(posting.hiring_count?.toString() || '1')
                 setWorkingHours(posting.working_hours || '')
-                setBreakTime(posting.break_time || '')
+                setWorkingDays(posting.working_days || [])
                 setSalaryRange(posting.salary_range || '')
-                setHolidaySystem(posting.holiday_system || '')
                 setIsPostingActive(posting.is_active)
 
-                if (posting.benefits) {
-                    setBenefits(posting.benefits.join(', '))
-                }
+
             }
 
             // 공고 키워드 로드
@@ -147,6 +158,11 @@ const Info = () => {
             return
         }
 
+        if (workingDays.length === 0) {
+            Alert.alert('알림', '근무일을 선택해주세요.')
+            return
+        }
+
         setLoading(true)
         try {
             // 공고 저장/업데이트
@@ -157,10 +173,8 @@ const Info = () => {
                 requirements: requirements,
                 hiring_count: parseInt(hiringCount) || 1,
                 working_hours: workingHours,
-                break_time: breakTime,
+                working_days: workingDays,
                 salary_range: salaryRange,
-                holiday_system: holidaySystem,
-                benefits: benefits ? benefits.split(',').map(b => b.trim()) : [],
                 is_active: isPostingActive,
                 updated_at: new Date().toISOString()
             }
@@ -255,8 +269,6 @@ const Info = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 100 }}
             >
-
-
                 {/* 채용 정보 */}
                 <View className="p-6 border-b border-gray-100">
                     <Text className="text-xl font-bold mb-4">채용 정보</Text>
@@ -284,25 +296,44 @@ const Info = () => {
                         />
                     </View>
 
-                    <View className="flex-row gap-4 mb-4">
-                        <View className="flex-1">
-                            <Text className="text-gray-700 mb-2">근무시간</Text>
-                            <TextInput
-                                className="border border-gray-300 rounded-lg p-3"
-                                placeholder="예: 09:00-18:00"
-                                value={workingHours}
-                                onChangeText={setWorkingHours}
-                            />
+                    <View className="mb-4">
+                        <Text className="text-gray-700 mb-2">근무시간</Text>
+                        <TextInput
+                            className="border border-gray-300 rounded-lg p-3"
+                            placeholder="예: 09:00-18:00"
+                            value={workingHours}
+                            onChangeText={setWorkingHours}
+                        />
+                    </View>
+
+                    <View className="mb-4">
+                        <Text className="text-gray-700 mb-2">근무일 *</Text>
+                        <View className="flex-row flex-wrap gap-2">
+                            {weekDays.map(day => (
+                                <TouchableOpacity
+                                    key={day.value}
+                                    onPress={() => toggleWorkingDay(day.value)}
+                                    className={`px-4 py-2 rounded-lg border-2 ${
+                                        workingDays.includes(day.value)
+                                            ? 'bg-blue-500 border-blue-500'
+                                            : 'bg-white border-gray-300'
+                                    }`}
+                                >
+                                    <Text className={`font-medium ${
+                                        workingDays.includes(day.value)
+                                            ? 'text-white'
+                                            : 'text-gray-700'
+                                    }`}>
+                                        {day.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
-                        <View className="flex-1">
-                            <Text className="text-gray-700 mb-2">휴게시간</Text>
-                            <TextInput
-                                className="border border-gray-300 rounded-lg p-3"
-                                placeholder="예: 1시간"
-                                value={breakTime}
-                                onChangeText={setBreakTime}
-                            />
-                        </View>
+                        {workingDays.length > 0 && (
+                            <Text className="text-sm text-gray-500 mt-2">
+                                선택됨: {workingDays.join(', ')}
+                            </Text>
+                        )}
                     </View>
 
                     <View className="mb-4">
@@ -315,27 +346,7 @@ const Info = () => {
                         />
                     </View>
 
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">휴무</Text>
-                        <TextInput
-                            className="border border-gray-300 rounded-lg p-3"
-                            placeholder="예: 주 1회 휴무"
-                            value={holidaySystem}
-                            onChangeText={setHolidaySystem}
-                        />
-                    </View>
 
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">복지/혜택</Text>
-                        <TextInput
-                            className="border border-gray-300 rounded-lg p-3"
-                            placeholder="예: 4대보험, 식사제공, 기숙사"
-                            value={benefits}
-                            onChangeText={setBenefits}
-                            multiline
-                            numberOfLines={2}
-                        />
-                    </View>
 
                     <View className="mb-4">
                         <Text className="text-gray-700 mb-2">모집인원</Text>
@@ -364,11 +375,11 @@ const Info = () => {
 
                 {/* 채용 분야 선택 */}
                 <View className="p-6 border-b border-gray-100">
-                    <Text className="text-xl font-bold mb-4">채용 분야</Text>
+                    <Text className="text-xl font-bold mb-4">사장님이 원하시는 인재 찾아드릴께요!</Text>
 
                     {/* 국가 선택 */}
                     <View className="mb-6">
-                        <Text className="text-lg font-semibold mb-3">대상 국가 *</Text>
+                        <Text className="text-lg font-semibold mb-3">선호국가 - 중복선택 가능해요!</Text>
                         <Dropdown
                             style={{
                                 height: 50,
@@ -425,11 +436,11 @@ const Info = () => {
             </ScrollView>
 
             {/* 하단 버튼 */}
-            <View className="absolute bottom-4 left-2 right-2 bg-white border-t border-gray-200 p-4">
+            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
                     onPress={handleSave}
                     disabled={loading}
-                    className={`py-4 rounded-2xl ${
+                    className={`py-4 rounded-xl ${
                         loading ? 'bg-gray-400' : 'bg-blue-500'
                     }`}
                 >
