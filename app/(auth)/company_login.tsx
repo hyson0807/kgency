@@ -52,7 +52,7 @@ const CompanyLogin = () => {
             const cleanPhone = phone.replace(/-/g, '');
             const formattedPhone = `+82${cleanPhone.slice(1)}`;
 
-            const response = await axios.post('https://1232-production.up.railway.app/verify-otp', {
+            const response = await axios.post('https://kgencyserver-production.up.railway.app/verify-otp', {
                 phone: formattedPhone,
                 otp: otp,
                 userType: 'company'  // 회사 타입으로 설정

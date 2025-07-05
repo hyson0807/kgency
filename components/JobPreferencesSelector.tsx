@@ -23,7 +23,7 @@ const JobPreferencesSelector: React.FC<JobPreferencesSelectorProps> = ({
                        }) => {
     return (
         <View className="p-6">
-            <Text className="text-2xl font-bold mb-4">{title}</Text>
+            <Text className="text-xl font-bold mb-4">{title}</Text>
             <View className="flex-row flex-wrap gap-3">
                 {jobs.map(job => (
                     <KeywordTag

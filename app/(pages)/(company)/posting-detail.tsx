@@ -270,6 +270,12 @@ export default function CompanyPostingDetail() {
                     <View className="p-6 border-b border-gray-100">
                         <Text className="text-lg font-semibold mb-4">근무 조건</Text>
 
+                        {posting?.title && (
+                            <View className="flex-row items-center mb-3">
+                                <Text className="text-gray-700 ml-3">제목: {posting.title}</Text>
+                            </View>
+                        )}
+
                         {posting?.salary_range && (
                             <View className="flex-row items-center mb-3">
                                 <Ionicons name="cash-outline" size={20} color="#6b7280" />
@@ -280,18 +286,6 @@ export default function CompanyPostingDetail() {
                             <View className="flex-row items-center mb-3">
                                 <Ionicons name="time-outline" size={20} color="#6b7280" />
                                 <Text className="text-gray-700 ml-3">근무시간: {posting.working_hours}</Text>
-                            </View>
-                        )}
-                        {posting?.break_time && (
-                            <View className="flex-row items-center mb-3">
-                                <Ionicons name="cafe-outline" size={20} color="#6b7280" />
-                                <Text className="text-gray-700 ml-3">휴게시간: {posting.break_time}</Text>
-                            </View>
-                        )}
-                        {posting?.holiday_system && (
-                            <View className="flex-row items-center mb-3">
-                                <Ionicons name="calendar-outline" size={20} color="#6b7280" />
-                                <Text className="text-gray-700 ml-3">휴무: {posting.holiday_system}</Text>
                             </View>
                         )}
                         {posting?.hiring_count && (

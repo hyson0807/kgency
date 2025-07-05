@@ -30,8 +30,7 @@ const Info = () => {
     const [selectedCountries, setSelectedCountries] = useState<number[]>([])
     const [selectedJobs, setSelectedJobs] = useState<number[]>([])
     const [selectedConditions, setSelectedConditions] = useState<number[]>([])
-    const [selectedLocation, setSelectedLocation] = useState<number>();
-
+    const [selectedLocation, setSelectedLocation] = useState<number | null>(null)
 
     // 공고 활성화 상태
     const [isPostingActive, setIsPostingActive] = useState(true)
@@ -94,11 +93,11 @@ const Info = () => {
 
     // 수정 모드인 경우 기존 공고 데이터 로드
     useEffect(() => {
-        if (jobPostingId) {
+        if (jobPostingId && keywords.length > 0) {
             setIsEditMode(true)
             loadJobPosting()
         }
-    }, [jobPostingId])
+    }, [jobPostingId, keywords])
 
     const loadJobPosting = async () => {
         if (!jobPostingId) return
@@ -138,20 +137,28 @@ const Info = () => {
             if (postingKeywords) {
                 const keywordIds = postingKeywords.map(k => k.keyword_id)
 
-                // 카테고리별로 분류
+                // 카테고리별로 분류 - 수정된 부분
+                const tempCountries: number[] = []
+                const tempJobs: number[] = []
+                const tempConditions: number[] = []
+
                 keywords.forEach(keyword => {
                     if (keywordIds.includes(keyword.id)) {
                         if (keyword.category === '국가') {
-                            setSelectedCountries(prev => [...prev, keyword.id])
+                            tempCountries.push(keyword.id)
                         } else if (keyword.category === '직종') {
-                            setSelectedJobs(prev => [...prev, keyword.id])
+                            tempJobs.push(keyword.id)
                         } else if (keyword.category === '근무조건') {
-                            setSelectedConditions(prev => [...prev, keyword.id])
+                            tempConditions.push(keyword.id)
                         } else if (keyword.category === '지역') {
-                            setSelectedLocation(prev => keyword.id)
+                            setSelectedLocation(keyword.id) // 수정된 부분
                         }
                     }
                 })
+
+                setSelectedCountries(tempCountries)
+                setSelectedJobs(tempJobs)
+                setSelectedConditions(tempConditions)
             }
         } catch (error) {
             console.error('공고 로드 실패:', error)
@@ -239,11 +246,12 @@ const Info = () => {
                     .delete()
                     .eq('job_posting_id', savedPostingId)
 
-                // 새 키워드 추가 - 국가들도 포함
+                // 새 키워드 추가 - 지역도 포함하도록 수정
                 const allSelectedKeywords = [
                     ...selectedCountries,
                     ...selectedJobs,
-                    ...selectedConditions
+                    ...selectedConditions,
+                    ...(selectedLocation ? [selectedLocation] : []) // 지역 추가
                 ].filter(Boolean)
 
                 if (allSelectedKeywords.length > 0) {
@@ -316,7 +324,7 @@ const Info = () => {
                     <View className="mb-4">
                         <Text className="text-gray-700 mb-2">상세 설명</Text>
                         <TextInput
-                            className="border border-gray-300 rounded-lg p-3"
+                            className="border border-gray-300 rounded-lg p-3 min-h-[100px]"
                             placeholder="업무 내용을 자세히 설명해주세요"
                             value={jobDescription}
                             onChangeText={setJobDescription}
@@ -327,45 +335,42 @@ const Info = () => {
                     </View>
 
                     <View className="mb-4">
-                        <Text className="text-2xl font-bold mb-4">지역</Text>
-                        <View className="p-4 bg-gray-50 rounded-xl">
-                            <Dropdown
-                                style={{
-                                    height: 50,
-                                    borderColor: '#d1d5db',
-                                    borderWidth: 2,
-                                    borderRadius: 12,
-                                    paddingHorizontal: 16,
-                                    backgroundColor: 'white',
-                                }}
-                                placeholderStyle={{
-                                    fontSize: 16,
-                                    color: '#9ca3af'
-                                }}
-                                selectedTextStyle={{
-                                    fontSize: 16,
-                                }}
-                                inputSearchStyle={{
-                                    height: 40,
-                                    fontSize: 16,
-                                }}
-                                iconStyle={{
-                                    width: 20,
-                                    height: 20,
-                                }}
-                                data={locationOptions}
-                                search
-                                maxHeight={300}
-                                labelField="label"
-                                valueField="value"
-                                placeholder="일하는 지역을 선택하세요"
-                                searchPlaceholder="검색..."
-                                value={selectedLocation}
-                                onChange={item => {
-                                    setSelectedLocation(item.value);
-                                }}
-                            />
-                        </View>
+                        <Text className="text-gray-700 mb-2">근무 지역</Text>
+                        <Dropdown
+                            style={{
+                                height: 50,
+                                borderColor: '#d1d5db',
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                paddingHorizontal: 12,
+                            }}
+                            placeholderStyle={{
+                                fontSize: 14,
+                                color: '#9ca3af'
+                            }}
+                            selectedTextStyle={{
+                                fontSize: 14,
+                            }}
+                            inputSearchStyle={{
+                                height: 40,
+                                fontSize: 14,
+                            }}
+                            iconStyle={{
+                                width: 20,
+                                height: 20,
+                            }}
+                            data={locationOptions}
+                            search
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder="근무 지역을 선택하세요"
+                            searchPlaceholder="검색..."
+                            value={selectedLocation}
+                            onChange={item => {
+                                setSelectedLocation(item.value);
+                            }}
+                        />
                     </View>
 
                     <View className="mb-4">
@@ -505,17 +510,16 @@ const Info = () => {
                             keyboardType="numeric"
                         />
                     </View>
-
-
                 </View>
 
                 {/* 채용 분야 선택 */}
-                <View className="p-6 border-b border-gray-100">
-                    <Text className="text-xl font-bold mb-4">사장님이 원하시는 인재 찾아드릴게요!</Text>
+                <View className=" border-b border-gray-100">
+                    <Text className="text-xl font-bold p-6">사장님이 원하시는 인재 찾아드릴께요!</Text>
 
                     {/* 국가 선택 - 다중 선택 가능 */}
-                    <View className="mb-6">
-                        <Text className="text-lg font-semibold mb-3">선호국가 * - 중복선택 가능해요!</Text>
+                    <View className="mb-6 p-6">
+                        <Text className="text-lg font-semibold mb-3">선호 국가 *</Text>
+                        <Text className="text-sm text-gray-500 mb-3">여러 국가를 선택할 수 있습니다</Text>
                         <View className="flex-row flex-wrap gap-2">
                             {countryKeywords.map(country => (
                                 <TouchableOpacity
