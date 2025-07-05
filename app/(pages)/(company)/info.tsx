@@ -9,7 +9,6 @@ import Back from '@/components/back'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 import { useUserKeywords } from '@/hooks/useUserKeywords'
-import { Dropdown } from 'react-native-element-dropdown'
 
 //채용공고 등록 페이지
 const Info = () => {
@@ -24,11 +23,10 @@ const Info = () => {
     const [workingHours, setWorkingHours] = useState('')
     const [workingDays, setWorkingDays] = useState<string[]>([])
     const [salaryRange, setSalaryRange] = useState('')
-    const [requirements, setRequirements] = useState('')
     const [hiringCount, setHiringCount] = useState('1')
 
-    // 키워드 선택 상태
-    const [selectedCountry, setSelectedCountry] = useState<number | null>(null)
+    // 키워드 선택 상태 - 국가도 배열로 변경
+    const [selectedCountries, setSelectedCountries] = useState<number[]>([])
     const [selectedJobs, setSelectedJobs] = useState<number[]>([])
     const [selectedConditions, setSelectedConditions] = useState<number[]>([])
 
@@ -37,14 +35,13 @@ const Info = () => {
     const [loading, setLoading] = useState(false)
     const [isEditMode, setIsEditMode] = useState(false)
 
-    // 카테고리별 키워드 필터링
-    const countryOptions = keywords
-        .filter(k => k.category === '국가')
-        .map(country => ({
-            label: country.keyword,
-            value: country.id
-        }))
+    const [workingHoursNegotiable, setWorkingHoursNegotiable] = useState(false)
+    const [payDay, setPayDay] = useState('')
+    const [payDayNegotiable, setPayDayNegotiable] = useState(false)
+    const [salaryType, setSalaryType] = useState('')
 
+    // 카테고리별 키워드 필터링
+    const countryKeywords = keywords.filter(k => k.category === '국가')
     const jobKeywords = keywords.filter(k => k.category === '직종')
     const conditionKeywords = keywords.filter(k => k.category === '근무조건')
 
@@ -59,12 +56,29 @@ const Info = () => {
         { label: '일', value: '일' }
     ]
 
+    // 급여 타입 데이터
+    const salaryTypes = [
+        { label: '시급', value: '시급' },
+        { label: '일급', value: '일급' },
+        { label: '월급', value: '월급' },
+        { label: '연봉', value: '연봉' }
+    ]
+
     // 요일 선택/해제 토글
     const toggleWorkingDay = (day: string) => {
         setWorkingDays(prev =>
             prev.includes(day)
                 ? prev.filter(d => d !== day)
                 : [...prev, day]
+        )
+    }
+
+    // 국가 선택/해제 토글
+    const toggleCountry = (countryId: number) => {
+        setSelectedCountries(prev =>
+            prev.includes(countryId)
+                ? prev.filter(id => id !== countryId)
+                : [...prev, countryId]
         )
     }
 
@@ -92,14 +106,15 @@ const Info = () => {
             if (posting) {
                 setJobTitle(posting.title)
                 setJobDescription(posting.description || '')
-                setRequirements(posting.requirements || '')
                 setHiringCount(posting.hiring_count?.toString() || '1')
                 setWorkingHours(posting.working_hours || '')
                 setWorkingDays(posting.working_days || [])
                 setSalaryRange(posting.salary_range || '')
                 setIsPostingActive(posting.is_active)
-
-
+                setWorkingHoursNegotiable(posting.working_hours_negotiable || false)
+                setPayDay(posting.pay_day || '')
+                setPayDayNegotiable(posting.pay_day_negotiable || false)
+                setSalaryType(posting.salary_type || '')
             }
 
             // 공고 키워드 로드
@@ -117,7 +132,7 @@ const Info = () => {
                 keywords.forEach(keyword => {
                     if (keywordIds.includes(keyword.id)) {
                         if (keyword.category === '국가') {
-                            setSelectedCountry(keyword.id)
+                            setSelectedCountries(prev => [...prev, keyword.id])
                         } else if (keyword.category === '직종') {
                             setSelectedJobs(prev => [...prev, keyword.id])
                         } else if (keyword.category === '근무조건') {
@@ -152,8 +167,8 @@ const Info = () => {
 
     // 공고 저장
     const handleSave = async () => {
-        // 유효성 검사
-        if (!jobTitle || !selectedCountry || selectedJobs.length === 0) {
+        // 유효성 검사 - 국가 선택 조건 변경
+        if (!jobTitle || selectedCountries.length === 0 || selectedJobs.length === 0) {
             Alert.alert('알림', '필수 정보를 모두 입력해주세요.')
             return
         }
@@ -170,11 +185,14 @@ const Info = () => {
                 company_id: user?.userId,
                 title: jobTitle,
                 description: jobDescription,
-                requirements: requirements,
                 hiring_count: parseInt(hiringCount) || 1,
                 working_hours: workingHours,
+                working_hours_negotiable: workingHoursNegotiable,
                 working_days: workingDays,
                 salary_range: salaryRange,
+                salary_type: salaryType,
+                pay_day: payDay,
+                pay_day_negotiable: payDayNegotiable,
                 is_active: isPostingActive,
                 updated_at: new Date().toISOString()
             }
@@ -209,9 +227,9 @@ const Info = () => {
                     .delete()
                     .eq('job_posting_id', savedPostingId)
 
-                // 새 키워드 추가
+                // 새 키워드 추가 - 국가들도 포함
                 const allSelectedKeywords = [
-                    selectedCountry,
+                    ...selectedCountries,
                     ...selectedJobs,
                     ...selectedConditions
                 ].filter(Boolean)
@@ -298,12 +316,33 @@ const Info = () => {
 
                     <View className="mb-4">
                         <Text className="text-gray-700 mb-2">근무시간</Text>
-                        <TextInput
-                            className="border border-gray-300 rounded-lg p-3"
-                            placeholder="예: 09:00-18:00"
-                            value={workingHours}
-                            onChangeText={setWorkingHours}
-                        />
+                        <View className="flex-row items-center gap-2">
+                            <TextInput
+                                className="flex-1 border border-gray-300 rounded-lg p-3"
+                                placeholder="예: 09:00-18:00"
+                                value={workingHours}
+                                onChangeText={setWorkingHours}
+                                editable={!workingHoursNegotiable}
+                            />
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setWorkingHoursNegotiable(!workingHoursNegotiable)
+
+                                }}
+                                className="flex-row items-center gap-2"
+                            >
+                                <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
+                                    workingHoursNegotiable
+                                        ? 'bg-blue-500 border-blue-500'
+                                        : 'bg-white border-gray-300'
+                                }`}>
+                                    {workingHoursNegotiable && (
+                                        <Text className="text-white text-xs">✓</Text>
+                                    )}
+                                </View>
+                                <Text className="text-gray-700">협의가능</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     <View className="mb-4">
@@ -337,6 +376,31 @@ const Info = () => {
                     </View>
 
                     <View className="mb-4">
+                        <Text className="text-gray-700 mb-2">급여 타입</Text>
+                        <View className="flex-row flex-wrap gap-2">
+                            {salaryTypes.map(type => (
+                                <TouchableOpacity
+                                    key={type.value}
+                                    onPress={() => setSalaryType(type.value)}
+                                    className={`px-4 py-2 rounded-lg border-2 ${
+                                        salaryType === type.value
+                                            ? 'bg-blue-500 border-blue-500'
+                                            : 'bg-white border-gray-300'
+                                    }`}
+                                >
+                                    <Text className={`font-medium ${
+                                        salaryType === type.value
+                                            ? 'text-white'
+                                            : 'text-gray-700'
+                                    }`}>
+                                        {type.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+
+                    <View className="mb-4">
                         <Text className="text-gray-700 mb-2">급여</Text>
                         <TextInput
                             className="border border-gray-300 rounded-lg p-3"
@@ -346,7 +410,36 @@ const Info = () => {
                         />
                     </View>
 
+                    <View className="mb-4">
+                        <Text className="text-gray-700 mb-2">급여일</Text>
+                        <View className="flex-row items-center gap-2">
+                            <TextInput
+                                className="flex-1 border border-gray-300 rounded-lg p-3"
+                                placeholder="예: 매월 10일"
+                                value={payDay}
+                                onChangeText={setPayDay}
+                                editable={!payDayNegotiable}
+                            />
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setPayDayNegotiable(!payDayNegotiable)
 
+                                }}
+                                className="flex-row items-center gap-2"
+                            >
+                                <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
+                                    payDayNegotiable
+                                        ? 'bg-blue-500 border-blue-500'
+                                        : 'bg-white border-gray-300'
+                                }`}>
+                                    {payDayNegotiable && (
+                                        <Text className="text-white text-xs">✓</Text>
+                                    )}
+                                </View>
+                                <Text className="text-gray-700">협의가능</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
 
                     <View className="mb-4">
                         <Text className="text-gray-700 mb-2">모집인원</Text>
@@ -359,46 +452,42 @@ const Info = () => {
                         />
                     </View>
 
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">자격요건</Text>
-                        <TextInput
-                            className="border border-gray-300 rounded-lg p-3"
-                            placeholder="필요한 자격요건을 입력하세요"
-                            value={requirements}
-                            onChangeText={setRequirements}
-                            multiline
-                            numberOfLines={3}
-                            textAlignVertical="top"
-                        />
-                    </View>
+
                 </View>
 
                 {/* 채용 분야 선택 */}
                 <View className="p-6 border-b border-gray-100">
-                    <Text className="text-xl font-bold mb-4">사장님이 원하시는 인재 찾아드릴께요!</Text>
+                    <Text className="text-xl font-bold mb-4">사장님이 원하시는 인재 찾아드릴게요!</Text>
 
-                    {/* 국가 선택 */}
+                    {/* 국가 선택 - 다중 선택 가능 */}
                     <View className="mb-6">
-                        <Text className="text-lg font-semibold mb-3">선호국가 - 중복선택 가능해요!</Text>
-                        <Dropdown
-                            style={{
-                                height: 50,
-                                borderColor: '#d1d5db',
-                                borderWidth: 1,
-                                borderRadius: 8,
-                                paddingHorizontal: 12,
-                            }}
-                            placeholderStyle={{ fontSize: 14, color: '#9ca3af' }}
-                            selectedTextStyle={{ fontSize: 14 }}
-                            data={countryOptions}
-                            search
-                            labelField="label"
-                            valueField="value"
-                            placeholder="국가를 선택하세요"
-                            searchPlaceholder="검색..."
-                            value={selectedCountry}
-                            onChange={item => setSelectedCountry(item.value)}
-                        />
+                        <Text className="text-lg font-semibold mb-3">선호국가 * - 중복선택 가능해요!</Text>
+                        <View className="flex-row flex-wrap gap-2">
+                            {countryKeywords.map(country => (
+                                <TouchableOpacity
+                                    key={country.id}
+                                    onPress={() => toggleCountry(country.id)}
+                                    className={`px-4 py-2 rounded-lg border-2 ${
+                                        selectedCountries.includes(country.id)
+                                            ? 'bg-blue-500 border-blue-500'
+                                            : 'bg-white border-gray-300'
+                                    }`}
+                                >
+                                    <Text className={`font-medium ${
+                                        selectedCountries.includes(country.id)
+                                            ? 'text-white'
+                                            : 'text-gray-700'
+                                    }`}>
+                                        {country.keyword}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                        {selectedCountries.length > 0 && (
+                            <Text className="text-sm text-gray-500 mt-2">
+                                {selectedCountries.length}개 국가 선택됨
+                            </Text>
+                        )}
                     </View>
 
                     {/* 직종 선택 */}

@@ -202,6 +202,9 @@ export const useMatchedJobPostings = () => {
             countries: keywords.filter(k => k.keyword.category === '국가').map(k => k.keyword),
             jobs: keywords.filter(k => k.keyword.category === '직종').map(k => k.keyword),
             conditions: keywords.filter(k => k.keyword.category === '근무조건').map(k => k.keyword),
+            location: keywords.filter(k => k.keyword.category === '지역').map(k => k.keyword),
+            moveable: keywords.filter(k => k.keyword.category === '지역이동').map(k => k.keyword),
+
         };
     };
 

@@ -167,39 +167,25 @@ export default function PostingDetail() {
                     )}
                 </View>
 
-                {/* 복지/혜택 */}
-                {posting.benefits && posting.benefits.length > 0 && (
-                    <View className="p-6 border-b border-gray-100">
-                        <Text className="text-lg font-semibold mb-4">복지/혜택</Text>
+                <View className="p-6 border-b border-gray-100">
+                    <Text className="text-lg font-semibold mb-4">회사의 강점!</Text>
+
+                {keywords.conditions.length > 0 && (
+                    <View className="mb-4">
                         <View className="flex-row flex-wrap gap-2">
-                            {posting.benefits.map((benefit: string, index: number) => (
-                                <View key={index} className="bg-green-100 px-3 py-2 rounded-lg">
-                                    <Text className="text-green-700">{benefit}</Text>
+                            {keywords.conditions.map((keyword) => (
+                                <View key={keyword.id} className="bg-orange-100 px-3 py-1 rounded-full">
+                                    <Text className="text-orange-700 text-sm">{keyword.keyword}</Text>
                                 </View>
                             ))}
                         </View>
                     </View>
                 )}
+                </View>
 
 
 
-                {/* 자격요건 */}
-                {posting.requirements && (
-                    <View className="p-6 border-b border-gray-100">
-                        <Text className="text-lg font-semibold mb-4">회사의 강점!</Text>
-                        {keywords.conditions.length > 0 && (
-                            <View>
-                                <View className="flex-row flex-wrap gap-2">
-                                    {keywords.conditions.map((keyword) => (
-                                        <View key={keyword.id} className="bg-teal-100 px-3 py-1 rounded-full">
-                                            <Text className="text-teal-700 text-sm">{keyword.keyword}</Text>
-                                        </View>
-                                    ))}
-                                </View>
-                            </View>
-                        )}
-                    </View>
-                )}
+
 
                 {/* 상세 설명 */}
                 {posting.description && (
