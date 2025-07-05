@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {router} from "expo-router";
 
 // 타입 정의
 interface Profile {
@@ -58,6 +59,20 @@ export const useProfile = () => {
                 .select('*')
                 .eq('id', user.userId)
                 .single();
+
+            // 유저가 삭제된 경우 처리
+            if (profileError && profileError.code === 'PGRST116') {
+                console.log('유저 프로필이 존재하지 않습니다');
+
+                // 로컬 스토리지 정리
+                await AsyncStorage.removeItem('authToken');
+                await AsyncStorage.removeItem('userData');
+                await AsyncStorage.removeItem('userProfile');
+
+                // 로그인 페이지로 리다이렉트
+                router.replace('/start');
+                return;
+            }
 
             if (profileError) throw profileError;
 
