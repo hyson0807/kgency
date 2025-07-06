@@ -180,30 +180,30 @@ const Applications = () => {
                 </View>
 
                 {/* 공고 정보 */}
-                <View className="mb-3">
-                    {item.job_posting.salary_range && (
-                        <View className="flex-row items-center mb-1">
-                            <Ionicons name="cash-outline" size={14} color="#6b7280" />
-                            <Text className="text-sm text-gray-600 ml-2">
-                                {item.job_posting.salary_range}
-                            </Text>
-                        </View>
-                    )}
-                    {item.job_posting.working_hours && (
-                        <View className="flex-row items-center mb-1">
-                            <Ionicons name="time-outline" size={14} color="#6b7280" />
-                            <Text className="text-sm text-gray-600 ml-2">
-                                {item.job_posting.working_hours}
-                            </Text>
-                        </View>
-                    )}
-                    <View className="flex-row items-center">
-                        <Ionicons name="location-outline" size={14} color="#6b7280" />
-                        <Text className="text-sm text-gray-600 ml-2">
-                            {item.job_posting.company.address || '주소 미입력'}
-                        </Text>
-                    </View>
-                </View>
+                {/*<View className="mb-3">*/}
+                {/*    {item.job_posting.salary_range && (*/}
+                {/*        <View className="flex-row items-center mb-1">*/}
+                {/*            <Ionicons name="cash-outline" size={14} color="#6b7280" />*/}
+                {/*            <Text className="text-sm text-gray-600 ml-2">*/}
+                {/*                {item.job_posting.salary_range}*/}
+                {/*            </Text>*/}
+                {/*        </View>*/}
+                {/*    )}*/}
+                {/*    {item.job_posting.working_hours && (*/}
+                {/*        <View className="flex-row items-center mb-1">*/}
+                {/*            <Ionicons name="time-outline" size={14} color="#6b7280" />*/}
+                {/*            <Text className="text-sm text-gray-600 ml-2">*/}
+                {/*                {item.job_posting.working_hours}*/}
+                {/*            </Text>*/}
+                {/*        </View>*/}
+                {/*    )}*/}
+                {/*    <View className="flex-row items-center">*/}
+                {/*        <Ionicons name="location-outline" size={14} color="#6b7280" />*/}
+                {/*        <Text className="text-sm text-gray-600 ml-2">*/}
+                {/*            {item.job_posting.company.address || '주소 미입력'}*/}
+                {/*        </Text>*/}
+                {/*    </View>*/}
+                {/*</View>*/}
 
                 {/* 지원 정보 */}
                 <View className="flex-row items-center justify-between pt-3 border-t border-gray-100">

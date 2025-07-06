@@ -120,20 +120,6 @@ export default function ViewResume() {
                     </Text>
                 </View>
 
-                {/* AI 생성 안내 */}
-                <View className="mt-4 mb-6 p-4 bg-amber-50 rounded-xl">
-                    <View className="flex-row items-start">
-                        <Ionicons name="information-circle" size={20} color="#f59e0b" />
-                        <View className="ml-2 flex-1">
-                            <Text className="text-sm font-medium text-amber-900">
-                                AI가 작성한 이력서입니다
-                            </Text>
-                            <Text className="text-xs text-amber-700 mt-1">
-                                지원자의 프로필 정보를 기반으로 작성되었습니다.
-                            </Text>
-                        </View>
-                    </View>
-                </View>
             </ScrollView>
 
             {/* 하단 액션 버튼 */}

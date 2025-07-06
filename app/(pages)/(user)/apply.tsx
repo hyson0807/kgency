@@ -383,7 +383,7 @@ export default function Apply() {
                                 {topicOptions.map((grade) => (
                                     <TouchableOpacity
                                         key={grade}
-                                        onPress={() => setTopic(grade)}
+                                        onPress={() => setTopic(topic === grade ? null : grade)}
                                         className={`flex-1 py-3 rounded-lg border items-center ${
                                             topic === grade
                                                 ? 'bg-blue-500 border-blue-500'

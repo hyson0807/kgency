@@ -182,12 +182,12 @@ const JobPosting = () => {
 
                 {/* 공고 정보 */}
                 <View className="mb-3">
-                    {item.salary_range && (
-                        <Text className="text-sm text-gray-600">💰 {item.salary_range}</Text>
-                    )}
-                    {item.working_hours && (
-                        <Text className="text-sm text-gray-600">🕐 {item.working_hours}</Text>
-                    )}
+                    {/*{item.salary_range && (*/}
+                    {/*    <Text className="text-sm text-gray-600">💰 {item.salary_range}</Text>*/}
+                    {/*)}*/}
+                    {/*{item.working_hours && (*/}
+                    {/*    <Text className="text-sm text-gray-600">🕐 {item.working_hours}</Text>*/}
+                    {/*)}*/}
                     <Text className="text-sm text-gray-500 mt-1">
                         등록일: {formatDate(item.created_at)}
                     </Text>

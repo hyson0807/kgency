@@ -188,7 +188,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
 
     const handleRegenerate = async () => {
         Alert.alert(
-            'AI 이력서 재생성',
+            '이력서 재생성',
             '현재 작성된 내용이 사라집니다. 계속하시겠습니까?',
             [
                 { text: '취소', style: 'cancel' },
@@ -209,7 +209,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
         return (
             <SafeAreaView className="flex-1 bg-white justify-center items-center">
                 <ActivityIndicator size="large" color="#3b82f6" />
-                <Text className="mt-4 text-gray-600">AI가 이력서를 작성 중입니다...</Text>
+                <Text className="mt-4 text-gray-600">이력서를 작성 중입니다...</Text>
             </SafeAreaView>
         );
     }
@@ -220,7 +220,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
             <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
                 <View className="flex-row items-center">
                     <Back />
-                    <Text className="text-lg font-bold ml-4">AI 이력서</Text>
+                    <Text className="text-lg font-bold ml-4">이력서</Text>
                 </View>
                 <View className="flex-row gap-2">
                     <TouchableOpacity
@@ -257,7 +257,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                         </Text>
                     </View>
                     <Text className="text-sm text-blue-700 mt-1">
-                        {companyName} | AI가 작성한 맞춤형 이력서
+                        {companyName} | 맞춤형 이력서
                     </Text>
                 </View>
 
@@ -297,7 +297,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                         <Ionicons name="information-circle" size={20} color="#f59e0b" />
                         <View className="ml-2 flex-1">
                             <Text className="text-sm font-medium text-amber-900">
-                                AI가 작성한 이력서입니다
+                                입력하신 정보에 기반하여 작성된 이력서입니다
                             </Text>
                             <Text className="text-xs text-amber-700 mt-1">
                                 내용을 검토하고 필요시 수정할 수 있습니다.

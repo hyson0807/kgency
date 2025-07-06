@@ -6,6 +6,11 @@ import { useAuth } from "@/contexts/AuthContext"
 import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import { Dropdown } from 'react-native-element-dropdown'
+import { useUserKeywords } from '@/hooks/useUserKeywords'
+import { supabase } from '@/lib/supabase'
+
+
+
 
 const MyPosting = () => {
     const { profile, updateProfile, loading: profileLoading } = useProfile()
@@ -16,6 +21,7 @@ const MyPosting = () => {
 
     // 모달 상태
     const [modalVisible, setModalVisible] = useState(false)
+    const [keywordModalVisible, setKeywordModalVisible] = useState(false)
 
     // 프로필 정보 상태
     const [name, setName] = useState('')
@@ -23,6 +29,10 @@ const MyPosting = () => {
     const [gender, setGender] = useState<string | undefined>(undefined)
     const [visa, setVisa] = useState<string | undefined>(undefined)
     const [koreanLevel, setKoreanLevel] = useState<string | undefined>(undefined)
+
+    // 키워드 정보 상태
+    const [userKeywords, setUserKeywords] = useState<string[]>([])
+    const [userLocation, setUserLocation] = useState<string>('')
 
     // 드롭다운 옵션들
     const genderOptions = [
@@ -63,6 +73,46 @@ const MyPosting = () => {
             }
         }
     }, [profile])
+
+    // 유저 키워드 가져오기
+    useEffect(() => {
+        fetchUserKeywords()
+    }, [profile])
+
+    const fetchUserKeywords = async () => {
+        if (!profile) return;
+
+        try {
+            const { data, error } = await supabase
+                .from('user_keyword')
+                .select(`
+                keyword:keyword_id (
+                    keyword,
+                    category
+                )
+            `)
+                .eq('user_id', profile.id);
+
+            if (error) throw error;
+
+            if (data) {
+                // keyword가 배열이면 먼저 flatMap 해줘야 함
+                const keywordList = (data as { keyword: { keyword: string; category: string }[] }[])
+                    .flatMap(item => item.keyword || []);
+
+                const allKeywords = keywordList.map(k => k.keyword);
+                setUserKeywords(allKeywords);
+
+                const location = keywordList.find(k => k.category === '지역');
+                if (location) {
+                    setUserLocation(location.keyword);
+                }
+            }
+        } catch (error) {
+            console.error('키워드 조회 실패:', error);
+        }
+    };
+
 
     // 필수 정보 입력 확인
     const isRequiredInfoComplete = () => {
@@ -115,9 +165,9 @@ const MyPosting = () => {
             },
             userInfo: {
                 age: parseInt(age),
-                gender,
-                visa,
-                korean_level: koreanLevel
+                gender: gender || undefined,
+                visa: visa || undefined,
+                korean_level: koreanLevel || undefined
             }
         })
 
@@ -223,21 +273,31 @@ const MyPosting = () => {
                     </View>
                 </View>
 
-                {/* 조건 수정 버튼 */}
-                <TouchableOpacity
-                    onPress={() => router.push('/(pages)/(user)/info')}
-                    className="bg-gray-800 mx-4 mt-4 py-4 rounded-xl shadow-sm"
-                >
-                    <Text className="text-white text-center font-bold">희망 조건 수정</Text>
-                </TouchableOpacity>
+                {/* 희망 조건 섹션 */}
+                <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
+                    <View className="flex-row items-center justify-between mb-4">
+                        <Text className="text-lg font-bold text-gray-800">내 매칭 키워드</Text>
+                        <TouchableOpacity
+                            onPress={() => router.push('/(pages)/(user)/info')}
+                            className="bg-blue-100 px-4 py-2 rounded-lg"
+                        >
+                            <Text className="text-blue-600 font-medium">수정</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                {/* 로그아웃 버튼 */}
-                <TouchableOpacity
-                    onPress={logout}
-                    className="bg-red-500 mx-4 mt-4 py-4 rounded-xl shadow-sm"
-                >
-                    <Text className="text-white text-center font-bold">로그아웃</Text>
-                </TouchableOpacity>
+                    <View className="space-y-3">
+                        <View>
+                            {userKeywords.length > 0 ? (
+                                <Text className="text-sm text-gray-700 leading-5 ">
+                                    {userKeywords.join(', ')}
+                                </Text>
+                            ) : (
+                                <Text className="text-sm text-gray-500">선택된 키워드가 없습니다</Text>
+                            )}
+                        </View>
+                    </View>
+                </View>
+
             </ScrollView>
 
             {/* 정보 수정 모달 */}

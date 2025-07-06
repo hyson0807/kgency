@@ -10,6 +10,7 @@ import JobPreferencesSelector from "@/components/JobPreferencesSelector";
 import { Dropdown } from 'react-native-element-dropdown';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Back from "@/components/back";
 
 const Info = () => {
     const {logout} = useAuth();
@@ -180,9 +181,11 @@ const Info = () => {
     return (
         <SafeAreaView className="flex-1 bg-white">
             <View className="flex-1">
-                <View className="w-full bg-purple-600 p-6">
-                    <Text className="text-3xl font-bold text-white">원하는 조건을 선택해 주세요</Text>
-                    <Text className="text-xl text-white mt-2">중요한 것만 골라주세요</Text>
+                <View className="p-4 border-b border-gray-200">
+                    <View className="flex-row items-center">
+                        <Back/>
+                        <Text className="text-lg font-bold ml-4">희망 조건 설정</Text>
+                    </View>
                 </View>
 
                 <ScrollView
@@ -191,28 +194,28 @@ const Info = () => {
                     contentContainerStyle={{ paddingBottom: 20 }}
                 >
                     {/* 지역 선택 섹션 */}
-                    <View className="p-6">
-                        <Text className="text-2xl font-bold mb-4">희망 근무 지역</Text>
-                        <View className="p-4 bg-gray-50 rounded-xl">
+                    <View className="p-4">
+                        <Text className="text-base font-semibold mb-3">희망 근무 지역</Text>
+                        <View className="p-3 bg-gray-50 rounded-xl">
                             <Dropdown
                                 style={{
-                                    height: 50,
+                                    height: 45,
                                     borderColor: '#d1d5db',
-                                    borderWidth: 2,
-                                    borderRadius: 12,
-                                    paddingHorizontal: 16,
+                                    borderWidth: 1,
+                                    borderRadius: 8,
+                                    paddingHorizontal: 12,
                                     backgroundColor: 'white',
                                 }}
                                 placeholderStyle={{
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: '#9ca3af'
                                 }}
                                 selectedTextStyle={{
-                                    fontSize: 16,
+                                    fontSize: 14,
                                 }}
                                 inputSearchStyle={{
                                     height: 40,
-                                    fontSize: 16,
+                                    fontSize: 14,
                                 }}
                                 iconStyle={{
                                     width: 20,
@@ -235,18 +238,18 @@ const Info = () => {
                             {moveableKeyword && (
                                 <TouchableOpacity
                                     onPress={toggleMoveable}
-                                    className="mt-4 flex-row items-center justify-between p-4 bg-white rounded-xl border-2 border-gray-200"
+                                    className="mt-3 flex-row items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
                                 >
-                                    <Text className="text-base text-gray-700">
+                                    <Text className="text-sm text-gray-700">
                                         {moveableKeyword.keyword}
                                     </Text>
-                                    <View className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
+                                    <View className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
                                         selectedMoveable === moveableKeyword.id
                                             ? 'bg-blue-500 border-blue-500'
                                             : 'bg-white border-gray-300'
                                     }`}>
                                         {selectedMoveable === moveableKeyword.id && (
-                                            <Ionicons name="checkmark" size={16} color="white" />
+                                            <Ionicons name="checkmark" size={12} color="white" />
                                         )}
                                     </View>
                                 </TouchableOpacity>
@@ -255,28 +258,28 @@ const Info = () => {
                     </View>
 
                     {/* 국가 선택 섹션 */}
-                    <View className="p-6">
-                        <Text className="text-2xl font-bold mb-4">국가</Text>
-                        <View className="p-4 bg-gray-50 rounded-xl">
+                    <View className="p-4">
+                        <Text className="text-base font-semibold mb-3">국가</Text>
+                        <View className="p-3 bg-gray-50 rounded-xl">
                             <Dropdown
                                 style={{
-                                    height: 50,
+                                    height: 45,
                                     borderColor: '#d1d5db',
-                                    borderWidth: 2,
-                                    borderRadius: 12,
-                                    paddingHorizontal: 16,
+                                    borderWidth: 1,
+                                    borderRadius: 8,
+                                    paddingHorizontal: 12,
                                     backgroundColor: 'white',
                                 }}
                                 placeholderStyle={{
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: '#9ca3af'
                                 }}
                                 selectedTextStyle={{
-                                    fontSize: 16,
+                                    fontSize: 14,
                                 }}
                                 inputSearchStyle={{
                                     height: 40,
-                                    fontSize: 16,
+                                    fontSize: 14,
                                 }}
                                 iconStyle={{
                                     width: 20,
@@ -312,18 +315,14 @@ const Info = () => {
                     />
 
                     {/* 저장 버튼 */}
-                    <View className="p-6">
+                    <View className="p-4">
                         <TouchableOpacity
-                            className="w-full bg-blue-500 items-center justify-center py-5 rounded-2xl"
+                            className="w-full bg-blue-500 items-center justify-center py-3 rounded-xl"
                             onPress={handleSaveAndNext}
                         >
-                            <Text className="font-bold text-xl text-white">매칭 일자리 보기</Text>
+                            <Text className="font-semibold text-base text-white">저장하기</Text>
                         </TouchableOpacity>
                     </View>
-
-                    <TouchableOpacity onPress={logout} className="p-4">
-                        <Text className="text-center text-gray-500">로그아웃</Text>
-                    </TouchableOpacity>
                 </ScrollView>
             </View>
         </SafeAreaView>

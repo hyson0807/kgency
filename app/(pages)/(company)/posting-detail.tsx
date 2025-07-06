@@ -137,36 +137,23 @@ export default function CompanyPostingDetail() {
     }
 
     //지원자 부분
+    //지원자 부분
     const renderApplicant = ({ item }: { item: Application }) => (
-        <TouchableOpacity
-            onPress={() => handleViewResume(item)}
-            className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm"
-        >
-            <View className="flex-row justify-between items-start mb-2">
-                <View className="flex-1">
-                    <View className="flex-row items-center">
-                        <Text className="text-lg font-bold">{item.user.name}</Text>
-                        {item.message && !item.message.is_read && (
-                            <View className="ml-2 bg-blue-500 px-2 py-0.5 rounded-full">
-                                <Text className="text-xs text-white">새 이력서</Text>
-                            </View>
-                        )}
-                    </View>
-                    <Text className="text-sm text-gray-600">{formatDate(item.applied_at)}</Text>
+        <View className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm">
+            <View className="mb-2">
+                <View className="flex-row items-center">
+                    <Text className="text-lg font-bold">{item.user.name}</Text>
+                    {item.message && !item.message.is_read && (
+                        <View className="ml-2 bg-blue-500 px-2 py-0.5 rounded-full">
+                            <Text className="text-xs text-white">새 이력서</Text>
+                        </View>
+                    )}
                 </View>
-                <TouchableOpacity
-                    onPress={(e) => {
-                        e.stopPropagation()
-                        handleContactApplicant(item)
-                    }}
-                    className="bg-blue-100 p-2 rounded-full"
-                >
-                    <Ionicons name="call-outline" size={20} color="#3b82f6" />
-                </TouchableOpacity>
+                <Text className="text-sm text-gray-600">{formatDate(item.applied_at)}</Text>
             </View>
 
             {/* 지원자 정보 요약 */}
-            <View className="space-y-1">
+            <View className="space-y-1 mb-3">
                 {item.user.user_info?.age && (
                     <Text className="text-sm text-gray-700">
                         나이: {item.user.user_info.age}세 / {item.user.user_info.gender || '성별 미입력'}
@@ -190,13 +177,33 @@ export default function CompanyPostingDetail() {
                 )}
             </View>
 
-            <View className="mt-3 pt-3 border-t border-gray-100">
-                <TouchableOpacity className="flex-row items-center justify-center">
-                    <Ionicons name="document-text-outline" size={16} color="#3b82f6" />
-                    <Text className="text-blue-600 font-medium ml-2">이력서 보기</Text>
+            {/* 버튼들 */}
+            <View className="flex-row gap-2 pt-3 border-t border-gray-100">
+                <TouchableOpacity
+                    onPress={() => handleViewResume(item)}
+                    className="flex-1 bg-blue-500 py-3 rounded-lg flex-row items-center justify-center"
+                >
+                    <Ionicons name="document-text-outline" size={18} color="white" />
+                    <Text className="text-white font-medium ml-2">이력서 보기</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => {
+                        // 실제 앱에서는 Clipboard API 사용
+                        Alert.alert(
+                            '연락처 복사',
+                            `${item.user.name}님의 연락처가 복사되었습니다.\n${item.user.phone_number}`,
+                            [{ text: '확인' }]
+                        );
+                        // 실제 구현시: Clipboard.setString(item.user.phone_number)
+                    }}
+                    className="flex-1 bg-gray-100 py-3 rounded-lg flex-row items-center justify-center"
+                >
+                    <Ionicons name="copy-outline" size={18} color="#374151" />
+                    <Text className="text-gray-700 font-medium ml-2">연락처 복사</Text>
                 </TouchableOpacity>
             </View>
-        </TouchableOpacity>
+        </View>
     )
 
     if (loading) {
