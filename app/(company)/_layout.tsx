@@ -27,6 +27,13 @@ const user_Layout = () => {
             />
 
             <Tabs.Screen
+                name="jobPosting"
+                options={{
+                    tabBarIcon: ({size, color}) => <Ionicons name='home' size={size} color={color}/>
+                }}
+            />
+
+            <Tabs.Screen
                 name="inbox"
                 options={{
                     tabBarIcon: ({size, color}) => <Entypo name="v-card" size={size} color={color} />
