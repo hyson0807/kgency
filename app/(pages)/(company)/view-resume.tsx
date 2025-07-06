@@ -9,47 +9,66 @@ import { supabase } from '@/lib/supabase'
 
 export default function ViewResume() {
     const params = useLocalSearchParams()
-    const { applicationId, userName, resume } = params
+    const {
+        applicationId,
+        messageId,
+        userName,
+        userPhone,
+        resume,
+        subject,
+        createdAt
+    } = params
 
     useEffect(() => {
-        markAsRead()
-    }, [applicationId])
+        if (messageId) {
+            markAsRead()
+        }
+    }, [messageId])
 
     const markAsRead = async () => {
-        if (!applicationId) return
+        if (!messageId) return
 
         try {
-            // application의 message_id를 통해 메시지를 읽음 표시
-            const { data: application } = await supabase
-                .from('applications')
-                .select('message_id')
-                .eq('id', applicationId)
-                .single()
-
-            if (application?.message_id) {
-                await supabase
-                    .from('messages')
-                    .update({ is_read: true })
-                    .eq('id', application.message_id)
-            }
+            await supabase
+                .from('messages')
+                .update({ is_read: true })
+                .eq('id', messageId)
         } catch (error) {
             console.error('읽음 표시 실패:', error)
         }
     }
 
     const handleContact = () => {
-        Alert.alert(
-            '지원자 연락',
-            `${userName}님에게 연락하시겠습니까?`,
-            [
-                { text: '취소', style: 'cancel' },
-                { text: '확인', onPress: () => router.back() }
-            ]
-        )
+        const phone = Array.isArray(userPhone) ? userPhone[0] : userPhone
+        const name = Array.isArray(userName) ? userName[0] : userName
+
+        if (phone) {
+            Alert.alert(
+                '지원자 연락처',
+                `${name}님의 연락처:\n${phone}`,
+                [
+                    { text: '닫기', style: 'cancel' },
+                    {
+                        text: '복사',
+                        onPress: () => {
+                            // 실제 앱에서는 Clipboard API 사용
+                            Alert.alert('알림', '전화번호가 복사되었습니다.')
+                        }
+                    }
+                ]
+            )
+        } else {
+            Alert.alert('알림', '연락처 정보가 없습니다.')
+        }
     }
 
     const handleSaveResume = () => {
         Alert.alert('알림', '이력서가 저장되었습니다.')
+    }
+
+    const formatDate = (dateString: string | string[]) => {
+        const date = new Date(Array.isArray(dateString) ? dateString[0] : dateString)
+        return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
     }
 
     return (
@@ -70,7 +89,19 @@ export default function ViewResume() {
                 <View className="flex-row items-center justify-between">
                     <View>
                         <Text className="text-sm text-gray-600">지원자</Text>
-                        <Text className="text-lg font-bold text-blue-900">{userName}</Text>
+                        <Text className="text-lg font-bold text-blue-900">
+                            {Array.isArray(userName) ? userName[0] : userName}
+                        </Text>
+                        {subject && (
+                            <Text className="text-sm text-gray-600 mt-1">
+                                {Array.isArray(subject) ? subject[0] : subject}
+                            </Text>
+                        )}
+                        {createdAt && (
+                            <Text className="text-xs text-gray-500 mt-1">
+                                수신일: {formatDate(createdAt)}
+                            </Text>
+                        )}
                     </View>
                     <TouchableOpacity
                         onPress={handleContact}
@@ -85,7 +116,7 @@ export default function ViewResume() {
             <ScrollView className="flex-1 px-4 py-4">
                 <View className="bg-gray-50 p-6 rounded-xl">
                     <Text className="text-base text-gray-800 leading-7">
-                        {resume}
+                        {Array.isArray(resume) ? resume[0] : resume}
                     </Text>
                 </View>
 
@@ -98,7 +129,7 @@ export default function ViewResume() {
                                 AI가 작성한 이력서입니다
                             </Text>
                             <Text className="text-xs text-amber-700 mt-1">
-                                지원자의 프로필 정보를 기반으로 귀사의 채용 공고에 맞춰 작성되었습니다.
+                                지원자의 프로필 정보를 기반으로 작성되었습니다.
                             </Text>
                         </View>
                     </View>

@@ -15,6 +15,7 @@ interface Profile {
     address?: string;
     description?: string;
     onboarding_completed: boolean;
+    job_seeking_active?: boolean;
     created_at?: string;
 }
 

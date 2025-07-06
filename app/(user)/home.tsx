@@ -366,20 +366,6 @@ const Home = () => {
                 }
             />
 
-            <View className="absolute bottom-4 right-4 gap-2">
-                <TouchableOpacity
-                    className="bg-gray-800 px-4 py-2 rounded-full shadow-lg"
-                    onPress={() => router.replace('/(pages)/(user)/info')}
-                >
-                    <Text className="text-white">조건 수정</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    className="bg-red-500 px-4 py-2 rounded-full shadow-lg"
-                    onPress={logout}
-                >
-                    <Text className="text-white">로그아웃</Text>
-                </TouchableOpacity>
-            </View>
         </SafeAreaView>
     )
 }

@@ -69,18 +69,18 @@ const Inbox = () => {
             markAsRead(message.id);
         }
 
-        // 메시지 상세 페이지로 이동
-        // router.push({
-        //     pathname: '/(company)/message-detail',
-        //     params: {
-        //         messageId: message.id,
-        //         senderName: message.sender.name,
-        //         senderPhone: message.sender.phone_number,
-        //         subject: message.subject,
-        //         content: message.content,
-        //         createdAt: message.created_at
-        //     }
-        // });
+        // view-resume 페이지로 이동
+        router.push({
+            pathname: '/(pages)/(company)/view-resume',
+            params: {
+                messageId: message.id,
+                userName: message.sender.name,
+                userPhone: message.sender.phone_number,
+                resume: message.content,
+                subject: message.subject,
+                createdAt: message.created_at
+            }
+        });
     };
 
     const markAsRead = async (messageId: string) => {

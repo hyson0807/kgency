@@ -27,6 +27,14 @@ const user_Layout = () => {
             />
 
             <Tabs.Screen
+                name="myposting"
+                options={{
+                    tabBarLabel: '내 공고',
+                    tabBarIcon: ({size, color}) => <Ionicons name="document-text" size={size} color={color} />
+                }}
+            />
+
+            <Tabs.Screen
                 name="applications"
                 options={{
                     tabBarIcon: ({size, color}) => <Entypo name="v-card" size={size} color={color} />
