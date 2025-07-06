@@ -41,6 +41,7 @@ const Info = () => {
     const [payDay, setPayDay] = useState('')
     const [payDayNegotiable, setPayDayNegotiable] = useState(false)
     const [salaryType, setSalaryType] = useState('')
+    const [workingDaysNegotiable, setWorkingDaysNegotiable] = useState(false)
 
     // 카테고리별 키워드 필터링
     const countryKeywords = keywords.filter(k => k.category === '국가')
@@ -118,6 +119,7 @@ const Info = () => {
                 setHiringCount(posting.hiring_count?.toString() || '1')
                 setWorkingHours(posting.working_hours || '')
                 setWorkingDays(posting.working_days || [])
+                setWorkingDaysNegotiable(posting.working_days_negotiable || false)
                 setSalaryRange(posting.salary_range || '')
                 setIsPostingActive(posting.is_active)
                 setWorkingHoursNegotiable(posting.working_hours_negotiable || false)
@@ -208,6 +210,7 @@ const Info = () => {
                 working_hours: workingHours,
                 working_hours_negotiable: workingHoursNegotiable,
                 working_days: workingDays,
+                working_days_negotiable: workingDaysNegotiable,
                 salary_range: salaryRange,
                 salary_type: salaryType,
                 pay_day: payDay,
@@ -406,12 +409,12 @@ const Info = () => {
 
                     <View className="mb-4">
                         <Text className="text-gray-700 mb-2">근무일 *</Text>
-                        <View className="flex-row flex-wrap gap-2">
+                        <View className="flex-row flex-wrap gap-3 items-center">
                             {weekDays.map(day => (
                                 <TouchableOpacity
                                     key={day.value}
                                     onPress={() => toggleWorkingDay(day.value)}
-                                    className={`px-4 py-2 rounded-lg border-2 ${
+                                    className={`px-2 py-2 rounded-lg border-2 ${
                                         workingDays.includes(day.value)
                                             ? 'bg-blue-500 border-blue-500'
                                             : 'bg-white border-gray-300'
@@ -426,12 +429,27 @@ const Info = () => {
                                     </Text>
                                 </TouchableOpacity>
                             ))}
+                            <TouchableOpacity
+                                onPress={() => setWorkingDaysNegotiable(!workingDaysNegotiable)}
+                                className="flex-row items-center gap-2 mt-3"
+                            >
+                                <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
+                                    workingDaysNegotiable
+                                        ? 'bg-blue-500 border-blue-500'
+                                        : 'bg-white border-gray-300'
+                                }`}>
+                                    {workingDaysNegotiable && (
+                                        <Text className="text-white text-xs">✓</Text>
+                                    )}
+                                </View>
+                                <Text className="text-gray-700">협의가능</Text>
+                            </TouchableOpacity>
+
                         </View>
-                        {workingDays.length > 0 && (
-                            <Text className="text-sm text-gray-500 mt-2">
-                                선택됨: {workingDays.join(', ')}
-                            </Text>
-                        )}
+
+
+
+
                     </View>
 
                     <View className="mb-4">

@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
-
+import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 interface Application {
     id: string
     applied_at: string
@@ -37,6 +37,7 @@ export default function CompanyPostingDetail() {
     const params = useLocalSearchParams()
     const { postingId } = params
     const { user } = useAuth()
+    const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings()
 
     const [posting, setPosting] = useState<any>(null)
     const [applications, setApplications] = useState<Application[]>([])
@@ -51,23 +52,13 @@ export default function CompanyPostingDetail() {
     }, [postingId])
 
     const loadPostingDetail = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('job_postings')
-                .select(`
-                    *,
-                    job_posting_keywords:job_posting_keyword (
-                        keyword:keyword_id (
-                            keyword,
-                            category
-                        )
-                    )
-                `)
-                .eq('id', postingId)
-                .single()
+        if (!postingId) return
 
-            if (error) throw error
-            setPosting(data)
+        try {
+            const data = await fetchPostingById(postingId as string)
+            if (data) {
+                setPosting(data)
+            }
         } catch (error) {
             console.error('공고 로드 실패:', error)
             Alert.alert('오류', '공고 정보를 불러오는데 실패했습니다.')
@@ -145,6 +136,7 @@ export default function CompanyPostingDetail() {
         return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
     }
 
+    //지원자 부분
     const renderApplicant = ({ item }: { item: Application }) => (
         <TouchableOpacity
             onPress={() => handleViewResume(item)}
@@ -216,6 +208,19 @@ export default function CompanyPostingDetail() {
             </SafeAreaView>
         )
     }
+    if (!posting) {
+        return (
+            <SafeAreaView className="flex-1 bg-white">
+                <View className="flex-row items-center p-4 border-b border-gray-200">
+                    <Back />
+                </View>
+                <View className="flex-1 justify-center items-center">
+                    <Text className="text-gray-500">공고를 찾을 수 없습니다.</Text>
+                </View>
+            </SafeAreaView>
+        )
+    }
+    const keywords = getPostingKeywords(posting)
 
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
@@ -266,35 +271,99 @@ export default function CompanyPostingDetail() {
                         </View>
                     </View>
 
+                    {posting?.description && (
+                        <View className="p-6 border-b border-gray-100">
+                            <Text className="text-lg font-semibold mb-4">회사 소개</Text>
+                            <Text className="text-gray-700 leading-6">{posting.company.description}</Text>
+                        </View>
+                    )}
+
                     {/* 근무 조건 */}
                     <View className="p-6 border-b border-gray-100">
                         <Text className="text-lg font-semibold mb-4">근무 조건</Text>
 
-                        {posting?.title && (
+
+                        {/* 근무지역 */}
+                        {keywords.location && keywords.location.length > 0 && (
                             <View className="flex-row items-center mb-3">
-                                <Text className="text-gray-700 ml-3">제목: {posting.title}</Text>
+                                <Ionicons name="location" size={20} color="#6b7280" />
+                                <View className="ml-3">
+                                    <Text className="text-xs text-gray-500">근무지역</Text>
+                                    <Text className="text-gray-700">
+                                        {keywords.location.map(k => k.keyword).join(', ')}
+                                    </Text>
+                                </View>
                             </View>
                         )}
 
-                        {posting?.salary_range && (
+                        {/* 근무일 */}
+                        {posting?.working_days && posting.working_days.length > 0 && (
                             <View className="flex-row items-center mb-3">
-                                <Ionicons name="cash-outline" size={20} color="#6b7280" />
-                                <Text className="text-gray-700 ml-3">급여: {posting.salary_range}</Text>
+                                <Ionicons name="calendar-outline" size={20} color="#6b7280" />
+                                <View className="ml-3">
+                                    <Text className="text-xs text-gray-500">근무일</Text>
+                                    <Text className="text-gray-700">
+                                        {posting.working_days.join(', ')}
+                                        {posting.working_days_negotiable && ' (협의가능)'}
+                                    </Text>
+                                </View>
                             </View>
                         )}
+
+                        {/* 근무시간 */}
                         {posting?.working_hours && (
                             <View className="flex-row items-center mb-3">
                                 <Ionicons name="time-outline" size={20} color="#6b7280" />
-                                <Text className="text-gray-700 ml-3">근무시간: {posting.working_hours}</Text>
+                                <View className="ml-3">
+                                    <Text className="text-xs text-gray-500">근무시간</Text>
+                                    <Text className="text-gray-700">
+                                        {posting.working_hours}
+                                        {posting.working_hours_negotiable && ' (협의가능)'}
+                                    </Text>
+                                </View>
                             </View>
                         )}
+
+                        {/* 급여타입 & 급여 */}
+                        {(posting?.salary_type || posting?.salary_range) && (
+                            <View className="flex-row items-center mb-3">
+                                <Ionicons name="cash-outline" size={20} color="#6b7280" />
+                                <View className="ml-3">
+                                    <Text className="text-xs text-gray-500">급여</Text>
+                                    <Text className="text-gray-700">
+                                        {posting.salary_type && `${posting.salary_type} `}
+                                        {posting.salary_range}
+                                    </Text>
+                                </View>
+                            </View>
+                        )}
+
+                        {/* 급여일 */}
+                        {posting?.pay_day && (
+                            <View className="flex-row items-center mb-3">
+                                <Ionicons name="wallet-outline" size={20} color="#6b7280" />
+                                <View className="ml-3">
+                                    <Text className="text-xs text-gray-500">급여일</Text>
+                                    <Text className="text-gray-700">
+                                        {posting.pay_day}
+                                        {posting.pay_day_negotiable && ' (협의가능)'}
+                                    </Text>
+                                </View>
+                            </View>
+                        )}
+
                         {posting?.hiring_count && (
                             <View className="flex-row items-center">
                                 <Ionicons name="people-outline" size={20} color="#6b7280" />
-                                <Text className="text-gray-700 ml-3">모집인원: {posting.hiring_count}명</Text>
+                                <View className="ml-3">
+                                    <Text className="text-xs text-gray-500">모집인원</Text>
+                                    <Text className="text-gray-700">{posting.hiring_count}명</Text>
+                                </View>
                             </View>
                         )}
                     </View>
+
+
 
                     {/* 복지/혜택 */}
                     {posting?.benefits && posting.benefits.length > 0 && (
@@ -318,13 +387,58 @@ export default function CompanyPostingDetail() {
                         </View>
                     )}
 
-                    {/* 자격요건 */}
-                    {posting?.requirements && (
+
+                    {/* 회사의 강점 - 추가할 부분 */}
+                    <View className="p-6 border-b border-gray-100">
+                        <Text className="text-lg font-semibold mb-4">회사의 강점!</Text>
+
+                        {keywords.conditions.length > 0 && (
+                            <View className="mb-4">
+                                <View className="flex-row flex-wrap gap-2">
+                                    {keywords.conditions.map((keyword) => (
+                                        <View key={keyword.id} className="bg-orange-100 px-3 py-1 rounded-full">
+                                            <Text className="text-orange-700 text-sm">{keyword.keyword}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </View>
+                        )}
+                    </View>
+
+                    {/* 채용 분야 */}
+                    {keywords && (
                         <View className="p-6">
-                            <Text className="text-lg font-semibold mb-4">자격요건</Text>
-                            <Text className="text-gray-700 leading-6">{posting.requirements}</Text>
+                            <Text className="text-lg font-semibold mb-4">채용 분야</Text>
+
+                            {keywords.countries.length > 0 && (
+                                <View className="mb-4">
+                                    <Text className="text-gray-600 font-medium mb-2">대상 국가</Text>
+                                    <View className="flex-row flex-wrap gap-2">
+                                        {keywords.countries.map((keyword) => (
+                                            <View key={keyword.id} className="bg-purple-100 px-3 py-1 rounded-full">
+                                                <Text className="text-purple-700 text-sm">{keyword.keyword}</Text>
+                                            </View>
+                                        ))}
+                                    </View>
+                                </View>
+                            )}
+
+                            {keywords.jobs.length > 0 && (
+                                <View className="mb-4">
+                                    <Text className="text-gray-600 font-medium mb-2">모집 직종</Text>
+                                    <View className="flex-row flex-wrap gap-2">
+                                        {keywords.jobs.map((keyword) => (
+                                            <View key={keyword.id} className="bg-orange-100 px-3 py-1 rounded-full">
+                                                <Text className="text-orange-700 text-sm">{keyword.keyword}</Text>
+                                            </View>
+                                        ))}
+                                    </View>
+                                </View>
+                            )}
                         </View>
                     )}
+
+
 
                     {/* 수정/삭제 버튼 */}
                     <View className="p-6">

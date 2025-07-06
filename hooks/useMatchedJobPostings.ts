@@ -12,6 +12,7 @@ interface JobPosting {
     working_hours?: string;
     working_hours_negotiable?: boolean;
     working_days?: string[];
+    working_days_negotiable?: boolean;
     holiday_system?: string;
     hiring_count: number;
     per_day?: string;
@@ -41,6 +42,8 @@ interface MatchedPosting {
         countries: string[];
         jobs: string[];
         conditions: string[];
+        location: string[];
+        moveable: string[];
     };
 }
 
@@ -123,7 +126,9 @@ export const useMatchedJobPostings = () => {
                     const matchedKeywords = {
                         countries: [] as string[],
                         jobs: [] as string[],
-                        conditions: [] as string[]
+                        conditions: [] as string[],
+                        location: [] as string[],
+                        moveable: [] as string[],
                     };
 
                     posting.job_posting_keywords?.forEach((jpk: any) => {
@@ -196,7 +201,7 @@ export const useMatchedJobPostings = () => {
 
     // 공고의 키워드 가져오기
     const getPostingKeywords = (posting: JobPosting) => {
-        if (!posting.job_posting_keywords) return { countries: [], jobs: [], conditions: [] };
+        if (!posting.job_posting_keywords) return { countries: [], jobs: [], conditions: [],location: [], moveable: [] };
 
         const keywords = posting.job_posting_keywords;
 

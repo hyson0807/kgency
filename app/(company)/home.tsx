@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from '@/lib/supabase'
 import { Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
 
 interface UserKeyword {
     keyword: {
@@ -240,10 +241,20 @@ const Home = () => {
 
     const renderHeader = () => (
         <View className="bg-white p-4 mb-2">
-            <Text className="text-lg font-bold text-gray-800">구직자 목록</Text>
-            <Text className="text-sm text-gray-600 mt-1">
-                총 {matchedJobSeekers.length}명의 구직자
-            </Text>
+            <View className="flex-row items-center justify-between">
+                <View>
+                    <Text className="text-lg font-bold text-gray-800">구직자 목록</Text>
+                    <Text className="text-sm text-gray-600 mt-1">
+                        총 {matchedJobSeekers.length}명의 구직자
+                    </Text>
+                </View>
+                <TouchableOpacity
+                    onPress={() => router.push('/(pages)/(company)/keywords')}
+                    className="bg-blue-100 px-4 py-2 rounded-lg"
+                >
+                    <Text className="text-blue-600 font-medium">대표 키워드 설정</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 

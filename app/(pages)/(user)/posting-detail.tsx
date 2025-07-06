@@ -122,22 +122,52 @@ export default function PostingDetail() {
                     )}
                 </View>
 
+
+
+                {/* 회사 소개 */}
+                {posting.company.description && (
+                    <View className="p-6 border-b border-gray-100">
+                        <Text className="text-lg font-semibold mb-4">회사 소개</Text>
+                        <Text className="text-gray-700 leading-6">{posting.company.description}</Text>
+                    </View>
+                )}
+
                 {/* 주요 정보 */}
                 <View className="p-6 border-b border-gray-100">
                     <Text className="text-lg font-semibold mb-4">근무 조건</Text>
 
-                    {posting.salary_range && (
+                    {/* 근무지역 */}
+                    {keywords.location && keywords.location.length > 0 && (
                         <View className="flex-row items-center mb-3">
                             <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="cash-outline" size={18} color="#3b82f6" />
+                                <Ionicons name="location" size={18} color="#3b82f6" />
                             </View>
                             <View className="ml-3">
-                                <Text className="text-xs text-gray-500">급여</Text>
-                                <Text className="text-base text-gray-800">{posting.salary_range}</Text>
+                                <Text className="text-xs text-gray-500">근무지역</Text>
+                                <Text className="text-base text-gray-800">
+                                    {keywords.location.map(k => k.keyword).join(', ')}
+                                </Text>
                             </View>
                         </View>
                     )}
 
+                    {/* 근무일 */}
+                    {posting.working_days && posting.working_days.length > 0 && (
+                        <View className="flex-row items-center mb-3">
+                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
+                                <Ionicons name="calendar-outline" size={18} color="#3b82f6" />
+                            </View>
+                            <View className="ml-3">
+                                <Text className="text-xs text-gray-500">근무일</Text>
+                                <Text className="text-base text-gray-800">
+                                    {posting.working_days.join(', ')}
+                                    {posting.working_days_negotiable && ' (협의가능)'}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
+
+                    {/* 근무시간 */}
                     {posting.working_hours && (
                         <View className="flex-row items-center mb-3">
                             <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
@@ -145,14 +175,45 @@ export default function PostingDetail() {
                             </View>
                             <View className="ml-3">
                                 <Text className="text-xs text-gray-500">근무시간</Text>
-                                <Text className="text-base text-gray-800">{posting.working_hours}</Text>
+                                <Text className="text-base text-gray-800">
+                                    {posting.working_hours}
+                                    {posting.working_hours_negotiable && ' (협의가능)'}
+                                </Text>
                             </View>
                         </View>
                     )}
 
+                    {/* 급여타입 & 급여 */}
+                    {(posting.salary_type || posting.salary_range) && (
+                        <View className="flex-row items-center mb-3">
+                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
+                                <Ionicons name="cash-outline" size={18} color="#3b82f6" />
+                            </View>
+                            <View className="ml-3">
+                                <Text className="text-xs text-gray-500">급여</Text>
+                                <Text className="text-base text-gray-800">
+                                    {posting.salary_type && `${posting.salary_type} `}
+                                    {posting.salary_range}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
 
-
-
+                    {/* 급여일 */}
+                    {posting.pay_day && (
+                        <View className="flex-row items-center mb-3">
+                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
+                                <Ionicons name="wallet-outline" size={18} color="#3b82f6" />
+                            </View>
+                            <View className="ml-3">
+                                <Text className="text-xs text-gray-500">급여일</Text>
+                                <Text className="text-base text-gray-800">
+                                    {posting.pay_day}
+                                    {posting.pay_day_negotiable && ' (협의가능)'}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
 
                     {posting.hiring_count && (
                         <View className="flex-row items-center">
@@ -166,6 +227,16 @@ export default function PostingDetail() {
                         </View>
                     )}
                 </View>
+
+                {/* 상세 설명 */}
+                {posting.description && (
+                    <View className="p-6 border-b border-gray-100">
+                        <Text className="text-lg font-semibold mb-4">상세 설명</Text>
+                        <Text className="text-gray-700 leading-6">{posting.description}</Text>
+                    </View>
+                )}
+
+
 
                 <View className="p-6 border-b border-gray-100">
                     <Text className="text-lg font-semibold mb-4">회사의 강점!</Text>
@@ -187,21 +258,7 @@ export default function PostingDetail() {
 
 
 
-                {/* 상세 설명 */}
-                {posting.description && (
-                    <View className="p-6 border-b border-gray-100">
-                        <Text className="text-lg font-semibold mb-4">상세 설명</Text>
-                        <Text className="text-gray-700 leading-6">{posting.description}</Text>
-                    </View>
-                )}
 
-                {/* 회사 소개 */}
-                {posting.company.description && (
-                    <View className="p-6 border-b border-gray-100">
-                        <Text className="text-lg font-semibold mb-4">회사 소개</Text>
-                        <Text className="text-gray-700 leading-6">{posting.company.description}</Text>
-                    </View>
-                )}
 
                 {/* 채용 분야 */}
                 {keywords && (
