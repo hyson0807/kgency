@@ -2,15 +2,20 @@
 
 import { useState } from 'react'
 import CustomModal from '@/components/CustomModal'
+import { useTranslation } from '@/contexts/TranslationContext'
 
 export const useModal = () => {
+    const { t } = useTranslation()
+
     const [modalConfig, setModalConfig] = useState({
         visible: false,
         title: '',
         message: '',
         type: 'info' as 'confirm' | 'warning' | 'info',
         onConfirm: () => {},
-        showCancel: false
+        showCancel: false,
+        confirmText: '',
+        cancelText: ''
     })
 
     const showModal = (
@@ -18,15 +23,23 @@ export const useModal = () => {
         message: string,
         type: 'info' | 'confirm' | 'warning' = 'info',
         onConfirm?: () => void,
-        showCancel: boolean = false
+        showCancel: boolean = false,
+        confirmText?: string,
+        cancelText?: string
     ) => {
+        // 기본 텍스트 설정
+        const defaultConfirmText = t('button.confirm', '확인')
+        const defaultCancelText = t('button.cancel', '취소')
+
         setModalConfig({
             visible: true,
             title,
             message,
             type,
             onConfirm: onConfirm || (() => setModalConfig(prev => ({ ...prev, visible: false }))),
-            showCancel
+            showCancel,
+            confirmText: confirmText || defaultConfirmText,
+            cancelText: cancelText || defaultCancelText
         })
     }
 
@@ -43,8 +56,8 @@ export const useModal = () => {
             type={modalConfig.type}
             onConfirm={modalConfig.onConfirm}
             showCancel={modalConfig.showCancel}
-            confirmText={modalConfig.type === 'confirm' && modalConfig.showCancel ? '전화' : '확인'}
-            cancelText="취소"
+            confirmText={modalConfig.confirmText}
+            cancelText={modalConfig.cancelText}
         />
     )
 

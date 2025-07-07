@@ -39,11 +39,13 @@ interface MatchedPosting {
         countries: string[]
         jobs: string[]
         conditions: string[]
+        location: string[]
+        moveable: string[]
     }
 }
 
 const Home = () => {
-    const { t, translateDB, language } = useTranslation();
+    const { t, translateDB } = useTranslation();
     const { user } = useAuth()
     const [matchedPostings, setMatchedPostings] = useState<MatchedPosting[]>([])
     const [loading, setLoading] = useState(true)
@@ -145,7 +147,9 @@ const Home = () => {
                     const matchedKeywords = {
                         countries: [] as string[],
                         jobs: [] as string[],
-                        conditions: [] as string[]
+                        conditions: [] as string[],
+                        location: [] as string[],
+                        moveable: [] as string[]
                     }
 
                     posting.job_posting_keywords?.forEach((jpk: any) => {
@@ -167,6 +171,12 @@ const Home = () => {
                                     break
                                 case '근무조건':
                                     matchedKeywords.conditions.push(translatedKeyword)
+                                    break
+                                case '지역':
+                                    matchedKeywords.countries.push(translatedKeyword)
+                                    break
+                                case '지역이동':
+                                    matchedKeywords.countries.push(translatedKeyword)
                                     break
                             }
                         }
@@ -310,6 +320,22 @@ const Home = () => {
                                     <Ionicons name="time-outline" size={16} color="#3b82f6" />
                                     <Text className="text-sm text-gray-700 ml-2 flex-1">
                                         {matchedKeywords.conditions.join(', ')}
+                                    </Text>
+                                </View>
+                            )}
+                            {matchedKeywords.location.length > 0 && (
+                                <View className="flex-row items-center">
+                                    <Ionicons name="globe-outline" size={16} color="#3b82f6" />
+                                    <Text className="text-sm text-gray-700 ml-2">
+                                        {matchedKeywords.location.join(', ')}
+                                    </Text>
+                                </View>
+                            )}
+                            {matchedKeywords.moveable.length > 0 && (
+                                <View className="flex-row items-center">
+                                    <Ionicons name="globe-outline" size={16} color="#3b82f6" />
+                                    <Text className="text-sm text-gray-700 ml-2">
+                                        {matchedKeywords.moveable.join(', ')}
                                     </Text>
                                 </View>
                             )}

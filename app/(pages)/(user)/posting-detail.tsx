@@ -8,6 +8,8 @@ import Back from '@/components/back'
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslation } from "@/contexts/TranslationContext";
+
 
 export default function PostingDetail() {
     const params = useLocalSearchParams()
@@ -18,6 +20,8 @@ export default function PostingDetail() {
     const [posting, setPosting] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [hasApplied, setHasApplied] = useState(false)
+    const { t } = useTranslation()
+
 
     useEffect(() => {
         loadPostingDetail()
@@ -88,7 +92,7 @@ export default function PostingDetail() {
                     <Back />
                 </View>
                 <View className="flex-1 justify-center items-center">
-                    <Text className="text-gray-500">공고를 찾을 수 없습니다.</Text>
+                    <Text className="text-gray-500">{t('posting_detail.not_found', '공고를 찾을 수 없습니다.')}</Text>
                 </View>
             </SafeAreaView>
         )
@@ -101,7 +105,8 @@ export default function PostingDetail() {
             {/* 헤더 */}
             <View className="flex-row items-center p-4 border-b border-gray-200">
                 <Back />
-                <Text className="text-lg font-bold ml-4">채용 상세</Text>
+                <Text className="text-lg font-bold ml-4">{t('posting_detail.title', '채용 상세')}</Text>
+
             </View>
 
             <ScrollView
@@ -127,14 +132,14 @@ export default function PostingDetail() {
                 {/* 회사 소개 */}
                 {posting.company.description && (
                     <View className="p-6 border-b border-gray-100">
-                        <Text className="text-lg font-semibold mb-4">회사 소개</Text>
+                        <Text className="text-lg font-semibold mb-4">{t('posting_detail.company_intro', '회사 소개')}</Text>
                         <Text className="text-gray-700 leading-6">{posting.company.description}</Text>
                     </View>
                 )}
 
                 {/* 주요 정보 */}
                 <View className="p-6 border-b border-gray-100">
-                    <Text className="text-lg font-semibold mb-4">근무 조건</Text>
+                    <Text className="text-lg font-semibold mb-4">{t('posting_detail.work_conditions', '근무 조건')}</Text>
 
                     {/* 근무지역 */}
                     {keywords.location && keywords.location.length > 0 && (
@@ -143,7 +148,7 @@ export default function PostingDetail() {
                                 <Ionicons name="location" size={18} color="#3b82f6" />
                             </View>
                             <View className="ml-3">
-                                <Text className="text-xs text-gray-500">근무지역</Text>
+                                <Text className="text-xs text-gray-500">{t('posting_detail.work_location', '근무지역')}</Text>
                                 <Text className="text-base text-gray-800">
                                     {keywords.location.map(k => k.keyword).join(', ')}
                                 </Text>
@@ -158,10 +163,10 @@ export default function PostingDetail() {
                                 <Ionicons name="calendar-outline" size={18} color="#3b82f6" />
                             </View>
                             <View className="ml-3">
-                                <Text className="text-xs text-gray-500">근무일</Text>
+                                <Text className="text-xs text-gray-500">{t('posting_detail.work_days', '근무일')}</Text>
                                 <Text className="text-base text-gray-800">
                                     {posting.working_days.join(', ')}
-                                    {posting.working_days_negotiable && ' (협의가능)'}
+                                    {posting.working_days_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
                                 </Text>
                             </View>
                         </View>
@@ -174,10 +179,10 @@ export default function PostingDetail() {
                                 <Ionicons name="time-outline" size={18} color="#3b82f6" />
                             </View>
                             <View className="ml-3">
-                                <Text className="text-xs text-gray-500">근무시간</Text>
+                                <Text className="text-xs text-gray-500">{t('posting_detail.work_hours', '근무시간')}</Text>
                                 <Text className="text-base text-gray-800">
                                     {posting.working_hours}
-                                    {posting.working_hours_negotiable && ' (협의가능)'}
+                                    {posting.working_hours_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
                                 </Text>
                             </View>
                         </View>
@@ -190,7 +195,7 @@ export default function PostingDetail() {
                                 <Ionicons name="cash-outline" size={18} color="#3b82f6" />
                             </View>
                             <View className="ml-3">
-                                <Text className="text-xs text-gray-500">급여</Text>
+                                <Text className="text-xs text-gray-500">{t('posting_detail.salary', '급여')}</Text>
                                 <Text className="text-base text-gray-800">
                                     {posting.salary_type && `${posting.salary_type} `}
                                     {posting.salary_range}
@@ -206,10 +211,10 @@ export default function PostingDetail() {
                                 <Ionicons name="wallet-outline" size={18} color="#3b82f6" />
                             </View>
                             <View className="ml-3">
-                                <Text className="text-xs text-gray-500">급여일</Text>
+                                <Text className="text-xs text-gray-500">{t('posting_detail.pay_day', '급여일')}</Text>
                                 <Text className="text-base text-gray-800">
                                     {posting.pay_day}
-                                    {posting.pay_day_negotiable && ' (협의가능)'}
+                                    {posting.pay_day_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
                                 </Text>
                             </View>
                         </View>
@@ -221,8 +226,8 @@ export default function PostingDetail() {
                                 <Ionicons name="people-outline" size={18} color="#3b82f6" />
                             </View>
                             <View className="ml-3">
-                                <Text className="text-xs text-gray-500">모집인원</Text>
-                                <Text className="text-base text-gray-800">{posting.hiring_count}명</Text>
+                                <Text className="text-xs text-gray-500">{t('posting_detail.hiring_count', '모집인원')}</Text>
+                                <Text className="text-base text-gray-800">{posting.hiring_count}{t('posting_detail.people', '명')}</Text>
                             </View>
                         </View>
                     )}
@@ -231,7 +236,7 @@ export default function PostingDetail() {
                 {/* 상세 설명 */}
                 {posting.description && (
                     <View className="p-6 border-b border-gray-100">
-                        <Text className="text-lg font-semibold mb-4">상세 설명</Text>
+                        <Text className="text-lg font-semibold mb-4">{t('posting_detail.detail_description', '상세 설명')}</Text>
                         <Text className="text-gray-700 leading-6">{posting.description}</Text>
                     </View>
                 )}
@@ -239,7 +244,7 @@ export default function PostingDetail() {
 
 
                 <View className="p-6 border-b border-gray-100">
-                    <Text className="text-lg font-semibold mb-4">회사의 강점!</Text>
+                    <Text className="text-lg font-semibold mb-4">{t('posting_detail.company_benefits', '회사의 강점!')}</Text>
 
                 {keywords.conditions.length > 0 && (
                     <View className="mb-4">
@@ -263,11 +268,12 @@ export default function PostingDetail() {
                 {/* 채용 분야 */}
                 {keywords && (
                     <View className="p-6">
-                        <Text className="text-lg font-semibold mb-4">채용 분야</Text>
+                        <Text className="text-lg font-semibold mb-4">{t('posting_detail.hiring_fields', '채용 분야')}</Text>
+
 
                         {keywords.countries.length > 0 && (
                             <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">대상 국가</Text>
+                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_countries', '대상 국가')}</Text>
                                 <View className="flex-row flex-wrap gap-2">
                                     {keywords.countries.map((keyword) => (
                                         <View key={keyword.id} className="bg-purple-100 px-3 py-1 rounded-full">
@@ -280,7 +286,7 @@ export default function PostingDetail() {
 
                         {keywords.jobs.length > 0 && (
                             <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">모집 직종</Text>
+                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.job_positions', '모집 직종')}</Text>
                                 <View className="flex-row flex-wrap gap-2">
                                     {keywords.jobs.map((keyword) => (
                                         <View key={keyword.id} className="bg-orange-100 px-3 py-1 rounded-full">
@@ -302,7 +308,7 @@ export default function PostingDetail() {
                     <View className="bg-gray-300 py-4 rounded-xl items-center">
                         <View className="flex-row items-center">
                             <Ionicons name="checkmark-circle" size={20} color="#4b5563" />
-                            <Text className="text-gray-700 font-bold text-lg ml-2">이미 지원한 공고</Text>
+                            <Text className="text-gray-700 font-bold text-lg ml-2">{t('posting_detail.already_applied', '이미 지원한 공고')}</Text>
                         </View>
                     </View>
                 ) : (
@@ -310,7 +316,7 @@ export default function PostingDetail() {
                         className="bg-blue-500 py-4 rounded-xl items-center mx-4 my-2"
                         onPress={handleApply}
                     >
-                        <Text className="text-white text-lg font-bold">지원하기</Text>
+                        <Text className="text-white text-lg font-bold">{t('posting_detail.apply', '지원하기')}</Text>
                     </TouchableOpacity>
                 )}
             </View>

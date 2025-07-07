@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import KeywordTag from './KeywordTag'
-
+import { useTranslation } from '@/contexts/TranslationContext'
 interface Keyword {
     id: number;
     keyword: string;
@@ -19,11 +19,14 @@ const WorkConditionsSelector: React.FC<WorkConditionsSelectorProps> = ({
                conditions,
                selectedConditions,
                onToggle,
-               title = "원하는 혜택"
+               title
 }) => {
+        const { t } = useTranslation();
     return (
         <View className="p-6">
-            <Text className="text-xl font-bold mb-4">{title}</Text>
+            <Text className="font-bold mb-4">
+                {title || t('work_conditions_selector.title', '원하는 혜택')}
+            </Text>
             <View className="flex-row flex-wrap gap-3">
                 {conditions.map(condition => (
                     <KeywordTag

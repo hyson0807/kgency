@@ -7,7 +7,8 @@ import Back from '@/components/back'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import axios from 'axios'
-import CustomModal from '@/components/CustomModal'
+import { useModal } from '@/hooks/useModal'
+import { useTranslation } from "@/contexts/TranslationContext"
 
 export default function Resume() {
     const params = useLocalSearchParams();
@@ -17,6 +18,8 @@ export default function Resume() {
     const jobTitle = Array.isArray(params.jobTitle) ? params.jobTitle[0] : params.jobTitle;
     const question = Array.isArray(params.question) ? params.question[0] : params.question;
     const { user } = useAuth();
+    const { t } = useTranslation()
+    const { showModal, ModalComponent, hideModal } = useModal()
 
     const [resume, setResume] = useState('')
     const [loading, setLoading] = useState(true)
@@ -26,28 +29,18 @@ export default function Resume() {
     const [sending, setSending] = useState(false)
     const [regenerating, setRegenerating] = useState(false)
 
-    // 모달 상태
-    const [modalConfig, setModalConfig] = useState({
-        visible: false,
-        title: '',
-        message: '',
-        type: 'confirm' as 'confirm' | 'warning' | 'info',
-        onConfirm: () => {},
-        showCancel: true
-    })
-
     // 컴포넌트 마운트 시 AI 이력서 생성
     useEffect(() => {
         if (jobPostingId && companyId && user) {
             generateResume();
         } else if (!jobPostingId) {
-            setError('공고 정보가 없습니다.');
+            setError(t('resume.no_posting_info', '공고 정보가 없습니다.'));
             setLoading(false);
         } else if (!companyId) {
-            setError('회사 정보가 없습니다.');
+            setError(t('resume.no_company_info', '회사 정보가 없습니다.'));
             setLoading(false);
         } else if (!user) {
-            setError('로그인이 필요합니다.');
+            setError(t('resume.login_required', '로그인이 필요합니다.'));
             setLoading(false);
         }
     }, [jobPostingId, companyId, user]);
@@ -76,11 +69,11 @@ export default function Resume() {
                 setResume(response.data.resume);
                 setEditedResume(response.data.resume);
             } else {
-                throw new Error(response.data.error || 'AI 이력서 생성에 실패했습니다.');
+                throw new Error(response.data.error || t('resume.ai_generation_failed', 'AI 이력서 생성에 실패했습니다.'));
             }
         } catch (error: any) {
             console.error('AI 이력서 생성 오류:', error);
-            setError(error.response?.data?.error || error.message || 'AI 이력서 생성 중 오류가 발생했습니다.');
+            setError(error.response?.data?.error || error.message || t('resume.ai_generation_error', 'AI 이력서 생성 중 오류가 발생했습니다.'));
 
             // 오류 발생 시 기본 이력서 템플릿 제공
             const fallbackResume = `안녕하세요, ${companyName} 채용 담당자님
@@ -101,14 +94,12 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
     };
 
     const handleSend = async () => {
-        setModalConfig({
-            visible: true,
-            title: '이력서 전송',
-            message: `${jobTitle || '채용 공고'}에 이력서를 전송하시겠습니까?`,
-            type: 'confirm',
-            showCancel: true,
-            onConfirm: async () => {
-                setModalConfig(prev => ({ ...prev, visible: false }));
+        showModal(
+            t('resume.send_modal_title', '이력서 전송'),
+            t('resume.send_modal_message', `${jobTitle || '채용 공고'}에 이력서를 전송하시겠습니까?`, {jobTitle}),
+            'confirm',
+            async () => {
+                hideModal();
                 setSending(true);
                 try {
                     // 먼저 중복 지원 확인
@@ -131,7 +122,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                         .insert({
                             sender_id: user?.userId,
                             receiver_id: companyId,
-                            subject: `[${jobTitle}] 입사 지원서`,
+                            subject: t('resume.application_subject', `[${jobTitle}] 입사 지원서`),
                             content: isEditing ? editedResume : resume
                         })
                         .select()
@@ -160,8 +151,9 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                 } finally {
                     setSending(false);
                 }
-            }
-        });
+            },
+            true
+        );
     };
 
     const handleEdit = () => {
@@ -176,27 +168,26 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
     };
 
     const handleRegenerate = async () => {
-        setModalConfig({
-            visible: true,
-            title: '이력서 재생성',
-            message: '현재 작성된 내용이 사라집니다. 계속하시겠습니까?',
-            type: 'warning',
-            showCancel: true,
-            onConfirm: async () => {
-                setModalConfig(prev => ({ ...prev, visible: false }));
+        showModal(
+            t('resume.regenerate_modal_title', '이력서 재생성'),
+            t('resume.regenerate_modal_message', '현재 작성된 내용이 사라집니다. 계속하시겠습니까?'),
+            'warning',
+            async () => {
+                hideModal();
                 setRegenerating(true);
                 await generateResume();
                 setRegenerating(false);
                 setIsEditing(false);
-            }
-        });
+            },
+            true
+        );
     };
 
     if (loading) {
         return (
             <SafeAreaView className="flex-1 bg-white justify-center items-center">
                 <ActivityIndicator size="large" color="#3b82f6" />
-                <Text className="mt-4 text-gray-600">이력서를 작성 중입니다...</Text>
+                <Text className="mt-4 text-gray-600">{t('resume.creating', '이력서를 작성 중입니다...')}</Text>
             </SafeAreaView>
         );
     }
@@ -207,7 +198,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
             <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
                 <View className="flex-row items-center">
                     <Back />
-                    <Text className="text-lg font-bold ml-4">이력서</Text>
+                    <Text className="text-lg font-bold ml-4">{t('resume.title', '이력서')}</Text>
                 </View>
                 <View className="flex-row gap-2">
                     <TouchableOpacity
@@ -240,11 +231,11 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                     <View className="flex-row items-center">
                         <Ionicons name="document-text" size={20} color="#1e40af" />
                         <Text className="text-lg font-bold text-blue-900 ml-2">
-                            {jobTitle || '채용 공고'}
+                            {jobTitle || t('resume.job_posting', '채용 공고')}
                         </Text>
                     </View>
                     <Text className="text-sm text-blue-700 mt-1">
-                        {companyName} | 맞춤형 이력서
+                        {companyName} | {t('resume.customized_resume', '맞춤형 이력서')}
                     </Text>
                 </View>
 
@@ -266,7 +257,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                             multiline
                             value={editedResume}
                             onChangeText={setEditedResume}
-                            placeholder="이력서 내용을 입력하세요..."
+                            placeholder={t('resume.enter_content', '이력서 내용을 입력하세요...')}
                             textAlignVertical="top"
                         />
                     ) : (
@@ -284,11 +275,10 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                         <Ionicons name="information-circle" size={20} color="#f59e0b" />
                         <View className="ml-2 flex-1">
                             <Text className="text-sm font-medium text-amber-900">
-                                입력하신 정보에 기반하여 작성된 이력서입니다
+                                {t('resume.ai_info', '입력하신 정보에 기반하여 작성된 이력서입니다')}
                             </Text>
                             <Text className="text-xs text-amber-700 mt-1">
-                                내용을 검토하고 필요시 수정할 수 있습니다.
-                                수정하려면 상단의 편집 버튼을 누르세요.
+                                {t('resume.edit_info', '내용을 검토하고 필요시 수정할 수 있습니다. 수정하려면 상단의 편집 버튼을 누르세요.')}
                             </Text>
                         </View>
                     </View>
@@ -305,21 +295,13 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                     }`}
                 >
                     <Text className="text-center text-white font-bold text-lg">
-                        {sending ? '전송 중...' : isEditing ? '편집을 완료하세요' : '이력서 전송'}
+                        {sending ? t('resume.sending', '전송 중...') : isEditing ? t('resume.complete_edit', '편집을 완료하세요') : t('resume.send_resume', '이력서 전송')}
                     </Text>
                 </TouchableOpacity>
             </View>
 
-            {/* 커스텀 모달 */}
-            <CustomModal
-                visible={modalConfig.visible}
-                onClose={() => setModalConfig(prev => ({ ...prev, visible: false }))}
-                title={modalConfig.title}
-                message={modalConfig.message}
-                type={modalConfig.type}
-                onConfirm={modalConfig.onConfirm}
-                showCancel={modalConfig.showCancel}
-            />
+            {/* useModal로 생성되는 모달 */}
+            <ModalComponent />
         </SafeAreaView>
     );
 }

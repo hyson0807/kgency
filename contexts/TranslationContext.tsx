@@ -822,6 +822,680 @@ const translations: { [key: string]: { [lang: string]: string } } = {
         ja: '退会する',
         zh: '注销账户',
         vi: 'Xóa tài khoản'
+    },
+
+
+    // Posting Detail 페이지
+    'posting_detail.title': {
+        en: 'Job Details',
+        ja: '採用詳細',
+        zh: '招聘详情',
+        vi: 'Chi tiết tuyển dụng'
+    },
+    'posting_detail.not_found': {
+        en: 'Job posting not found.',
+        ja: '求人が見つかりません。',
+        zh: '找不到招聘信息。',
+        vi: 'Không tìm thấy tin tuyển dụng.'
+    },
+    'posting_detail.company_intro': {
+        en: 'About Company',
+        ja: '会社紹介',
+        zh: '公司介绍',
+        vi: 'Giới thiệu công ty'
+    },
+    'posting_detail.work_conditions': {
+        en: 'Working Conditions',
+        ja: '勤務条件',
+        zh: '工作条件',
+        vi: 'Điều kiện làm việc'
+    },
+    'posting_detail.work_location': {
+        en: 'Work Location',
+        ja: '勤務地',
+        zh: '工作地点',
+        vi: 'Địa điểm làm việc'
+    },
+    'posting_detail.work_days': {
+        en: 'Working Days',
+        ja: '勤務日',
+        zh: '工作日',
+        vi: 'Ngày làm việc'
+    },
+    'posting_detail.work_hours': {
+        en: 'Working Hours',
+        ja: '勤務時間',
+        zh: '工作时间',
+        vi: 'Giờ làm việc'
+    },
+    'posting_detail.salary': {
+        en: 'Salary',
+        ja: '給与',
+        zh: '薪资',
+        vi: 'Lương'
+    },
+    'posting_detail.pay_day': {
+        en: 'Pay Day',
+        ja: '給料日',
+        zh: '发薪日',
+        vi: 'Ngày trả lương'
+    },
+    'posting_detail.negotiable': {
+        en: ' (Negotiable)',
+        ja: ' (協議可能)',
+        zh: ' (可协商)',
+        vi: ' (Có thể thương lượng)'
+    },
+    'posting_detail.hiring_count': {
+        en: 'Positions',
+        ja: '募集人数',
+        zh: '招聘人数',
+        vi: 'Số lượng tuyển'
+    },
+    'posting_detail.people': {
+        en: ' people',
+        ja: '名',
+        zh: '人',
+        vi: ' người'
+    },
+    'posting_detail.detail_description': {
+        en: 'Job Description',
+        ja: '詳細説明',
+        zh: '详细说明',
+        vi: 'Mô tả chi tiết'
+    },
+    'posting_detail.company_benefits': {
+        en: 'Company Benefits!',
+        ja: '会社の強み！',
+        zh: '公司优势！',
+        vi: 'Điểm mạnh của công ty!'
+    },
+    'posting_detail.hiring_fields': {
+        en: 'Hiring Fields',
+        ja: '採用分野',
+        zh: '招聘领域',
+        vi: 'Lĩnh vực tuyển dụng'
+    },
+    'posting_detail.target_countries': {
+        en: 'Target Countries',
+        ja: '対象国',
+        zh: '目标国家',
+        vi: 'Quốc gia mục tiêu'
+    },
+    'posting_detail.job_positions': {
+        en: 'Job Positions',
+        ja: '募集職種',
+        zh: '招聘职位',
+        vi: 'Vị trí tuyển dụng'
+    },
+    'posting_detail.already_applied': {
+        en: 'Already Applied',
+        ja: 'すでに応募済み',
+        zh: '已申请',
+        vi: 'Đã ứng tuyển'
+    },
+    'posting_detail.apply': {
+        en: 'Apply Now',
+        ja: '応募する',
+        zh: '立即申请',
+        vi: 'Ứng tuyển ngay'
+    },
+
+
+
+    // Apply 페이지
+    'apply.title': {
+        en: 'Application Form',
+        ja: '応募書作成',
+        zh: '申请表',
+        vi: 'Đơn ứng tuyển'
+    },
+    'apply.applying_to': {
+        en: 'Applying to',
+        ja: '応募先',
+        zh: '申请职位',
+        vi: 'Ứng tuyển vào'
+    },
+    'apply.job_posting': {
+        en: 'Job Posting',
+        ja: '求人',
+        zh: '招聘信息',
+        vi: 'Tin tuyển dụng'
+    },
+    'apply.already_applied_warning': {
+        en: 'You have already applied to this job',
+        ja: 'すでに応募済みです',
+        zh: '您已申请过此职位',
+        vi: 'Bạn đã ứng tuyển công việc này'
+    },
+    'apply.basic_info': {
+        en: 'Basic Information',
+        ja: '基本情報',
+        zh: '基本信息',
+        vi: 'Thông tin cơ bản'
+    },
+    'apply.name': {
+        en: 'Name',
+        ja: '名前',
+        zh: '姓名',
+        vi: 'Họ tên'
+    },
+    'apply.enter_name': {
+        en: 'Enter your name',
+        ja: '名前を入力してください',
+        zh: '请输入姓名',
+        vi: 'Nhập họ tên'
+    },
+    'apply.age': {
+        en: 'Age',
+        ja: '年齢',
+        zh: '年龄',
+        vi: 'Tuổi'
+    },
+    'apply.gender': {
+        en: 'Gender',
+        ja: '性別',
+        zh: '性别',
+        vi: 'Giới tính'
+    },
+    'apply.select': {
+        en: 'Select',
+        ja: '選択',
+        zh: '选择',
+        vi: 'Chọn'
+    },
+    'apply.visa_type': {
+        en: 'Visa Type',
+        ja: 'ビザの種類',
+        zh: '签证类型',
+        vi: 'Loại visa'
+    },
+    'apply.select_visa': {
+        en: 'Select visa type',
+        ja: 'ビザの種類を選択',
+        zh: '选择签证类型',
+        vi: 'Chọn loại visa'
+    },
+    'apply.career_info': {
+        en: 'Career Information',
+        ja: '経歴情報',
+        zh: '工作经历',
+        vi: 'Thông tin nghề nghiệp'
+    },
+    'apply.desired_period': {
+        en: 'Desired Work Period',
+        ja: '希望勤務期間',
+        zh: '希望工作期限',
+        vi: 'Thời gian làm việc mong muốn'
+    },
+    'apply.related_experience': {
+        en: 'Related Experience',
+        ja: '関連経験',
+        zh: '相关经验',
+        vi: 'Kinh nghiệm liên quan'
+    },
+    'apply.experience_detail': {
+        en: 'Experience Details',
+        ja: '経歴内容',
+        zh: '经历详情',
+        vi: 'Chi tiết kinh nghiệm'
+    },
+    'apply.enter_experience': {
+        en: 'Enter brief work experience',
+        ja: '簡単な経歴内容を入力してください',
+        zh: '请输入简要工作经历',
+        vi: 'Nhập kinh nghiệm làm việc ngắn gọn'
+    },
+    'apply.korean_level': {
+        en: 'Korean Level',
+        ja: '韓国語レベル',
+        zh: '韩语水平',
+        vi: 'Trình độ tiếng Hàn'
+    },
+    'apply.topik_level': {
+        en: 'TOPIK Level',
+        ja: 'TOPIK級',
+        zh: 'TOPIK等级',
+        vi: 'Cấp độ TOPIK'
+    },
+    'apply.questions': {
+        en: 'Questions for Employer',
+        ja: '社長への質問',
+        zh: '想问老板的问题',
+        vi: 'Câu hỏi cho nhà tuyển dụng'
+    },
+    'apply.questions_placeholder': {
+        en: 'Questions',
+        ja: '質問事項',
+        zh: '问题',
+        vi: 'Câu hỏi'
+    },
+    'apply.saving': {
+        en: 'Saving...',
+        ja: '保存中...',
+        zh: '保存中...',
+        vi: 'Đang lưu...'
+    },
+    'apply.create_resume': {
+        en: 'Auto-create Resume!',
+        ja: '履歴書を自動作成します！',
+        zh: '自动生成简历！',
+        vi: 'Tự động tạo hồ sơ!'
+    },
+    'apply.name_required': {
+        en: 'Name is required',
+        ja: '名前は必須入力項目です',
+        zh: '姓名为必填项',
+        vi: 'Họ tên là bắt buộc'
+    },
+    'apply.invalid_age': {
+        en: 'Please enter a valid age',
+        ja: '正しい年齢を入力してください',
+        zh: '请输入有效年龄',
+        vi: 'Vui lòng nhập tuổi hợp lệ'
+    },
+    'apply.already_applied_title': {
+        en: 'Already Applied',
+        ja: 'すでに応募済み',
+        zh: '已申请',
+        vi: 'Đã ứng tuyển'
+    },
+    'apply.already_applied_message': {
+        en: 'You have already applied to this job. Do you want to rewrite your resume?',
+        ja: 'この求人にはすでに応募しています。それでも履歴書を再作成しますか？',
+        zh: '您已申请过此职位。是否要重新编写简历？',
+        vi: 'Bạn đã ứng tuyển công việc này. Bạn có muốn viết lại hồ sơ không?'
+    },
+    'apply.save_failed': {
+        en: 'Failed to save information',
+        ja: '情報の保存に失敗しました',
+        zh: '保存信息失败',
+        vi: 'Lưu thông tin thất bại'
+    },
+    'apply.save_error': {
+        en: 'An error occurred while saving',
+        ja: '保存中に問題が発生しました',
+        zh: '保存时出现问题',
+        vi: 'Đã xảy ra lỗi khi lưu'
+    },
+
+// 성별 옵션
+    'apply.gender_male': {
+        en: 'Male',
+        ja: '男性',
+        zh: '男性',
+        vi: 'Nam'
+    },
+    'apply.gender_female': {
+        en: 'Female',
+        ja: '女性',
+        zh: '女性',
+        vi: 'Nữ'
+    },
+    'apply.gender_other': {
+        en: 'Other',
+        ja: 'その他',
+        zh: '其他',
+        vi: 'Khác'
+    },
+
+// 근무 기간
+    'apply.period_1month': {
+        en: '1 month',
+        ja: '1ヶ月',
+        zh: '1个月',
+        vi: '1 tháng'
+    },
+    'apply.period_3months': {
+        en: '3 months',
+        ja: '3ヶ月',
+        zh: '3个月',
+        vi: '3 tháng'
+    },
+    'apply.period_6months': {
+        en: '6 months',
+        ja: '6ヶ月',
+        zh: '6个月',
+        vi: '6 tháng'
+    },
+    'apply.period_1year': {
+        en: '1 year',
+        ja: '1年',
+        zh: '1年',
+        vi: '1 năm'
+    },
+    'apply.period_long': {
+        en: 'Long-term',
+        ja: '長期',
+        zh: '长期',
+        vi: 'Dài hạn'
+    },
+
+// 경력
+    'apply.exp_none': {
+        en: 'No experience',
+        ja: '初めて',
+        zh: '无经验',
+        vi: 'Chưa có kinh nghiệm'
+    },
+    'apply.exp_1month': {
+        en: '1 month',
+        ja: '1ヶ月',
+        zh: '1个月',
+        vi: '1 tháng'
+    },
+    'apply.exp_6months': {
+        en: '6 months',
+        ja: '6ヶ月',
+        zh: '6个月',
+        vi: '6 tháng'
+    },
+    'apply.exp_1year': {
+        en: '1 year',
+        ja: '1年',
+        zh: '1年',
+        vi: '1 năm'
+    },
+    'apply.exp_3years': {
+        en: '3+ years',
+        ja: '3年以上',
+        zh: '3年以上',
+        vi: '3 năm trở lên'
+    },
+
+// 한국어 레벨
+    'apply.korean_beginner': {
+        en: 'Beginner',
+        ja: '初級',
+        zh: '初级',
+        vi: 'Sơ cấp'
+    },
+    'apply.korean_intermediate': {
+        en: 'Intermediate',
+        ja: '中級',
+        zh: '中级',
+        vi: 'Trung cấp'
+    },
+    'apply.korean_advanced': {
+        en: 'Advanced',
+        ja: '上級',
+        zh: '高级',
+        vi: 'Cao cấp'
+    },
+
+// TOPIK 레벨
+    'apply.topik_1': {
+        en: 'Level 1',
+        ja: '1級',
+        zh: '1级',
+        vi: 'Cấp 1'
+    },
+    'apply.topik_2': {
+        en: 'Level 2',
+        ja: '2級',
+        zh: '2级',
+        vi: 'Cấp 2'
+    },
+    'apply.topik_3plus': {
+        en: 'Level 3+',
+        ja: '3級以上',
+        zh: '3级以上',
+        vi: 'Cấp 3 trở lên'
+    },
+    // 비자 종류
+    'apply.visa_f2': {
+        en: 'F-2 (Residence)',
+        ja: 'F-2 (居住ビザ)',
+        zh: 'F-2 (居住签证)',
+        vi: 'F-2 (Thị thực cư trú)'
+    },
+    'apply.visa_f4': {
+        en: 'F-4 (Overseas Korean)',
+        ja: 'F-4 (在外同胞)',
+        zh: 'F-4 (海外同胞)',
+        vi: 'F-4 (Kiều bào)'
+    },
+    'apply.visa_f5': {
+        en: 'F-5 (Permanent Residence)',
+        ja: 'F-5 (永住)',
+        zh: 'F-5 (永久居留)',
+        vi: 'F-5 (Thường trú nhân)'
+    },
+    'apply.visa_f6': {
+        en: 'F-6 (Marriage Migrant)',
+        ja: 'F-6 (結婚移民)',
+        zh: 'F-6 (结婚移民)',
+        vi: 'F-6 (Kết hôn di trú)'
+    },
+    'apply.visa_e9': {
+        en: 'E-9 (Non-professional Employment)',
+        ja: 'E-9 (非専門就業)',
+        zh: 'E-9 (非专业就业)',
+        vi: 'E-9 (Lao động phổ thông)'
+    },
+    'apply.visa_h2': {
+        en: 'H-2 (Working Visit)',
+        ja: 'H-2 (訪問就業)',
+        zh: 'H-2 (访问就业)',
+        vi: 'H-2 (Thăm thân lao động)'
+    },
+    'apply.visa_d2': {
+        en: 'D-2 (Student)',
+        ja: 'D-2 (留学)',
+        zh: 'D-2 (留学)',
+        vi: 'D-2 (Du học)'
+    },
+    'apply.visa_d4': {
+        en: 'D-4 (General Training)',
+        ja: 'D-4 (一般研修)',
+        zh: 'D-4 (一般研修)',
+        vi: 'D-4 (Tu nghiệp tổng hợp)'
+    },
+    'apply.visa_other': {
+        en: 'Other',
+        ja: 'その他',
+        zh: '其他',
+        vi: 'Khác'
+    },
+
+
+
+
+
+    // Resume 페이지
+    'resume.title': {
+        en: 'Resume',
+        ja: '履歴書',
+        zh: '简历',
+        vi: 'Hồ sơ'
+    },
+    'resume.creating': {
+        en: 'Creating your resume...',
+        ja: '履歴書を作成中です...',
+        zh: '正在生成简历...',
+        vi: 'Đang tạo hồ sơ...'
+    },
+    'resume.no_posting_info': {
+        en: 'Job posting information not found.',
+        ja: '求人情報がありません。',
+        zh: '没有招聘信息。',
+        vi: 'Không có thông tin tuyển dụng.'
+    },
+    'resume.no_company_info': {
+        en: 'Company information not found.',
+        ja: '会社情報がありません。',
+        zh: '没有公司信息。',
+        vi: 'Không có thông tin công ty.'
+    },
+    'resume.login_required': {
+        en: 'Login required.',
+        ja: 'ログインが必要です。',
+        zh: '需要登录。',
+        vi: 'Cần đăng nhập.'
+    },
+    'resume.ai_generation_failed': {
+        en: 'Failed to generate AI resume.',
+        ja: 'AI履歴書の生成に失敗しました。',
+        zh: 'AI简历生成失败。',
+        vi: 'Tạo hồ sơ AI thất bại.'
+    },
+    'resume.ai_generation_error': {
+        en: 'An error occurred while generating AI resume.',
+        ja: 'AI履歴書生成中にエラーが発生しました。',
+        zh: 'AI简历生成时出错。',
+        vi: 'Đã xảy ra lỗi khi tạo hồ sơ AI.'
+    },
+    'resume.job_posting': {
+        en: 'Job Posting',
+        ja: '求人',
+        zh: '招聘信息',
+        vi: 'Tin tuyển dụng'
+    },
+    'resume.customized_resume': {
+        en: 'Customized Resume',
+        ja: 'カスタマイズ履歴書',
+        zh: '定制简历',
+        vi: 'Hồ sơ tùy chỉnh'
+    },
+    'resume.enter_content': {
+        en: 'Enter resume content...',
+        ja: '履歴書の内容を入力してください...',
+        zh: '请输入简历内容...',
+        vi: 'Nhập nội dung hồ sơ...'
+    },
+    'resume.ai_info': {
+        en: 'This resume is created based on the information you provided',
+        ja: '入力された情報に基づいて作成された履歴書です',
+        zh: '这份简历是根据您提供的信息生成的',
+        vi: 'Hồ sơ này được tạo dựa trên thông tin bạn cung cấp'
+    },
+    'resume.edit_info': {
+        en: 'Review and edit if necessary. Click the edit button at the top to make changes.',
+        ja: '内容を確認し、必要に応じて修正できます。編集するには上部の編集ボタンを押してください。',
+        zh: '请检查内容，如需修改请点击顶部的编辑按钮。',
+        vi: 'Xem lại và chỉnh sửa nếu cần. Nhấn nút chỉnh sửa ở trên để thay đổi.'
+    },
+    'resume.sending': {
+        en: 'Sending...',
+        ja: '送信中...',
+        zh: '发送中...',
+        vi: 'Đang gửi...'
+    },
+    'resume.complete_edit': {
+        en: 'Complete editing first',
+        ja: '編集を完了してください',
+        zh: '请先完成编辑',
+        vi: 'Hoàn thành chỉnh sửa trước'
+    },
+    'resume.send_resume': {
+        en: 'Send Resume',
+        ja: '履歴書を送信',
+        zh: '发送简历',
+        vi: 'Gửi hồ sơ'
+    },
+    'resume.send_modal_title': {
+        en: 'Send Resume',
+        ja: '履歴書送信',
+        zh: '发送简历',
+        vi: 'Gửi hồ sơ'
+    },
+    'resume.send_modal_message': {
+        en: 'Send your resume to {{jobTitle}}?',
+        ja: '{{jobTitle}}に履歴書を送信しますか？',
+        zh: '向{{jobTitle}}发送简历吗？',
+        vi: 'Gửi hồ sơ đến {{jobTitle}}?'
+    },
+    'resume.regenerate_modal_title': {
+        en: 'Regenerate Resume',
+        ja: '履歴書再生成',
+        zh: '重新生成简历',
+        vi: 'Tạo lại hồ sơ'
+    },
+    'resume.regenerate_modal_message': {
+        en: 'Current content will be lost. Continue?',
+        ja: '現在作成された内容が消えます。続けますか？',
+        zh: '当前内容将丢失。是否继续？',
+        vi: 'Nội dung hiện tại sẽ bị mất. Tiếp tục?'
+    },
+    'resume.application_subject': {
+        en: '[{{job}}] Job Application',
+        ja: '[{{job}}] 入社志願書',
+        zh: '[{{job}}] 入职申请',
+        vi: '[{{job}}] Đơn ứng tuyển'
+    },
+
+
+
+
+    // Info 페이지
+    'info.title': {
+        en: 'Set Preferences',
+        ja: '希望条件設定',
+        zh: '设置工作条件',
+        vi: 'Cài đặt điều kiện mong muốn'
+    },
+    'info.desired_location': {
+        en: 'Desired Work Location',
+        ja: '希望勤務地',
+        zh: '希望工作地点',
+        vi: 'Địa điểm làm việc mong muốn'
+    },
+    'info.select_location': {
+        en: 'Select location',
+        ja: '地域を選択してください',
+        zh: '请选择地区',
+        vi: 'Chọn khu vực'
+    },
+    'info.country': {
+        en: 'Country',
+        ja: '国',
+        zh: '国家',
+        vi: 'Quốc gia'
+    },
+    'info.select_country': {
+        en: 'Select country',
+        ja: '国を選択してください',
+        zh: '请选择国家',
+        vi: 'Chọn quốc gia'
+    },
+    'info.search': {
+        en: 'Search...',
+        ja: '検索...',
+        zh: '搜索...',
+        vi: 'Tìm kiếm...'
+    },
+    'info.save': {
+        en: 'Save',
+        ja: '保存',
+        zh: '保存',
+        vi: 'Lưu'
+    },
+    'info.select_location_required': {
+        en: 'Please select a location',
+        ja: '地域を選択してください',
+        zh: '请选择地区',
+        vi: 'Vui lòng chọn khu vực'
+    },
+    'info.select_country_required': {
+        en: 'Please select a country',
+        ja: '国を選択してください',
+        zh: '请选择国家',
+        vi: 'Vui lòng chọn quốc gia'
+    },
+    // JobPreferencesSelector
+    'job_selector.title': {
+        en: 'Desired Jobs',
+        ja: '希望職種',
+        zh: '希望职位',
+        vi: 'Công việc mong muốn'
+    },
+
+// WorkConditionsSelector
+    'work_conditions_selector.title': {
+        en: 'Desired Benefits',
+        ja: '希望する待遇',
+        zh: '期望福利',
+        vi: 'Phúc lợi mong muốn'
     }
 };
 

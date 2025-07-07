@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Back from "@/components/back";
 import {useModal} from "@/hooks/useModal";
+import { useTranslation } from "@/contexts/TranslationContext"
 
 const Info = () => {
     const {updateProfile} = useProfile();
@@ -19,10 +20,10 @@ const Info = () => {
     const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
     const [selectedJobs, setSelectedJobs] = useState<number[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<number[]>([]);
-
     const { keywords, user_keywords, loading, fetchKeywords, updateKeywords } = useUserKeywords();
-
     const { showModal, hideModal, ModalComponent } = useModal();
+    const { t } = useTranslation()
+
 
     // 카테고리별 키워드 필터링
     const locationOptions = keywords
@@ -122,13 +123,13 @@ const Info = () => {
     const handleSaveAndNext = async () => {
         // 지역 선택 확인
         if (!selectedLocation) {
-            showModal('알림', '지역을 선택해주세요')
+            showModal(t('alert.notification', '알림'), t('info.select_location_required', '지역을 선택해주세요'))
             return;
         }
 
         // 국가 선택 확인
         if (!selectedCountry) {
-            showModal('알림', '국가를 선택해주세요')
+            showModal(t('alert.notification', '알림'), t('info.select_country_required', '국가를 선택해주세요'))
             return;
         }
 
@@ -185,7 +186,7 @@ const Info = () => {
                 <View className="p-4 border-b border-gray-200">
                     <View className="flex-row items-center">
                         <Back/>
-                        <Text className="text-lg font-bold ml-4">희망 조건 설정</Text>
+                        <Text className="text-lg font-bold ml-4">{t('info.title', '희망 조건 설정')}</Text>
                     </View>
                 </View>
 
@@ -196,7 +197,7 @@ const Info = () => {
                 >
                     {/* 지역 선택 섹션 */}
                     <View className="p-4">
-                        <Text className="text-base font-semibold mb-3">희망 근무 지역</Text>
+                        <Text className="text-base font-semibold mb-3">{t('info.desired_location', '희망 근무 지역')}</Text>
                         <View className="p-3 bg-gray-50 rounded-xl">
                             <Dropdown
                                 style={{
@@ -227,8 +228,8 @@ const Info = () => {
                                 maxHeight={300}
                                 labelField="label"
                                 valueField="value"
-                                placeholder="지역을 선택하세요"
-                                searchPlaceholder="검색..."
+                                placeholder={t('info.select_location', '지역을 선택하세요')}
+                                searchPlaceholder={t('info.search', '검색...')}
                                 value={selectedLocation}
                                 onChange={item => {
                                     setSelectedLocation(item.value);
@@ -260,7 +261,7 @@ const Info = () => {
 
                     {/* 국가 선택 섹션 */}
                     <View className="p-4">
-                        <Text className="text-base font-semibold mb-3">국가</Text>
+                        <Text className="text-base font-semibold mb-3">{t('info.country', '국가')}</Text>
                         <View className="p-3 bg-gray-50 rounded-xl">
                             <Dropdown
                                 style={{
@@ -291,8 +292,8 @@ const Info = () => {
                                 maxHeight={300}
                                 labelField="label"
                                 valueField="value"
-                                placeholder="국가를 선택하세요"
-                                searchPlaceholder="검색..."
+                                placeholder={t('info.select_country', '국가를 선택하세요')}
+                                searchPlaceholder={t('info.search', '검색...')}
                                 value={selectedCountry}
                                 onChange={item => {
                                     setSelectedCountry(item.value);
@@ -321,7 +322,7 @@ const Info = () => {
                             className="w-full bg-blue-500 items-center justify-center py-3 rounded-xl"
                             onPress={handleSaveAndNext}
                         >
-                            <Text className="font-semibold text-base text-white">저장하기</Text>
+                            <Text className="font-semibold text-base text-white">{t('info.save', '저장하기')}</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
