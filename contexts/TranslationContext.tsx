@@ -270,6 +270,558 @@ const translations: { [key: string]: { [lang: string]: string } } = {
         ja: 'お知らせ',
         zh: '通知',
         vi: 'Thông báo'
+    },
+
+    // My Posting 페이지
+    'myposting.title': {
+        en: 'My Job Posting',
+        ja: '私の求職公告',
+        zh: '我的求职信息',
+        vi: 'Tin tuyển dụng của tôi'
+    },
+    'myposting.activate_posting': {
+        en: 'Activate Job Posting',
+        ja: '求職公告の有効化',
+        zh: '激活求职信息',
+        vi: 'Kích hoạt tin tuyển dụng'
+    },
+    'myposting.activate_description': {
+        en: 'When activated, companies can see your profile',
+        ja: '有効化すると、企業があなたのプロフィールを閲覧できます',
+        zh: '激活后，公司可以查看您的个人资料',
+        vi: 'Khi kích hoạt, các công ty có thể xem hồ sơ của bạn'
+    },
+    'myposting.required_info_warning': {
+        en: 'All required information must be entered to activate job posting',
+        ja: '求職公告を有効化するには、すべての必須情報を入力する必要があります',
+        zh: '必须填写所有必需信息才能激活求职信息',
+        vi: 'Phải nhập đầy đủ thông tin bắt buộc để kích hoạt tin tuyển dụng'
+    },
+    'myposting.posting_active': {
+        en: 'Job posting is activated',
+        ja: '求職公告が有効化されています',
+        zh: '求职信息已激活',
+        vi: 'Tin tuyển dụng đã được kích hoạt'
+    },
+    'myposting.my_info': {
+        en: 'My Information',
+        ja: '私の情報',
+        zh: '我的信息',
+        vi: 'Thông tin của tôi'
+    },
+    'myposting.name': {
+        en: 'Name',
+        ja: '名前',
+        zh: '姓名',
+        vi: 'Họ tên'
+    },
+    'myposting.age': {
+        en: 'Age',
+        ja: '年齢',
+        zh: '年龄',
+        vi: 'Tuổi'
+    },
+    'myposting.gender': {
+        en: 'Gender',
+        ja: '性別',
+        zh: '性别',
+        vi: 'Giới tính'
+    },
+    'myposting.visa': {
+        en: 'Visa',
+        ja: 'ビザ',
+        zh: '签证',
+        vi: 'Visa'
+    },
+    'myposting.korean_level': {
+        en: 'Korean Level',
+        ja: '韓国語レベル',
+        zh: '韩语水平',
+        vi: 'Trình độ tiếng Hàn'
+    },
+    'myposting.not_entered': {
+        en: 'Not entered',
+        ja: '未入力',
+        zh: '未输入',
+        vi: 'Chưa nhập'
+    },
+    'myposting.matching_keywords': {
+        en: 'My Matching Keywords',
+        ja: '私のマッチングキーワード',
+        zh: '我的匹配关键词',
+        vi: 'Từ khóa phù hợp của tôi'
+    },
+    'myposting.no_keywords': {
+        en: 'No keywords selected',
+        ja: '選択されたキーワードがありません',
+        zh: '没有选择关键词',
+        vi: 'Chưa chọn từ khóa nào'
+    },
+    'myposting.edit_info': {
+        en: 'Edit Information',
+        ja: '情報を編集',
+        zh: '编辑信息',
+        vi: 'Chỉnh sửa thông tin'
+    },
+    'myposting.visa_type': {
+        en: 'Visa Type',
+        ja: 'ビザの種類',
+        zh: '签证类型',
+        vi: 'Loại visa'
+    },
+    'myposting.enter_name': {
+        en: 'Enter your name',
+        ja: '名前を入力してください',
+        zh: '请输入姓名',
+        vi: 'Nhập họ tên'
+    },
+    'myposting.enter_age': {
+        en: 'Enter your age',
+        ja: '年齢を入力してください',
+        zh: '请输入年龄',
+        vi: 'Nhập tuổi'
+    },
+    'myposting.select_gender': {
+        en: 'Select gender',
+        ja: '性別を選択してください',
+        zh: '请选择性别',
+        vi: 'Chọn giới tính'
+    },
+    'myposting.select_visa': {
+        en: 'Select visa type',
+        ja: 'ビザの種類を選択してください',
+        zh: '请选择签证类型',
+        vi: 'Chọn loại visa'
+    },
+    'myposting.required_info_title': {
+        en: 'Required Information Needed',
+        ja: '必須情報の入力が必要',
+        zh: '需要填写必需信息',
+        vi: 'Cần nhập thông tin bắt buộc'
+    },
+    'myposting.required_info_message': {
+        en: 'Please enter all required information to activate job posting.',
+        ja: '求職公告を有効化するには、すべての必須情報を入力してください。',
+        zh: '请输入所有必需信息以激活求职信息。',
+        vi: 'Vui lòng nhập đầy đủ thông tin bắt buộc để kích hoạt tin tuyển dụng.'
+    },
+    // 성별 옵션
+    'myposting.gender_male': {
+        en: 'Male',
+        ja: '男性',
+        zh: '男性',
+        vi: 'Nam'
+    },
+    'myposting.gender_female': {
+        en: 'Female',
+        ja: '女性',
+        zh: '女性',
+        vi: 'Nữ'
+    },
+    'myposting.gender_other': {
+        en: 'Other',
+        ja: 'その他',
+        zh: '其他',
+        vi: 'Khác'
+    },
+
+// 비자 옵션
+    'myposting.visa_f2': {
+        en: 'F-2 (Residence)',
+        ja: 'F-2 (居住ビザ)',
+        zh: 'F-2 (居住签证)',
+        vi: 'F-2 (Thị thực cư trú)'
+    },
+    'myposting.visa_f4': {
+        en: 'F-4 (Overseas Korean)',
+        ja: 'F-4 (在外同胞)',
+        zh: 'F-4 (海外同胞)',
+        vi: 'F-4 (Kiều bào)'
+    },
+    'myposting.visa_f5': {
+        en: 'F-5 (Permanent Residence)',
+        ja: 'F-5 (永住)',
+        zh: 'F-5 (永久居留)',
+        vi: 'F-5 (Thường trú nhân)'
+    },
+    'myposting.visa_f6': {
+        en: 'F-6 (Marriage Migrant)',
+        ja: 'F-6 (結婚移民)',
+        zh: 'F-6 (结婚移民)',
+        vi: 'F-6 (Kết hôn di trú)'
+    },
+    'myposting.visa_e9': {
+        en: 'E-9 (Non-professional Employment)',
+        ja: 'E-9 (非専門就業)',
+        zh: 'E-9 (非专业就业)',
+        vi: 'E-9 (Lao động phổ thông)'
+    },
+    'myposting.visa_h2': {
+        en: 'H-2 (Working Visit)',
+        ja: 'H-2 (訪問就業)',
+        zh: 'H-2 (访问就业)',
+        vi: 'H-2 (Thăm thân lao động)'
+    },
+    'myposting.visa_d2': {
+        en: 'D-2 (Student)',
+        ja: 'D-2 (留学)',
+        zh: 'D-2 (留学)',
+        vi: 'D-2 (Du học)'
+    },
+    'myposting.visa_d4': {
+        en: 'D-4 (General Training)',
+        ja: 'D-4 (一般研修)',
+        zh: 'D-4 (一般研修)',
+        vi: 'D-4 (Tu nghiệp tổng hợp)'
+    },
+    'myposting.visa_other': {
+        en: 'Other',
+        ja: 'その他',
+        zh: '其他',
+        vi: 'Khác'
+    },
+// 한국어 레벨 옵션
+    'myposting.korean_beginner': {
+        en: 'Beginner',
+        ja: '初級',
+        zh: '初级',
+        vi: 'Sơ cấp'
+    },
+    'myposting.korean_intermediate': {
+        en: 'Intermediate',
+        ja: '中級',
+        zh: '中级',
+        vi: 'Trung cấp'
+    },
+    'myposting.korean_advanced': {
+        en: 'Advanced',
+        ja: '上級',
+        zh: '高级',
+        vi: 'Cao cấp'
+    },
+
+
+    // Applications 페이지
+    'applications.title': {
+        en: 'Application History',
+        ja: '応募履歴',
+        zh: '申请记录',
+        vi: 'Lịch sử ứng tuyển'
+    },
+    'applications.total_applications': {
+        en: 'Total {{count}} applications',
+        ja: '全{{count}}件の応募',
+        zh: '共{{count}}个申请',
+        vi: 'Tổng cộng {{count}} đơn ứng tuyển'
+    },
+    'applications.filter_all': {
+        en: 'All',
+        ja: '全て',
+        zh: '全部',
+        vi: 'Tất cả'
+    },
+    'applications.filter_pending': {
+        en: 'Under Review',
+        ja: '検討中',
+        zh: '审核中',
+        vi: 'Đang xét duyệt'
+    },
+    'applications.filter_reviewed': {
+        en: 'Reviewed',
+        ja: '検討完了',
+        zh: '已审核',
+        vi: 'Đã xét duyệt'
+    },
+    'applications.status_pending': {
+        en: 'Under Review',
+        ja: '検討中',
+        zh: '审核中',
+        vi: 'Đang xét duyệt'
+    },
+    'applications.status_reviewed': {
+        en: 'Reviewed',
+        ja: '検討完了',
+        zh: '已审核',
+        vi: 'Đã xét duyệt'
+    },
+    'applications.status_accepted': {
+        en: 'Accepted',
+        ja: '合格',
+        zh: '已录取',
+        vi: 'Đã trúng tuyển'
+    },
+    'applications.status_rejected': {
+        en: 'Rejected',
+        ja: '不合格',
+        zh: '未录取',
+        vi: 'Không trúng tuyển'
+    },
+    'applications.applied_date': {
+        en: 'Applied',
+        ja: '応募日',
+        zh: '申请日期',
+        vi: 'Ngày ứng tuyển'
+    },
+    'applications.closed': {
+        en: 'Closed',
+        ja: '募集終了',
+        zh: '已结束',
+        vi: 'Đã đóng'
+    },
+    'applications.view_resume': {
+        en: 'View Submitted Resume',
+        ja: '提出した履歴書を見る',
+        zh: '查看提交的简历',
+        vi: 'Xem hồ sơ đã nộp'
+    },
+    'applications.no_applications': {
+        en: 'No applications yet',
+        ja: 'まだ応募した求人がありません',
+        zh: '还没有申请的职位',
+        vi: 'Chưa có đơn ứng tuyển nào'
+    },
+    'applications.no_pending': {
+        en: 'No applications under review',
+        ja: '検討中の応募がありません',
+        zh: '没有审核中的申请',
+        vi: 'Không có đơn đang xét duyệt'
+    },
+    'applications.no_reviewed': {
+        en: 'No reviewed applications',
+        ja: '検討完了した応募がありません',
+        zh: '没有已审核的申请',
+        vi: 'Không có đơn đã xét duyệt'
+    },
+    'applications.go_to_postings': {
+        en: 'Browse Jobs',
+        ja: '求人を見る',
+        zh: '查看职位',
+        vi: 'Xem tin tuyển dụng'
+    },
+    'applications.today': {
+        en: 'Today',
+        ja: '今日',
+        zh: '今天',
+        vi: 'Hôm nay'
+    },
+    'applications.yesterday': {
+        en: 'Yesterday',
+        ja: '昨日',
+        zh: '昨天',
+        vi: 'Hôm qua'
+    },
+    'applications.days_ago': {
+        en: '{{days}} days ago',
+        ja: '{{days}}日前',
+        zh: '{{days}}天前',
+        vi: '{{days}} ngày trước'
+    },
+    'applications.loading': {
+        en: 'Loading...',
+        ja: '読み込み中...',
+        zh: '加载中...',
+        vi: 'Đang tải...'
+    },
+
+
+    // Settings 페이지
+    'settings.title': {
+        en: 'Settings',
+        ja: '設定',
+        zh: '设置',
+        vi: 'Cài đặt'
+    },
+    'settings.no_name': {
+        en: 'No Name',
+        ja: '名前なし',
+        zh: '未设置姓名',
+        vi: 'Chưa có tên'
+    },
+    'settings.edit_profile': {
+        en: 'Edit Profile',
+        ja: 'プロフィール編集',
+        zh: '编辑个人资料',
+        vi: 'Chỉnh sửa hồ sơ'
+    },
+    'settings.notification_settings': {
+        en: 'Notification Settings',
+        ja: '通知設定',
+        zh: '通知设置',
+        vi: 'Cài đặt thông báo'
+    },
+    'settings.new_job_notification': {
+        en: 'New Job Alerts',
+        ja: '新しい仕事の通知',
+        zh: '新工作提醒',
+        vi: 'Thông báo việc mới'
+    },
+    'settings.new_job_description': {
+        en: 'Notifications for matching jobs',
+        ja: 'マッチする求人の通知',
+        zh: '匹配职位的通知',
+        vi: 'Thông báo công việc phù hợp'
+    },
+    'settings.application_status_notification': {
+        en: 'Application Status Alerts',
+        ja: '応募状況の通知',
+        zh: '申请状态提醒',
+        vi: 'Thông báo tình trạng ứng tuyển'
+    },
+    'settings.application_status_description': {
+        en: 'Application status change notifications',
+        ja: '応募状態変更の通知',
+        zh: '申请状态变更通知',
+        vi: 'Thông báo thay đổi trạng thái ứng tuyển'
+    },
+    'settings.marketing_notification': {
+        en: 'Marketing Notifications',
+        ja: 'マーケティング通知',
+        zh: '营销通知',
+        vi: 'Thông báo tiếp thị'
+    },
+    'settings.marketing_description': {
+        en: 'Event and benefit information',
+        ja: 'イベント・特典情報',
+        zh: '活动和优惠信息',
+        vi: 'Thông tin sự kiện và ưu đãi'
+    },
+    'settings.app_settings': {
+        en: 'App Settings',
+        ja: 'アプリ設定',
+        zh: '应用设置',
+        vi: 'Cài đặt ứng dụng'
+    },
+    'settings.language_settings': {
+        en: 'Language Settings',
+        ja: '言語設定',
+        zh: '语言设置',
+        vi: 'Cài đặt ngôn ngữ'
+    },
+    'settings.information': {
+        en: 'Information',
+        ja: '情報',
+        zh: '信息',
+        vi: 'Thông tin'
+    },
+    'settings.terms_of_service': {
+        en: 'Terms of Service',
+        ja: '利用規約',
+        zh: '服务条款',
+        vi: 'Điều khoản sử dụng'
+    },
+    'settings.privacy_policy': {
+        en: 'Privacy Policy',
+        ja: 'プライバシーポリシー',
+        zh: '隐私政策',
+        vi: 'Chính sách bảo mật'
+    },
+    'settings.customer_service': {
+        en: 'Customer Service',
+        ja: 'カスタマーサービス',
+        zh: '客服中心',
+        vi: 'Dịch vụ khách hàng'
+    },
+    'settings.app_version': {
+        en: 'App Version',
+        ja: 'アプリバージョン',
+        zh: '应用版本',
+        vi: 'Phiên bản ứng dụng'
+    },
+    'settings.account_management': {
+        en: 'Account Management',
+        ja: 'アカウント管理',
+        zh: '账户管理',
+        vi: 'Quản lý tài khoản'
+    },
+    'settings.logout': {
+        en: 'Logout',
+        ja: 'ログアウト',
+        zh: '退出登录',
+        vi: 'Đăng xuất'
+    },
+    'settings.delete_account': {
+        en: 'Delete Account',
+        ja: '退会',
+        zh: '注销账户',
+        vi: 'Xóa tài khoản'
+    },
+    'settings.logout_confirm': {
+        en: 'Are you sure you want to logout?',
+        ja: '本当にログアウトしますか？',
+        zh: '确定要退出登录吗？',
+        vi: 'Bạn có chắc muốn đăng xuất?'
+    },
+    'settings.error': {
+        en: 'Error',
+        ja: 'エラー',
+        zh: '错误',
+        vi: 'Lỗi'
+    },
+    'settings.auth_not_found': {
+        en: 'Authentication information not found.',
+        ja: '認証情報が見つかりません。',
+        zh: '找不到认证信息。',
+        vi: 'Không tìm thấy thông tin xác thực.'
+    },
+    'settings.delete_complete': {
+        en: 'Account Deleted',
+        ja: '退会完了',
+        zh: '注销完成',
+        vi: 'Đã xóa tài khoản'
+    },
+    'settings.thank_you': {
+        en: 'Thank you for using our service.',
+        ja: 'ご利用ありがとうございました。',
+        zh: '感谢您使用我们的服务。',
+        vi: 'Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.'
+    },
+    'settings.delete_error': {
+        en: 'An error occurred while deleting your account.',
+        ja: '退会処理中に問題が発生しました。',
+        zh: '注销账户时出现问题。',
+        vi: 'Đã xảy ra lỗi khi xóa tài khoản.'
+    },
+    'settings.language_change': {
+        en: 'Language Changed',
+        ja: '言語変更',
+        zh: '语言更改',
+        vi: 'Đã thay đổi ngôn ngữ'
+    },
+    'settings.restart_required': {
+        en: 'Please restart the app to apply changes.',
+        ja: 'アプリを再起動すると適用されます。',
+        zh: '请重启应用以应用更改。',
+        vi: 'Vui lòng khởi động lại ứng dụng để áp dụng thay đổi.'
+    },
+    'settings.customer_service_info': {
+        en: 'Have questions?\nCustomer Service: 1588-0000\nHours: Weekdays 09:00 - 18:00',
+        ja: 'お問い合わせはこちら\nカスタマーセンター: 1588-0000\n営業時間: 平日 09:00 - 18:00',
+        zh: '有疑问吗？\n客服中心：1588-0000\n工作时间：工作日 09:00 - 18:00',
+        vi: 'Có thắc mắc?\nTổng đài: 1588-0000\nGiờ làm việc: Thứ 2-6, 09:00 - 18:00'
+    },
+    'settings.select_language': {
+        en: 'Select Language',
+        ja: '言語を選択',
+        zh: '选择语言',
+        vi: 'Chọn ngôn ngữ'
+    },
+    'settings.delete_confirm_title': {
+        en: 'Are you sure you want to delete your account?',
+        ja: '本当に退会しますか？',
+        zh: '确定要注销账户吗？',
+        vi: 'Bạn có chắc muốn xóa tài khoản?'
+    },
+    'settings.delete_warning': {
+        en: 'All data will be deleted and cannot be recovered.',
+        ja: '全てのデータが削除され\n復元できません。',
+        zh: '所有数据将被删除\n且无法恢复。',
+        vi: 'Tất cả dữ liệu sẽ bị xóa\nvà không thể khôi phục.'
+    },
+    'settings.delete_button': {
+        en: 'Delete Account',
+        ja: '退会する',
+        zh: '注销账户',
+        vi: 'Xóa tài khoản'
     }
 };
 

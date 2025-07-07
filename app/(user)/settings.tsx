@@ -7,6 +7,7 @@ import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/hooks/useModal'
+import { useTranslation } from "@/contexts/TranslationContext";
 
 const Settings = () => {
     const { logout, user } = useAuth()
@@ -25,7 +26,9 @@ const Settings = () => {
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
 
     // 언어 설정
-    const [selectedLanguage, setSelectedLanguage] = useState('ko')
+    const { t, language } = useTranslation()
+    const [selectedLanguage, setSelectedLanguage] = useState(language)
+
 
     // 앱 정보
     const APP_VERSION = '1.0.0'
@@ -68,8 +71,8 @@ const Settings = () => {
     // 로그아웃 처리
     const handleLogout = () => {
         showModal(
-            '로그아웃',
-            '정말 로그아웃 하시겠습니까?',
+            t('settings.logout', '로그아웃'),
+            t('settings.logout_confirm', '정말 로그아웃 하시겠습니까?'),
             'confirm',
             () => logout(),
             true
@@ -84,7 +87,7 @@ const Settings = () => {
             // 토큰 가져오기
             const token = await AsyncStorage.getItem('authToken');
             if (!token) {
-                showModal('오류', '인증 정보를 찾을 수 없습니다.', 'warning')
+                showModal(t('settings.error', '오류'), t('settings.auth_not_found', '인증 정보를 찾을 수 없습니다.'), 'warning')
                 return;
             }
 
@@ -104,8 +107,8 @@ const Settings = () => {
                 await AsyncStorage.clear();
 
                 showModal(
-                    '회원 탈퇴 완료',
-                    '그동안 이용해주셔서 감사합니다.',
+                    t('settings.delete_complete', '회원 탈퇴 완료'),
+                    t('settings.thank_you', '그동안 이용해주셔서 감사합니다.'),
                     'info',
                     () => logout()
                 )
@@ -115,8 +118,8 @@ const Settings = () => {
         } catch (error) {
             console.error('회원 탈퇴 실패:', error);
             showModal(
-                '오류',
-                '회원 탈퇴 처리 중 문제가 발생했습니다.',
+                t('settings.error', '오류'),
+                t('settings.delete_error', '회원 탈퇴 처리 중 문제가 발생했습니다.'),
                 'warning'
             )
         }
@@ -130,8 +133,8 @@ const Settings = () => {
             setLanguageModalVisible(false)
 
             showModal(
-                '언어 변경',
-                '앱을 재시작하면 적용됩니다.',
+                t('settings.language_change', '언어 변경'),
+                t('settings.restart_required', '앱을 재시작하면 적용됩니다.'),
                 'info'
             )
         } catch (error) {
@@ -149,8 +152,8 @@ const Settings = () => {
     // 고객센터 처리
     const handleCustomerService = () => {
         showModal(
-            '고객센터',
-            '문의사항이 있으신가요?\n고객센터: 1588-0000\n운영시간: 평일 09:00 - 18:00',
+            t('settings.customer_service', '고객센터'),
+            t('settings.customer_service_info', '문의사항이 있으신가요?\n고객센터: 1588-0000\n운영시간: 평일 09:00 - 18:00'),
             'info'
         )
     }
@@ -159,7 +162,7 @@ const Settings = () => {
         <SafeAreaView className="flex-1 bg-gray-50">
             {/* 헤더 */}
             <View className="bg-white px-4 py-3 border-b border-gray-200">
-                <Text className="text-2xl font-bold">설정</Text>
+                <Text className="text-2xl font-bold">{t('settings.title', '설정')}</Text>
             </View>
 
             <ScrollView
@@ -175,7 +178,7 @@ const Settings = () => {
                                 <Ionicons name="person" size={24} color="#3b82f6" />
                             </View>
                             <View className="ml-3">
-                                <Text className="font-bold text-lg">{profile?.name || '이름 없음'}</Text>
+                                <Text className="font-bold text-lg">{profile?.name || t('settings.no_name', '이름 없음')}</Text>
                                 <Text className="text-sm text-gray-600">{profile?.phone_number}</Text>
                             </View>
                         </View>
@@ -183,20 +186,20 @@ const Settings = () => {
                             onPress={() => router.push('/(pages)/(user)/info')}
                             className="bg-blue-100 px-3 py-1 rounded-lg"
                         >
-                            <Text className="text-blue-600 text-sm font-medium">프로필 수정</Text>
+                            <Text className="text-blue-600 text-sm font-medium">{t('settings.edit_profile', '프로필 수정')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
 
                 {/* 알림 설정 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
-                    <Text className="text-lg font-bold mb-4">알림 설정</Text>
+                    <Text className="text-lg font-bold mb-4">{t('settings.notification_settings', '알림 설정')}</Text>
 
                     <View className="space-y-4">
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">새 일자리 알림</Text>
-                                <Text className="text-sm text-gray-600">매칭되는 새 공고 알림</Text>
+                                <Text className="font-medium">{t('settings.new_job_notification', '새 일자리 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.new_job_description', '매칭되는 새 공고 알림')}</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.newJob}
@@ -208,8 +211,8 @@ const Settings = () => {
 
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">지원 현황 알림</Text>
-                                <Text className="text-sm text-gray-600">지원 상태 변경 알림</Text>
+                                <Text className="font-medium">{t('settings.application_status_notification', '지원 현황 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.application_status_description', '지원 상태 변경 알림')}</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.applicationStatus}
@@ -221,8 +224,8 @@ const Settings = () => {
 
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">마케팅 알림</Text>
-                                <Text className="text-sm text-gray-600">이벤트 및 혜택 정보</Text>
+                                <Text className="font-medium">{t('settings.marketing_notification', '마케팅 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.marketing_description', '이벤트 및 혜택 정보')}</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.marketing}
@@ -236,7 +239,7 @@ const Settings = () => {
 
                 {/* 앱 설정 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
-                    <Text className="text-lg font-bold mb-4">앱 설정</Text>
+                    <Text className="text-lg font-bold mb-4">{t('settings.app_settings', '앱 설정')}</Text>
 
                     <TouchableOpacity
                         onPress={() => setLanguageModalVisible(true)}
@@ -244,11 +247,15 @@ const Settings = () => {
                     >
                         <View className="flex-row items-center">
                             <Ionicons name="language" size={20} color="#6b7280" />
-                            <Text className="ml-3">언어 설정</Text>
+                            <Text className="ml-3">{t('settings.language_settings', '언어 설정')}</Text>
                         </View>
                         <View className="flex-row items-center">
                             <Text className="text-gray-600 mr-2">
-                                {selectedLanguage === 'ko' ? '한국어' : 'English'}
+                                {selectedLanguage === 'ko' ? '한국어' :
+                                    selectedLanguage === 'en' ? 'English' :
+                                        selectedLanguage === 'ja' ? '日本語' :
+                                            selectedLanguage === 'zh' ? '中文' :
+                                                selectedLanguage === 'vi' ? 'Tiếng Việt' : '한국어'}
                             </Text>
                             <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                         </View>
@@ -257,7 +264,7 @@ const Settings = () => {
 
                 {/* 정보 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
-                    <Text className="text-lg font-bold mb-4">정보</Text>
+                    <Text className="text-lg font-bold mb-4">{t('settings.information', '정보')}</Text>
 
                     <TouchableOpacity
                         onPress={() => openLink('https://example.com/terms')}
@@ -265,7 +272,7 @@ const Settings = () => {
                     >
                         <View className="flex-row items-center">
                             <Ionicons name="document-text-outline" size={20} color="#6b7280" />
-                            <Text className="ml-3">이용약관</Text>
+                            <Text className="ml-3">{t('settings.terms_of_service', '이용약관')}</Text>
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
@@ -276,7 +283,7 @@ const Settings = () => {
                     >
                         <View className="flex-row items-center">
                             <Ionicons name="shield-checkmark-outline" size={20} color="#6b7280" />
-                            <Text className="ml-3">개인정보처리방침</Text>
+                            <Text className="ml-3">{t('settings.privacy_policy', '개인정보처리방침')}</Text>
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
@@ -287,7 +294,7 @@ const Settings = () => {
                     >
                         <View className="flex-row items-center">
                             <Ionicons name="mail-outline" size={20} color="#6b7280" />
-                            <Text className="ml-3">고객센터</Text>
+                            <Text className="ml-3">{t('settings.customer_service', '고객센터')}</Text>
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
@@ -295,7 +302,7 @@ const Settings = () => {
                     <View className="flex-row items-center justify-between py-3">
                         <View className="flex-row items-center">
                             <Ionicons name="information-circle-outline" size={20} color="#6b7280" />
-                            <Text className="ml-3">앱 버전</Text>
+                            <Text className="ml-3">{t('settings.app_version', '앱 버전')}</Text>
                         </View>
                         <Text className="text-gray-600">{APP_VERSION}</Text>
                     </View>
@@ -303,14 +310,14 @@ const Settings = () => {
 
                 {/* 계정 관리 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
-                    <Text className="text-lg font-bold mb-4">계정 관리</Text>
+                    <Text className="text-lg font-bold mb-4">{t('settings.account_management', '계정 관리')}</Text>
 
                     <TouchableOpacity
                         onPress={handleLogout}
                         className="flex-row items-center py-3"
                     >
                         <Ionicons name="log-out-outline" size={20} color="#ef4444" />
-                        <Text className="ml-3 text-red-500">로그아웃</Text>
+                        <Text className="ml-3 text-red-500">{t('settings.logout', '로그아웃')}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -318,7 +325,7 @@ const Settings = () => {
                         className="flex-row items-center py-3"
                     >
                         <Ionicons name="trash-outline" size={20} color="#ef4444" />
-                        <Text className="ml-3 text-red-500">회원 탈퇴</Text>
+                        <Text className="ml-3 text-red-500">{t('settings.delete_account', '회원 탈퇴')}</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -333,7 +340,7 @@ const Settings = () => {
                 <View className="flex-1 bg-black/50 justify-end">
                     <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10">
                         <View className="flex-row items-center justify-between mb-6">
-                            <Text className="text-xl font-bold">언어 선택</Text>
+                            <Text className="text-xl font-bold">{t('settings.select_language', '언어 선택')}</Text>
                             <TouchableOpacity onPress={() => setLanguageModalVisible(false)}>
                                 <Ionicons name="close" size={24} color="#6b7280" />
                             </TouchableOpacity>
@@ -383,11 +390,11 @@ const Settings = () => {
                             <View className="w-16 h-16 bg-red-100 rounded-full items-center justify-center mb-3">
                                 <Ionicons name="warning" size={32} color="#ef4444" />
                             </View>
-                            <Text className="text-xl font-bold text-gray-900">정말 탈퇴하시겠습니까?</Text>
+                            <Text className="text-xl font-bold text-gray-900">{t('settings.delete_confirm_title', '정말 탈퇴하시겠습니까?')}</Text>
                         </View>
 
                         <Text className="text-gray-600 text-center mb-6">
-                            회원 탈퇴 시 모든 데이터가 삭제되며{'\n'}복구할 수 없습니다.
+                            {t('settings.delete_warning', '회원 탈퇴 시 모든 데이터가 삭제되며\n복구할 수 없습니다.')}
                         </Text>
 
                         <View className="flex-row gap-3">
@@ -395,7 +402,7 @@ const Settings = () => {
                                 onPress={() => setDeleteAccountModalVisible(false)}
                                 className="flex-1 py-3 rounded-xl bg-gray-100"
                             >
-                                <Text className="text-center text-gray-700 font-medium">취소</Text>
+                                <Text className="text-center text-gray-700 font-medium">{t('button.cancel', '취소')}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -405,7 +412,7 @@ const Settings = () => {
                                 }}
                                 className="flex-1 py-3 rounded-xl bg-red-500"
                             >
-                                <Text className="text-center text-white font-medium">탈퇴하기</Text>
+                                <Text className="text-center text-white font-medium">{t('settings.delete_button', '탈퇴하기')}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

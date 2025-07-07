@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from '@/lib/supabase'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { useTranslation } from "@/contexts/TranslationContext";
 
 interface Application {
     id: string
@@ -33,6 +34,7 @@ const Applications = () => {
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
     const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'reviewed'>('all')
+    const { t } = useTranslation()
 
     useEffect(() => {
         if (user) {
@@ -127,11 +129,11 @@ const Applications = () => {
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
         if (diffDays === 0) {
-            return `오늘 ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
+            return t('applications.today', '오늘') + ` ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
         } else if (diffDays === 1) {
-            return '어제'
+            return t('applications.yesterday', '어제')
         } else if (diffDays < 7) {
-            return `${diffDays}일 전`
+            return t('applications.days_ago', `${diffDays}일 전`, { days: diffDays })
         } else {
             return `${date.getMonth() + 1}/${date.getDate()}`
         }
@@ -140,13 +142,13 @@ const Applications = () => {
     const getStatusInfo = (status: string) => {
         switch (status) {
             case 'pending':
-                return { text: '검토중', color: 'text-orange-600', bgColor: 'bg-orange-100' }
+                return { text: t('applications.status_pending', '검토중'), color: 'text-orange-600', bgColor: 'bg-orange-100' }
             case 'reviewed':
-                return { text: '검토완료', color: 'text-blue-600', bgColor: 'bg-blue-100' }
+                return { text: t('applications.status_reviewed', '검토완료'), color: 'text-blue-600', bgColor: 'bg-blue-100' }
             case 'accepted':
-                return { text: '합격', color: 'text-green-600', bgColor: 'bg-green-100' }
+                return { text: t('applications.status_accepted', '합격'), color: 'text-green-600', bgColor: 'bg-green-100' }
             case 'rejected':
-                return { text: '불합격', color: 'text-red-600', bgColor: 'bg-red-100' }
+                return { text: t('applications.status_rejected', '불합격'), color: 'text-red-600', bgColor: 'bg-red-100' }
             default:
                 return { text: status, color: 'text-gray-600', bgColor: 'bg-gray-100' }
         }
@@ -208,12 +210,12 @@ const Applications = () => {
                 {/* 지원 정보 */}
                 <View className="flex-row items-center justify-between pt-3 border-t border-gray-100">
                     <Text className="text-sm text-gray-500">
-                        지원일: {formatDate(item.applied_at)}
+                        {t('applications.applied_date', '지원일')}: {formatDate(item.applied_at)}
                     </Text>
 
                     {!isPostingActive && (
                         <View className="bg-gray-100 px-2 py-1 rounded">
-                            <Text className="text-xs text-gray-600">모집마감</Text>
+                            <Text className="text-xs text-gray-600">{t('applications.closed', '모집마감')}</Text>
                         </View>
                     )}
                 </View>
@@ -229,7 +231,7 @@ const Applications = () => {
                     >
                         <Ionicons name="document-text-outline" size={16} color="#3b82f6" />
                         <Text className="text-blue-600 text-sm font-medium ml-1">
-                            제출한 이력서 보기
+                            {t('applications.view_resume', '제출한 이력서 보기')}
                         </Text>
                     </TouchableOpacity>
                 )}
@@ -242,7 +244,7 @@ const Applications = () => {
             <SafeAreaView className="flex-1 bg-gray-50">
                 <View className="flex-1 justify-center items-center">
                     <ActivityIndicator size="large" color="#3b82f6" />
-                    <Text className="mt-2 text-gray-600">로딩 중...</Text>
+                    <Text className="mt-2 text-gray-600">{t('applications.loading', '로딩 중...')}</Text>
                 </View>
             </SafeAreaView>
         )
@@ -253,9 +255,9 @@ const Applications = () => {
             {/* 헤더 */}
             <View className="bg-white border-b border-gray-200">
                 <View className="p-4">
-                    <Text className="text-2xl font-bold">지원 내역</Text>
+                    <Text className="text-2xl font-bold">{t('applications.title', '지원 내역')}</Text>
                     <Text className="text-sm text-gray-600 mt-1">
-                        총 {applications.length}개의 지원
+                        {t('applications.total_applications', `총 ${applications.length}개의 지원`, { count: applications.length })}
                     </Text>
                 </View>
 
@@ -270,7 +272,7 @@ const Applications = () => {
                         <Text className={`${
                             activeFilter === 'all' ? 'text-blue-500 font-bold' : 'text-gray-600'
                         }`}>
-                            전체
+                            {t('applications.filter_all', '전체')}
                         </Text>
                     </TouchableOpacity>
 
@@ -283,7 +285,7 @@ const Applications = () => {
                         <Text className={`${
                             activeFilter === 'pending' ? 'text-blue-500 font-bold' : 'text-gray-600'
                         }`}>
-                            검토중
+                            {t('applications.filter_pending', '검토중')}
                         </Text>
                     </TouchableOpacity>
 
@@ -296,7 +298,7 @@ const Applications = () => {
                         <Text className={`${
                             activeFilter === 'reviewed' ? 'text-blue-500 font-bold' : 'text-gray-600'
                         }`}>
-                            검토완료
+                            {t('applications.filter_reviewed', '검토완료')}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -322,17 +324,17 @@ const Applications = () => {
                         <Ionicons name="document-text-outline" size={80} color="#9ca3af" />
                         <Text className="text-gray-500 text-lg mt-4">
                             {activeFilter === 'all'
-                                ? '아직 지원한 공고가 없습니다'
+                                ? t('applications.no_applications', '아직 지원한 공고가 없습니다')
                                 : activeFilter === 'pending'
-                                    ? '검토중인 지원이 없습니다'
-                                    : '검토 완료된 지원이 없습니다'}
+                                    ? t('applications.no_pending', '검토중인 지원이 없습니다')
+                                    : t('applications.no_reviewed', '검토 완료된 지원이 없습니다')}
                         </Text>
                         {activeFilter === 'all' && (
                             <TouchableOpacity
                                 onPress={() => router.push('/(user)/home')}
                                 className="mt-4 px-6 py-3 bg-blue-500 rounded-xl"
                             >
-                                <Text className="text-white font-medium">공고 보러가기</Text>
+                                <Text className="text-white font-medium">{t('applications.go_to_postings', '공고 보러가기')}</Text>
                             </TouchableOpacity>
                         )}
                     </View>
