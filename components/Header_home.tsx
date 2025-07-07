@@ -4,15 +4,15 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 
 const HeaderHome = () => {
     return (
-        <View className="flex-row items-center justify-between w-full h-12  m-3 px-3">
-            <View className="p-2">
-                <Text className="text-2xl">케이전시</Text>
+        <View className="flex-row items-center justify-between w-full h-12  m-3 px-2">
+            <View className="">
+                <Text className="text-2xl font-bold">K-gency</Text>
             </View>
             <View className="flex-row items-center justify-center gap-4 p-2">
-                <Text className="text-2xl">검색</Text>
-                <TouchableOpacity>
-                    <Fontisto name="bell" size={24} color="black" />
-                </TouchableOpacity>
+                {/*<Text className="text-2xl">검색</Text>*/}
+                {/*<TouchableOpacity>*/}
+                {/*    <Fontisto name="bell" size={24} color="black" />*/}
+                {/*</TouchableOpacity>*/}
             </View>
         </View>
     )

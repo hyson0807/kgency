@@ -3,18 +3,19 @@ import {Tabs} from "expo-router";
 import { Ionicons } from "@expo/vector-icons"
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
+import Feather from '@expo/vector-icons/Feather';
 const user_Layout = () => {
     return (
         <Tabs
             screenOptions={{
                 headerShown: false,
-                tabBarActiveTintColor: 'black',
+                tabBarActiveTintColor: 'blue',
                 tabBarInactiveTintColor: 'gray',
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: 60,
+                    height: 70,
+
                 },
             }}
         >
@@ -22,6 +23,7 @@ const user_Layout = () => {
             <Tabs.Screen
                 name="home"
                 options={{
+                    tabBarLabel: '홈',
                     tabBarIcon: ({size, color}) => <Ionicons name='home' size={size} color={color}/>
                 }}
             />
@@ -29,19 +31,23 @@ const user_Layout = () => {
             <Tabs.Screen
                 name="jobPosting"
                 options={{
-                    tabBarIcon: ({size, color}) => <Ionicons name='home' size={size} color={color}/>
+                    tabBarLabel: '내 공고',
+                    tabBarIcon: ({size, color}) => <Entypo name="add-to-list" size={size} color={color} />
                 }}
             />
 
             <Tabs.Screen
                 name="inbox"
                 options={{
-                    tabBarIcon: ({size, color}) => <Entypo name="v-card" size={size} color={color} />
+                    tabBarLabel: '메시지',
+
+                    tabBarIcon: ({size, color}) => <Feather name="mail" size={size} color={color} />
                 }}
             />
             <Tabs.Screen
                 name="settings"
                 options={{
+                    tabBarLabel: '설정',
                     tabBarIcon: ({size, color}) => <MaterialIcons name="settings" size={size} color={color} />
                 }}
             />

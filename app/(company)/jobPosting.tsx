@@ -15,7 +15,13 @@ interface JobPosting {
     created_at: string
     updated_at: string
     working_hours?: string
+    working_hours_negotiable?: boolean
+    working_days?: string[]
+    working_days_negotiable?: boolean
+    pay_day?: string
+    pay_day_negotiable?: boolean
     salary_range?: string
+    salary_type: string
     applications?: {
         id: string
     }[]
@@ -288,24 +294,21 @@ const JobPosting = () => {
                     />
                 }
             />
-            <Text onPress={() => router.push('/register')}>register</Text>
 
             {/* 플로팅 버튼 */}
-            {postings.length > 0 && (
-                <TouchableOpacity
-                    onPress={() => router.push('/(pages)/(company)/info')}
-                    className="absolute bottom-6 right-6 w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg"
-                    style={{
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 3.84,
-                        elevation: 5,
-                    }}
-                >
-                    <Ionicons name="add" size={28} color="white" />
-                </TouchableOpacity>
-            )}
+            <TouchableOpacity
+                onPress={() => router.push('/(pages)/(company)/info')}
+                className="absolute bottom-6 right-6 w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg"
+                style={{
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                }}
+            >
+                <Ionicons name="add" size={28} color="white" />
+            </TouchableOpacity>
         </SafeAreaView>
     )
 }
