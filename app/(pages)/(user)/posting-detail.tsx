@@ -297,7 +297,7 @@ export default function PostingDetail() {
             </ScrollView>
 
             {/* 하단 지원 버튼 */}
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-8 pt-2" >
                 {hasApplied ? (
                     <View className="bg-gray-300 py-4 rounded-xl items-center">
                         <View className="flex-row items-center">
@@ -307,7 +307,7 @@ export default function PostingDetail() {
                     </View>
                 ) : (
                     <TouchableOpacity
-                        className="bg-blue-500 py-4 rounded-xl items-center"
+                        className="bg-blue-500 py-4 rounded-xl items-center mx-4 my-2"
                         onPress={handleApply}
                     >
                         <Text className="text-white text-lg font-bold">지원하기</Text>

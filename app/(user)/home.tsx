@@ -6,6 +6,7 @@ import { router } from "expo-router"
 import Header_home from "@/components/Header_home"
 import { supabase } from "@/lib/supabase"
 import { Ionicons } from '@expo/vector-icons'
+import {useTranslation} from "@/contexts/TranslationContext";
 
 interface JobPosting {
     id: string
@@ -42,7 +43,8 @@ interface MatchedPosting {
 }
 
 const Home = () => {
-    const { logout, user } = useAuth()
+    const { t, translateDB, language } = useTranslation();
+    const { user } = useAuth()
     const [matchedPostings, setMatchedPostings] = useState<MatchedPosting[]>([])
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
@@ -148,15 +150,23 @@ const Home = () => {
 
                     posting.job_posting_keywords?.forEach((jpk: any) => {
                         if (matchedKeywordIds.includes(jpk.keyword.id)) {
+                            // DB에서 번역된 키워드 가져오기
+                            const translatedKeyword = translateDB(
+                                'keyword',
+                                'keyword',
+                                jpk.keyword.id.toString(),
+                                jpk.keyword.keyword
+                            )
+
                             switch (jpk.keyword.category) {
                                 case '국가':
-                                    matchedKeywords.countries.push(jpk.keyword.keyword)
+                                    matchedKeywords.countries.push(translatedKeyword)
                                     break
                                 case '직종':
-                                    matchedKeywords.jobs.push(jpk.keyword.keyword)
+                                    matchedKeywords.jobs.push(translatedKeyword)
                                     break
                                 case '근무조건':
-                                    matchedKeywords.conditions.push(jpk.keyword.keyword)
+                                    matchedKeywords.conditions.push(translatedKeyword)
                                     break
                             }
                         }
@@ -215,14 +225,18 @@ const Home = () => {
                 {hasApplied && (
                     <View className="absolute top-4 right-4 bg-green-500 px-3 py-1 rounded-full flex-row items-center">
                         <Ionicons name="checkmark-circle" size={16} color="white" />
-                        <Text className="text-white text-xs font-medium ml-1">지원완료</Text>
+                        <Text className="text-white text-xs font-medium ml-1">
+                            {t('home.applied', '지원완료')}
+                        </Text>
                     </View>
                 )}
 
                 {/* 회사 정보 */}
                 <View className="mb-2">
                     <Text className="text-sm text-gray-600">{posting.company.name}</Text>
-                    <Text className="text-lg font-bold text-gray-800 pr-20">{posting.title}</Text>
+                    <Text className="text-lg font-bold text-gray-800 pr-20">
+                        {translateDB('job_postings', 'title', posting.id, posting.title)}
+                    </Text>
                 </View>
 
                 {/* 공고 정보 */}
@@ -267,7 +281,9 @@ const Home = () => {
                 {hasMatches ? (
                     <View className="border-t border-gray-100 pt-3">
                         <Text className="text-sm text-blue-600 font-semibold mb-2">
-                            매칭된 키워드 ({matchedCount}개)
+                            {t('home.matched_keywords', `매칭된 키워드 (${matchedCount}개)`, {
+                                count: matchedCount
+                            })}
                         </Text>
 
                         <View className="space-y-1">
@@ -302,7 +318,7 @@ const Home = () => {
                 ) : (
                     <View className="border-t border-gray-100 pt-3">
                         <Text className="text-sm text-gray-500">
-                            매칭된 키워드가 없습니다
+                            {t('home.no_matched_keywords', '매칭된 키워드가 없습니다')}
                         </Text>
                     </View>
                 )}
@@ -312,9 +328,13 @@ const Home = () => {
 
     const renderHeader = () => (
         <View className="bg-white p-4 mb-2">
-            <Text className="text-lg font-bold text-gray-800">추천 일자리</Text>
+            <Text className="text-lg font-bold text-gray-800">
+                {t('home.recommended_jobs', '추천 일자리')}
+            </Text>
             <Text className="text-sm text-gray-600 mt-1">
-                총 {matchedPostings.length}개의 공고
+                {t('home.total_postings', `총 ${matchedPostings.length}개의 공고`, {
+                    count: matchedPostings.length
+                })}
             </Text>
         </View>
     )
@@ -325,7 +345,7 @@ const Home = () => {
                 <Header_home />
                 <View className="flex-1 items-center justify-center">
                     <ActivityIndicator size="large" color="#3b82f6" />
-                    <Text className="text-gray-600 mt-2">로딩 중...</Text>
+                    <Text className="text-gray-600 mt-2">{t('home.loading', '로딩 중...')}</Text>
                 </View>
             </SafeAreaView>
         )
@@ -354,13 +374,15 @@ const Home = () => {
                     <View className="flex-1 justify-center items-center p-8">
                         <Ionicons name="document-text-outline" size={80} color="#9ca3af" />
                         <Text className="text-gray-500 text-lg mt-4">
-                            매칭되는 공고가 없습니다
+                            {t('home.no_matching_postings', '매칭되는 공고가 없습니다')}
                         </Text>
                         <TouchableOpacity
                             onPress={() => router.replace('/(pages)/(user)/info')}
                             className="mt-4 px-6 py-3 bg-blue-500 rounded-xl"
                         >
-                            <Text className="text-white font-medium">조건 설정하기</Text>
+                            <Text className="text-white font-medium">
+                                {t('home.set_preferences', '조건 설정하기')}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 }

@@ -259,16 +259,7 @@ const CompanyLogin = () => {
                                 >
                                     <Text className="text-gray-700 text-center">회사 테스트 로그인 (010-2222-2222)</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setPhone('010-1111-1111');
-                                        setOtp('123456');
-                                        setInputOtp(true);
-                                    }}
-                                    className="bg-gray-100 p-3 rounded-lg"
-                                >
-                                    <Text className="text-gray-700 text-center">구직자 테스트 로그인 (010-1111-1111)</Text>
-                                </TouchableOpacity>
+
                             </View>
                         </View>
                     )}

@@ -6,9 +6,11 @@ import axios from "axios";
 import {useAuth} from "@/contexts/AuthContext";
 import {router} from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
+import {useTranslation} from "@/contexts/TranslationContext";
 
 const UserLogin = () => {
     const { login } = useAuth();
+    const { t } = useTranslation();
 
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
@@ -41,7 +43,7 @@ const UserLogin = () => {
     const sendOtp = async () => {
         const cleanPhone = phone.replace(/[^0-9]/g, '');
         if(!cleanPhone || cleanPhone.length !== 11) {
-            Alert.alert('알림', '올바른 휴대폰 번호를 입력해주세요');
+            Alert.alert(t('alert.notification', '알림'), t('alert.enter_valid_phone', '올바른 휴대폰 번호를 입력해주세요'));
             return;
         }
         setLoading(true);
@@ -51,16 +53,16 @@ const UserLogin = () => {
 
             const response = await axios.post('https://kgencyserver-production.up.railway.app/send-otp', {phone: formattedPhone})
             if (response.data.success) {
-                Alert.alert('전송 완료', '인증번호가 전송되었습니다');
+                Alert.alert(t('alert.send_complete', '전송 완료'), t('alert.code_sent', '인증번호가 전송되었습니다'));
                 setInputOtp(true);
                 setResendTimer(180); // 3분 타이머
                 setTimeout(() => otpInputRef.current?.focus(), 100);
             } else {
-                Alert.alert('전송 실패', response.data.error || '인증번호 전송에 실패했습니다');
+                Alert.alert(t('alert.send_failed', '전송 실패'), response.data.error || t('alert.code_send_error', '인증번호 전송에 실패했습니다'));
             }
         } catch (error) {
             console.error(error);
-            Alert.alert('오류', '네트워크 연결을 확인해주세요');
+            Alert.alert(t('alert.error', '오류'), t('alert.check_network', '네트워크 연결을 확인해주세요'));
         } finally {
             setLoading(false);
         }
@@ -68,7 +70,7 @@ const UserLogin = () => {
 
     const verifyOtp = async () => {
         if (!otp || otp.length !== 6) {
-            Alert.alert('알림', '6자리 인증번호를 입력해주세요');
+            Alert.alert(t('alert.notification', '알림'), t('alert.enter_6_digits', '6자리 인증번호를 입력해주세요'));
             return;
         }
         setLoading(true);
@@ -90,7 +92,7 @@ const UserLogin = () => {
                 );
 
                 if (result.success) {
-                    Alert.alert('성공', '로그인되었습니다!');
+                    Alert.alert(t('alert.success', '성공'), t('alert.login_success', '로그인되었습니다!'));
 
                     if (response.data.onboardingStatus.completed) {
                         router.replace('/(user)/home');
@@ -98,14 +100,14 @@ const UserLogin = () => {
                         router.replace('/(pages)/(user)/info');
                     }
                 } else {
-                    Alert.alert('오류', '로그인 처리 중 오류가 발생했습니다');
+                    Alert.alert(t('alert.error', '오류'), t('alert.login_error', '로그인 처리 중 오류가 발생했습니다'));
                 }
             } else {
-                Alert.alert('인증 실패', response.data.error || '인증번호가 일치하지 않습니다');
+                Alert.alert(t('alert.auth_failed', '인증 실패'), response.data.error || t('alert.code_mismatch', '인증번호가 일치하지 않습니다'));
             }
         } catch (error) {
             console.error(error);
-            Alert.alert('오류', '인증 처리 중 오류가 발생했습니다');
+            Alert.alert(t('alert.error', '오류'), t('alert.auth_error', '인증 처리 중 오류가 발생했습니다'));
         } finally {
             setLoading(false);
         }
@@ -132,16 +134,16 @@ const UserLogin = () => {
                     {/* 헤더 영역 */}
                     <View className="mt-8 mb-12">
                         <Text className="text-3xl font-bold text-gray-900 mb-3">
-                            전화번호 인증
+                            {t('login.phone_auth', '전화번호 인증')}
                         </Text>
                         <Text className="text-base text-gray-600">
-                            원활한 서비스 이용을 위해 본인인증을 해주세요
+                            {t('login.subtitle', '원활한 서비스 이용을 위해 본인인증을 해주세요')}
                         </Text>
                     </View>
 
                     {/* 휴대폰 번호 입력 */}
                     <View className="mb-8">
-                        <Text className="text-sm font-medium text-gray-700 mb-3" >휴대폰 번호</Text>
+                        <Text className="text-sm font-medium text-gray-700 mb-3" >{t('login.phone_number', '휴대폰 번호')}</Text>
                         <View style={{ borderBottomWidth: 2, borderBottomColor: '#d1d5db', paddingBottom: 8 }}>
                             <View className=" flex-row items-center" style={{ height: 40 }}>
                                 <TextInput
@@ -165,7 +167,7 @@ const UserLogin = () => {
                                         {loading ? (
                                             <ActivityIndicator size="small" color="white" />
                                         ) : (
-                                            <Text className="text-white font-medium">인증번호 받기</Text>
+                                            <Text className="text-white font-medium">{t('login.get_code', '인증번호 받기')}</Text>
                                         )}
                                     </TouchableOpacity>
                                 )}
@@ -177,10 +179,10 @@ const UserLogin = () => {
                     {inputOtp && (
                         <View className="mb-8">
                             <View className="flex-row items-center justify-between mb-3">
-                                <Text className="text-sm font-medium text-gray-700">인증번호</Text>
+                                <Text className="text-sm font-medium text-gray-700">{t('login.verification_code', '인증번호')}</Text>
                                 {resendTimer > 0 && (
                                     <Text className="text-sm text-gray-500">
-                                        재전송 가능 {Math.floor(resendTimer / 60)}:{(resendTimer % 60).toString().padStart(2, '0')}
+                                        {t('login.resend_available', '재전송 가능')} {Math.floor(resendTimer / 60)}:{(resendTimer % 60).toString().padStart(2, '0')}
                                     </Text>
                                 )}
                             </View>
@@ -208,7 +210,7 @@ const UserLogin = () => {
                                         {loading ? (
                                             <ActivityIndicator size="small" color="white" />
                                         ) : (
-                                            <Text className="text-white font-medium">인증하기</Text>
+                                            <Text className="text-white font-medium">{t('login.verify', '인증하기')}</Text>
                                         )}
                                     </TouchableOpacity>
                                 </View>
@@ -223,7 +225,7 @@ const UserLogin = () => {
                                     }}
                                     className="mt-4"
                                 >
-                                    <Text className="text-blue-500 text-center">인증번호 재전송</Text>
+                                    <Text className="text-blue-500 text-center">{t('login.resend', '인증번호 재전송')}</Text>
                                 </TouchableOpacity>
                             )}
 
@@ -231,7 +233,7 @@ const UserLogin = () => {
                             <View className="mt-6 bg-blue-50 p-4 rounded-xl flex-row items-start">
                                 <Ionicons name="information-circle" size={20} color="#3b82f6" />
                                 <Text className="text-sm text-blue-700 ml-2 flex-1">
-                                    6자리 인증번호 입력 시 자동으로 인증됩니다
+                                    {t('login.auto_verify_info', '6자리 인증번호 입력 시 자동으로 인증됩니다')}
                                 </Text>
                             </View>
                         </View>

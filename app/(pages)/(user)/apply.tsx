@@ -1,26 +1,22 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, TextInput, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
-import { Ionicons } from '@expo/vector-icons'
 import { router, useLocalSearchParams } from 'expo-router'
 import Back from '@/components/back'
 import { Dropdown } from 'react-native-element-dropdown'
 import { useProfile } from '@/hooks/useProfile'
-import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 
 export default function Apply() {
     const params = useLocalSearchParams();
     const { jobPostingId, companyId, companyName, jobTitle } = params;
     const { profile, updateProfile, loading: profileLoading } = useProfile();
-    const { authenticatedRequest } = useAuth();
 
     // 개인정보 상태
     const [name, setName] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [age, setAge] = useState('')
     const [gender, setGender] = useState<string | null>(null)
-    const [nationality, setNationality] = useState('')
     const [visa, setVisa] = useState<string | null>(null)
     const [koreanLevel, setKoreanLevel] = useState<string | null>(null)
     const [topic, setTopic] = useState<string | null>(null)
@@ -37,7 +33,6 @@ export default function Apply() {
         { label: '여성', value: '여성' },
         { label: '기타', value: '기타' }
     ]
-
     const visaOptions = [
         { label: 'F-2 (거주비자)', value: 'F-2' },
         { label: 'F-4 (재외동포)', value: 'F-4' },
@@ -49,12 +44,10 @@ export default function Apply() {
         { label: 'D-4 (일반연수)', value: 'D-4' },
         { label: '기타', value: '기타' }
     ]
-
     const koreanLevelOptions = ['초급', '중급', '고급']
     const topicOptions = ['1급', '2급', '3급이상']
     const workPeriodOptions = ['1개월', '3개월', '6개월', '1년', '장기']
     const experienceOptions = ['처음','1개월', '6개월', '1년', '3년이상']
-
     const educationOptions = [
         { label: '중학교 졸업', value: '중학교 졸업' },
         { label: '고등학교 졸업', value: '고등학교 졸업' },
@@ -415,11 +408,11 @@ export default function Apply() {
             </ScrollView>
 
             {/* 하단 버튼 */}
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-8 pt-2">
                 <TouchableOpacity
                     onPress={handleSubmit}
                     disabled={saving}
-                    className={`py-4 rounded-xl ${saving ? 'bg-gray-400' : 'bg-blue-500'}`}
+                    className={`py-4 rounded-xl mx-4 my-2 ${saving ? 'bg-gray-400' : 'bg-blue-500'}`}
                 >
                     <Text className="text-center text-white font-bold text-lg">
                         {saving ? '저장 중...' : '이력서 자동으로 만들어줄게!'}
