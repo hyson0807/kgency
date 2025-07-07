@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch, Modal, Alert, Linking } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Switch, Modal, Alert, Linking, Platform } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
@@ -22,6 +22,7 @@ const Settings = () => {
     // 모달 상태
     const [languageModalVisible, setLanguageModalVisible] = useState(false)
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
+    const [logoutModalVisible, setLogoutModalVisible] = useState(false)
 
     // 언어 설정
     const [selectedLanguage, setSelectedLanguage] = useState('ko')
@@ -64,20 +65,47 @@ const Settings = () => {
         saveNotificationSettings(newSettings)
     }
 
+    // 웹 호환 Alert 함수
+    const showAlert = (title: string, message: string, buttons: any[]) => {
+        if (Platform.OS === 'web') {
+            // 웹에서는 모달로 처리
+            if (title === '로그아웃') {
+                setLogoutModalVisible(true)
+            } else if (title === '언어 변경') {
+                // 웹에서는 console.log로 대체
+                console.log(title, message)
+                // 또는 Toast 라이브러리 사용
+            }
+        } else {
+            // 모바일에서는 기본 Alert 사용
+            Alert.alert(title, message, buttons)
+        }
+    }
+
     // 로그아웃 처리
     const handleLogout = () => {
-        Alert.alert(
-            '로그아웃',
-            '정말 로그아웃 하시겠습니까?',
-            [
-                { text: '취소', style: 'cancel' },
-                {
-                    text: '로그아웃',
-                    style: 'destructive',
-                    onPress: () => logout()
-                }
-            ]
-        )
+        if (Platform.OS === 'web') {
+            setLogoutModalVisible(true)
+        } else {
+            Alert.alert(
+                '로그아웃',
+                '정말 로그아웃 하시겠습니까?',
+                [
+                    { text: '취소', style: 'cancel' },
+                    {
+                        text: '로그아웃',
+                        style: 'destructive',
+                        onPress: () => logout()
+                    }
+                ]
+            )
+        }
+    }
+
+    // 실제 로그아웃 실행
+    const performLogout = async () => {
+        setLogoutModalVisible(false)
+        await logout()
     }
 
     // 회원 탈퇴 처리
@@ -85,18 +113,27 @@ const Settings = () => {
         if (!user) return
 
         try {
-            // 3. Auth 유저 삭제
+            // Auth 유저 삭제
             await supabase.auth.admin.deleteUser(user.userId)
 
-            // 4. 로컬 데이터 삭제 및 로그아웃
+            // 로컬 데이터 삭제 및 로그아웃
             await AsyncStorage.clear()
 
-            Alert.alert('회원 탈퇴 완료', '그동안 이용해주셔서 감사합니다.', [
-                { text: '확인', onPress: () => logout() }
-            ])
+            if (Platform.OS === 'web') {
+                console.log('회원 탈퇴 완료')
+                await logout()
+            } else {
+                Alert.alert('회원 탈퇴 완료', '그동안 이용해주셔서 감사합니다.', [
+                    { text: '확인', onPress: () => logout() }
+                ])
+            }
         } catch (error) {
             console.error('회원 탈퇴 실패:', error)
-            Alert.alert('오류', '회원 탈퇴 처리 중 문제가 발생했습니다.')
+            if (Platform.OS === 'web') {
+                console.error('회원 탈퇴 처리 중 문제가 발생했습니다.')
+            } else {
+                Alert.alert('오류', '회원 탈퇴 처리 중 문제가 발생했습니다.')
+            }
         }
     }
 
@@ -106,7 +143,12 @@ const Settings = () => {
             await AsyncStorage.setItem('appLanguage', language)
             setSelectedLanguage(language)
             setLanguageModalVisible(false)
-            Alert.alert('언어 변경', '앱을 재시작하면 적용됩니다.')
+
+            if (Platform.OS === 'web') {
+                console.log('언어가 변경되었습니다. 새로고침하면 적용됩니다.')
+            } else {
+                Alert.alert('언어 변경', '앱을 재시작하면 적용됩니다.')
+            }
         } catch (error) {
             console.error('언어 설정 저장 실패:', error)
         }
@@ -117,6 +159,15 @@ const Settings = () => {
         Linking.openURL(url).catch(err =>
             console.error('링크 열기 실패:', err)
         )
+    }
+
+    // 고객센터 처리
+    const handleCustomerService = () => {
+        if (Platform.OS === 'web') {
+            console.log('고객센터 문의')
+        } else {
+            Alert.alert('고객센터', '문의사항이 있으신가요?')
+        }
     }
 
     return (
@@ -246,7 +297,7 @@ const Settings = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => alert("")}
+                        onPress={handleCustomerService}
                         className="flex-row items-center justify-between py-3"
                     >
                         <View className="flex-row items-center">
@@ -286,6 +337,39 @@ const Settings = () => {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+
+            {/* 로그아웃 확인 모달 (웹용) */}
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={logoutModalVisible}
+                onRequestClose={() => setLogoutModalVisible(false)}
+            >
+                <View className="flex-1 bg-black/50 justify-center px-4">
+                    <View className="bg-white rounded-2xl p-6">
+                        <Text className="text-xl font-bold text-center mb-4">로그아웃</Text>
+                        <Text className="text-gray-600 text-center mb-6">
+                            정말 로그아웃 하시겠습니까?
+                        </Text>
+
+                        <View className="flex-row gap-3">
+                            <TouchableOpacity
+                                onPress={() => setLogoutModalVisible(false)}
+                                className="flex-1 py-3 rounded-xl bg-gray-100"
+                            >
+                                <Text className="text-center text-gray-700 font-medium">취소</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={performLogout}
+                                className="flex-1 py-3 rounded-xl bg-red-500"
+                            >
+                                <Text className="text-center text-white font-medium">로그아웃</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
 
             {/* 언어 선택 모달 */}
             <Modal
