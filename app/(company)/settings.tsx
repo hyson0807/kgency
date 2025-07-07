@@ -6,7 +6,6 @@ import { useProfile } from "@/hooks/useProfile"
 import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
 
 const Settings = () => {
@@ -83,18 +82,37 @@ const Settings = () => {
         if (!user) return
 
         try {
-            // Auth 유저 삭제 (CASCADE로 관련 데이터 자동 삭제)
-            await supabase.auth.admin.deleteUser(user.userId)
+            // 토큰 가져오기
+            const token = await AsyncStorage.getItem('authToken');
+            if (!token) {
+                showModal('오류', '인증 정보를 찾을 수 없습니다.', 'warning')
+                return;
+            }
 
-            // 로컬 데이터 삭제 및 로그아웃
-            await AsyncStorage.clear()
+            // 서버 API 호출
+            const response = await fetch('https://kgencyserver-production.up.railway.app/delete-account', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
-            showModal(
-                '회원 탈퇴 완료',
-                '그동안 이용해주셔서 감사합니다.',
-                'info',
-                () => logout()
-            )
+            const result = await response.json();
+
+            if (result.success) {
+                // 로컬 데이터 삭제
+                await AsyncStorage.clear();
+
+                showModal(
+                    '회원 탈퇴 완료',
+                    '그동안 이용해주셔서 감사합니다.',
+                    'info',
+                    () => logout()
+                )
+            } else {
+                throw new Error(result.error || '회원 탈퇴 처리 중 문제가 발생했습니다.')
+            }
         } catch (error) {
             console.error('회원 탈퇴 실패:', error)
             showModal(
