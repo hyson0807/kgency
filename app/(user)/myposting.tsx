@@ -1,27 +1,16 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Modal, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Modal, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useProfile } from "@/hooks/useProfile"
-import { useAuth } from "@/contexts/AuthContext"
 import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import { Dropdown } from 'react-native-element-dropdown'
-import { useUserKeywords } from '@/hooks/useUserKeywords'
 import { supabase } from '@/lib/supabase'
-
-
-
+import { useModal } from '@/hooks/useModal'
 
 const MyPosting = () => {
     const { profile, updateProfile, loading: profileLoading } = useProfile()
-    const { logout } = useAuth()
-
-    // 공고 활성화 상태
     const [isJobSeekingActive, setIsJobSeekingActive] = useState(false)
-
-    // 모달 상태
-    const [modalVisible, setModalVisible] = useState(false)
-    const [keywordModalVisible, setKeywordModalVisible] = useState(false)
 
     // 프로필 정보 상태
     const [name, setName] = useState('')
@@ -33,6 +22,9 @@ const MyPosting = () => {
     // 키워드 정보 상태
     const [userKeywords, setUserKeywords] = useState<string[]>([])
     const [userLocation, setUserLocation] = useState<string>('')
+
+    const [modalVisible, setModalVisible] = useState(false)
+    const { showModal, ModalComponent, hideModal} = useModal()
 
     // 드롭다운 옵션들
     const genderOptions = [
@@ -113,7 +105,6 @@ const MyPosting = () => {
         }
     };
 
-
     // 필수 정보 입력 확인
     const isRequiredInfoComplete = () => {
         return !!(name && age && gender && visa && koreanLevel)
@@ -122,13 +113,15 @@ const MyPosting = () => {
     // 구직공고 활성화 토글
     const toggleJobSeeking = async () => {
         if (!isRequiredInfoComplete()) {
-            Alert.alert(
+            showModal(
                 '필수 정보 입력 필요',
                 '구직공고를 활성화하려면 모든 필수 정보를 입력해주세요.',
-                [
-                    { text: '취소', style: 'cancel' },
-                    { text: '정보 입력', onPress: () => setModalVisible(true) }
-                ]
+                'info',
+                () => {
+                    hideModal()
+                    setModalVisible(true)
+                },
+                true  // showCancel
             )
             return
         }
@@ -143,19 +136,16 @@ const MyPosting = () => {
 
         if (updated) {
             setIsJobSeekingActive(newStatus)
-            Alert.alert(
-                '성공',
-                newStatus ? '구직공고가 활성화되었습니다!' : '구직공고가 비활성화되었습니다.'
-            )
+            // 성공 메시지 제거
         } else {
-            Alert.alert('오류', '상태 변경에 실패했습니다.')
+            showModal('오류', '상태 변경에 실패했습니다.', 'warning')
         }
     }
 
     // 프로필 정보 저장
     const handleSaveProfile = async () => {
         if (!isRequiredInfoComplete()) {
-            Alert.alert('알림', '모든 필수 정보를 입력해주세요.')
+            showModal('알림', '모든 필수 정보를 입력해주세요.')
             return
         }
 
@@ -173,9 +163,9 @@ const MyPosting = () => {
 
         if (updated) {
             setModalVisible(false)
-            Alert.alert('성공', '정보가 업데이트되었습니다!')
+            // 성공 메시지 제거
         } else {
-            Alert.alert('오류', '정보 업데이트에 실패했습니다.')
+            showModal('오류', '정보 업데이트에 실패했습니다.', 'warning')
         }
     }
 
@@ -420,6 +410,9 @@ const MyPosting = () => {
                     </View>
                 </View>
             </Modal>
+            <ModalComponent/>
+
+
         </SafeAreaView>
     )
 }

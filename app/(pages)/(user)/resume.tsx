@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, Alert } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from '@expo/vector-icons'
@@ -7,10 +7,10 @@ import Back from '@/components/back'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import axios from 'axios'
+import CustomModal from '@/components/CustomModal'
 
 export default function Resume() {
     const params = useLocalSearchParams();
-    // params가 배열일 수 있으므로 첫 번째 값을 가져옴
     const jobPostingId = Array.isArray(params.jobPostingId) ? params.jobPostingId[0] : params.jobPostingId;
     const companyId = Array.isArray(params.companyId) ? params.companyId[0] : params.companyId;
     const companyName = Array.isArray(params.companyName) ? params.companyName[0] : params.companyName;
@@ -25,6 +25,16 @@ export default function Resume() {
     const [editedResume, setEditedResume] = useState('')
     const [sending, setSending] = useState(false)
     const [regenerating, setRegenerating] = useState(false)
+
+    // 모달 상태
+    const [modalConfig, setModalConfig] = useState({
+        visible: false,
+        title: '',
+        message: '',
+        type: 'confirm' as 'confirm' | 'warning' | 'info',
+        onConfirm: () => {},
+        showCancel: true
+    })
 
     // 컴포넌트 마운트 시 AI 이력서 생성
     useEffect(() => {
@@ -47,14 +57,12 @@ export default function Resume() {
         setError(null);
 
         try {
-            // 디버깅을 위한 로그
             console.log('AI 이력서 생성 요청:', {
                 user_id: user?.userId,
                 job_posting_id: jobPostingId,
                 company_id: companyId
             });
 
-            // AI 이력서 생성 API 호출 (job_posting_id 추가)
             const response = await axios.post('https://kgencyserver-production.up.railway.app/generate-resume-for-posting', {
                 user_id: user?.userId,
                 job_posting_id: jobPostingId,
@@ -93,86 +101,67 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
     };
 
     const handleSend = async () => {
-        Alert.alert(
-            '이력서 전송',
-            `${jobTitle || '채용 공고'}에 이력서를 전송하시겠습니까?`,
-            [
-                { text: '취소', style: 'cancel' },
-                {
-                    text: '전송',
-                    onPress: async () => {
-                        setSending(true);
-                        try {
-                            // 먼저 중복 지원 확인
-                            const { data: existingApp } = await supabase
-                                .from('applications')
-                                .select('id')
-                                .eq('user_id', user?.userId)
-                                .eq('job_posting_id', jobPostingId)
-                                .maybeSingle();
+        setModalConfig({
+            visible: true,
+            title: '이력서 전송',
+            message: `${jobTitle || '채용 공고'}에 이력서를 전송하시겠습니까?`,
+            type: 'confirm',
+            showCancel: true,
+            onConfirm: async () => {
+                setModalConfig(prev => ({ ...prev, visible: false }));
+                setSending(true);
+                try {
+                    // 먼저 중복 지원 확인
+                    const { data: existingApp } = await supabase
+                        .from('applications')
+                        .select('id')
+                        .eq('user_id', user?.userId)
+                        .eq('job_posting_id', jobPostingId)
+                        .maybeSingle();
 
-                            if (existingApp) {
-                                Alert.alert(
-                                    '이미 지원함',
-                                    '이 공고에는 이미 지원하셨습니다.',
-                                    [
-                                        {
-                                            text: '확인',
-                                            onPress: () => router.replace('/(user)/home')
-                                        }
-                                    ]
-                                );
-                                setSending(false);
-                                return;
-                            }
-
-                            // 메시지 전송
-                            const { data: messageData, error: messageError } = await supabase
-                                .from('messages')
-                                .insert({
-                                    sender_id: user?.userId,
-                                    receiver_id: companyId,
-                                    subject: `[${jobTitle}] 입사 지원서`,
-                                    content: isEditing ? editedResume : resume
-                                })
-                                .select()
-                                .single();
-
-                            if (messageError) throw messageError;
-
-                            // 지원 내역 저장 (job_posting_id 추가)
-                            const { error: applicationError } = await supabase
-                                .from('applications')
-                                .insert({
-                                    user_id: user?.userId,
-                                    company_id: companyId,
-                                    job_posting_id: jobPostingId,
-                                    message_id: messageData.id,
-                                    status: 'pending'
-                                });
-
-                            if (applicationError) throw applicationError;
-
-                            Alert.alert(
-                                '전송 완료',
-                                '이력서가 성공적으로 전송되었습니다!',
-                                [
-                                    {
-                                        text: '확인',
-                                        onPress: () => router.replace('/(user)/home')
-                                    }
-                                ]
-                            );
-                        } catch (error) {
-                            console.error('이력서 전송 오류:', error);
-                            Alert.alert('오류', '이력서 전송 중 문제가 발생했습니다.');
-                        } finally {
-                            setSending(false);
-                        }
+                    if (existingApp) {
+                        // 이미 지원한 경우 알림 없이 홈으로 이동
+                        router.replace('/(user)/home');
+                        return;
                     }
+
+                    // 메시지 전송
+                    const { data: messageData, error: messageError } = await supabase
+                        .from('messages')
+                        .insert({
+                            sender_id: user?.userId,
+                            receiver_id: companyId,
+                            subject: `[${jobTitle}] 입사 지원서`,
+                            content: isEditing ? editedResume : resume
+                        })
+                        .select()
+                        .single();
+
+                    if (messageError) throw messageError;
+
+                    // 지원 내역 저장
+                    const { error: applicationError } = await supabase
+                        .from('applications')
+                        .insert({
+                            user_id: user?.userId,
+                            company_id: companyId,
+                            job_posting_id: jobPostingId,
+                            message_id: messageData.id,
+                            status: 'pending'
+                        });
+
+                    if (applicationError) throw applicationError;
+
+                    // 성공 시 홈으로 이동
+                    router.replace('/(user)/home');
+                } catch (error) {
+                    console.error('이력서 전송 오류:', error);
+                    // 에러 발생 시에도 알림 없이 처리
+                } finally {
+                    setSending(false);
                 }
-            ]
-        );
+            }
+        });
     };
 
     const handleEdit = () => {
@@ -187,22 +176,20 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
     };
 
     const handleRegenerate = async () => {
-        Alert.alert(
-            '이력서 재생성',
-            '현재 작성된 내용이 사라집니다. 계속하시겠습니까?',
-            [
-                { text: '취소', style: 'cancel' },
-                {
-                    text: '재생성',
-                    onPress: async () => {
-                        setRegenerating(true);
-                        await generateResume();
-                        setRegenerating(false);
-                        setIsEditing(false);
-                    }
-                }
-            ]
-        );
+        setModalConfig({
+            visible: true,
+            title: '이력서 재생성',
+            message: '현재 작성된 내용이 사라집니다. 계속하시겠습니까?',
+            type: 'warning',
+            showCancel: true,
+            onConfirm: async () => {
+                setModalConfig(prev => ({ ...prev, visible: false }));
+                setRegenerating(true);
+                await generateResume();
+                setRegenerating(false);
+                setIsEditing(false);
+            }
+        });
     };
 
     if (loading) {
@@ -322,6 +309,17 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                     </Text>
                 </TouchableOpacity>
             </View>
+
+            {/* 커스텀 모달 */}
+            <CustomModal
+                visible={modalConfig.visible}
+                onClose={() => setModalConfig(prev => ({ ...prev, visible: false }))}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                type={modalConfig.type}
+                onConfirm={modalConfig.onConfirm}
+                showCancel={modalConfig.showCancel}
+            />
         </SafeAreaView>
     );
 }

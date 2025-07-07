@@ -1,5 +1,5 @@
 // app/(pages)/(company)/posting-detail.tsx
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, FlatList, Alert } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
@@ -8,6 +8,7 @@ import Back from '@/components/back'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
+import { useModal } from '@/hooks/useModal'
 interface Application {
     id: string
     applied_at: string
@@ -43,6 +44,8 @@ export default function CompanyPostingDetail() {
     const [applications, setApplications] = useState<Application[]>([])
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState<'info' | 'applicants'>('info')
+    const { showModal, ModalComponent, hideModal } = useModal()
+
 
     useEffect(() => {
         if (postingId) {
@@ -61,7 +64,7 @@ export default function CompanyPostingDetail() {
             }
         } catch (error) {
             console.error('공고 로드 실패:', error)
-            Alert.alert('오류', '공고 정보를 불러오는데 실패했습니다.')
+            showModal('오류', '공고 정보를 불러오는데 실패했습니다.', 'warning')
         } finally {
             setLoading(false)
         }
@@ -105,16 +108,15 @@ export default function CompanyPostingDetail() {
     }
 
     const handleContactApplicant = (applicant: Application) => {
-        Alert.alert(
+        showModal(
             '지원자 연락',
             `${applicant.user.name}님에게 연락하시겠습니까?\n연락처: ${applicant.user.phone_number}`,
-            [
-                { text: '취소', style: 'cancel' },
-                { text: '전화', onPress: () => {
-                        // 전화 앱 열기 (실제 구현시)
-                        console.log('전화:', applicant.user.phone_number)
-                    }}
-            ]
+            'confirm',
+            () => {
+                hideModal()  // setModalConfig 대신 hideModal 사용
+                console.log('전화:', applicant.user.phone_number)
+            },
+            true  // showCancel을 true로 설정
         )
     }
 
@@ -190,11 +192,11 @@ export default function CompanyPostingDetail() {
                 <TouchableOpacity
                     onPress={() => {
                         // 실제 앱에서는 Clipboard API 사용
-                        Alert.alert(
+                        showModal(
                             '연락처 복사',
                             `${item.user.name}님의 연락처가 복사되었습니다.\n${item.user.phone_number}`,
-                            [{ text: '확인' }]
-                        );
+                            'info'
+                        )
                         // 실제 구현시: Clipboard.setString(item.user.phone_number)
                     }}
                     className="flex-1 bg-gray-100 py-3 rounded-lg flex-row items-center justify-center"
@@ -476,6 +478,7 @@ export default function CompanyPostingDetail() {
                     }
                 />
             )}
+            <ModalComponent />
         </SafeAreaView>
     )
 }

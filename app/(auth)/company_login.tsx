@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ActivityIndicator} from 'react-native'
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator} from 'react-native'
 import React, {useState, useEffect, useRef} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import Back from "@/components/back";
@@ -6,6 +6,7 @@ import axios from "axios";
 import {useAuth} from "@/contexts/AuthContext";
 import {router} from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
+import CustomModal from '@/components/CustomModal';
 
 const CompanyLogin = () => {
     const { login } = useAuth();
@@ -15,6 +16,16 @@ const CompanyLogin = () => {
     const [loading, setLoading] = useState(false);
     const [inputOtp, setInputOtp] = useState(false);
     const [resendTimer, setResendTimer] = useState(0);
+
+    // 모달 상태
+    const [modalConfig, setModalConfig] = useState({
+        visible: false,
+        title: '',
+        message: '',
+        type: 'info' as 'confirm' | 'warning' | 'info',
+        onConfirm: () => {},
+        showCancel: false
+    });
 
     const otpInputRef = useRef<TextInput>(null);
 
@@ -28,7 +39,6 @@ const CompanyLogin = () => {
 
     const formatPhoneNumber = (value: string) => {
         const numbers = value.replace(/[^\d]/g, '');
-        // 회사 번호는 다양한 형식이 있을 수 있으므로 자동 포맷팅 제거
         return numbers;
     };
 
@@ -40,7 +50,14 @@ const CompanyLogin = () => {
     const sendOtp = async () => {
         const cleanPhone = phone.replace(/[^0-9]/g, '');
         if(!cleanPhone) {
-            Alert.alert('알림', '회사 전화번호를 입력해주세요');
+            setModalConfig({
+                visible: true,
+                title: '알림',
+                message: '회사 전화번호를 입력해주세요',
+                type: 'info',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, visible: false })),
+                showCancel: false
+            });
             return;
         }
         setLoading(true);
@@ -50,16 +67,30 @@ const CompanyLogin = () => {
 
             const response = await axios.post('https://kgencyserver-production.up.railway.app/send-otp', {phone: formattedPhone})
             if (response.data.success) {
-                Alert.alert('전송 완료', '인증번호가 전송되었습니다');
+                // 성공 메시지 제거 - 바로 OTP 입력으로 이동
                 setInputOtp(true);
-                setResendTimer(180); // 3분 타이머
+                setResendTimer(180);
                 setTimeout(() => otpInputRef.current?.focus(), 100);
             } else {
-                Alert.alert('전송 실패', response.data.error || '인증번호 전송에 실패했습니다');
+                setModalConfig({
+                    visible: true,
+                    title: '전송 실패',
+                    message: response.data.error || '인증번호 전송에 실패했습니다',
+                    type: 'warning',
+                    onConfirm: () => setModalConfig(prev => ({ ...prev, visible: false })),
+                    showCancel: false
+                });
             }
         } catch (error) {
             console.error(error);
-            Alert.alert('오류', '네트워크 연결을 확인해주세요');
+            setModalConfig({
+                visible: true,
+                title: '오류',
+                message: '네트워크 연결을 확인해주세요',
+                type: 'warning',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, visible: false })),
+                showCancel: false
+            });
         } finally {
             setLoading(false);
         }
@@ -67,7 +98,14 @@ const CompanyLogin = () => {
 
     const verifyOtp = async () => {
         if (!otp || otp.length !== 6) {
-            Alert.alert('알림', '6자리 인증번호를 입력해주세요');
+            setModalConfig({
+                visible: true,
+                title: '알림',
+                message: '6자리 인증번호를 입력해주세요',
+                type: 'info',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, visible: false })),
+                showCancel: false
+            });
             return;
         }
         setLoading(true);
@@ -78,7 +116,7 @@ const CompanyLogin = () => {
             const response = await axios.post('https://kgencyserver-production.up.railway.app/verify-otp', {
                 phone: formattedPhone,
                 otp: otp,
-                userType: 'company'  // 회사 타입으로 설정
+                userType: 'company'
             });
 
             if (response.data.success) {
@@ -89,22 +127,42 @@ const CompanyLogin = () => {
                 );
 
                 if (result.success) {
-                    Alert.alert('성공', '로그인되었습니다!');
-
+                    // 성공 메시지 제거 - 바로 페이지 이동
                     if (response.data.onboardingStatus.completed) {
                         router.replace('/(company)/home');
                     } else {
                         router.replace('/(pages)/(company)/register');
                     }
                 } else {
-                    Alert.alert('오류', '로그인 처리 중 오류가 발생했습니다');
+                    setModalConfig({
+                        visible: true,
+                        title: '오류',
+                        message: '로그인 처리 중 오류가 발생했습니다',
+                        type: 'warning',
+                        onConfirm: () => setModalConfig(prev => ({ ...prev, visible: false })),
+                        showCancel: false
+                    });
                 }
             } else {
-                Alert.alert('인증 실패', response.data.error || '인증번호가 일치하지 않습니다');
+                setModalConfig({
+                    visible: true,
+                    title: '인증 실패',
+                    message: response.data.error || '인증번호가 일치하지 않습니다',
+                    type: 'warning',
+                    onConfirm: () => setModalConfig(prev => ({ ...prev, visible: false })),
+                    showCancel: false
+                });
             }
         } catch (error) {
             console.error(error);
-            Alert.alert('오류', '인증 처리 중 오류가 발생했습니다');
+            setModalConfig({
+                visible: true,
+                title: '오류',
+                message: '인증 처리 중 오류가 발생했습니다',
+                type: 'warning',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, visible: false })),
+                showCancel: false
+            });
         } finally {
             setLoading(false);
         }
@@ -158,7 +216,6 @@ const CompanyLogin = () => {
                                     keyboardType="phone-pad"
                                     editable={!inputOtp}
                                     style={{  lineHeight: 19, textAlignVertical: 'center' }}
-
                                 />
                                 {phone.replace(/[^0-9]/g, '').length > 0 && !inputOtp && (
                                     <TouchableOpacity
@@ -259,12 +316,22 @@ const CompanyLogin = () => {
                                 >
                                     <Text className="text-gray-700 text-center">회사 테스트 로그인 (010-2222-2222)</Text>
                                 </TouchableOpacity>
-
                             </View>
                         </View>
                     )}
                 </View>
             </KeyboardAvoidingView>
+
+            {/* 커스텀 모달 */}
+            <CustomModal
+                visible={modalConfig.visible}
+                onClose={() => setModalConfig(prev => ({ ...prev, visible: false }))}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                type={modalConfig.type}
+                onConfirm={modalConfig.onConfirm}
+                showCancel={modalConfig.showCancel}
+            />
         </SafeAreaView>
     )
 }

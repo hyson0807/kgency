@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
@@ -9,12 +9,16 @@ import Back from '@/components/back'
 import { Dropdown } from 'react-native-element-dropdown'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
+import {useModal} from "@/hooks/useModal";
 
 interface Keyword {
     id: number;
     keyword: string;
     category: string;
 }
+
+
+
 
 const Keywords = () => {
     const { user } = useAuth()
@@ -29,6 +33,8 @@ const Keywords = () => {
     const [selectedCountries, setSelectedCountries] = useState<number[]>([])
     const [selectedJobs, setSelectedJobs] = useState<number[]>([])
     const [selectedConditions, setSelectedConditions] = useState<number[]>([])
+
+    const { showModal, ModalComponent, hideModal} = useModal()
 
     // 카테고리별 키워드 필터링
     const locationOptions = keywords
@@ -195,15 +201,11 @@ const Keywords = () => {
                 if (error) throw error
             }
 
-            Alert.alert('성공', '키워드가 저장되었습니다!', [
-                {
-                    text: '확인',
-                    onPress: () => router.back()
-                }
-            ])
+            router.back()
+
         } catch (error) {
             console.error('키워드 저장 실패:', error)
-            Alert.alert('오류', '키워드 저장에 실패했습니다.')
+            showModal('알림', '키워드 저장 실패', 'warning')
         } finally {
             setSaving(false)
         }
@@ -364,6 +366,8 @@ const Keywords = () => {
                     </Text>
                 </TouchableOpacity>
             </View>
+
+            <ModalComponent/>
         </SafeAreaView>
     )
 }

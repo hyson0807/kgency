@@ -1,14 +1,13 @@
-import {View, Text, TextInput, TouchableOpacity, Alert} from 'react-native'
+import {View, Text, TextInput, TouchableOpacity} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useProfile} from "@/hooks/useProfile";
 import {router} from "expo-router";
+import { useModal } from '@/hooks/useModal'
 
 const Register = () => {
-
+    const { showModal, ModalComponent } = useModal()
     const { profile, updateProfile } = useProfile()
-
-    // 회사 정보 상태
     const [companyName, setCompanyName] = useState('')
     const [address, setAddress] = useState('')
     const [description, setDescription] = useState('')
@@ -24,7 +23,7 @@ const Register = () => {
 
     const handleSave = async () => {
         if(!companyName || !address || !description) {
-            Alert.alert('알림', '필수 정보를 모두 입력해주세요.')
+            showModal('알림', '필수 정보를 모두 입력해주세요', "info")
             return
         }
         const result = await updateProfile({
@@ -95,6 +94,7 @@ const Register = () => {
                 </TouchableOpacity>
             </View>
         </View>
+            <ModalComponent />
         </SafeAreaView>
     )
 }

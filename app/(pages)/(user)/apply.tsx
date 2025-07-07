@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, TextInput, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, TextInput } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from 'expo-router'
@@ -6,6 +6,7 @@ import Back from '@/components/back'
 import { Dropdown } from 'react-native-element-dropdown'
 import { useProfile } from '@/hooks/useProfile'
 import { supabase } from '@/lib/supabase'
+import { useModal } from '@/hooks/useModal'
 
 export default function Apply() {
     const params = useLocalSearchParams();
@@ -26,6 +27,9 @@ export default function Apply() {
     const [hasApplied, setHasApplied] = useState(false)
     const [saving, setSaving] = useState(false)
     const [question, setQuestion] = useState('')
+    const { showModal, hideModal, ModalComponent } = useModal();
+
+
 
     // 드롭다운 옵션들
     const genderOptions = [
@@ -104,13 +108,12 @@ export default function Apply() {
 
     const validateForm = () => {
         if (!name) {
-            Alert.alert('알림', '이름은 필수 입력 항목입니다.')
+            showModal('알림', '이름은 필수 입력 항목입니다.')
             return false
         }
 
-
         if (age && (parseInt(age) < 0 || parseInt(age) > 100)) {
-            Alert.alert('알림', '올바른 나이를 입력해주세요.')
+            showModal('알림', '올바른 나이를 입력해주세요.')
             return false
         }
 
@@ -120,17 +123,16 @@ export default function Apply() {
     const handleSubmit = async () => {
         // 중복 지원 체크
         if (hasApplied) {
-            Alert.alert(
+            showModal(
                 '이미 지원한 공고',
                 '이 공고에는 이미 지원하셨습니다. 그래도 이력서를 다시 작성하시겠습니까?',
-                [
-                    { text: '취소', style: 'cancel' },
-                    {
-                        text: '계속하기',
-                        onPress: () => proceedToResume()
-                    }
-                ]
-            );
+                'confirm',
+                () => {
+                    hideModal()
+                    proceedToResume()
+                },
+                true  // showCancel true
+            )
             return;
         }
 
@@ -176,11 +178,11 @@ export default function Apply() {
                     }
                 });
             } else {
-                Alert.alert('오류', '정보 저장에 실패했습니다.')
+                showModal('오류', '정보 저장에 실패했습니다.', 'warning')
             }
         } catch (error) {
             console.error('프로필 업데이트 오류:', error)
-            Alert.alert('오류', '정보 저장 중 문제가 발생했습니다.')
+            showModal('오류', '정보 저장 중 문제가 발생했습니다.', 'warning')
         } finally {
             setSaving(false)
         }
@@ -419,6 +421,9 @@ export default function Apply() {
                     </Text>
                 </TouchableOpacity>
             </View>
+
+            <ModalComponent />
+
         </SafeAreaView>
     )
 }

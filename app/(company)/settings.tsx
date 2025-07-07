@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch, Modal, Alert, Linking } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Switch, Modal, Linking } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
@@ -7,10 +7,12 @@ import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { supabase } from '@/lib/supabase'
+import { useModal } from '@/hooks/useModal'
 
 const Settings = () => {
     const { logout, user } = useAuth()
     const { profile } = useProfile()
+    const { showModal, ModalComponent } = useModal()
 
     // 알림 설정 상태
     const [notificationSettings, setNotificationSettings] = useState({
@@ -67,17 +69,12 @@ const Settings = () => {
 
     // 로그아웃 처리
     const handleLogout = () => {
-        Alert.alert(
+        showModal(
             '로그아웃',
             '정말 로그아웃 하시겠습니까?',
-            [
-                { text: '취소', style: 'cancel' },
-                {
-                    text: '로그아웃',
-                    style: 'destructive',
-                    onPress: () => logout()
-                }
-            ]
+            'confirm',
+            () => logout(),
+            true
         )
     }
 
@@ -92,12 +89,19 @@ const Settings = () => {
             // 로컬 데이터 삭제 및 로그아웃
             await AsyncStorage.clear()
 
-            Alert.alert('회원 탈퇴 완료', '그동안 이용해주셔서 감사합니다.', [
-                { text: '확인', onPress: () => logout() }
-            ])
+            showModal(
+                '회원 탈퇴 완료',
+                '그동안 이용해주셔서 감사합니다.',
+                'info',
+                () => logout()
+            )
         } catch (error) {
             console.error('회원 탈퇴 실패:', error)
-            Alert.alert('오류', '회원 탈퇴 처리 중 문제가 발생했습니다.')
+            showModal(
+                '오류',
+                '회원 탈퇴 처리 중 문제가 발생했습니다.',
+                'warning'
+            )
         }
     }
 
@@ -107,7 +111,11 @@ const Settings = () => {
             await AsyncStorage.setItem('appLanguage', language)
             setSelectedLanguage(language)
             setLanguageModalVisible(false)
-            Alert.alert('언어 변경', '앱을 재시작하면 적용됩니다.')
+            showModal(
+                '언어 변경',
+                '앱을 재시작하면 적용됩니다.',
+                'info'
+            )
         } catch (error) {
             console.error('언어 설정 저장 실패:', error)
         }
@@ -117,6 +125,15 @@ const Settings = () => {
     const openLink = (url: string) => {
         Linking.openURL(url).catch(err =>
             console.error('링크 열기 실패:', err)
+        )
+    }
+
+    // 고객센터 연락처 표시
+    const showCustomerService = () => {
+        showModal(
+            '기업 고객센터',
+            '기업 고객센터: 1588-0000\n운영시간: 평일 09:00 - 18:00',
+            'info'
         )
     }
 
@@ -287,7 +304,7 @@ const Settings = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => alert("기업 고객센터: 1588-0000")}
+                        onPress={showCustomerService}
                         className="flex-row items-center justify-between py-3"
                     >
                         <View className="flex-row items-center">
@@ -431,6 +448,9 @@ const Settings = () => {
                     </View>
                 </View>
             </Modal>
+
+            {/* useModal로 생성되는 모달 */}
+            <ModalComponent />
         </SafeAreaView>
     )
 }

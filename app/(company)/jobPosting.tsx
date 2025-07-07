@@ -1,10 +1,11 @@
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from '@/lib/supabase'
 import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
+import CustomModal from '@/components/CustomModal'
 
 interface JobPosting {
     id: string
@@ -32,11 +33,19 @@ interface JobPosting {
         }
     }[]
 }
+
 const JobPosting = () => {
     const { user } = useAuth()
     const [postings, setPostings] = useState<JobPosting[]>([])
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
+
+    // 모달 상태
+    const [deleteModal, setDeleteModal] = useState({
+        visible: false,
+        postingId: '',
+        title: ''
+    })
 
     useEffect(() => {
         if (user) {
@@ -70,7 +79,6 @@ const JobPosting = () => {
             setPostings(data || [])
         } catch (error) {
             console.error('공고 조회 실패:', error)
-            Alert.alert('오류', '공고 목록을 불러오는데 실패했습니다.')
         } finally {
             setLoading(false)
         }
@@ -100,41 +108,36 @@ const JobPosting = () => {
                 )
             )
 
-            Alert.alert('성공', currentStatus ? '공고가 비활성화되었습니다.' : '공고가 활성화되었습니다.')
+            // 성공 메시지 제거 - 상태 변경만 수행
         } catch (error) {
             console.error('상태 변경 실패:', error)
-            Alert.alert('오류', '상태 변경에 실패했습니다.')
         }
     }
 
     const handleDelete = (postingId: string, title: string) => {
-        Alert.alert(
-            '공고 삭제',
-            `"${title}" 공고를 삭제하시겠습니까?\n삭제된 공고는 복구할 수 없습니다.`,
-            [
-                { text: '취소', style: 'cancel' },
-                {
-                    text: '삭제',
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            const { error } = await supabase
-                                .from('job_postings')
-                                .delete()
-                                .eq('id', postingId)
+        setDeleteModal({
+            visible: true,
+            postingId,
+            title
+        })
+    }
 
-                            if (error) throw error
+    const confirmDelete = async () => {
+        try {
+            const { error } = await supabase
+                .from('job_postings')
+                .delete()
+                .eq('id', deleteModal.postingId)
 
-                            setPostings(prev => prev.filter(p => p.id !== postingId))
-                            Alert.alert('성공', '공고가 삭제되었습니다.')
-                        } catch (error) {
-                            console.error('삭제 실패:', error)
-                            Alert.alert('오류', '공고 삭제에 실패했습니다.')
-                        }
-                    }
-                }
-            ]
-        )
+            if (error) throw error
+
+            setPostings(prev => prev.filter(p => p.id !== deleteModal.postingId))
+            setDeleteModal({ visible: false, postingId: '', title: '' })
+            // 성공 메시지 제거
+        } catch (error) {
+            console.error('삭제 실패:', error)
+            setDeleteModal({ visible: false, postingId: '', title: '' })
+        }
     }
 
     const formatDate = (dateString: string) => {
@@ -188,12 +191,6 @@ const JobPosting = () => {
 
                 {/* 공고 정보 */}
                 <View className="mb-3">
-                    {/*{item.salary_range && (*/}
-                    {/*    <Text className="text-sm text-gray-600">💰 {item.salary_range}</Text>*/}
-                    {/*)}*/}
-                    {/*{item.working_hours && (*/}
-                    {/*    <Text className="text-sm text-gray-600">🕐 {item.working_hours}</Text>*/}
-                    {/*)}*/}
                     <Text className="text-sm text-gray-500 mt-1">
                         등록일: {formatDate(item.created_at)}
                     </Text>
@@ -309,7 +306,22 @@ const JobPosting = () => {
             >
                 <Ionicons name="add" size={28} color="white" />
             </TouchableOpacity>
+
+            {/* 삭제 확인 모달 */}
+            <CustomModal
+                visible={deleteModal.visible}
+                onClose={() => setDeleteModal({ visible: false, postingId: '', title: '' })}
+                title="공고 삭제"
+                message={`"${deleteModal.title}" 공고를 삭제하시겠습니까?\n삭제된 공고는 복구할 수 없습니다.`}
+                type="warning"
+                confirmText="삭제"
+                cancelText="취소"
+                onConfirm={confirmDelete}
+                showCancel={true}
+                icon="trash-outline"
+            />
         </SafeAreaView>
     )
 }
+
 export default JobPosting

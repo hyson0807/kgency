@@ -1,7 +1,6 @@
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert, Switch, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Switch, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
-import { useProfile } from "@/hooks/useProfile"
 import { useAuth } from "@/contexts/AuthContext"
 import { router, useLocalSearchParams } from "expo-router"
 import { supabase } from '@/lib/supabase'
@@ -10,6 +9,7 @@ import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 import { useUserKeywords } from '@/hooks/useUserKeywords'
 import {Dropdown} from "react-native-element-dropdown";
+import {useModal} from "@/hooks/useModal";
 
 //채용공고 등록 페이지
 const Info = () => {
@@ -17,6 +17,8 @@ const Info = () => {
     const { keywords, loading: keywordsLoading } = useUserKeywords()
     const params = useLocalSearchParams()
     const jobPostingId = params.jobPostingId as string | undefined
+
+
 
     // 공고 정보 상태
     const [jobTitle, setJobTitle] = useState('')
@@ -42,6 +44,10 @@ const Info = () => {
     const [payDayNegotiable, setPayDayNegotiable] = useState(false)
     const [salaryType, setSalaryType] = useState('')
     const [workingDaysNegotiable, setWorkingDaysNegotiable] = useState(false)
+
+    const { showModal, ModalComponent, hideModal} = useModal()
+
+
 
     // 카테고리별 키워드 필터링
     const countryKeywords = keywords.filter(k => k.category === '국가')
@@ -92,6 +98,24 @@ const Info = () => {
         )
     }
 
+    // 직종 선택/해제 토글
+    const toggleJob = (jobId: number) => {
+        setSelectedJobs(prev =>
+            prev.includes(jobId)
+                ? prev.filter(id => id !== jobId)
+                : [...prev, jobId]
+        )
+    }
+
+    // 근무조건 선택/해제 토글
+    const toggleCondition = (conditionId: number) => {
+        setSelectedConditions(prev =>
+            prev.includes(conditionId)
+                ? prev.filter(id => id !== conditionId)
+                : [...prev, conditionId]
+        )
+    }
+
     // 수정 모드인 경우 기존 공고 데이터 로드
     useEffect(() => {
         if (jobPostingId && keywords.length > 0) {
@@ -139,7 +163,7 @@ const Info = () => {
             if (postingKeywords) {
                 const keywordIds = postingKeywords.map(k => k.keyword_id)
 
-                // 카테고리별로 분류 - 수정된 부분
+                // 카테고리별로 분류
                 const tempCountries: number[] = []
                 const tempJobs: number[] = []
                 const tempConditions: number[] = []
@@ -153,7 +177,7 @@ const Info = () => {
                         } else if (keyword.category === '근무조건') {
                             tempConditions.push(keyword.id)
                         } else if (keyword.category === '지역') {
-                            setSelectedLocation(keyword.id) // 수정된 부분
+                            setSelectedLocation(keyword.id)
                         }
                     }
                 })
@@ -164,38 +188,20 @@ const Info = () => {
             }
         } catch (error) {
             console.error('공고 로드 실패:', error)
-            Alert.alert('오류', '공고 정보를 불러오는데 실패했습니다.')
+            showModal('오류', '공고 정보를 불러오는데 실패했습니다.', 'warning')
         }
-    }
-
-    // 직종 선택/해제 토글
-    const toggleJob = (jobId: number) => {
-        setSelectedJobs(prev =>
-            prev.includes(jobId)
-                ? prev.filter(id => id !== jobId)
-                : [...prev, jobId]
-        )
-    }
-
-    // 근무조건 선택/해제 토글
-    const toggleCondition = (conditionId: number) => {
-        setSelectedConditions(prev =>
-            prev.includes(conditionId)
-                ? prev.filter(id => id !== conditionId)
-                : [...prev, conditionId]
-        )
     }
 
     // 공고 저장
     const handleSave = async () => {
-        // 유효성 검사 - 국가 선택 조건 변경
+        // 유효성 검사
         if (!jobTitle || selectedCountries.length === 0 || selectedJobs.length === 0) {
-            Alert.alert('알림', '필수 정보를 모두 입력해주세요.')
+            showModal('알림', '필수 정보를 모두 입력해주세요.')
             return
         }
 
         if (workingDays.length === 0) {
-            Alert.alert('알림', '근무일을 선택해주세요.')
+            showModal('알림', '근무일을 선택해 주세요')
             return
         }
 
@@ -241,7 +247,7 @@ const Info = () => {
                 savedPostingId = newPosting.id
             }
 
-            // 3. 키워드 업데이트
+            // 키워드 업데이트
             if (savedPostingId) {
                 // 기존 키워드 삭제
                 await supabase
@@ -249,12 +255,12 @@ const Info = () => {
                     .delete()
                     .eq('job_posting_id', savedPostingId)
 
-                // 새 키워드 추가 - 지역도 포함하도록 수정
+                // 새 키워드 추가
                 const allSelectedKeywords = [
                     ...selectedCountries,
                     ...selectedJobs,
                     ...selectedConditions,
-                    ...(selectedLocation ? [selectedLocation] : []) // 지역 추가
+                    ...(selectedLocation ? [selectedLocation] : [])
                 ].filter(Boolean)
 
                 if (allSelectedKeywords.length > 0) {
@@ -271,16 +277,19 @@ const Info = () => {
                 }
             }
 
-            Alert.alert('성공', isEditMode ? '공고가 수정되었습니다!' : '공고가 등록되었습니다!', [
-                {
-                    text: '확인',
-                    onPress: () => router.replace('/(company)/home')
+            showModal(
+                '성공',
+                isEditMode ? '공고가 수정되었습니다!' : '공고가 등록되었습니다!',
+                'confirm',
+                () => {
+                    hideModal()
+                    router.replace('/(company)/home')
                 }
-            ])
+            )
 
         } catch (error) {
             console.error('저장 실패:', error)
-            Alert.alert('오류', '저장 중 문제가 발생했습니다.')
+            showModal('오류', '저장 중 문제가 발생했습니다.', 'warning')
         } finally {
             setLoading(false)
         }
@@ -387,10 +396,7 @@ const Info = () => {
                                 editable={!workingHoursNegotiable}
                             />
                             <TouchableOpacity
-                                onPress={() => {
-                                    setWorkingHoursNegotiable(!workingHoursNegotiable)
-
-                                }}
+                                onPress={() => setWorkingHoursNegotiable(!workingHoursNegotiable)}
                                 className="flex-row items-center gap-2"
                             >
                                 <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
@@ -444,12 +450,7 @@ const Info = () => {
                                 </View>
                                 <Text className="text-gray-700">협의가능</Text>
                             </TouchableOpacity>
-
                         </View>
-
-
-
-
                     </View>
 
                     <View className="mb-4">
@@ -498,10 +499,7 @@ const Info = () => {
                                 editable={!payDayNegotiable}
                             />
                             <TouchableOpacity
-                                onPress={() => {
-                                    setPayDayNegotiable(!payDayNegotiable)
-
-                                }}
+                                onPress={() => setPayDayNegotiable(!payDayNegotiable)}
                                 className="flex-row items-center gap-2"
                             >
                                 <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
@@ -614,6 +612,8 @@ const Info = () => {
                     </Text>
                 </TouchableOpacity>
             </View>
+
+            <ModalComponent/>
         </SafeAreaView>
     )
 }

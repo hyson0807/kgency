@@ -1,7 +1,6 @@
-import {View, Text, ScrollView, TouchableOpacity, Alert} from 'react-native'
+import {View, Text, ScrollView, TouchableOpacity} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
-import {useAuth} from "@/contexts/AuthContext";
 import {useUserKeywords} from "@/hooks/useUserKeywords";
 import {useProfile} from "@/hooks/useProfile";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -11,10 +10,10 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Back from "@/components/back";
+import {useModal} from "@/hooks/useModal";
 
 const Info = () => {
-    const {logout} = useAuth();
-    const {profile, updateProfile} = useProfile();
+    const {updateProfile} = useProfile();
     const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
     const [selectedMoveable, setSelectedMoveable] = useState<number | null>(null);
     const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
@@ -22,6 +21,8 @@ const Info = () => {
     const [selectedConditions, setSelectedConditions] = useState<number[]>([]);
 
     const { keywords, user_keywords, loading, fetchKeywords, updateKeywords } = useUserKeywords();
+
+    const { showModal, hideModal, ModalComponent } = useModal();
 
     // 카테고리별 키워드 필터링
     const locationOptions = keywords
@@ -121,13 +122,13 @@ const Info = () => {
     const handleSaveAndNext = async () => {
         // 지역 선택 확인
         if (!selectedLocation) {
-            Alert.alert('알림', '지역을 선택해주세요');
+            showModal('알림', '지역을 선택해주세요')
             return;
         }
 
         // 국가 선택 확인
         if (!selectedCountry) {
-            Alert.alert('알림', '국가를 선택해주세요.');
+            showModal('알림', '국가를 선택해주세요')
             return;
         }
 
@@ -140,7 +141,8 @@ const Info = () => {
             });
 
             if (!profileUpdated) {
-                Alert.alert('오류', '프로필 업데이트에 실패했습니다.');
+                // Alert 제거하고 콘솔 로그만 남김
+                console.error('프로필 업데이트 실패');
                 return;
             }
 
@@ -161,18 +163,17 @@ const Info = () => {
             const keywordsUpdated = await updateKeywords(allSelectedKeywords);
 
             if (keywordsUpdated) {
-                Alert.alert('성공', '정보가 저장되었습니다!', [
-                    {
-                        text: '확인',
-                        onPress: () => router.replace('/(user)/home')
-                    }
-                ]);
+                // 성공 메시지 없이 바로 페이지 이동
+                router.replace('/(user)/home');
             } else {
-                Alert.alert('오류', '키워드 저장에 실패했습니다.');
+                // 실패해도 그냥 페이지 이동
+                console.error('키워드 저장 실패');
+                router.replace('/(user)/home');
             }
         } catch (error) {
             console.error('저장 실패:', error);
-            Alert.alert('오류', '저장 중 문제가 발생했습니다.');
+            // 에러가 나도 페이지 이동
+            router.replace('/(user)/home');
         }
     };
 
@@ -325,6 +326,8 @@ const Info = () => {
                     </View>
                 </ScrollView>
             </View>
+            <ModalComponent/>
+
         </SafeAreaView>
     )
 }

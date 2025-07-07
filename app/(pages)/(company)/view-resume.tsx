@@ -1,13 +1,15 @@
 // app/(pages)/(company)/view-resume.tsx
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
 import { supabase } from '@/lib/supabase'
+import { useModal } from '@/hooks/useModal'
 
 export default function ViewResume() {
+    const { showModal, ModalComponent } = useModal()
     const params = useLocalSearchParams()
     const {
         applicationId,
@@ -43,27 +45,23 @@ export default function ViewResume() {
         const name = Array.isArray(userName) ? userName[0] : userName
 
         if (phone) {
-            Alert.alert(
+            showModal(
                 '지원자 연락처',
                 `${name}님의 연락처:\n${phone}`,
-                [
-                    { text: '닫기', style: 'cancel' },
-                    {
-                        text: '복사',
-                        onPress: () => {
-                            // 실제 앱에서는 Clipboard API 사용
-                            Alert.alert('알림', '전화번호가 복사되었습니다.')
-                        }
-                    }
-                ]
+                'info',
+                () => {
+                    // 실제 앱에서는 Clipboard API 사용
+                    showModal('알림', '전화번호가 복사되었습니다.')
+                },
+                true  // showCancel true로 설정
             )
         } else {
-            Alert.alert('알림', '연락처 정보가 없습니다.')
+            showModal('알림', '연락처 정보가 없습니다.')
         }
     }
 
     const handleSaveResume = () => {
-        Alert.alert('알림', '이력서가 저장되었습니다.')
+        showModal('알림', '이력서가 저장되었습니다.')
     }
 
     const formatDate = (dateString: string | string[]) => {
@@ -147,6 +145,7 @@ export default function ViewResume() {
                     </TouchableOpacity>
                 </View>
             </View>
+            <ModalComponent />
         </SafeAreaView>
     )
 }
