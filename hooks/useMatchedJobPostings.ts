@@ -44,6 +44,9 @@ interface MatchedPosting {
         conditions: string[];
         location: string[];
         moveable: string[];
+        gender: string[];
+        age: string[];
+        visa: string[];
     };
 }
 
@@ -129,6 +132,9 @@ export const useMatchedJobPostings = () => {
                         conditions: [] as string[],
                         location: [] as string[],
                         moveable: [] as string[],
+                        gender: [] as string[],
+                        age: [] as string[],
+                        visa: [] as string[],
                     };
 
                     posting.job_posting_keywords?.forEach((jpk: any) => {
@@ -201,7 +207,7 @@ export const useMatchedJobPostings = () => {
 
     // 공고의 키워드 가져오기
     const getPostingKeywords = (posting: JobPosting) => {
-        if (!posting.job_posting_keywords) return { countries: [], jobs: [], conditions: [],location: [], moveable: [] };
+        if (!posting.job_posting_keywords) return { countries: [], jobs: [], conditions: [],location: [], moveable: [], gender: [], age: [], visa: [] };
 
         const keywords = posting.job_posting_keywords;
 
@@ -211,6 +217,9 @@ export const useMatchedJobPostings = () => {
             conditions: keywords.filter(k => k.keyword.category === '근무조건').map(k => k.keyword),
             location: keywords.filter(k => k.keyword.category === '지역').map(k => k.keyword),
             moveable: keywords.filter(k => k.keyword.category === '지역이동').map(k => k.keyword),
+            gender: keywords.filter(k => k.keyword.category === '성별').map(k => k.keyword),
+            age: keywords.filter(k => k.keyword.category === '나이대').map(k => k.keyword),
+            visa: keywords.filter(k => k.keyword.category === '비자').map(k => k.keyword),
 
         };
     };

@@ -41,6 +41,9 @@ interface MatchedPosting {
         conditions: string[]
         location: string[]
         moveable: string[]
+        gender: string[]
+        age: string[]
+        visa: string[]
     }
 }
 
@@ -149,7 +152,10 @@ const Home = () => {
                         jobs: [] as string[],
                         conditions: [] as string[],
                         location: [] as string[],
-                        moveable: [] as string[]
+                        moveable: [] as string[],
+                        gender: [] as string[],
+                        age: [] as string[],
+                        visa: [] as string[],
                     }
 
                     posting.job_posting_keywords?.forEach((jpk: any) => {
@@ -177,6 +183,15 @@ const Home = () => {
                                     break
                                 case '지역이동':
                                     matchedKeywords.countries.push(translatedKeyword)
+                                    break
+                                case '성별':
+                                    matchedKeywords.gender.push(translatedKeyword)
+                                    break
+                                case '나이대':
+                                    matchedKeywords.age.push(translatedKeyword)
+                                    break
+                                case '비자':
+                                    matchedKeywords.visa.push(translatedKeyword)
                                     break
                             }
                         }
@@ -242,7 +257,7 @@ const Home = () => {
                 )}
 
                 {/* 회사 정보 */}
-                <View className="mb-2">
+                <View className="mb-2" >
                     <Text className="text-sm text-gray-600">{posting.company.name}</Text>
                     <Text className="text-lg font-bold text-gray-800 pr-20">
                         {translateDB('job_postings', 'title', posting.id, posting.title)}
@@ -292,14 +307,7 @@ const Home = () => {
                 {/* 매칭된 키워드 */}
                 {hasMatches ? (
                     <View className="border-t border-gray-100 pt-3">
-                        {/* 국가 매칭 메시지 */}
-                        {matchedKeywords.countries.length > 0 && (
-                            <View className="bg-blue-50 px-3 py-2 rounded-lg mb-3">
-                                <Text className="text-blue-700 text-sm font-medium">
-                                    💙 이 회사는 {matchedKeywords.countries[0]} 사람을 선호해요!
-                                </Text>
-                            </View>
-                        )}
+
 
                         <Text className="text-sm text-gray-700 font-semibold mb-2">
                             🎯 나와 딱 맞는 조건
@@ -312,7 +320,12 @@ const Home = () => {
                                 ...matchedKeywords.jobs,
                                 ...matchedKeywords.conditions,
                                 ...matchedKeywords.location,
-                                ...matchedKeywords.moveable
+                                ...matchedKeywords.moveable,
+                                ...matchedKeywords.gender,
+                                ...matchedKeywords.age,
+                                ...matchedKeywords.visa,
+
+
                             ].map((keyword, index) => (
                                 <View
                                     key={index}
@@ -325,6 +338,14 @@ const Home = () => {
                                 </View>
                             ))}
                         </View>
+                        {/* 국가 매칭 메시지 */}
+                        {matchedKeywords.countries.length > 0 && (
+                            <View className="bg-blue-50 px-3 py-2 rounded-lg mt-3">
+                                <Text className="text-blue-700 text-sm font-medium">
+                                    💙 이 회사는 {matchedKeywords.countries[0]} 사람을 선호해요!
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 ) : (
                     <View className="border-t border-gray-100 pt-3">

@@ -146,8 +146,12 @@ const Home = () => {
     }, [user])
 
     const handleJobSeekerPress = (jobSeeker: JobSeeker) => {
-        // TODO: 구직자 상세 페이지로 이동 또는 모달 열기
-        console.log('구직자 선택:', jobSeeker.name)
+        router.push({
+            pathname: '/(pages)/(company)/job-seeker-detail',
+            params: {
+                userId: jobSeeker.id
+            }
+        })
     }
 
     const renderJobSeeker = ({ item }: { item: MatchedJobSeeker }) => {

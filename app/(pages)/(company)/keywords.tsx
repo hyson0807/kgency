@@ -320,7 +320,7 @@ const Keywords = () => {
                 if (error) throw error
             }
 
-            router.back()
+            router.push('/')
 
         } catch (error) {
             console.error('키워드 저장 실패:', error)
@@ -702,13 +702,13 @@ const Keywords = () => {
                     title="모집 직종"
                 />
 
-                {/* 근무조건 선택 */}
-                <WorkConditionsSelector
-                    conditions={conditionKeywords}
-                    selectedConditions={selectedConditions}
-                    onToggle={toggleCondition}
-                    title="제공 조건"
-                />
+                 {/*근무조건 선택*/}
+                {/*<WorkConditionsSelector*/}
+                {/*    conditions={conditionKeywords}*/}
+                {/*    selectedConditions={selectedConditions}*/}
+                {/*    onToggle={toggleCondition}*/}
+                {/*    title="제공 조건"*/}
+                {/*/>*/}
 
                 {/* 선택된 키워드 요약 */}
                 <View className="mx-6 p-4 bg-blue-50 rounded-xl">
@@ -733,7 +733,7 @@ const Keywords = () => {
                 <TouchableOpacity
                     onPress={handleSave}
                     disabled={saving}
-                    className={`py-4 rounded-xl ${
+                    className={`py-4 mb-4 rounded-xl ${
                         saving ? 'bg-gray-400' : 'bg-blue-500'
                     }`}
                 >

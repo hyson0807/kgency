@@ -56,6 +56,36 @@ const translations: { [key: string]: { [lang: string]: string } } = {
         zh: '雇主登录',
         vi: 'Đăng nhập nhà tuyển dụng'
     },
+    'start.select_type': {
+        en: 'Which service would you like to use?',
+        ja: 'どのサービスをご利用になりますか？',
+        zh: '您想使用哪种服务？',
+        vi: 'Bạn muốn sử dụng dịch vụ nào?'
+    },
+    'start.job_seeker': {
+        en: 'Job Seeker',
+        ja: '求職者',
+        zh: '求职者',
+        vi: 'Người tìm việc'
+    },
+    'start.job_seeker_desc': {
+        en: 'Looking for a job?\nWe\'ll recommend perfect matches',
+        ja: '仕事をお探しですか？\nぴったりの仕事をご紹介します',
+        zh: '正在找工作吗？\n我们会推荐合适的工作',
+        vi: 'Đang tìm việc làm?\nChúng tôi sẽ giới thiệu việc phù hợp'
+    },
+    'start.employer': {
+        en: 'Employer',
+        ja: '求人者',
+        zh: '雇主',
+        vi: 'Nhà tuyển dụng'
+    },
+    'start.employer_desc': {
+        en: 'Looking for employees?\nWe\'ll match you with talent',
+        ja: '従業員をお探しですか？\n人材をマッチングします',
+        zh: '正在招聘员工吗？\n我们会为您匹配人才',
+        vi: 'Đang tìm nhân viên?\nChúng tôi sẽ kết nối nhân tài'
+    },
 
     // 로그인 페이지
     'login.phone_auth': {

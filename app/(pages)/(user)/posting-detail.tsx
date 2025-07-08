@@ -296,6 +296,42 @@ export default function PostingDetail() {
                                 </View>
                             </View>
                         )}
+                        {keywords.gender.length > 0 && (
+                            <View className="mb-4">
+                                <Text className="text-gray-600 font-medium mb-2">모집 성별</Text>
+                                <View className="flex-row flex-wrap gap-2">
+                                    {keywords.gender.map((keyword) => (
+                                        <View key={keyword.id} className="bg-blue-100 px-3 py-1 rounded-full">
+                                            <Text className="text-blue-700 text-sm">{keyword.keyword}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </View>
+                        )}
+                        {keywords.age.length > 0 && (
+                            <View className="mb-4">
+                                <Text className="text-gray-600 font-medium mb-2">모집 나이대</Text>
+                                <View className="flex-row flex-wrap gap-2">
+                                    {keywords.age.map((keyword) => (
+                                        <View key={keyword.id} className="bg-green-100 px-3 py-1 rounded-full">
+                                            <Text className="text-green-700 text-sm">{keyword.keyword}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </View>
+                        )}
+                        {keywords.visa.length > 0 && (
+                            <View className="mb-4">
+                                <Text className="text-gray-600 font-medium mb-2">지원 가능한 비자</Text>
+                                <View className="flex-row flex-wrap gap-2">
+                                    {keywords.visa.map((keyword) => (
+                                        <View key={keyword.id} className="bg-yellow-100 px-3 py-1 rounded-full">
+                                            <Text className="text-yellow-700 text-sm">{keyword.keyword}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </View>
+                        )}
 
 
                     </View>

@@ -191,15 +191,11 @@ const Register = () => {
     }
 
     const handleSave = async () => {
-        if(!companyName || !address || !description) {
+        if(!companyName || !address) {
             showModal('알림', '필수 정보를 모두 입력해주세요', "info")
             return
         }
 
-        if (!selectedLocation) {
-            showModal('알림', '지역을 선택해주세요', "info")
-            return
-        }
 
         try {
             // 1. 프로필 업데이트
@@ -207,7 +203,6 @@ const Register = () => {
                 profile: {
                     name: companyName,
                     address: address,
-                    description: description,
                     onboarding_completed: true
                 }
             })
@@ -217,39 +212,8 @@ const Register = () => {
                 return
             }
 
-            // 2. 키워드 저장
-            if (profile?.id) {
-                // 기존 키워드 삭제
-                await supabase
-                    .from('company_keyword')
-                    .delete()
-                    .eq('company_id', profile.id)
+            router.push('/(pages)/(company)/keywords')
 
-                // 선택된 키워드들 모으기
-                const allSelectedKeywords = [
-                    selectedLocation,
-                    selectedMoveable,
-                    ...selectedCountries,
-                    ...selectedJobs,
-                    ...selectedConditions
-                ].filter(Boolean) // null 제거
-
-                // 새로운 키워드 추가
-                if (allSelectedKeywords.length > 0) {
-                    const inserts = allSelectedKeywords.map(keywordId => ({
-                        company_id: profile.id,
-                        keyword_id: keywordId
-                    }))
-
-                    const { error } = await supabase
-                        .from('company_keyword')
-                        .insert(inserts)
-
-                    if (error) throw error
-                }
-            }
-
-            router.replace('/(company)/home')
         } catch (error) {
             console.error('저장 실패:', error)
             showModal('오류', '저장 중 문제가 발생했습니다.', 'warning')
@@ -267,7 +231,7 @@ const Register = () => {
     return (
         <SafeAreaView className="flex-1">
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                <View className="p-6">
+                <View className="flex-1 justify-start p-6">
                     {/* 회사 정보 섹션 */}
                     <Text className="text-xl font-bold mb-4">회사 정보</Text>
 
@@ -290,157 +254,6 @@ const Register = () => {
                             onChangeText={setAddress}
                         />
                     </View>
-
-
-
-                    {/* 키워드 선택 섹션 */}
-                    <Text className="text-xl font-bold mb-4 mt-8">채용 키워드 설정</Text>
-
-                    {/* 지역 선택 */}
-                    <View className="mb-6">
-                        <Text className="text-lg font-semibold mb-3">희망 근무 지역 *</Text>
-                        <View className="p-4 bg-gray-50 rounded-xl">
-                            <Dropdown
-                                style={{
-                                    height: 50,
-                                    borderColor: '#d1d5db',
-                                    borderWidth: 2,
-                                    borderRadius: 12,
-                                    paddingHorizontal: 16,
-                                    backgroundColor: 'white',
-                                }}
-                                placeholderStyle={{
-                                    fontSize: 16,
-                                    color: '#9ca3af'
-                                }}
-                                selectedTextStyle={{
-                                    fontSize: 16,
-                                }}
-                                inputSearchStyle={{
-                                    height: 40,
-                                    fontSize: 16,
-                                }}
-                                iconStyle={{
-                                    width: 20,
-                                    height: 20,
-                                }}
-                                data={locationOptions}
-                                search
-                                maxHeight={300}
-                                labelField="label"
-                                valueField="value"
-                                placeholder="지역을 선택하세요"
-                                searchPlaceholder="검색..."
-                                value={selectedLocation}
-                                onChange={item => {
-                                    setSelectedLocation(item.value)
-                                }}
-                            />
-
-                            {/* 지역이동 가능 토글 */}
-                            {moveableKeyword && (
-                                <TouchableOpacity
-                                    onPress={toggleMoveable}
-                                    className="mt-4 flex-row items-center justify-between p-4 bg-white rounded-xl border-2 border-gray-200"
-                                >
-                                    <Text className="text-base text-gray-700">
-                                        {moveableKeyword.keyword}
-                                    </Text>
-                                    <View className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
-                                        selectedMoveable === moveableKeyword.id
-                                            ? 'bg-blue-500 border-blue-500'
-                                            : 'bg-white border-gray-300'
-                                    }`}>
-                                        {selectedMoveable === moveableKeyword.id && (
-                                            <Ionicons name="checkmark" size={16} color="white" />
-                                        )}
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    </View>
-
-                    {/* 국가 선택 */}
-                    <View className="mb-6">
-                        <Text className="text-lg font-semibold mb-3">선호 국가</Text>
-                        <View className="p-4 bg-gray-50 rounded-xl">
-                            <Dropdown
-                                style={{
-                                    height: 50,
-                                    borderColor: '#d1d5db',
-                                    borderWidth: 2,
-                                    borderRadius: 12,
-                                    paddingHorizontal: 16,
-                                    backgroundColor: 'white',
-                                }}
-                                placeholderStyle={{
-                                    fontSize: 16,
-                                    color: '#9ca3af'
-                                }}
-                                selectedTextStyle={{
-                                    fontSize: 16,
-                                }}
-                                inputSearchStyle={{
-                                    height: 40,
-                                    fontSize: 16,
-                                }}
-                                iconStyle={{
-                                    width: 20,
-                                    height: 20,
-                                }}
-                                data={countryOptions}
-                                search
-                                maxHeight={300}
-                                labelField="label"
-                                valueField="value"
-                                placeholder="국가를 선택하세요"
-                                searchPlaceholder="검색..."
-                                value={null}
-                                onChange={handleCountrySelect}
-                            />
-
-                            {/* 선택된 국가들 태그로 표시 */}
-                            {selectedCountries.length > 0 && (
-                                <View className="flex-row flex-wrap gap-2 mt-4">
-                                    {selectedCountries.map(countryId => {
-                                        const country = countryKeywords.find(k => k.id === countryId)
-                                        return country ? (
-                                            <View
-                                                key={countryId}
-                                                className="flex-row items-center bg-blue-500 px-3 py-2 rounded-full"
-                                            >
-                                                <Text className="text-white text-sm font-medium mr-2">
-                                                    {country.keyword}
-                                                </Text>
-                                                <TouchableOpacity onPress={() => removeCountry(countryId)}>
-                                                    <Ionicons name="close-circle" size={18} color="white" />
-                                                </TouchableOpacity>
-                                            </View>
-                                        ) : null
-                                    })}
-                                </View>
-                            )}
-                        </View>
-                    </View>
-
-                    {/* 직종 선택 */}
-                    <JobPreferencesSelector
-                        jobs={jobKeywords}
-                        selectedJobs={selectedJobs}
-                        onToggle={toggleJob}
-                        title="모집 직종"
-                    />
-
-                    {/* 근무조건 선택 */}
-                    <WorkConditionsSelector
-                        conditions={conditionKeywords}
-                        selectedConditions={selectedConditions}
-                        onToggle={toggleCondition}
-                        title="제공 조건"
-                    />
-
-                    {/* 하단 여백 */}
-                    <View className="h-24" />
                 </View>
             </ScrollView>
 
@@ -448,7 +261,7 @@ const Register = () => {
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
                     onPress={handleSave}
-                    className="py-4 rounded-xl bg-blue-500"
+                    className="bg-blue-500 py-4 rounded-xl items-center mx-4 my-2"
                 >
                     <Text className="text-center text-white font-bold text-lg">
                         회사 정보 입력
