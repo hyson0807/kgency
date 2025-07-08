@@ -464,10 +464,10 @@ const Info = () => {
                     </View>
 
                     <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">상세 설명</Text>
+                        <Text className="text-gray-700 mb-2">업무 내용</Text>
                         <TextInput
                             className="border border-gray-300 rounded-lg p-3 min-h-[100px]"
-                            placeholder="업무 내용을 자세히 설명해주세요"
+                            placeholder="업무 내용을 간단히 알려주세요!"
                             value={jobDescription}
                             onChangeText={setJobDescription}
                             multiline

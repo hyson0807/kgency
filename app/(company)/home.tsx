@@ -253,9 +253,9 @@ const Home = () => {
             <View className="flex-row items-center justify-between">
                 <View>
                     <Text className="text-lg font-bold text-gray-800">구직자 목록</Text>
-                    <Text className="text-sm text-gray-600 mt-1">
-                        총 {matchedJobSeekers.length}명의 구직자
-                    </Text>
+                    {/*<Text className="text-sm text-gray-600 mt-1">*/}
+                    {/*    총 {matchedJobSeekers.length}명의 구직자*/}
+                    {/*</Text>*/}
                 </View>
                 <TouchableOpacity
                     onPress={() => router.push('/(pages)/(company)/keywords')}
