@@ -17,9 +17,6 @@ interface Keyword {
     category: string;
 }
 
-
-
-
 const Keywords = () => {
     const { user } = useAuth()
     const [keywords, setKeywords] = useState<Keyword[]>([])
@@ -48,6 +45,15 @@ const Keywords = () => {
     const jobKeywords = keywords.filter(k => k.category === '직종')
     const conditionKeywords = keywords.filter(k => k.category === '근무조건')
     const moveableKeyword = keywords.find(k => k.category === '지역이동')
+
+    // 국가 드롭다운 옵션 (상관없음 포함)
+    const countryOptions = [
+        { label: '상관없음', value: 'all' },
+        ...countryKeywords.map(country => ({
+            label: country.keyword,
+            value: country.id
+        }))
+    ]
 
     useEffect(() => {
         fetchKeywords()
@@ -128,13 +134,23 @@ const Keywords = () => {
         }
     }, [companyKeywords, keywords, moveableKeyword])
 
-    // 국가 선택/해제
-    const toggleCountry = (countryId: number) => {
-        setSelectedCountries(prev =>
-            prev.includes(countryId)
-                ? prev.filter(id => id !== countryId)
-                : [...prev, countryId]
-        )
+    // 국가 선택 처리
+    const handleCountrySelect = (item: any) => {
+        if (item.value === 'all') {
+            // "상관없음" 선택 시 모든 국가 선택
+            const allCountryIds = countryKeywords.map(k => k.id)
+            setSelectedCountries(allCountryIds)
+        } else {
+            // 개별 국가 선택
+            if (!selectedCountries.includes(item.value)) {
+                setSelectedCountries([...selectedCountries, item.value])
+            }
+        }
+    }
+
+    // 국가 제거
+    const removeCountry = (countryId: number) => {
+        setSelectedCountries(prev => prev.filter(id => id !== countryId))
     }
 
     // 직종 선택/해제
@@ -295,29 +311,72 @@ const Keywords = () => {
                     </View>
                 </View>
 
-                {/* 국가 선택 */}
+                {/* 국가 선택 - 드롭다운으로 변경 */}
                 <View className="p-6">
                     <Text className="text-xl font-bold mb-4">선호 국가</Text>
-                    <View className="flex-row flex-wrap gap-2">
-                        {countryKeywords.map(country => (
-                            <TouchableOpacity
-                                key={country.id}
-                                onPress={() => toggleCountry(country.id)}
-                                className={`px-4 py-2 rounded-lg border-2 ${
-                                    selectedCountries.includes(country.id)
-                                        ? 'bg-blue-500 border-blue-500'
-                                        : 'bg-white border-gray-300'
-                                }`}
-                            >
-                                <Text className={`font-medium ${
-                                    selectedCountries.includes(country.id)
-                                        ? 'text-white'
-                                        : 'text-gray-700'
-                                }`}>
-                                    {country.keyword}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
+                    <View className="p-4 bg-gray-50 rounded-xl">
+                        <Dropdown
+                            style={{
+                                height: 50,
+                                borderColor: '#d1d5db',
+                                borderWidth: 2,
+                                borderRadius: 12,
+                                paddingHorizontal: 16,
+                                backgroundColor: 'white',
+                            }}
+                            placeholderStyle={{
+                                fontSize: 16,
+                                color: '#9ca3af'
+                            }}
+                            selectedTextStyle={{
+                                fontSize: 16,
+                            }}
+                            inputSearchStyle={{
+                                height: 40,
+                                fontSize: 16,
+                            }}
+                            iconStyle={{
+                                width: 20,
+                                height: 20,
+                            }}
+                            data={countryOptions}
+                            search
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder="국가를 선택하세요"
+                            searchPlaceholder="검색..."
+                            value={null} // 드롭다운 자체는 선택 값을 유지하지 않음
+                            onChange={handleCountrySelect}
+                        />
+
+                        {/* 선택된 국가들 태그로 표시 */}
+                        {selectedCountries.length > 0 && (
+                            <View className="flex-row flex-wrap gap-2 mt-4">
+                                {selectedCountries.map(countryId => {
+                                    const country = countryKeywords.find(k => k.id === countryId)
+                                    return country ? (
+                                        <View
+                                            key={countryId}
+                                            className="flex-row items-center bg-blue-500 px-3 py-2 rounded-full"
+                                        >
+                                            <Text className="text-white text-sm font-medium mr-2">
+                                                {country.keyword}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => removeCountry(countryId)}>
+                                                <Ionicons name="close-circle" size={18} color="white" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    ) : null
+                                })}
+                            </View>
+                        )}
+
+                        {selectedCountries.length === 0 && (
+                            <Text className="text-sm text-gray-500 mt-3 text-center">
+                                선택된 국가가 없습니다
+                            </Text>
+                        )}
                     </View>
                 </View>
 

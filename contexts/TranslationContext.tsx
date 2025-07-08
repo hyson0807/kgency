@@ -1482,6 +1482,15 @@ const translations: { [key: string]: { [lang: string]: string } } = {
         zh: '请选择国家',
         vi: 'Vui lòng chọn quốc gia'
     },
+    // 국가 선택 섹션
+    'info.location_no_preference': {
+        en: 'No Preference',
+        ja: '指定なし',
+        zh: '不限',
+        vi: 'Không quan trọng'
+    },
+
+
     // JobPreferencesSelector
     'job_selector.title': {
         en: 'Desired Jobs',

@@ -24,14 +24,20 @@ const Info = () => {
     const { showModal, hideModal, ModalComponent } = useModal();
     const { t } = useTranslation()
 
-
     // 카테고리별 키워드 필터링
-    const locationOptions = keywords
-        .filter(k => k.category === '지역')
-        .map(location => ({
-            label: location.keyword,
-            value: location.id,
-        }));
+    const locationOptions = [
+        // "상관없음" 옵션을 첫 번째로 추가
+        {
+            label: t('info.location_no_preference', '상관없음'),
+            value: null
+        },
+        ...keywords
+            .filter(k => k.category === '지역')
+            .map(location => ({
+                label: location.keyword,
+                value: location.id,
+            }))
+    ];
 
     const countryOptions = keywords
         .filter(k => k.category === '국가')
@@ -88,6 +94,9 @@ const Info = () => {
                 .filter(uk => uk.keyword && uk.keyword.category === '근무조건')
                 .map(uk => uk.keyword_id);
             setSelectedConditions(existingConditions);
+        } else {
+            // 기존 키워드가 없으면 "상관없음"을 기본값으로 설정
+            setSelectedLocation(null);
         }
     }, [user_keywords, moveableKeyword]);
 
@@ -121,13 +130,7 @@ const Info = () => {
     };
 
     const handleSaveAndNext = async () => {
-        // 지역 선택 확인
-        if (!selectedLocation) {
-            showModal(t('alert.notification', '알림'), t('info.select_location_required', '지역을 선택해주세요'))
-            return;
-        }
-
-        // 국가 선택 확인
+        // 국가 선택 확인 (지역은 "상관없음"이 기본값이므로 체크하지 않음)
         if (!selectedCountry) {
             showModal(t('alert.notification', '알림'), t('info.select_country_required', '국가를 선택해주세요'))
             return;
@@ -149,7 +152,8 @@ const Info = () => {
 
             // 2. 모든 선택된 키워드 ID 모으기
             const allSelectedKeywords = [
-                selectedLocation,
+                // selectedLocation이 null이면 포함하지 않음
+                ...(selectedLocation !== null ? [selectedLocation] : []),
                 selectedCountry,
                 ...selectedJobs,
                 ...selectedConditions
@@ -228,7 +232,7 @@ const Info = () => {
                                 maxHeight={300}
                                 labelField="label"
                                 valueField="value"
-                                placeholder={t('info.select_location', '지역을 선택하세요')}
+                                placeholder={t('info.location_no_preference', '선호지역 없음')}
                                 searchPlaceholder={t('info.search', '검색...')}
                                 value={selectedLocation}
                                 onChange={item => {
@@ -236,7 +240,7 @@ const Info = () => {
                                 }}
                             />
 
-                            {/* 지역이동 가능 토글 */}
+                            {/* 지역이동 가능 토글 - 상관없음을 선택해도 표시 */}
                             {moveableKeyword && (
                                 <TouchableOpacity
                                     onPress={toggleMoveable}
