@@ -280,12 +280,7 @@ export default function CompanyPostingDetail() {
                         </View>
                     </View>
 
-                    {posting?.description && (
-                        <View className="p-6 border-b border-gray-100">
-                            <Text className="text-lg font-semibold mb-4">회사 소개</Text>
-                            <Text className="text-gray-700 leading-6">{posting.company.description}</Text>
-                        </View>
-                    )}
+
 
                     {/* 근무 조건 */}
                     <View className="p-6 border-b border-gray-100">

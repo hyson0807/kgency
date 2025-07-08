@@ -523,7 +523,6 @@ const Info = () => {
                                 placeholder="예: 09:00-18:00"
                                 value={workingHours}
                                 onChangeText={setWorkingHours}
-                                editable={!workingHoursNegotiable}
                             />
                             <TouchableOpacity
                                 onPress={() => setWorkingHoursNegotiable(!workingHoursNegotiable)}
@@ -626,7 +625,6 @@ const Info = () => {
                                 placeholder="예: 매월 10일"
                                 value={payDay}
                                 onChangeText={setPayDay}
-                                editable={!payDayNegotiable}
                             />
                             <TouchableOpacity
                                 onPress={() => setPayDayNegotiable(!payDayNegotiable)}
@@ -993,7 +991,7 @@ const Info = () => {
                 <TouchableOpacity
                     onPress={handleSave}
                     disabled={loading}
-                    className={`py-4 rounded-xl ${
+                    className={`py-4 mb-4 rounded-xl ${
                         loading ? 'bg-gray-400' : 'bg-blue-500'
                     }`}
                 >
