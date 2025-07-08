@@ -28,6 +28,9 @@ const Keywords = () => {
     const [selectedLocation, setSelectedLocation] = useState<number | null>(null)
     const [selectedMoveable, setSelectedMoveable] = useState<number | null>(null)
     const [selectedCountries, setSelectedCountries] = useState<number[]>([])
+    const [selectedGenders, setSelectedGenders] = useState<number[]>([])
+    const [selectedAges, setSelectedAges] = useState<number[]>([])
+    const [selectedVisas, setSelectedVisas] = useState<number[]>([])
     const [selectedJobs, setSelectedJobs] = useState<number[]>([])
     const [selectedConditions, setSelectedConditions] = useState<number[]>([])
 
@@ -42,6 +45,9 @@ const Keywords = () => {
         }))
 
     const countryKeywords = keywords.filter(k => k.category === '국가')
+    const genderKeywords = keywords.filter(k => k.category === '성별')
+    const ageKeywords = keywords.filter(k => k.category === '나이대')
+    const visaKeywords = keywords.filter(k => k.category === '비자')
     const jobKeywords = keywords.filter(k => k.category === '직종')
     const conditionKeywords = keywords.filter(k => k.category === '근무조건')
     const moveableKeyword = keywords.find(k => k.category === '지역이동')
@@ -52,6 +58,33 @@ const Keywords = () => {
         ...countryKeywords.map(country => ({
             label: country.keyword,
             value: country.id
+        }))
+    ]
+
+    // 성별 드롭다운 옵션 (상관없음 포함)
+    const genderOptions = [
+        { label: '상관없음', value: 'all' },
+        ...genderKeywords.map(gender => ({
+            label: gender.keyword,
+            value: gender.id
+        }))
+    ]
+
+    // 나이대 드롭다운 옵션 (상관없음 포함)
+    const ageOptions = [
+        { label: '상관없음', value: 'all' },
+        ...ageKeywords.map(age => ({
+            label: age.keyword,
+            value: age.id
+        }))
+    ]
+
+    // 비자 드롭다운 옵션 (상관없음 포함)
+    const visaOptions = [
+        { label: '상관없음', value: 'all' },
+        ...visaKeywords.map(visa => ({
+            label: visa.keyword,
+            value: visa.id
         }))
     ]
 
@@ -120,6 +153,24 @@ const Keywords = () => {
                 .map(k => k.id)
             setSelectedCountries(countries)
 
+            // 성별
+            const genders = keywords
+                .filter(k => k.category === '성별' && companyKeywords.includes(k.id))
+                .map(k => k.id)
+            setSelectedGenders(genders)
+
+            // 나이대
+            const ages = keywords
+                .filter(k => k.category === '나이대' && companyKeywords.includes(k.id))
+                .map(k => k.id)
+            setSelectedAges(ages)
+
+            // 비자
+            const visas = keywords
+                .filter(k => k.category === '비자' && companyKeywords.includes(k.id))
+                .map(k => k.id)
+            setSelectedVisas(visas)
+
             // 직종
             const jobs = keywords
                 .filter(k => k.category === '직종' && companyKeywords.includes(k.id))
@@ -137,13 +188,47 @@ const Keywords = () => {
     // 국가 선택 처리
     const handleCountrySelect = (item: any) => {
         if (item.value === 'all') {
-            // "상관없음" 선택 시 모든 국가 선택
             const allCountryIds = countryKeywords.map(k => k.id)
             setSelectedCountries(allCountryIds)
         } else {
-            // 개별 국가 선택
             if (!selectedCountries.includes(item.value)) {
                 setSelectedCountries([...selectedCountries, item.value])
+            }
+        }
+    }
+
+    // 성별 선택 처리
+    const handleGenderSelect = (item: any) => {
+        if (item.value === 'all') {
+            const allGenderIds = genderKeywords.map(k => k.id)
+            setSelectedGenders(allGenderIds)
+        } else {
+            if (!selectedGenders.includes(item.value)) {
+                setSelectedGenders([...selectedGenders, item.value])
+            }
+        }
+    }
+
+    // 나이대 선택 처리
+    const handleAgeSelect = (item: any) => {
+        if (item.value === 'all') {
+            const allAgeIds = ageKeywords.map(k => k.id)
+            setSelectedAges(allAgeIds)
+        } else {
+            if (!selectedAges.includes(item.value)) {
+                setSelectedAges([...selectedAges, item.value])
+            }
+        }
+    }
+
+    // 비자 선택 처리
+    const handleVisaSelect = (item: any) => {
+        if (item.value === 'all') {
+            const allVisaIds = visaKeywords.map(k => k.id)
+            setSelectedVisas(allVisaIds)
+        } else {
+            if (!selectedVisas.includes(item.value)) {
+                setSelectedVisas([...selectedVisas, item.value])
             }
         }
     }
@@ -151,6 +236,21 @@ const Keywords = () => {
     // 국가 제거
     const removeCountry = (countryId: number) => {
         setSelectedCountries(prev => prev.filter(id => id !== countryId))
+    }
+
+    // 성별 제거
+    const removeGender = (genderId: number) => {
+        setSelectedGenders(prev => prev.filter(id => id !== genderId))
+    }
+
+    // 나이대 제거
+    const removeAge = (ageId: number) => {
+        setSelectedAges(prev => prev.filter(id => id !== ageId))
+    }
+
+    // 비자 제거
+    const removeVisa = (visaId: number) => {
+        setSelectedVisas(prev => prev.filter(id => id !== visaId))
     }
 
     // 직종 선택/해제
@@ -199,6 +299,9 @@ const Keywords = () => {
                 selectedLocation,
                 selectedMoveable,
                 ...selectedCountries,
+                ...selectedGenders,
+                ...selectedAges,
+                ...selectedVisas,
                 ...selectedJobs,
                 ...selectedConditions
             ].filter(Boolean) // null 제거
@@ -249,7 +352,7 @@ const Keywords = () => {
             >
                 {/* 지역 선택 */}
                 <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">희망 근무 지역</Text>
+                    <Text className="text-xl font-bold mb-4">사장님 회사 위치!</Text>
                     <View className="p-4 bg-gray-50 rounded-xl">
                         <Dropdown
                             style={{
@@ -288,32 +391,40 @@ const Keywords = () => {
                             }}
                         />
 
-                        {/* 지역이동 가능 토글 */}
-                        {moveableKeyword && (
-                            <TouchableOpacity
-                                onPress={toggleMoveable}
-                                className="mt-4 flex-row items-center justify-between p-4 bg-white rounded-xl border-2 border-gray-200"
-                            >
-                                <Text className="text-base text-gray-700">
-                                    {moveableKeyword.keyword}
-                                </Text>
-                                <View className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
-                                    selectedMoveable === moveableKeyword.id
-                                        ? 'bg-blue-500 border-blue-500'
-                                        : 'bg-white border-gray-300'
-                                }`}>
-                                    {selectedMoveable === moveableKeyword.id && (
-                                        <Ionicons name="checkmark" size={16} color="white" />
-                                    )}
-                                </View>
-                            </TouchableOpacity>
-                        )}
+
                     </View>
                 </View>
 
+                <View className="p-6">
+                    <Text className="text-xl font-bold mb-4">지역이동 가능자 선호</Text>
+                    <View className="p-4 bg-gray-50 rounded-xl">
+
+                    {/* 지역이동 가능 토글 */}
+                    {moveableKeyword && (
+                        <TouchableOpacity
+                            onPress={toggleMoveable}
+                            className=" flex-row items-center justify-between p-4 bg-white rounded-xl border-2 border-gray-200"
+                        >
+                            <Text className="text-base text-gray-700">
+                                {moveableKeyword.keyword}
+                            </Text>
+                            <View className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
+                                selectedMoveable === moveableKeyword.id
+                                    ? 'bg-blue-500 border-blue-500'
+                                    : 'bg-white border-gray-300'
+                            }`}>
+                                {selectedMoveable === moveableKeyword.id && (
+                                    <Ionicons name="checkmark" size={16} color="white" />
+                                )}
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                    </View>
+                    </View>
+
                 {/* 국가 선택 - 드롭다운으로 변경 */}
                 <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">선호 국가</Text>
+                    <Text className="text-xl font-bold mb-4">선호하는 국가</Text>
                     <View className="p-4 bg-gray-50 rounded-xl">
                         <Dropdown
                             style={{
@@ -380,6 +491,209 @@ const Keywords = () => {
                     </View>
                 </View>
 
+                {/* 성별 선택 */}
+                <View className="p-6">
+                    <Text className="text-xl font-bold mb-4">선호하는 성별</Text>
+                    <View className="p-4 bg-gray-50 rounded-xl">
+                        <Dropdown
+                            style={{
+                                height: 50,
+                                borderColor: '#d1d5db',
+                                borderWidth: 2,
+                                borderRadius: 12,
+                                paddingHorizontal: 16,
+                                backgroundColor: 'white',
+                            }}
+                            placeholderStyle={{
+                                fontSize: 16,
+                                color: '#9ca3af'
+                            }}
+                            selectedTextStyle={{
+                                fontSize: 16,
+                            }}
+                            inputSearchStyle={{
+                                height: 40,
+                                fontSize: 16,
+                            }}
+                            iconStyle={{
+                                width: 20,
+                                height: 20,
+                            }}
+                            data={genderOptions}
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder="성별을 선택하세요"
+                            value={null}
+                            onChange={handleGenderSelect}
+                        />
+
+                        {/* 선택된 성별들 태그로 표시 */}
+                        {selectedGenders.length > 0 && (
+                            <View className="flex-row flex-wrap gap-2 mt-4">
+                                {selectedGenders.map(genderId => {
+                                    const gender = genderKeywords.find(k => k.id === genderId)
+                                    return gender ? (
+                                        <View
+                                            key={genderId}
+                                            className="flex-row items-center bg-purple-500 px-3 py-2 rounded-full"
+                                        >
+                                            <Text className="text-white text-sm font-medium mr-2">
+                                                {gender.keyword}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => removeGender(genderId)}>
+                                                <Ionicons name="close-circle" size={18} color="white" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    ) : null
+                                })}
+                            </View>
+                        )}
+
+                        {selectedGenders.length === 0 && (
+                            <Text className="text-sm text-gray-500 mt-3 text-center">
+                                선택된 성별이 없습니다
+                            </Text>
+                        )}
+                    </View>
+                </View>
+
+                {/* 나이대 선택 */}
+                <View className="p-6">
+                    <Text className="text-xl font-bold mb-4">선호하는 나이대</Text>
+                    <View className="p-4 bg-gray-50 rounded-xl">
+                        <Dropdown
+                            style={{
+                                height: 50,
+                                borderColor: '#d1d5db',
+                                borderWidth: 2,
+                                borderRadius: 12,
+                                paddingHorizontal: 16,
+                                backgroundColor: 'white',
+                            }}
+                            placeholderStyle={{
+                                fontSize: 16,
+                                color: '#9ca3af'
+                            }}
+                            selectedTextStyle={{
+                                fontSize: 16,
+                            }}
+                            inputSearchStyle={{
+                                height: 40,
+                                fontSize: 16,
+                            }}
+                            iconStyle={{
+                                width: 20,
+                                height: 20,
+                            }}
+                            data={ageOptions}
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder="나이대를 선택하세요"
+                            value={null}
+                            onChange={handleAgeSelect}
+                        />
+
+                        {/* 선택된 나이대들 태그로 표시 */}
+                        {selectedAges.length > 0 && (
+                            <View className="flex-row flex-wrap gap-2 mt-4">
+                                {selectedAges.map(ageId => {
+                                    const age = ageKeywords.find(k => k.id === ageId)
+                                    return age ? (
+                                        <View
+                                            key={ageId}
+                                            className="flex-row items-center bg-green-500 px-3 py-2 rounded-full"
+                                        >
+                                            <Text className="text-white text-sm font-medium mr-2">
+                                                {age.keyword}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => removeAge(ageId)}>
+                                                <Ionicons name="close-circle" size={18} color="white" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    ) : null
+                                })}
+                            </View>
+                        )}
+
+                        {selectedAges.length === 0 && (
+                            <Text className="text-sm text-gray-500 mt-3 text-center">
+                                선택된 나이대가 없습니다
+                            </Text>
+                        )}
+                    </View>
+                </View>
+
+                {/* 비자 선택 */}
+                <View className="p-6">
+                    <Text className="text-xl font-bold mb-4">선호 비자</Text>
+                    <View className="p-4 bg-gray-50 rounded-xl">
+                        <Dropdown
+                            style={{
+                                height: 50,
+                                borderColor: '#d1d5db',
+                                borderWidth: 2,
+                                borderRadius: 12,
+                                paddingHorizontal: 16,
+                                backgroundColor: 'white',
+                            }}
+                            placeholderStyle={{
+                                fontSize: 16,
+                                color: '#9ca3af'
+                            }}
+                            selectedTextStyle={{
+                                fontSize: 16,
+                            }}
+                            inputSearchStyle={{
+                                height: 40,
+                                fontSize: 16,
+                            }}
+                            iconStyle={{
+                                width: 20,
+                                height: 20,
+                            }}
+                            data={visaOptions}
+                            search
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder="비자를 선택하세요"
+                            searchPlaceholder="검색..."
+                            value={null}
+                            onChange={handleVisaSelect}
+                        />
+
+                        {/* 선택된 비자들 태그로 표시 */}
+                        {selectedVisas.length > 0 && (
+                            <View className="flex-row flex-wrap gap-2 mt-4">
+                                {selectedVisas.map(visaId => {
+                                    const visa = visaKeywords.find(k => k.id === visaId)
+                                    return visa ? (
+                                        <View
+                                            key={visaId}
+                                            className="flex-row items-center bg-orange-500 px-3 py-2 rounded-full"
+                                        >
+                                            <Text className="text-white text-sm font-medium mr-2">
+                                                {visa.keyword}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => removeVisa(visaId)}>
+                                                <Ionicons name="close-circle" size={18} color="white" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    ) : null
+                                })}
+                            </View>
+                        )}
+
+                        {selectedVisas.length === 0 && (
+                            <Text className="text-sm text-gray-500 mt-3 text-center">
+                                선택된 비자가 없습니다
+                            </Text>
+                        )}
+                    </View>
+                </View>
+
                 {/* 직종 선택 */}
                 <JobPreferencesSelector
                     jobs={jobKeywords}
@@ -404,6 +718,9 @@ const Keywords = () => {
                         selectedLocation,
                         selectedMoveable,
                         ...selectedCountries,
+                        ...selectedGenders,
+                        ...selectedAges,
+                        ...selectedVisas,
                         ...selectedJobs,
                         ...selectedConditions
                     ].filter(Boolean).length}개

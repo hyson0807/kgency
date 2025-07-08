@@ -287,58 +287,43 @@ const Home = () => {
                     </View>
                 )}
 
+
+
                 {/* 매칭된 키워드 */}
                 {hasMatches ? (
                     <View className="border-t border-gray-100 pt-3">
-                        <Text className="text-sm text-blue-600 font-semibold mb-2">
-                            {t('home.matched_keywords', `매칭된 키워드 (${matchedCount}개)`, {
-                                count: matchedCount
-                            })}
+                        {/* 국가 매칭 메시지 */}
+                        {matchedKeywords.countries.length > 0 && (
+                            <View className="bg-blue-50 px-3 py-2 rounded-lg mb-3">
+                                <Text className="text-blue-700 text-sm font-medium">
+                                    💙 이 회사는 {matchedKeywords.countries[0]} 사람을 선호해요!
+                                </Text>
+                            </View>
+                        )}
+
+                        <Text className="text-sm text-gray-700 font-semibold mb-2">
+                            🎯 나와 딱 맞는 조건
                         </Text>
 
-                        <View className="space-y-1">
-                            {matchedKeywords.countries.length > 0 && (
-                                <View className="flex-row items-center">
-                                    <Ionicons name="globe-outline" size={16} color="#3b82f6" />
-                                    <Text className="text-sm text-gray-700 ml-2">
-                                        {matchedKeywords.countries.join(', ')}
+                        <View className="flex-row flex-wrap gap-2">
+                            {/* 모든 매칭된 키워드를 하나의 배열로 합치기 */}
+                            {[
+                                ...matchedKeywords.countries,
+                                ...matchedKeywords.jobs,
+                                ...matchedKeywords.conditions,
+                                ...matchedKeywords.location,
+                                ...matchedKeywords.moveable
+                            ].map((keyword, index) => (
+                                <View
+                                    key={index}
+                                    className="bg-green-100 px-4 py-2 rounded-3xl flex-row items-center justify-center"
+                                >
+                                    <Text className="text-green-700 mr-1">✓</Text>
+                                    <Text className="text-green-700 text-sm font-bold" numberOfLines={1}>
+                                        {keyword}
                                     </Text>
                                 </View>
-                            )}
-
-                            {matchedKeywords.jobs.length > 0 && (
-                                <View className="flex-row items-start">
-                                    <Ionicons name="briefcase-outline" size={16} color="#3b82f6" />
-                                    <Text className="text-sm text-gray-700 ml-2 flex-1">
-                                        {matchedKeywords.jobs.join(', ')}
-                                    </Text>
-                                </View>
-                            )}
-
-                            {matchedKeywords.conditions.length > 0 && (
-                                <View className="flex-row items-start">
-                                    <Ionicons name="time-outline" size={16} color="#3b82f6" />
-                                    <Text className="text-sm text-gray-700 ml-2 flex-1">
-                                        {matchedKeywords.conditions.join(', ')}
-                                    </Text>
-                                </View>
-                            )}
-                            {matchedKeywords.location.length > 0 && (
-                                <View className="flex-row items-center">
-                                    <Ionicons name="globe-outline" size={16} color="#3b82f6" />
-                                    <Text className="text-sm text-gray-700 ml-2">
-                                        {matchedKeywords.location.join(', ')}
-                                    </Text>
-                                </View>
-                            )}
-                            {matchedKeywords.moveable.length > 0 && (
-                                <View className="flex-row items-center">
-                                    <Ionicons name="globe-outline" size={16} color="#3b82f6" />
-                                    <Text className="text-sm text-gray-700 ml-2">
-                                        {matchedKeywords.moveable.join(', ')}
-                                    </Text>
-                                </View>
-                            )}
+                            ))}
                         </View>
                     </View>
                 ) : (
@@ -354,14 +339,24 @@ const Home = () => {
 
     const renderHeader = () => (
         <View className="bg-white p-4 mb-2">
-            <Text className="text-lg font-bold text-gray-800">
-                {t('home.recommended_jobs', '추천 일자리')}
-            </Text>
-            <Text className="text-sm text-gray-600 mt-1">
-                {t('home.total_postings', `총 ${matchedPostings.length}개의 공고`, {
-                    count: matchedPostings.length
-                })}
-            </Text>
+            <View className="flex-row items-center justify-between">
+                <View>
+                    <Text className="text-lg font-bold text-gray-800">
+                        {t('home.recommended_jobs', '추천 일자리')}
+                    </Text>
+                    <Text className="text-sm text-gray-600 mt-1">
+                        {t('home.total_postings', `총 ${matchedPostings.length}개의 공고`, {
+                            count: matchedPostings.length
+                        })}
+                    </Text>
+                </View>
+                <TouchableOpacity
+                    onPress={() => router.push('/(pages)/(user)/info')}
+                    className="bg-blue-100 px-4 py-2 rounded-lg"
+                >
+                    <Text className="text-blue-600 font-medium">대표 키워드 설정</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 

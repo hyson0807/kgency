@@ -214,24 +214,29 @@ const Home = () => {
 
                 {/* 키워드 표시 */}
                 <View className="border-t border-gray-100 pt-3">
-                    {allKeywords ? (
+                    {hasMatches ? (
                         <>
-                            <Text className="text-sm text-gray-500 mb-1">희망 조건</Text>
-                            <Text className="text-sm text-gray-700" numberOfLines={2}>
-                                {allKeywords}
+                            <Text className="text-sm text-gray-700 font-semibold mb-2">
+                                🎯 우리 회사와 딱 맞는 조건
                             </Text>
 
-                            {hasMatches && (
-                                <View className="mt-2 bg-blue-50 p-2 rounded-lg">
-                                    <Text className="text-xs text-blue-600">
-                                        매칭 키워드: {matchedKeywords.join(', ')}
-                                    </Text>
-                                </View>
-                            )}
+                            <View className="flex-row flex-wrap gap-2">
+                                {matchedKeywords.map((keyword, index) => (
+                                    <View
+                                        key={index}
+                                        className="bg-green-100 px-4 py-2 rounded-3xl flex-row items-center justify-center"
+                                    >
+                                        <Text className="text-green-700 mr-1">✓</Text>
+                                        <Text className="text-green-700 text-sm font-bold" numberOfLines={1}>
+                                            {keyword}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
                         </>
                     ) : (
                         <Text className="text-sm text-gray-500">
-                            등록된 키워드가 없습니다
+                            매칭된 키워드가 없습니다
                         </Text>
                     )}
                 </View>

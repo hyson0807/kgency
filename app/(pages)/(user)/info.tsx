@@ -1,4 +1,4 @@
-import {View, Text, ScrollView, TouchableOpacity} from 'react-native'
+import {View, Text, ScrollView, TouchableOpacity, TextInput} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useUserKeywords} from "@/hooks/useUserKeywords";
@@ -14,8 +14,8 @@ import {useModal} from "@/hooks/useModal";
 import { useTranslation } from "@/contexts/TranslationContext"
 
 const Info = () => {
-    const {updateProfile} = useProfile();
-    const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
+    const {profile, updateProfile} = useProfile();
+    const [selectedLocations, setSelectedLocations] = useState<number[]>([]);
     const [selectedMoveable, setSelectedMoveable] = useState<number | null>(null);
     const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
     const [selectedJobs, setSelectedJobs] = useState<number[]>([]);
@@ -24,20 +24,43 @@ const Info = () => {
     const { showModal, hideModal, ModalComponent } = useModal();
     const { t } = useTranslation()
 
-    // 카테고리별 키워드 필터링
-    const locationOptions = [
-        // "상관없음" 옵션을 첫 번째로 추가
-        {
-            label: t('info.location_no_preference', '상관없음'),
-            value: null
-        },
-        ...keywords
-            .filter(k => k.category === '지역')
-            .map(location => ({
-                label: location.keyword,
-                value: location.id,
-            }))
+    // 프로필 정보 상태
+    const [name, setName] = useState('');
+    const [age, setAge] = useState('');
+    const [gender, setGender] = useState<string | null>(null);
+    const [visa, setVisa] = useState<string | null>(null);
+    const [koreanLevel, setKoreanLevel] = useState<string | null>(null);
+
+    // 드롭다운 옵션
+    const genderOptions = [
+        { label: '남성', value: '남성' },
+        { label: '여성', value: '여성' }
     ];
+
+    const visaOptions = [
+        { label: 'F-2', value: 'F-2' },
+        { label: 'F-4', value: 'F-4' },
+        { label: 'F-5', value: 'F-5' },
+        { label: 'F-6', value: 'F-6' },
+        { label: 'E-9', value: 'E-9' },
+        { label: 'H-2', value: 'H-2' },
+        { label: 'D-2', value: 'D-2' },
+        { label: 'D-4', value: 'D-4' }
+    ];
+
+    const koreanLevelOptions = [
+        { label: '초급', value: '초급' },
+        { label: '중급', value: '중급' },
+        { label: '고급', value: '고급' }
+    ];
+
+    // 카테고리별 키워드 필터링
+    const locationOptions = keywords
+        .filter(k => k.category === '지역')
+        .map(location => ({
+            label: location.keyword,
+            value: location.id,
+        }));
 
     const countryOptions = keywords
         .filter(k => k.category === '국가')
@@ -46,10 +69,23 @@ const Info = () => {
             value: country.id
         }));
 
-    // 지역이동 가능 키워드 찾기 (단일 키워드)
     const moveableKeyword = keywords.find(k => k.category === '지역이동');
     const jobKeywords = keywords.filter(k => k.category === '직종');
     const conditionKeywords = keywords.filter(k => k.category === '근무조건');
+
+    // 프로필 정보 로드
+    useEffect(() => {
+        if (profile) {
+            setName(profile.name || '');
+
+            if (profile.user_info) {
+                setAge(profile.user_info.age?.toString() || '');
+                setGender(profile.user_info.gender || null);
+                setVisa(profile.user_info.visa || null);
+                setKoreanLevel(profile.user_info.korean_level || null);
+            }
+        }
+    }, [profile]);
 
     // 컴포넌트 마운트 시 키워드 목록 가져오기
     useEffect(() => {
@@ -67,13 +103,11 @@ const Info = () => {
                 setSelectedMoveable(existingMoveable.keyword_id);
             }
 
-            // 지역
-            const existingLocation = user_keywords.find(uk =>
-                uk.keyword && uk.keyword.category === '지역'
-            );
-            if(existingLocation) {
-                setSelectedLocation(existingLocation.keyword_id);
-            }
+            // 지역 - 다중 선택으로 변경
+            const existingLocations = user_keywords
+                .filter(uk => uk.keyword && uk.keyword.category === '지역')
+                .map(uk => uk.keyword_id);
+            setSelectedLocations(existingLocations);
 
             // 국가
             const existingCountry = user_keywords.find(uk =>
@@ -94,11 +128,43 @@ const Info = () => {
                 .filter(uk => uk.keyword && uk.keyword.category === '근무조건')
                 .map(uk => uk.keyword_id);
             setSelectedConditions(existingConditions);
-        } else {
-            // 기존 키워드가 없으면 "상관없음"을 기본값으로 설정
-            setSelectedLocation(null);
         }
     }, [user_keywords, moveableKeyword]);
+
+    // 나이를 나이대 키워드 ID로 변환
+    const getAgeKeywordId = (ageValue: string): number | null => {
+        const ageNum = parseInt(ageValue);
+        if (isNaN(ageNum)) return null;
+
+        const ageKeyword = keywords.find(k => {
+            if (k.category !== '나이대') return false;
+
+            if (ageNum >= 20 && ageNum < 25 && k.keyword === '20-25세') return true;
+            if (ageNum >= 25 && ageNum < 30 && k.keyword === '25-30세') return true;
+            if (ageNum >= 30 && ageNum < 35 && k.keyword === '30-35세') return true;
+            if (ageNum >= 35 && k.keyword === '35세 이상') return true;
+
+            return false;
+        });
+
+        return ageKeyword?.id || null;
+    };
+
+    // 성별을 키워드 ID로 변환
+    const getGenderKeywordId = (genderValue: string): number | null => {
+        const genderKeyword = keywords.find(k =>
+            k.category === '성별' && k.keyword === genderValue
+        );
+        return genderKeyword?.id || null;
+    };
+
+    // 비자를 키워드 ID로 변환
+    const getVisaKeywordId = (visaValue: string): number | null => {
+        const visaKeyword = keywords.find(k =>
+            k.category === '비자' && k.keyword === visaValue
+        );
+        return visaKeyword?.id || null;
+    };
 
     // 직종 선택/해제 토글
     const toggleJob = (jobId: number) => {
@@ -130,54 +196,88 @@ const Info = () => {
     };
 
     const handleSaveAndNext = async () => {
-        // 국가 선택 확인 (지역은 "상관없음"이 기본값이므로 체크하지 않음)
+        // 프로필 정보 필수 입력 확인
+        if (!name || !age || !gender || !visa || !koreanLevel) {
+            showModal(t('alert.notification', '알림'), '모든 프로필 정보를 입력해주세요');
+            return;
+        }
+
+        // 나이 유효성 검사
+        const ageNum = parseInt(age);
+        if (isNaN(ageNum) || ageNum < 1 || ageNum > 100) {
+            showModal(t('alert.notification', '알림'), '올바른 나이를 입력해주세요');
+            return;
+        }
+
+        // 국가 선택 확인
         if (!selectedCountry) {
             showModal(t('alert.notification', '알림'), t('info.select_country_required', '국가를 선택해주세요'))
             return;
         }
 
         try {
-            // 1. 프로필 업데이트 (온보딩 상태만)
+            // 1. 프로필 및 user_info 업데이트
             const profileUpdated = await updateProfile({
                 profile: {
+                    name: name,
                     onboarding_completed: true
+                },
+                userInfo: {
+                    age: ageNum,
+                    gender: gender,
+                    visa: visa,
+                    korean_level: koreanLevel
                 }
             });
 
             if (!profileUpdated) {
-                // Alert 제거하고 콘솔 로그만 남김
                 console.error('프로필 업데이트 실패');
                 return;
             }
 
-            // 2. 모든 선택된 키워드 ID 모으기
+            // 2. 프로필 관련 키워드 ID 가져오기
+            const ageKeywordId = getAgeKeywordId(age);
+            const genderKeywordId = getGenderKeywordId(gender);
+            const visaKeywordId = getVisaKeywordId(visa);
+
+            // 키워드 ID가 없는 경우 경고
+            if (!ageKeywordId) {
+                console.warn('나이대 키워드를 찾을 수 없습니다:', age);
+            }
+            if (!genderKeywordId) {
+                console.warn('성별 키워드를 찾을 수 없습니다:', gender);
+            }
+            if (!visaKeywordId) {
+                console.warn('비자 키워드를 찾을 수 없습니다:', visa);
+            }
+
+            // 3. 모든 선택된 키워드 ID 모으기
             const allSelectedKeywords = [
-                // selectedLocation이 null이면 포함하지 않음
-                ...(selectedLocation !== null ? [selectedLocation] : []),
+                ...selectedLocations,  // 다중 지역 선택
                 selectedCountry,
                 ...selectedJobs,
-                ...selectedConditions
-            ].filter(Boolean); // null 값 제거
+                ...selectedConditions,
+                ageKeywordId,
+                genderKeywordId,
+                visaKeywordId
+            ].filter((id): id is number => id !== null && id !== undefined);
 
             // 지역이동 가능이 선택되었으면 추가
             if (selectedMoveable) {
                 allSelectedKeywords.push(selectedMoveable);
             }
 
-            // 3. 키워드 업데이트
+            // 4. 키워드 업데이트
             const keywordsUpdated = await updateKeywords(allSelectedKeywords);
 
             if (keywordsUpdated) {
-                // 성공 메시지 없이 바로 페이지 이동
                 router.replace('/(user)/home');
             } else {
-                // 실패해도 그냥 페이지 이동
                 console.error('키워드 저장 실패');
                 router.replace('/(user)/home');
             }
         } catch (error) {
             console.error('저장 실패:', error);
-            // 에러가 나도 페이지 이동
             router.replace('/(user)/home');
         }
     };
@@ -199,6 +299,125 @@ const Info = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 20 }}
                 >
+                    {/* 프로필 정보 섹션 */}
+                    <View className="p-4 border-b border-gray-100">
+                        <Text className="text-lg font-bold mb-4">프로필 정보</Text>
+
+                        {/* 이름 */}
+                        <View className="mb-4">
+                            <Text className="text-sm font-medium text-gray-700 mb-2">이름 *</Text>
+                            <TextInput
+                                className="border border-gray-300 rounded-lg p-3"
+                                placeholder="이름을 입력하세요"
+                                value={name}
+                                onChangeText={setName}
+                            />
+                        </View>
+
+                        {/* 나이 */}
+                        <View className="mb-4">
+                            <Text className="text-sm font-medium text-gray-700 mb-2">나이 *</Text>
+                            <TextInput
+                                className="border border-gray-300 rounded-lg p-3"
+                                placeholder="나이를 입력하세요"
+                                value={age}
+                                onChangeText={setAge}
+                                keyboardType="numeric"
+                                maxLength={3}
+                            />
+                        </View>
+
+                        {/* 성별 */}
+                        <View className="mb-4">
+                            <Text className="text-sm font-medium text-gray-700 mb-2">성별 *</Text>
+                            <Dropdown
+                                style={{
+                                    height: 45,
+                                    borderColor: '#d1d5db',
+                                    borderWidth: 1,
+                                    borderRadius: 8,
+                                    paddingHorizontal: 12,
+                                    backgroundColor: 'white',
+                                }}
+                                placeholderStyle={{
+                                    fontSize: 14,
+                                    color: '#9ca3af'
+                                }}
+                                selectedTextStyle={{
+                                    fontSize: 14,
+                                }}
+                                data={genderOptions}
+                                labelField="label"
+                                valueField="value"
+                                placeholder="성별을 선택하세요"
+                                value={gender}
+                                onChange={item => {
+                                    setGender(item.value);
+                                }}
+                            />
+                        </View>
+
+                        {/* 비자 */}
+                        <View className="mb-4">
+                            <Text className="text-sm font-medium text-gray-700 mb-2">비자 종류 *</Text>
+                            <Dropdown
+                                style={{
+                                    height: 45,
+                                    borderColor: '#d1d5db',
+                                    borderWidth: 1,
+                                    borderRadius: 8,
+                                    paddingHorizontal: 12,
+                                    backgroundColor: 'white',
+                                }}
+                                placeholderStyle={{
+                                    fontSize: 14,
+                                    color: '#9ca3af'
+                                }}
+                                selectedTextStyle={{
+                                    fontSize: 14,
+                                }}
+                                data={visaOptions}
+                                labelField="label"
+                                valueField="value"
+                                placeholder="비자를 선택하세요"
+                                value={visa}
+                                onChange={item => {
+                                    setVisa(item.value);
+                                }}
+                            />
+                        </View>
+
+                        {/* 한국어 실력 */}
+                        <View className="mb-4">
+                            <Text className="text-sm font-medium text-gray-700 mb-2">한국어 실력 *</Text>
+                            <Dropdown
+                                style={{
+                                    height: 45,
+                                    borderColor: '#d1d5db',
+                                    borderWidth: 1,
+                                    borderRadius: 8,
+                                    paddingHorizontal: 12,
+                                    backgroundColor: 'white',
+                                }}
+                                placeholderStyle={{
+                                    fontSize: 14,
+                                    color: '#9ca3af'
+                                }}
+                                selectedTextStyle={{
+                                    fontSize: 14,
+                                }}
+                                data={koreanLevelOptions}
+                                labelField="label"
+                                valueField="value"
+                                placeholder="한국어 실력을 선택하세요"
+                                value={koreanLevel}
+                                onChange={item => {
+                                    setKoreanLevel(item.value);
+                                }}
+                            />
+                        </View>
+                    </View>
+
                     {/* 지역 선택 섹션 */}
                     <View className="p-4">
                         <Text className="text-base font-semibold mb-3">{t('info.desired_location', '희망 근무 지역')}</Text>
@@ -232,15 +451,41 @@ const Info = () => {
                                 maxHeight={300}
                                 labelField="label"
                                 valueField="value"
-                                placeholder={t('info.location_no_preference', '선호지역 없음')}
+                                placeholder={selectedLocations.length > 0 ? selectedLocations.length + '개 선택됨' : t('info.select_location', '지역을 선택하세요')}
                                 searchPlaceholder={t('info.search', '검색...')}
-                                value={selectedLocation}
+                                value={null}
                                 onChange={item => {
-                                    setSelectedLocation(item.value);
+                                    if (item.value && !selectedLocations.includes(item.value)) {
+                                        setSelectedLocations([...selectedLocations, item.value]);
+                                    }
                                 }}
                             />
 
-                            {/* 지역이동 가능 토글 - 상관없음을 선택해도 표시 */}
+                            {/* 선택된 지역들 태그로 표시 */}
+                            {selectedLocations.length > 0 && (
+                                <View className="flex-row flex-wrap gap-2 mt-3">
+                                    {selectedLocations.map(locationId => {
+                                        const location = keywords.find(k => k.id === locationId);
+                                        return location ? (
+                                            <View
+                                                key={locationId}
+                                                className="flex-row items-center bg-blue-500 px-3 py-2 rounded-full"
+                                            >
+                                                <Text className="text-white text-sm font-medium mr-2">
+                                                    {location.keyword}
+                                                </Text>
+                                                <TouchableOpacity onPress={() => {
+                                                    setSelectedLocations(prev => prev.filter(id => id !== locationId));
+                                                }}>
+                                                    <Ionicons name="close-circle" size={18} color="white" />
+                                                </TouchableOpacity>
+                                            </View>
+                                        ) : null;
+                                    })}
+                                </View>
+                            )}
+
+                            {/* 지역이동 가능 토글 */}
                             {moveableKeyword && (
                                 <TouchableOpacity
                                     onPress={toggleMoveable}
@@ -332,7 +577,6 @@ const Info = () => {
                 </ScrollView>
             </View>
             <ModalComponent/>
-
         </SafeAreaView>
     )
 }
