@@ -129,13 +129,6 @@ export default function PostingDetail() {
 
 
 
-                {/* 회사 소개 */}
-                {posting.company.description && (
-                    <View className="p-6 border-b border-gray-100">
-                        <Text className="text-lg font-semibold mb-4">{t('posting_detail.company_intro', '회사 소개')}</Text>
-                        <Text className="text-gray-700 leading-6">{posting.company.description}</Text>
-                    </View>
-                )}
 
                 {/* 주요 정보 */}
                 <View className="p-6 border-b border-gray-100">

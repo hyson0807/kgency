@@ -261,7 +261,7 @@ const Home = () => {
                     onPress={() => router.push('/(pages)/(company)/keywords')}
                     className="bg-blue-100 px-4 py-2 rounded-lg"
                 >
-                    <Text className="text-blue-600 font-medium">대표 키워드 설정</Text>
+                    <Text className="text-blue-600 font-medium py-2">우리 회사랑 맞는 인재 찾기!</Text>
                 </TouchableOpacity>
             </View>
         </View>
