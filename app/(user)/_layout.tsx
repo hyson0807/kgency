@@ -5,6 +5,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useTranslation } from "@/contexts/TranslationContext";
+import Feather from "@expo/vector-icons/Feather";
 
 const user_Layout = () => {
     const { t, translateDB, language } = useTranslation();
@@ -33,13 +34,6 @@ const user_Layout = () => {
                 }}
             />
 
-            <Tabs.Screen
-                name="myposting"
-                options={{
-                    tabBarLabel: t('tab.my_posting', '내공고'),
-                    tabBarIcon: ({size, color}) => <Entypo name="v-card" size={size} color={color} />
-                }}
-            />
 
             <Tabs.Screen
                 name="applications"
@@ -49,6 +43,15 @@ const user_Layout = () => {
                     tabBarIcon: ({size, color}) => <AntDesign name="copy1" size={size} color={color} />
                 }}
             />
+
+            <Tabs.Screen
+                name="message"
+                options={{
+                    tabBarLabel: t('tab.message', '메시지'),
+                    tabBarIcon: ({size, color}) => <Feather name="mail" size={size} color={color} />
+                }}
+            />
+
             <Tabs.Screen
                 name="settings"
                 options={{

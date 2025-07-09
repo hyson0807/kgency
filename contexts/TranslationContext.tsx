@@ -195,11 +195,11 @@ const translations: { [key: string]: { [lang: string]: string } } = {
         zh: '首页',
         vi: 'Trang chủ'
     },
-    'tab.my_posting': {
-        en: 'My Posting',
-        ja: '私の求人',
-        zh: '我的求职',
-        vi: 'Tin của tôi'
+    'tab.message': {
+        en: 'message',
+        ja: 'message',
+        zh: 'message',
+        vi: 'message'
     },
     'tab.applications': {
         en: 'Applications',

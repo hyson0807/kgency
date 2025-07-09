@@ -220,7 +220,8 @@ const Info = () => {
             const profileUpdated = await updateProfile({
                 profile: {
                     name: name,
-                    onboarding_completed: true
+                    onboarding_completed: true,
+                    job_seeking_active: true,
                 },
                 userInfo: {
                     age: ageNum,

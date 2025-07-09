@@ -11,8 +11,9 @@ import { useTranslation } from "@/contexts/TranslationContext";
 
 const Settings = () => {
     const { logout, user } = useAuth()
-    const { profile } = useProfile()
+    const { profile, updateProfile } = useProfile()
     const { showModal, ModalComponent } = useModal()
+    const [isJobSeekingActive, setIsJobSeekingActive] = useState(false)
 
     // 알림 설정 상태
     const [notificationSettings, setNotificationSettings] = useState({
@@ -36,6 +37,7 @@ const Settings = () => {
     // 알림 설정 로드
     useEffect(() => {
         loadNotificationSettings()
+        setIsJobSeekingActive(profile?.job_seeking_active || true)
     }, [])
 
     const loadNotificationSettings = async () => {
@@ -158,6 +160,18 @@ const Settings = () => {
         )
     }
 
+    const newStatus = !isJobSeekingActive
+    const activeButton = async () => {
+        const res = await updateProfile({
+            profile: {
+                job_seeking_active: newStatus
+            }
+        })
+        if(!res) showModal('알림', '공고 활성화 실패', 'warning')
+        setIsJobSeekingActive(newStatus)
+
+    }
+
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
             {/* 헤더 */}
@@ -189,6 +203,26 @@ const Settings = () => {
                             <Text className="text-blue-600 text-sm font-medium">{t('settings.edit_profile', '프로필 수정')}</Text>
                         </TouchableOpacity>
                     </View>
+                </View>
+                <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
+                <View className="flex-row items-center justify-between mb-4">
+                    <View className="flex-1">
+                        <Text className="text-lg font-bold text-gray-800">{t('myposting.activate_posting', '구직공고 활성화')}</Text>
+                        <Text className="text-sm text-gray-600 mt-1">
+                            {t('myposting.activate_description', '활성화하면 회사에서 내 프로필을 볼 수 있습니다')}
+                        </Text>
+                    </View>
+                    <TouchableOpacity
+                        onPress={activeButton}
+                        className={`w-14 h-8 rounded-full p-1 ${
+                            isJobSeekingActive ? 'bg-blue-500' : 'bg-gray-300'
+                        }`}
+                    >
+                        <View className={`w-6 h-6 bg-white rounded-full ${
+                            isJobSeekingActive ? 'self-end' : 'self-start'
+                        }`} />
+                    </TouchableOpacity>
+                </View>
                 </View>
 
                 {/* 알림 설정 섹션 */}
