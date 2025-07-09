@@ -129,7 +129,7 @@ const CompanyLogin = () => {
                 if (result.success) {
                     // 성공 메시지 제거 - 바로 페이지 이동
                     if (response.data.onboardingStatus.completed) {
-                        router.replace('/(company)/home');
+                        router.replace('/(company)/home2');
                     } else {
                         router.replace('/(pages)/(company)/register');
                     }

@@ -63,9 +63,9 @@ export const homeTranslations : TranslationData = {
         vi: 'Điều kiện phù hợp hoàn hảo'
     },
     'home.company_prefers': {
-        en: '💙 This company prefers {{country}} applicants!',
-        ja: '💙 この会社は{{country}}の方を優遇しています！',
-        zh: '💙 这家公司优先考虑{{country}}求职者！',
-        vi: '💙 Công ty này ưu tiên người {{country}}!'
+        en: 'This company prefers {{country}} applicants!',
+        ja: 'この会社は{{country}}の方を優遇しています！',
+        zh: '这家公司优先考虑{{country}}求职者！',
+        vi: 'Công ty này ưu tiên người {{country}}!'
     },
 }

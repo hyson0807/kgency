@@ -10,7 +10,7 @@ import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext";
 
 const Settings = () => {
-    const { logout, user } = useAuth()
+    const { logout, user,checkAuthState } = useAuth()
     const { profile, updateProfile } = useProfile()
     const { showModal, ModalComponent } = useModal()
     const [isJobSeekingActive, setIsJobSeekingActive] = useState(false)
@@ -36,6 +36,7 @@ const Settings = () => {
 
     // 알림 설정 로드
     useEffect(() => {
+        checkAuthState()
         loadNotificationSettings()
         setIsJobSeekingActive(profile?.job_seeking_active || true)
     }, [])

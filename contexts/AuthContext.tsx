@@ -76,9 +76,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const userData = await AsyncStorage.getItem('userData');
             const onboardingStatus = await AsyncStorage.getItem('onboardingStatus');
 
+
             if (token) {
                 const decoded = jwtDecode(token);
                 const isExpired = decoded.exp! * 1000 < Date.now();
+
+                console.log(decoded)
 
                 if (!isExpired && userData) {
                     setUser(JSON.parse(userData));
@@ -101,24 +104,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // 로그인 함수
     const login = async (token: string, userData: User, onboardingStatus: any): Promise<LoginResult> => {
         try {
-            // AsyncStorage에 저장
+            // 🔒 기존 데이터 삭제 (덮어쓰기 대신 명시적으로 클리어)
+            await AsyncStorage.removeItem('authToken');
+            await AsyncStorage.removeItem('userData');
+            await AsyncStorage.removeItem('onboardingStatus');
+            await AsyncStorage.removeItem('userProfile'); // 혹시 남아있을 경우 대비
+
+            // ✅ 새로운 로그인 데이터 저장
             await AsyncStorage.setItem('authToken', token);
             await AsyncStorage.setItem('userData', JSON.stringify(userData));
             await AsyncStorage.setItem('onboardingStatus', JSON.stringify(onboardingStatus));
 
-            // 상태 업데이트
+            // 상태 반영
             setUser(userData);
             setIsAuthenticated(true);
             setOnboardingCompleted(onboardingStatus.completed);
 
-            // axios 헤더 설정
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            console.log('로그인 성공');
             return { success: true };
-
         } catch (error) {
-            console.error('로그인 실패:', error);
             return {
                 success: false,
                 error: error instanceof Error ? error.message : '로그인 실패'

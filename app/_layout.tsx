@@ -1,15 +1,20 @@
-import {Slot} from "expo-router";
+import {Slot, Stack, Tabs} from "expo-router";
 import "./global.css"
 import {AuthProvider} from "@/contexts/AuthContext";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {TranslationProvider} from "@/contexts/TranslationContext";
 
 export default function RootLayout() {
+
   return (
       <TranslationProvider>
             <AuthProvider>
                 <SafeAreaProvider>
-                        <Slot/>
+                    <Stack
+                        screenOptions={{
+                            headerShown: false, // ✅ 헤더 숨김
+                        }}
+                    />
                 </SafeAreaProvider>
             </AuthProvider>
       </TranslationProvider>

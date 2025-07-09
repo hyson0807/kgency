@@ -4,7 +4,9 @@ import { Ionicons } from "@expo/vector-icons"
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Feather from '@expo/vector-icons/Feather';
-const user_Layout = () => {
+
+
+const company_Layout = () => {
     return (
         <Tabs
             screenOptions={{
@@ -21,7 +23,7 @@ const user_Layout = () => {
         >
 
             <Tabs.Screen
-                name="home"
+                name="home2"
                 options={{
                     tabBarLabel: '홈',
                     tabBarIcon: ({size, color}) => <Ionicons name='home' size={size} color={color}/>
@@ -45,7 +47,7 @@ const user_Layout = () => {
                 }}
             />
             <Tabs.Screen
-                name="settings"
+                name="settings2"
                 options={{
                     tabBarLabel: '설정',
                     tabBarIcon: ({size, color}) => <MaterialIcons name="settings" size={size} color={color} />
@@ -54,4 +56,5 @@ const user_Layout = () => {
         </Tabs>
     )
 }
-export default user_Layout
+export default company_Layout
+

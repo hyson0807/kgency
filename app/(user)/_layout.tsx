@@ -1,14 +1,20 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {Tabs} from "expo-router";
 import { Ionicons } from "@expo/vector-icons"
-import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useTranslation } from "@/contexts/TranslationContext";
 import Feather from "@expo/vector-icons/Feather";
+import {useAuth} from "@/contexts/AuthContext";
 
 const user_Layout = () => {
     const { t, translateDB, language } = useTranslation();
+    const {user} = useAuth();
+    console.log("유저정보123123", user)
+
+    useEffect(() => {
+        console.log("유저정보123123", user)
+    }, []);
 
     return (
         <Tabs

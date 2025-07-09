@@ -413,7 +413,7 @@ const Info = () => {
                 'confirm',
                 () => {
                     hideModal()
-                    router.replace('/(company)/home')
+                    router.replace('/(company)/home2')
                 }
             )
 

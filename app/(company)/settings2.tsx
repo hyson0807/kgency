@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/hooks/useModal'
 
-const Settings = () => {
+const Settings2 = () => {
     const { logout, user } = useAuth()
     const { profile } = useProfile()
     const { showModal, ModalComponent } = useModal()
@@ -473,4 +473,4 @@ const Settings = () => {
     )
 }
 
-export default Settings
+export default Settings2

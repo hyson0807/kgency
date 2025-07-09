@@ -35,7 +35,7 @@ interface MatchedJobSeeker {
     matchedKeywords: string[]
 }
 
-const Home = () => {
+const Home2 = () => {
     const { user } = useAuth()
     const [matchedJobSeekers, setMatchedJobSeekers] = useState<MatchedJobSeeker[]>([])
     const [loading, setLoading] = useState(true)
@@ -316,4 +316,4 @@ const Home = () => {
     )
 }
 
-export default Home
+export default Home2

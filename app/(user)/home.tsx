@@ -164,8 +164,8 @@ const Home = () => {
                             const translatedKeyword = translateDB(
                                 'keyword',
                                 'keyword',
-                                jpk.keyword.id.toString(),
-                                jpk.keyword.keyword
+                                jpk.keyword.id?.toString() || '',
+                                jpk.keyword.keyword || ''
                             )
 
                             switch (jpk.keyword.category) {
@@ -238,9 +238,9 @@ const Home = () => {
 
 
     const renderPosting = ({ item }: { item: MatchedPosting }) => {
-        const { posting, matchedCount, matchedKeywords } = item
-        const hasApplied = appliedPostings.includes(posting.id)
-        const hasMatches = matchedCount > 0
+        const { posting, matchedCount, matchedKeywords } = item;
+        const hasApplied = appliedPostings.includes(posting.id);
+        const hasMatches = matchedCount > 0;
 
         return (
             <TouchableOpacity
@@ -259,7 +259,7 @@ const Home = () => {
                 )}
 
                 {/* 회사 정보 */}
-                <View className="mb-2" >
+                <View className="mb-2">
                     <Text className="text-sm text-gray-600">{posting.company.name}</Text>
                     <Text className="text-lg font-bold text-gray-800 pr-20">
                         {translateDB('job_postings', 'title', posting.id, posting.title)}
@@ -288,35 +288,14 @@ const Home = () => {
                     )}
                 </View>
 
-                {/* 복지/혜택 */}
-                {posting.benefits && posting.benefits.length > 0 && (
-                    <View className="flex-row flex-wrap gap-1 mb-3">
-                        {posting.benefits.slice(0, 3).map((benefit, index) => (
-                            <View key={index} className="bg-gray-100 px-2 py-1 rounded">
-                                <Text className="text-xs text-gray-700">{benefit}</Text>
-                            </View>
-                        ))}
-                        {posting.benefits.length > 3 && (
-                            <View className="bg-gray-100 px-2 py-1 rounded">
-                                <Text className="text-xs text-gray-700">+{posting.benefits.length - 3}</Text>
-                            </View>
-                        )}
-                    </View>
-                )}
-
-
-
                 {/* 매칭된 키워드 */}
                 {hasMatches ? (
                     <View className="border-t border-gray-100 pt-3">
-
-
                         <Text className="text-sm text-gray-700 font-semibold mb-2">
-                            🎯 {t('home.perfect_match', '나와 딱 맞는 조건')}
+                            {t('home.perfect_match', '나와 딱 맞는 조건')}
                         </Text>
 
                         <View className="flex-row flex-wrap gap-2">
-                            {/* 모든 매칭된 키워드를 하나의 배열로 합치기 */}
                             {[
                                 ...matchedKeywords.countries,
                                 ...matchedKeywords.jobs,
@@ -326,8 +305,6 @@ const Home = () => {
                                 ...matchedKeywords.gender,
                                 ...matchedKeywords.age,
                                 ...matchedKeywords.visa,
-
-
                             ].map((keyword, index) => (
                                 <View
                                     key={index}
@@ -340,15 +317,14 @@ const Home = () => {
                                 </View>
                             ))}
                         </View>
-                        {/* 국가 매칭 메시지 */}
+
                         {matchedKeywords.countries.length > 0 && (
                             <View className="bg-blue-50 px-3 py-2 rounded-lg mt-3">
                                 <Text className="text-blue-700 text-sm font-medium">
-                                     {t('home.company_prefers', '💙이 회사는 {{country}} 사람을 선호해요!', {
-                                    country: matchedKeywords.countries[0]
-                                })}
+                                    {t('home.company_prefers', '이 회사는 {{country}} 사람을 선호해요!', {
+                                        country: matchedKeywords.countries[0] || '',
+                                    })}
                                 </Text>
-
                             </View>
                         )}
                     </View>
@@ -360,8 +336,9 @@ const Home = () => {
                     </View>
                 )}
             </TouchableOpacity>
-        )
-    }
+        );
+    };
+
 
     const renderHeader = () => (
         <View className="bg-white p-4 mb-2">
