@@ -21,7 +21,7 @@ const JobPreferencesSelector: React.FC<JobPreferencesSelectorProps> = ({
                            onToggle,
                            title
                        }) => {
-        const { t } = useTranslation();
+        const { t, translateDB } = useTranslation();
     return (
         <View className="p-6">
             <Text className=" font-bold mb-4">
@@ -32,7 +32,7 @@ const JobPreferencesSelector: React.FC<JobPreferencesSelectorProps> = ({
                     <KeywordTag
                         key={job.id}
                         id={job.id}
-                        text={job.keyword}
+                        text={translateDB('keyword', 'keyword', job.id.toString(), job.keyword)}
                         isSelected={selectedJobs.includes(job.id)}
                         onPress={onToggle}
                     />

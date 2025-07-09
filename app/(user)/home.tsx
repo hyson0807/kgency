@@ -179,10 +179,10 @@ const Home = () => {
                                     matchedKeywords.conditions.push(translatedKeyword)
                                     break
                                 case '지역':
-                                    matchedKeywords.countries.push(translatedKeyword)
+                                    matchedKeywords.location.push(translatedKeyword)
                                     break
                                 case '지역이동':
-                                    matchedKeywords.countries.push(translatedKeyword)
+                                    matchedKeywords.moveable.push(translatedKeyword)
                                     break
                                 case '성별':
                                     matchedKeywords.gender.push(translatedKeyword)
@@ -234,6 +234,8 @@ const Home = () => {
             }
         })
     }
+
+
 
     const renderPosting = ({ item }: { item: MatchedPosting }) => {
         const { posting, matchedCount, matchedKeywords } = item
@@ -310,7 +312,7 @@ const Home = () => {
 
 
                         <Text className="text-sm text-gray-700 font-semibold mb-2">
-                            🎯 나와 딱 맞는 조건
+                            🎯 {t('home.perfect_match', '나와 딱 맞는 조건')}
                         </Text>
 
                         <View className="flex-row flex-wrap gap-2">
@@ -342,8 +344,11 @@ const Home = () => {
                         {matchedKeywords.countries.length > 0 && (
                             <View className="bg-blue-50 px-3 py-2 rounded-lg mt-3">
                                 <Text className="text-blue-700 text-sm font-medium">
-                                    💙 이 회사는 {matchedKeywords.countries[0]} 사람을 선호해요!
+                                     {t('home.company_prefers', '💙이 회사는 {{country}} 사람을 선호해요!', {
+                                    country: matchedKeywords.countries[0]
+                                })}
                                 </Text>
+
                             </View>
                         )}
                     </View>
@@ -375,7 +380,7 @@ const Home = () => {
                     onPress={() => router.push('/(pages)/(user)/info')}
                     className="bg-blue-100 px-4 py-2 rounded-lg"
                 >
-                    <Text className="text-blue-600 font-medium">대표 키워드 설정</Text>
+                    <Text className="text-blue-600 font-medium">{t('home.set_keywords', '대표 키워드 설정')}</Text>
                 </TouchableOpacity>
             </View>
         </View>

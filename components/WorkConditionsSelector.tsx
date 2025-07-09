@@ -21,7 +21,7 @@ const WorkConditionsSelector: React.FC<WorkConditionsSelectorProps> = ({
                onToggle,
                title
 }) => {
-        const { t } = useTranslation();
+        const { t, translateDB } = useTranslation();
     return (
         <View className="p-6">
             <Text className="font-bold mb-4">
@@ -32,7 +32,7 @@ const WorkConditionsSelector: React.FC<WorkConditionsSelectorProps> = ({
                     <KeywordTag
                         key={condition.id}
                         id={condition.id}
-                        text={condition.keyword}
+                        text={translateDB('keyword', 'keyword', condition.id.toString(), condition.keyword)}
                         isSelected={selectedConditions.includes(condition.id)}
                         onPress={onToggle}
                     />

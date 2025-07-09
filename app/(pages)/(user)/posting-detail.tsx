@@ -20,7 +20,7 @@ export default function PostingDetail() {
     const [posting, setPosting] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [hasApplied, setHasApplied] = useState(false)
-    const { t } = useTranslation()
+    const { t, translateDB } = useTranslation()
 
 
     useEffect(() => {
@@ -143,7 +143,7 @@ export default function PostingDetail() {
                             <View className="ml-3">
                                 <Text className="text-xs text-gray-500">{t('posting_detail.work_location', '근무지역')}</Text>
                                 <Text className="text-base text-gray-800">
-                                    {keywords.location.map(k => k.keyword).join(', ')}
+                                    {keywords.location.map(k => translateDB('keyword', 'keyword', k.id.toString(), k.keyword)).join(', ')}
                                 </Text>
                             </View>
                         </View>
@@ -244,7 +244,9 @@ export default function PostingDetail() {
                         <View className="flex-row flex-wrap gap-2">
                             {keywords.conditions.map((keyword) => (
                                 <View key={keyword.id} className="bg-orange-100 px-3 py-1 rounded-full">
-                                    <Text className="text-orange-700 text-sm">{keyword.keyword}</Text>
+                                    <Text className="text-orange-700 text-sm">
+                                        {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
+                                    </Text>
                                 </View>
                             ))}
                         </View>
@@ -270,7 +272,9 @@ export default function PostingDetail() {
                                 <View className="flex-row flex-wrap gap-2">
                                     {keywords.countries.map((keyword) => (
                                         <View key={keyword.id} className="bg-purple-100 px-3 py-1 rounded-full">
-                                            <Text className="text-purple-700 text-sm">{keyword.keyword}</Text>
+                                            <Text className="text-purple-700 text-sm">
+                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
+                                            </Text>
                                         </View>
                                     ))}
                                 </View>
@@ -283,7 +287,9 @@ export default function PostingDetail() {
                                 <View className="flex-row flex-wrap gap-2">
                                     {keywords.jobs.map((keyword) => (
                                         <View key={keyword.id} className="bg-orange-100 px-3 py-1 rounded-full">
-                                            <Text className="text-orange-700 text-sm">{keyword.keyword}</Text>
+                                            <Text className="text-orange-700 text-sm">
+                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
+                                            </Text>
                                         </View>
                                     ))}
                                 </View>
@@ -291,11 +297,13 @@ export default function PostingDetail() {
                         )}
                         {keywords.gender.length > 0 && (
                             <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">모집 성별</Text>
+                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_gender', '모집 성별')}</Text>
                                 <View className="flex-row flex-wrap gap-2">
                                     {keywords.gender.map((keyword) => (
                                         <View key={keyword.id} className="bg-blue-100 px-3 py-1 rounded-full">
-                                            <Text className="text-blue-700 text-sm">{keyword.keyword}</Text>
+                                            <Text className="text-blue-700 text-sm">
+                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
+                                            </Text>
                                         </View>
                                     ))}
                                 </View>
@@ -303,11 +311,13 @@ export default function PostingDetail() {
                         )}
                         {keywords.age.length > 0 && (
                             <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">모집 나이대</Text>
+                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_age', '모집 나이대')}</Text>
                                 <View className="flex-row flex-wrap gap-2">
                                     {keywords.age.map((keyword) => (
                                         <View key={keyword.id} className="bg-green-100 px-3 py-1 rounded-full">
-                                            <Text className="text-green-700 text-sm">{keyword.keyword}</Text>
+                                            <Text className="text-green-700 text-sm">
+                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
+                                            </Text>
                                         </View>
                                     ))}
                                 </View>
@@ -315,11 +325,13 @@ export default function PostingDetail() {
                         )}
                         {keywords.visa.length > 0 && (
                             <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">지원 가능한 비자</Text>
+                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.available_visa', '지원 가능한 비자')}</Text>
                                 <View className="flex-row flex-wrap gap-2">
                                     {keywords.visa.map((keyword) => (
                                         <View key={keyword.id} className="bg-yellow-100 px-3 py-1 rounded-full">
-                                            <Text className="text-yellow-700 text-sm">{keyword.keyword}</Text>
+                                            <Text className="text-yellow-700 text-sm">
+                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
+                                            </Text>
                                         </View>
                                     ))}
                                 </View>
