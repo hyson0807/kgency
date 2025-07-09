@@ -7,132 +7,308 @@ export const postingDetailTranslations: TranslationData = {
         en: 'Job Details',
         ja: '採用詳細',
         zh: '招聘详情',
-        vi: 'Chi tiết tuyển dụng'
+        vi: 'Chi tiết tuyển dụng',
+        hi: 'नौकरी विवरण',
+        si: 'රැකියා විස්තර',
+        ar: 'تفاصيل الوظيفة',
+        tr: 'İş Detayları',
+        my: 'အလုပ်အသေးစိတ်',
+        ky: 'Жумуш чоо-жайы',
+        ha: 'Dalla-dalla na Aiki',
+        mn: 'Ажлын дэлгэрэнгүй'
     },
     'posting_detail.not_found': {
         en: 'Job posting not found.',
         ja: '求人が見つかりません。',
         zh: '找不到招聘信息。',
-        vi: 'Không tìm thấy tin tuyển dụng.'
+        vi: 'Không tìm thấy tin tuyển dụng.',
+        hi: 'नौकरी पोस्टिंग नहीं मिली।',
+        si: 'රැකියා දැන්වීම සොයා ගත නොහැක.',
+        ar: 'لم يتم العثور على إعلان الوظيفة.',
+        tr: 'İş ilanı bulunamadı.',
+        my: 'အလုပ်ကြေငြာကို ရှာမတွေ့ပါ။',
+        ky: 'Жумуш жарыялоосу табылган жок.',
+        ha: 'Ba a sami sanarwar aikin ba.',
+        mn: 'Ажлын зар олдсонгүй.'
     },
     'posting_detail.company_intro': {
         en: 'About Company',
         ja: '会社紹介',
         zh: '公司介绍',
-        vi: 'Giới thiệu công ty'
+        vi: 'Giới thiệu công ty',
+        hi: 'कंपनी के बारे में',
+        si: 'සමාගම ගැන',
+        ar: 'حول الشركة',
+        tr: 'Şirket Hakkında',
+        my: 'ကုမ္ပဏီအကြောင်း',
+        ky: 'Компания жөнүндө',
+        ha: 'Game da Kamfani',
+        mn: 'Компанийн тухай'
     },
     'posting_detail.work_conditions': {
         en: 'Working Conditions',
         ja: '勤務条件',
         zh: '工作条件',
-        vi: 'Điều kiện làm việc'
+        vi: 'Điều kiện làm việc',
+        hi: 'कार्य शर्तें',
+        si: 'වැඩ කිරීමේ කොන්දේසි',
+        ar: 'ظروف العمل',
+        tr: 'Çalışma Koşulları',
+        my: 'အလုပ်လုပ်မှုအခြေအနေများ',
+        ky: 'Жумуш шарттары',
+        ha: 'Yanayin Aiki',
+        mn: 'Ажлын нөхцөл'
     },
     'posting_detail.work_location': {
         en: 'Work Location',
         ja: '勤務地',
         zh: '工作地点',
-        vi: 'Địa điểm làm việc'
+        vi: 'Địa điểm làm việc',
+        hi: 'कार्य स्थान',
+        si: 'වැඩ කරන ස්ථානය',
+        ar: 'موقع العمل',
+        tr: 'Çalışma Yeri',
+        my: 'အလုပ်လုပ်ရာနေရာ',
+        ky: 'Жумуш орду',
+        ha: 'Wurin Aiki',
+        mn: 'Ажлын газар'
     },
     'posting_detail.work_days': {
         en: 'Working Days',
         ja: '勤務日',
         zh: '工作日',
-        vi: 'Ngày làm việc'
+        vi: 'Ngày làm việc',
+        hi: 'कार्य दिवस',
+        si: 'වැඩ කරන දින',
+        ar: 'أيام العمل',
+        tr: 'Çalışma Günleri',
+        my: 'အလုပ်လုပ်ရက်များ',
+        ky: 'Жумуш күндөрү',
+        ha: 'Kwanakin Aiki',
+        mn: 'Ажлын өдрүүд'
     },
     'posting_detail.work_hours': {
         en: 'Working Hours',
         ja: '勤務時間',
         zh: '工作时间',
-        vi: 'Giờ làm việc'
+        vi: 'Giờ làm việc',
+        hi: 'कार्य घंटे',
+        si: 'වැඩ කරන වේලාවන්',
+        ar: 'ساعات العمل',
+        tr: 'Çalışma Saatleri',
+        my: 'အလုပ်လုပ်ချိန်များ',
+        ky: 'Жумуш убактысы',
+        ha: 'Lokutan Aiki',
+        mn: 'Ажлын цаг'
     },
     'posting_detail.salary': {
         en: 'Salary',
         ja: '給与',
         zh: '薪资',
-        vi: 'Lương'
+        vi: 'Lương',
+        hi: 'वेतन',
+        si: 'වැටුප',
+        ar: 'الراتب',
+        tr: 'Maaş',
+        my: 'လုပ်ခ',
+        ky: 'Айлык акы',
+        ha: 'Albashi',
+        mn: 'Цалин'
     },
     'posting_detail.pay_day': {
         en: 'Pay Day',
         ja: '給料日',
         zh: '发薪日',
-        vi: 'Ngày trả lương'
+        vi: 'Ngày trả lương',
+        hi: 'वेतन दिवस',
+        si: 'වැටුප් දිනය',
+        ar: 'يوم الراتب',
+        tr: 'Maaş Günü',
+        my: 'လုပ်ခပေးရက်',
+        ky: 'Айлык акы берүү күнү',
+        ha: 'Ranar Biyan Albashi',
+        mn: 'Цалин олгох өдөр'
     },
     'posting_detail.negotiable': {
         en: ' (Negotiable)',
         ja: ' (協議可能)',
         zh: ' (可协商)',
-        vi: ' (Có thể thương lượng)'
+        vi: ' (Có thể thương lượng)',
+        hi: ' (बातचीत योग्य)',
+        si: ' (සාකච්ඡා කළ හැකි)',
+        ar: ' (قابل للتفاوض)',
+        tr: ' (Pazarlık Edilebilir)',
+        my: ' (ညှိနှိုင်းနိုင်သည်)',
+        ky: ' (Сүйлөшүүгө болот)',
+        ha: ' (Ana iya shawarwari)',
+        mn: ' (Ярилцан тохиролцох боломжтой)'
     },
     'posting_detail.hiring_count': {
         en: 'Positions',
         ja: '募集人数',
         zh: '招聘人数',
-        vi: 'Số lượng tuyển'
+        vi: 'Số lượng tuyển',
+        hi: 'पद',
+        si: 'තනතුරු',
+        ar: 'المناصب',
+        tr: 'Pozisyonlar',
+        my: 'ရာထူးများ',
+        ky: 'Орундар',
+        ha: 'Matsayi',
+        mn: 'Албан тушаал'
     },
     'posting_detail.people': {
         en: ' people',
         ja: '名',
         zh: '人',
-        vi: ' người'
+        vi: ' người',
+        hi: ' लोग',
+        si: ' පුද්ගලයින්',
+        ar: ' أشخاص',
+        tr: ' kişi',
+        my: ' ယောက်',
+        ky: ' киши',
+        ha: ' mutane',
+        mn: ' хүн'
     },
     'posting_detail.detail_description': {
         en: 'Job Description',
         ja: '詳細説明',
         zh: '详细说明',
-        vi: 'Mô tả chi tiết'
+        vi: 'Mô tả chi tiết',
+        hi: 'नौकरी विवरण',
+        si: 'රැකියා විස්තරය',
+        ar: 'وصف الوظيفة',
+        tr: 'İş Tanımı',
+        my: 'အလုပ်ဖော်ပြချက်',
+        ky: 'Жумуш сүрөттөмөсү',
+        ha: 'Bayanin Aiki',
+        mn: 'Ажлын тайлбар'
     },
     'posting_detail.company_benefits': {
         en: 'Company Benefits!',
         ja: '会社の強み！',
         zh: '公司优势！',
-        vi: 'Điểm mạnh của công ty!'
+        vi: 'Điểm mạnh của công ty!',
+        hi: 'कंपनी के फायदे!',
+        si: 'සමාගමේ ප්‍රතිලාභ!',
+        ar: 'مزايا الشركة!',
+        tr: 'Şirket Avantajları!',
+        my: 'ကုမ္ပဏီ၏အကျိုးကျေးဇူးများ!',
+        ky: 'Компаниянын артыкчылыктары!',
+        ha: 'Fa\'idodin Kamfani!',
+        mn: 'Компанийн давуу тал!'
     },
     'posting_detail.hiring_fields': {
         en: 'Hiring Fields',
         ja: '採用分野',
         zh: '招聘领域',
-        vi: 'Lĩnh vực tuyển dụng'
+        vi: 'Lĩnh vực tuyển dụng',
+        hi: 'भर्ती क्षेत्र',
+        si: 'බඳවා ගැනීමේ ක්ෂේත්‍ර',
+        ar: 'مجالات التوظيف',
+        tr: 'İşe Alım Alanları',
+        my: 'လုပ်သားရွေးချယ်မှုနယ်ပယ်များ',
+        ky: 'Жумушка алуу тармактары',
+        ha: 'Fannonin Daukar Aiki',
+        mn: 'Ажилд авах салбар'
     },
     'posting_detail.target_countries': {
         en: 'Target Countries',
         ja: '対象国',
         zh: '目标国家',
-        vi: 'Quốc gia mục tiêu'
+        vi: 'Quốc gia mục tiêu',
+        hi: 'लक्षित देश',
+        si: 'ඉලක්කගත රටවල්',
+        ar: 'البلدان المستهدفة',
+        tr: 'Hedef Ülkeler',
+        my: 'ပစ်မှတ်ထားသောနိုင်ငံများ',
+        ky: 'Максат өлкөлөрү',
+        ha: 'Ƙasashen da ake Nufin',
+        mn: 'Зорилтот улсууд'
     },
     'posting_detail.job_positions': {
         en: 'Job Positions',
         ja: '募集職種',
         zh: '招聘职位',
-        vi: 'Vị trí tuyển dụng'
+        vi: 'Vị trí tuyển dụng',
+        hi: 'नौकरी के पद',
+        si: 'රැකියා තනතුරු',
+        ar: 'المواقع الوظيفية',
+        tr: 'İş Pozisyonları',
+        my: 'အလုပ်ရာထူးများ',
+        ky: 'Жумуш орундары',
+        ha: 'Matsayin Aiki',
+        mn: 'Ажлын албан тушаал'
     },
     'posting_detail.already_applied': {
         en: 'Already Applied',
         ja: 'すでに応募済み',
         zh: '已申请',
-        vi: 'Đã ứng tuyển'
+        vi: 'Đã ứng tuyển',
+        hi: 'पहले से आवेदन किया गया',
+        si: 'දැනටමත් අයදුම් කර ඇත',
+        ar: 'تم التقدم بالفعل',
+        tr: 'Zaten Başvuruldu',
+        my: 'လျှောက်ထားပြီးပြီ',
+        ky: 'Мурда арыз берилген',
+        ha: 'An riga an aikace',
+        mn: 'Аль хэдийн өргөдөл гаргасан'
     },
     'posting_detail.apply': {
         en: 'Apply Now',
         ja: '応募する',
         zh: '立即申请',
-        vi: 'Ứng tuyển ngay'
+        vi: 'Ứng tuyển ngay',
+        hi: 'अभी आवेदन करें',
+        si: 'දැන් අයදුම් කරන්න',
+        ar: 'تقدم الآن',
+        tr: 'Şimdi Başvur',
+        my: 'ယခုပင်လျှောက်ထားပါ',
+        ky: 'Азыр арыз берүү',
+        ha: 'Aikace Yanzu',
+        mn: 'Одоо өргөдөл гаргах'
     },
     'posting_detail.target_gender': {
         en: 'Target Gender',
         ja: '募集性別',
         zh: '招聘性别',
-        vi: 'Giới tính tuyển dụng'
+        vi: 'Giới tính tuyển dụng',
+        hi: 'लक्षित लिंग',
+        si: 'ඉලක්කගත ලිංගිකත්වය',
+        ar: 'الجنس المستهدف',
+        tr: 'Hedef Cinsiyet',
+        my: 'ပစ်မှတ်ထားသောလိင်',
+        ky: 'Максат жынысы',
+        ha: 'Jinsin da ake Nufin',
+        mn: 'Зорилтот хүйс'
     },
     'posting_detail.target_age': {
         en: 'Target Age Group',
         ja: '募集年齢層',
         zh: '招聘年龄段',
-        vi: 'Độ tuổi tuyển dụng'
+        vi: 'Độ tuổi tuyển dụng',
+        hi: 'लक्षित आयु समूह',
+        si: 'ඉලක්කගත වයස් කාණ්ඩය',
+        ar: 'الفئة العمرية المستهدفة',
+        tr: 'Hedef Yaş Grubu',
+        my: 'ပစ်မှတ်ထားသောအသက်အုပ်စု',
+        ky: 'Максат жаш топтому',
+        ha: 'Rukuni Shekarun da ake Nufin',
+        mn: 'Зорилтот насны бүлэг'
     },
     'posting_detail.available_visa': {
         en: 'Eligible Visa Types',
         ja: '応募可能なビザ',
         zh: '可申请的签证类型',
-        vi: 'Loại visa được chấp nhận'
+        vi: 'Loại visa được chấp nhận',
+        hi: 'योग्य वीज़ा प्रकार',
+        si: 'සුදුසුකම් ඇති වීසා වර්ග',
+        ar: 'أنواع التأشيرات المؤهلة',
+        tr: 'Uygun Vize Türleri',
+        my: 'သင့်လျော်သောဗီဇာအမျိုးအစားများ',
+        ky: 'Ылайыктуу виза түрлөрү',
+        ha: 'Nau\'ukan Biza masu Cancanta',
+        mn: 'Тохирох визний төрлүүд'
     },
 }

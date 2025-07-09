@@ -7,48 +7,112 @@ export const loginTranslations: TranslationData = {
         en: 'Phone Verification',
         ja: '電話番号認証',
         zh: '电话验证',
-        vi: 'Xác thực số điện thoại'
+        vi: 'Xác thực số điện thoại',
+        hi: 'फोन सत्यापन',
+        si: 'දුරකථන සත්‍යාපනය',
+        ar: 'التحقق من الهاتف',
+        tr: 'Telefon Doğrulama',
+        my: 'ဖုန်းအတည်ပြုခြင်း',
+        ky: 'Телефон текшерүү',
+        ha: 'Tabbatar da Waya',
+        mn: 'Утасны баталгаажуулалт'
     },
     'login.subtitle': {
         en: 'Please verify your identity for smooth service',
         ja: 'スムーズなサービス利用のため本人確認をお願いします',
         zh: '为了顺利使用服务，请进行身份验证',
-        vi: 'Vui lòng xác thực để sử dụng dịch vụ thuận tiện'
+        vi: 'Vui lòng xác thực để sử dụng dịch vụ thuận tiện',
+        hi: 'सुगम सेवा के लिए कृपया अपनी पहचान सत्यापित करें',
+        si: 'සුමට සේවාව සඳහා කරුණාකර ඔබේ අනන්‍යතාවය සත්‍යාපනය කරන්න',
+        ar: 'يرجى التحقق من هويتك للحصول على خدمة سلسة',
+        tr: 'Sorunsuz hizmet için lütfen kimliğinizi doğrulayın',
+        my: 'ချောမွေ့သောဝန်ဆောင်မှုအတွက် သင့်အထောက်အထားကို အတည်ပြုပါ',
+        ky: 'Жакшы тейлөө үчүн жеке басыңызды текшериңиз',
+        ha: 'Da fatan za a tabbatar da asalin ku don samun hidima mai sauƙi',
+        mn: 'Үйлчилгээг чөлөөтэй ашиглахын тулд таны мэдээллийг баталгаажуулна уу'
     },
     'login.phone_number': {
         en: 'Phone Number',
         ja: '携帯電話番号',
         zh: '手机号码',
-        vi: 'Số điện thoại'
+        vi: 'Số điện thoại',
+        hi: 'फोन नंबर',
+        si: 'දුරකථන අංකය',
+        ar: 'رقم الهاتف',
+        tr: 'Telefon Numarası',
+        my: 'ဖုန်းနံပါတ်',
+        ky: 'Телефон номери',
+        ha: 'Lambar Waya',
+        mn: 'Утасны дугаар'
     },
     'login.get_code': {
         en: 'Get Code',
         ja: '認証番号を受け取る',
         zh: '获取验证码',
-        vi: 'Nhận mã'
+        vi: 'Nhận mã',
+        hi: 'कोड प्राप्त करें',
+        si: 'කේතය ලබා ගන්න',
+        ar: 'احصل على الرمز',
+        tr: 'Kod Al',
+        my: 'ကုဒ်ရယူပါ',
+        ky: 'Код алуу',
+        ha: 'Samu Lambar',
+        mn: 'Код авах'
     },
     'login.verification_code': {
         en: 'Verification Code',
         ja: '認証番号',
         zh: '验证码',
-        vi: 'Mã xác thực'
+        vi: 'Mã xác thực',
+        hi: 'सत्यापन कोड',
+        si: 'සත්‍යාපන කේතය',
+        ar: 'رمز التحقق',
+        tr: 'Doğrulama Kodu',
+        my: 'အတည်ပြုကုဒ်',
+        ky: 'Текшерүү коду',
+        ha: 'Lambar Tabbatarwa',
+        mn: 'Баталгаажуулах код'
     },
     'login.verify': {
         en: 'Verify',
         ja: '認証する',
         zh: '验证',
-        vi: 'Xác thực'
+        vi: 'Xác thực',
+        hi: 'सत्यापित करें',
+        si: 'සත්‍යාපනය කරන්න',
+        ar: 'تحقق',
+        tr: 'Doğrula',
+        my: 'အတည်ပြုပါ',
+        ky: 'Текшерүү',
+        ha: 'Tabbatar',
+        mn: 'Баталгаажуулах'
     },
     'login.resend': {
         en: 'Resend Code',
         ja: '認証番号を再送信',
         zh: '重新发送验证码',
-        vi: 'Gửi lại mã'
+        vi: 'Gửi lại mã',
+        hi: 'कोड फिर से भेजें',
+        si: 'කේතය නැවත යවන්න',
+        ar: 'إعادة إرسال الرمز',
+        tr: 'Kodu Yeniden Gönder',
+        my: 'ကုဒ်ကို ပြန်ပို့ပါ',
+        ky: 'Кодду кайра жөнөтүү',
+        ha: 'Sake Aike Lambar',
+        mn: 'Код дахин илгээх'
     },
     'login.auto_verify_info': {
         en: 'Verification will be done automatically when you enter 6 digits',
         ja: '6桁の認証番号を入力すると自動的に認証されます',
         zh: '输入6位验证码后将自动验证',
-        vi: 'Xác thực tự động khi bạn nhập đủ 6 số'
+        vi: 'Xác thực tự động khi bạn nhập đủ 6 số',
+        hi: '6 अंक दर्ज करने पर सत्यापन स्वचालित रूप से हो जाएगा',
+        si: 'ඔබ ඉලක්කම් 6ක් ඇතුළත් කළ විට සත්‍යාපනය ස්වයංක්‍රීයව සිදුවේ',
+        ar: 'سيتم التحقق تلقائياً عند إدخال 6 أرقام',
+        tr: '6 haneli kodu girdiğinizde doğrulama otomatik olarak yapılacak',
+        my: 'ဂဏန်း ၆ လုံး ရိုက်ထည့်လျှင် အလိုအလျောက် အတည်ပြုပါမည်',
+        ky: '6 санды киргизгенде текшерүү автоматтык түрдө жүргүзүлөт',
+        ha: 'Za a yi tabbatarwa kai tsaye idan kun shigar da lambobi 6',
+        mn: '6 оронтой тоо оруулахад автоматаар баталгаажуулна'
     },
 }

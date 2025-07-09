@@ -1,4 +1,4 @@
-import {View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Modal} from 'react-native'
+import {View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Modal, FlatList} from 'react-native'
 import React, {useState} from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {router} from "expo-router";
@@ -14,13 +14,40 @@ const Start = () => {
         { code: 'en', name: 'English', flag: '🇺🇸' },
         { code: 'ja', name: '日本語', flag: '🇯🇵' },
         { code: 'zh', name: '中文', flag: '🇨🇳' },
-        { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' }
+        { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
+        { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+        { code: 'si', name: 'සිංහල', flag: '🇱🇰' },
+        { code: 'ar', name: 'العربية', flag: '🇩🇿' },
+        { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+        { code: 'my', name: 'မြန်မာ', flag: '🇲🇲' },
+        { code: 'ky', name: 'Кыргызча', flag: '🇰🇬' },
+        { code: 'ha', name: 'Hausa', flag: '🇳🇬' },
+        { code: 'mn', name: 'Монгол', flag: '🇲🇳' }
     ];
 
     const handleLanguageChange = async (langCode: string) => {
         await changeLanguage(langCode);
         setLanguageModalVisible(false);
     };
+
+    const renderLanguageItem = ({ item }: { item: typeof languages[0] }) => (
+        <TouchableOpacity
+            onPress={() => handleLanguageChange(item.code)}
+            className={`flex-row items-center justify-between p-4 rounded-lg mb-2 ${
+                language === item.code ? 'bg-blue-50' : 'bg-gray-50'
+            }`}
+        >
+            <View className="flex-row items-center">
+                <Text className="text-2xl mr-3">{item.flag}</Text>
+                <Text className={`text-lg ${
+                    language === item.code ? 'text-blue-600 font-bold' : 'text-gray-700'
+                }`}>{item.name}</Text>
+            </View>
+            {language === item.code && (
+                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
+            )}
+        </TouchableOpacity>
+    );
 
     return (
         <SafeAreaView style={styles.container}>
@@ -131,7 +158,7 @@ const Start = () => {
                 onRequestClose={() => setLanguageModalVisible(false)}
             >
                 <View className="flex-1 bg-black/50 justify-end">
-                    <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10">
+                    <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10 max-h-[500px]">
                         <View className="flex-row items-center justify-between mb-6">
                             <Text className="text-xl font-bold">
                                 {t('language.select', '언어 선택')}
@@ -141,25 +168,14 @@ const Start = () => {
                             </TouchableOpacity>
                         </View>
 
-                        {languages.map((lang) => (
-                            <TouchableOpacity
-                                key={lang.code}
-                                onPress={() => handleLanguageChange(lang.code)}
-                                className={`flex-row items-center justify-between p-4 rounded-lg mb-2 ${
-                                    language === lang.code ? 'bg-blue-50' : 'bg-gray-50'
-                                }`}
-                            >
-                                <View className="flex-row items-center">
-                                    <Text className="text-2xl mr-3">{lang.flag}</Text>
-                                    <Text className={`text-lg ${
-                                        language === lang.code ? 'text-blue-600 font-bold' : 'text-gray-700'
-                                    }`}>{lang.name}</Text>
-                                </View>
-                                {language === lang.code && (
-                                    <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
-                                )}
-                            </TouchableOpacity>
-                        ))}
+                        <FlatList
+                            data={languages}
+                            renderItem={renderLanguageItem}
+                            keyExtractor={(item) => item.code}
+                            showsVerticalScrollIndicator={true}
+                            style={{ flexGrow: 0 }}
+                            contentContainerStyle={{ paddingBottom: 10 }}
+                        />
                     </View>
                 </View>
             </Modal>

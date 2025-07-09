@@ -5,54 +5,126 @@ export const startTranslations: TranslationData = {
         en: 'Looking for a job?',
         ja: '仕事をお探しですか？',
         zh: '找工作吗？',
-        vi: 'Bạn đang tìm việc?'
+        vi: 'Bạn đang tìm việc?',
+        hi: 'नौकरी की तलाश में हैं?',
+        si: 'රැකියාවක් සොයනවාද?',
+        ar: 'تبحث عن وظيفة؟',
+        tr: 'İş arıyor musunuz?',
+        my: 'အလုပ်ရှာနေပါသလား?',
+        ky: 'Жумуш издеп жатасызбы?',
+        ha: 'Kuna neman aiki?',
+        mn: 'Ажил хайж байна уу?'
     },
     'start.subtitle': {
         en: 'We\'ll find the perfect job\nfor you in just 30 seconds',
         ja: '30秒であなたにぴったりの\n仕事を見つけます',
         zh: '30秒内为您找到\n最适合的工作',
-        vi: 'Chúng tôi sẽ tìm công việc\nphù hợp cho bạn trong 30 giây'
+        vi: 'Chúng tôi sẽ tìm công việc\nphù hợp cho bạn trong 30 giây',
+        hi: 'हम आपके लिए सिर्फ 30 सेकंड में\nसही नौकरी ढूंढ देंगे',
+        si: 'අපි තත්පර 30 ක් තුළ ඔබට\nයෝග්‍ය රැකියාවක් සොයා දෙන්නෙමු',
+        ar: 'سنجد لك الوظيفة المثالية\nفي 30 ثانية فقط',
+        tr: 'Size mükemmel işi\n30 saniyede bulacağız',
+        my: 'သင့်အတွက် အကောင်းဆုံးအလုပ်ကို\nစက္ကန့် ၃၀ အတွင်း ရှာပေးပါမည်',
+        ky: 'Биз сизге 30 секундда\nэң туура келген жумушту табып беребиз',
+        ha: 'Za mu same muku cikakkiyar aikin\na cikin dakika 30 kawai',
+        mn: 'Бид танд зөвхөн 30 секундэд\nтохирох ажлыг олж өгнө'
     },
     'start.button': {
         en: 'Get Started',
         ja: '始める',
         zh: '开始',
-        vi: 'Bắt đầu'
+        vi: 'Bắt đầu',
+        hi: 'शुरू करें',
+        si: 'ආරම්භ කරන්න',
+        ar: 'ابدأ',
+        tr: 'Başla',
+        my: 'စတင်ပါ',
+        ky: 'Баштоо',
+        ha: 'Fara',
+        mn: 'Эхлэх'
     },
     'start.employer_login': {
         en: 'Employer Login',
         ja: '求人者ログイン',
         zh: '雇主登录',
-        vi: 'Đăng nhập nhà tuyển dụng'
+        vi: 'Đăng nhập nhà tuyển dụng',
+        hi: 'नियोक्ता लॉगिन',
+        si: 'සේවා යෝජකයා ප්‍රවේශය',
+        ar: 'تسجيل دخول صاحب العمل',
+        tr: 'İşveren Girişi',
+        my: 'အလုပ်ရှင် ဝင်ရောက်ခြင်း',
+        ky: 'Жумуш берүүчү кирүү',
+        ha: 'Shigar da Mai Daukar Aiki',
+        mn: 'Ажил олгогч нэвтрэх'
     },
     'start.select_type': {
         en: 'Which service would you like to use?',
         ja: 'どのサービスをご利用になりますか？',
         zh: '您想使用哪种服务？',
-        vi: 'Bạn muốn sử dụng dịch vụ nào?'
+        vi: 'Bạn muốn sử dụng dịch vụ nào?',
+        hi: 'आप कौन सी सेवा का उपयोग करना चाहते हैं?',
+        si: 'ඔබ කුමන සේවාව භාවිතා කිරීමට කැමතිද?',
+        ar: 'أي خدمة تريد أن تستخدم؟',
+        tr: 'Hangi hizmeti kullanmak istiyorsunuz?',
+        my: 'မည်သည့်ဝန်ဆောင်မှုကို သုံးလိုပါသလဲ?',
+        ky: 'Кайсы кызматты колдонууну каалайсыз?',
+        ha: 'Wane hidima kuke son amfani da ita?',
+        mn: 'Ямар үйлчилгээ ашиглахыг хүсэж байна вэ?'
     },
     'start.job_seeker': {
         en: 'Job Seeker',
         ja: '求職者',
         zh: '求职者',
-        vi: 'Người tìm việc'
+        vi: 'Người tìm việc',
+        hi: 'नौकरी खोजने वाला',
+        si: 'රැකියා අපේක්ෂකයා',
+        ar: 'باحث عن عمل',
+        tr: 'İş Arayan',
+        my: 'အလုပ်ရှာသူ',
+        ky: 'Жумуш издөөчү',
+        ha: 'Mai Neman Aiki',
+        mn: 'Ажил хайгч'
     },
     'start.job_seeker_desc': {
         en: 'Looking for a job?\nWe\'ll recommend perfect matches',
         ja: '仕事をお探しですか？\nぴったりの仕事をご紹介します',
         zh: '正在找工作吗？\n我们会推荐合适的工作',
-        vi: 'Đang tìm việc làm?\nChúng tôi sẽ giới thiệu việc phù hợp'
+        vi: 'Đang tìm việc làm?\nChúng tôi sẽ giới thiệu việc phù hợp',
+        hi: 'नौकरी की तलाश में हैं?\nहम सही मैच की सिफारिश करेंगे',
+        si: 'රැකියාවක් සොයනවාද?\nඅපි සුදුසු ගැලපීම් නිර්දේශ කරන්නෙමු',
+        ar: 'تبحث عن وظيفة؟\nسنوصي بالمطابقات المثالية',
+        tr: 'İş arıyor musunuz?\nMükemmel eşleşmeler önerecceğiz',
+        my: 'အလုပ်ရှာနေပါသလား?\nကျွန်ုပ်တို့သည် အလုံးစုံကိုက်ညီမှုများကို အကြံပြုပါမည်',
+        ky: 'Жумуш издеп жатасызбы?\nБиз эң туура келген жумуштарды сунуштайбыз',
+        ha: 'Kuna neman aiki?\nZa mu ba da shawara akan dacewa mai kyau',
+        mn: 'Ажил хайж байна уу?\nБид танд тохирох ажлыг санал болгоно'
     },
     'start.employer': {
         en: 'Employer',
         ja: '求人者',
         zh: '雇主',
-        vi: 'Nhà tuyển dụng'
+        vi: 'Nhà tuyển dụng',
+        hi: 'नियोक्ता',
+        si: 'සේවා යෝජකයා',
+        ar: 'صاحب العمل',
+        tr: 'İşveren',
+        my: 'အလုပ်ရှင်',
+        ky: 'Жумуш берүүчү',
+        ha: 'Mai Daukar Aiki',
+        mn: 'Ажил олгогч'
     },
     'start.employer_desc': {
         en: 'Looking for employees?\nWe\'ll match you with talent',
         ja: '従業員をお探しですか？\n人材をマッチングします',
         zh: '正在招聘员工吗？\n我们会为您匹配人才',
-        vi: 'Đang tìm nhân viên?\nChúng tôi sẽ kết nối nhân tài'
+        vi: 'Đang tìm nhân viên?\nChúng tôi sẽ kết nối nhân tài',
+        hi: 'कर्मचारी खोज रहे हैं?\nहम आपको प्रतिभा से जोड़ेंगे',
+        si: 'සේවකයින් සොයනවාද?\nඅපි ඔබට දක්ෂ පුද්ගලයින් සම්බන්ධ කරන්නෙමු',
+        ar: 'تبحث عن موظفين؟\nسنربطك بالمواهب',
+        tr: 'Çalışan arıyor musunuz?\nSizi yetenekle eşleştireceğiz',
+        my: 'ဝန်ထမ်းများရှာနေပါသလား?\nကျွန်ုပ်တို့သည် သင့်ကို အရည်အချင်းရှိသူများနှင့် ချိတ်ဆက်ပေးပါမည်',
+        ky: 'Кызматкерлерди издеп жатасызбы?\nБиз сизди таланттуу адамдар менен байланыштырабыз',
+        ha: 'Kuna neman ma\'aikata?\nZa mu hada ku da hazaka',
+        mn: 'Ажилтан хайж байна уу?\nБид танд авъяаслаг хүмүүсийг холбож өгнө'
     }
 };

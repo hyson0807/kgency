@@ -7,198 +7,462 @@ export const settingsTranslations: TranslationData = {
         en: 'Settings',
         ja: '設定',
         zh: '设置',
-        vi: 'Cài đặt'
+        vi: 'Cài đặt',
+        hi: 'सेटिंग्स',
+        si: 'සැකසුම්',
+        ar: 'الإعدادات',
+        tr: 'Ayarlar',
+        my: 'ဆက်တင်များ',
+        ky: 'Жөндөөлөр',
+        ha: 'Saiti',
+        mn: 'Тохиргоо'
     },
     'settings.no_name': {
         en: 'No Name',
         ja: '名前なし',
         zh: '未设置姓名',
-        vi: 'Chưa có tên'
+        vi: 'Chưa có tên',
+        hi: 'कोई नाम नहीं',
+        si: 'නමක් නැත',
+        ar: 'لا يوجد اسم',
+        tr: 'İsim Yok',
+        my: 'အမည်မရှိ',
+        ky: 'Аты жок',
+        ha: 'Babu Suna',
+        mn: 'Нэргүй'
     },
     'settings.edit_profile': {
         en: 'Edit Profile',
         ja: 'プロフィール編集',
         zh: '编辑个人资料',
-        vi: 'Chỉnh sửa hồ sơ'
+        vi: 'Chỉnh sửa hồ sơ',
+        hi: 'प्रोफ़ाइल संपादित करें',
+        si: 'පැතිකඩ සංස්කරණය කරන්න',
+        ar: 'تحرير الملف الشخصي',
+        tr: 'Profili Düzenle',
+        my: 'ပရိုဖိုင်ကို တည်းဖြတ်ပါ',
+        ky: 'Профилди оңдоо',
+        ha: 'Gyara Martaba',
+        mn: 'Хувийн мэдээлэл засах'
     },
     'settings.notification_settings': {
         en: 'Notification Settings',
         ja: '通知設定',
         zh: '通知设置',
-        vi: 'Cài đặt thông báo'
+        vi: 'Cài đặt thông báo',
+        hi: 'सूचना सेटिंग्स',
+        si: 'දැනුම්දීම් සැකසුම්',
+        ar: 'إعدادات الإشعارات',
+        tr: 'Bildirim Ayarları',
+        my: 'အကြောင်းကြားစာ ဆက်တင်များ',
+        ky: 'Билдирүү жөндөөлөрү',
+        ha: 'Saitunan Sanarwa',
+        mn: 'Мэдэгдлийн тохиргоо'
     },
     'settings.new_job_notification': {
         en: 'New Job Alerts',
         ja: '新しい仕事の通知',
         zh: '新工作提醒',
-        vi: 'Thông báo việc mới'
+        vi: 'Thông báo việc mới',
+        hi: 'नई नौकरी अलर्ट',
+        si: 'නව රැකියා අනතුරු ඇඟවීම්',
+        ar: 'تنبيهات الوظائف الجديدة',
+        tr: 'Yeni İş Uyarıları',
+        my: 'အလုပ်သစ်များ သတိပေးချက်',
+        ky: 'Жаңы жумуш эскертүүлөрү',
+        ha: 'Sanarwar Sabbin Aikace-aikace',
+        mn: 'Шинэ ажлын сэрэмжлүүлэг'
     },
     'settings.new_job_description': {
         en: 'Notifications for matching jobs',
         ja: 'マッチする求人の通知',
         zh: '匹配职位的通知',
-        vi: 'Thông báo công việc phù hợp'
+        vi: 'Thông báo công việc phù hợp',
+        hi: 'मैच करने वाली नौकरियों की सूचनाएं',
+        si: 'ගැලපෙන රැකියා සඳහා දැනුම්දීම්',
+        ar: 'إشعارات الوظائف المطابقة',
+        tr: 'Eşleşen işler için bildirimler',
+        my: 'ကိုက်ညီသောအလုပ်များအတွက် အကြောင်းကြားစာများ',
+        ky: 'Дал келген жумуштар үчүн билдирүүлөр',
+        ha: 'Sanarwar aikace-aikacen da suka dace',
+        mn: 'Таарсан ажлын мэдэгдэл'
     },
     'settings.application_status_notification': {
         en: 'Application Status Alerts',
         ja: '応募状況の通知',
         zh: '申请状态提醒',
-        vi: 'Thông báo tình trạng ứng tuyển'
+        vi: 'Thông báo tình trạng ứng tuyển',
+        hi: 'आवेदन स्थिति अलर्ट',
+        si: 'අයදුම්පත් තත්ත්ව අනතුරු ඇඟවීම්',
+        ar: 'تنبيهات حالة الطلب',
+        tr: 'Başvuru Durumu Uyarıları',
+        my: 'လျှောက်ထားမှုအခြေအနေ သတိပေးချက်များ',
+        ky: 'Арыздын абалы боюнча эскертүүлөр',
+        ha: 'Sanarwar Matsayin Aikace',
+        mn: 'Өргөдлийн байдлын сэрэмжлүүлэг'
     },
     'settings.application_status_description': {
         en: 'Application status change notifications',
         ja: '応募状態変更の通知',
         zh: '申请状态变更通知',
-        vi: 'Thông báo thay đổi trạng thái ứng tuyển'
+        vi: 'Thông báo thay đổi trạng thái ứng tuyển',
+        hi: 'आवेदन स्थिति परिवर्तन सूचनाएं',
+        si: 'අයදුම්පත් තත්ත්ව වෙනස්වීම් දැනුම්දීම්',
+        ar: 'إشعارات تغيير حالة الطلب',
+        tr: 'Başvuru durumu değişiklik bildirimleri',
+        my: 'လျှောက်ထားမှုအခြေအနေပြောင်းလဲခြင်း အကြောင်းကြားစာများ',
+        ky: 'Арыздын абалынын өзгөрүшү жөнүндө билдирүүлөр',
+        ha: 'Sanarwar canjin matsayin aikace',
+        mn: 'Өргөдлийн байдал өөрчлөгдсөн тухай мэдэгдэл'
     },
     'settings.marketing_notification': {
         en: 'Marketing Notifications',
         ja: 'マーケティング通知',
         zh: '营销通知',
-        vi: 'Thông báo tiếp thị'
+        vi: 'Thông báo tiếp thị',
+        hi: 'मार्केटिंग सूचनाएं',
+        si: 'අලෙවිකරණ දැනුම්දීම්',
+        ar: 'إشعارات التسويق',
+        tr: 'Pazarlama Bildirimleri',
+        my: 'စျေးကွက်ရှာဖွေရေး အကြောင်းကြားစာများ',
+        ky: 'Маркетинг билдирүүлөрү',
+        ha: 'Sanarwar Tallace-tallace',
+        mn: 'Маркетингийн мэдэгдэл'
     },
     'settings.marketing_description': {
         en: 'Event and benefit information',
         ja: 'イベント・特典情報',
         zh: '活动和优惠信息',
-        vi: 'Thông tin sự kiện và ưu đãi'
+        vi: 'Thông tin sự kiện và ưu đãi',
+        hi: 'कार्यक्रम और लाभ की जानकारी',
+        si: 'සිදුවීම් සහ ප්‍රතිලාභ තොරතුරු',
+        ar: 'معلومات الفعاليات والمزايا',
+        tr: 'Etkinlik ve avantaj bilgileri',
+        my: 'အခမ်းအနားများနှင့် အကျိုးကျေးဇူးများအကြောင်း အချက်အလက်',
+        ky: 'Иш-чара жана артыкчылыктар жөнүндө маалымат',
+        ha: 'Bayanan taron da fa\'ida',
+        mn: 'Арга хэмжээ болон ашиг тусын мэдээлэл'
     },
     'settings.app_settings': {
         en: 'App Settings',
         ja: 'アプリ設定',
         zh: '应用设置',
-        vi: 'Cài đặt ứng dụng'
+        vi: 'Cài đặt ứng dụng',
+        hi: 'ऐप सेटिंग्स',
+        si: 'යෙදුම් සැකසුම්',
+        ar: 'إعدادات التطبيق',
+        tr: 'Uygulama Ayarları',
+        my: 'အက်ပ် ဆက်တင်များ',
+        ky: 'Колдонмо жөндөөлөрү',
+        ha: 'Saitunan App',
+        mn: 'Апп тохиргоо'
     },
     'settings.language_settings': {
         en: 'Language Settings',
         ja: '言語設定',
         zh: '语言设置',
-        vi: 'Cài đặt ngôn ngữ'
+        vi: 'Cài đặt ngôn ngữ',
+        hi: 'भाषा सेटिंग्स',
+        si: 'භාෂා සැකසුම්',
+        ar: 'إعدادات اللغة',
+        tr: 'Dil Ayarları',
+        my: 'ဘာသာစကား ဆက်တင်များ',
+        ky: 'Тил жөндөөлөрү',
+        ha: 'Saitunan Harshe',
+        mn: 'Хэлний тохиргоо'
     },
     'settings.information': {
         en: 'Information',
         ja: '情報',
         zh: '信息',
-        vi: 'Thông tin'
+        vi: 'Thông tin',
+        hi: 'जानकारी',
+        si: 'තොරතුරු',
+        ar: 'المعلومات',
+        tr: 'Bilgi',
+        my: 'အချက်အလက်',
+        ky: 'Маалымат',
+        ha: 'Bayanai',
+        mn: 'Мэдээлэл'
     },
     'settings.terms_of_service': {
         en: 'Terms of Service',
         ja: '利用規約',
         zh: '服务条款',
-        vi: 'Điều khoản sử dụng'
+        vi: 'Điều khoản sử dụng',
+        hi: 'सेवा की शर्तें',
+        si: 'සේවා කොන්දේසි',
+        ar: 'شروط الخدمة',
+        tr: 'Hizmet Şartları',
+        my: 'ဝန်ဆောင်မှုစည်းကမ်းချက်များ',
+        ky: 'Кызмат шарттары',
+        ha: 'Sharuɗan Hidima',
+        mn: 'Үйлчилгээний нөхцөл'
     },
     'settings.privacy_policy': {
         en: 'Privacy Policy',
         ja: 'プライバシーポリシー',
         zh: '隐私政策',
-        vi: 'Chính sách bảo mật'
+        vi: 'Chính sách bảo mật',
+        hi: 'गोपनीयता नीति',
+        si: 'පෞද්ගලිකත්ව ප්‍රතිපත්තිය',
+        ar: 'سياسة الخصوصية',
+        tr: 'Gizlilik Politikası',
+        my: 'ကိုယ်ရေးကာယရေးမူဝါဒ',
+        ky: 'Купуялык саясаты',
+        ha: 'Manufar Sirri',
+        mn: 'Нууцлалын бодлого'
     },
     'settings.customer_service': {
         en: 'Customer Service',
         ja: 'カスタマーサービス',
         zh: '客服中心',
-        vi: 'Dịch vụ khách hàng'
+        vi: 'Dịch vụ khách hàng',
+        hi: 'ग्राहक सेवा',
+        si: 'පාරිභෝගික සේවය',
+        ar: 'خدمة العملاء',
+        tr: 'Müşteri Hizmetleri',
+        my: 'ဖောက်သည်ဝန်ဆောင်မှု',
+        ky: 'Кардарларды тейлөө',
+        ha: 'Hidimar Abokan Ciniki',
+        mn: 'Харилцагчийн үйлчилгээ'
     },
     'settings.app_version': {
         en: 'App Version',
         ja: 'アプリバージョン',
         zh: '应用版本',
-        vi: 'Phiên bản ứng dụng'
+        vi: 'Phiên bản ứng dụng',
+        hi: 'ऐप संस्करण',
+        si: 'යෙදුම් අනුවාදය',
+        ar: 'إصدار التطبيق',
+        tr: 'Uygulama Sürümü',
+        my: 'အက်ပ်ဗားရှင်း',
+        ky: 'Колдонмо версиясы',
+        ha: 'Sigar App',
+        mn: 'Апп хувилбар'
     },
     'settings.account_management': {
         en: 'Account Management',
         ja: 'アカウント管理',
         zh: '账户管理',
-        vi: 'Quản lý tài khoản'
+        vi: 'Quản lý tài khoản',
+        hi: 'खाता प्रबंधन',
+        si: 'ගිණුම් කළමනාකරණය',
+        ar: 'إدارة الحساب',
+        tr: 'Hesap Yönetimi',
+        my: 'အကောင့်စီမံခန့်ခွဲမှု',
+        ky: 'Аккаунт башкаруу',
+        ha: 'Sarrafa Asusun',
+        mn: 'Дансны удирдлага'
     },
     'settings.logout': {
         en: 'Logout',
         ja: 'ログアウト',
         zh: '退出登录',
-        vi: 'Đăng xuất'
+        vi: 'Đăng xuất',
+        hi: 'लॉग आउट',
+        si: 'වරන්න',
+        ar: 'تسجيل الخروج',
+        tr: 'Çıkış Yap',
+        my: 'ထွက်ရန်',
+        ky: 'Чыгуу',
+        ha: 'Fita',
+        mn: 'Гарах'
     },
     'settings.delete_account': {
         en: 'Delete Account',
         ja: '退会',
         zh: '注销账户',
-        vi: 'Xóa tài khoản'
+        vi: 'Xóa tài khoản',
+        hi: 'खाता हटाएं',
+        si: 'ගිණුම මකන්න',
+        ar: 'حذف الحساب',
+        tr: 'Hesabı Sil',
+        my: 'အကောင့်ကို ဖျက်ပါ',
+        ky: 'Аккаунтту өчүрүү',
+        ha: 'Share Asusun',
+        mn: 'Данс устгах'
     },
     'settings.logout_confirm': {
         en: 'Are you sure you want to logout?',
         ja: '本当にログアウトしますか？',
         zh: '确定要退出登录吗？',
-        vi: 'Bạn có chắc muốn đăng xuất?'
+        vi: 'Bạn có chắc muốn đăng xuất?',
+        hi: 'क्या आप वाकई लॉग आउट करना चाहते हैं?',
+        si: 'ඔබට ඇත්තටම ඉවත්වීමට අවශ්‍යද?',
+        ar: 'هل أنت متأكد من أنك تريد تسجيل الخروج؟',
+        tr: 'Çıkış yapmak istediğinizden emin misiniz?',
+        my: 'သင်ထွက်လိုသည်မှာ သေချာပါသလား?',
+        ky: 'Чыгууну каалайсызбы?',
+        ha: 'Kana tabbatacce kana son fita?',
+        mn: 'Та гарахдаа итгэлтэй байна уу?'
     },
     'settings.error': {
         en: 'Error',
         ja: 'エラー',
         zh: '错误',
-        vi: 'Lỗi'
+        vi: 'Lỗi',
+        hi: 'त्रुटि',
+        si: 'දෝෂය',
+        ar: 'خطأ',
+        tr: 'Hata',
+        my: 'အမှား',
+        ky: 'Ката',
+        ha: 'Kuskure',
+        mn: 'Алдаа'
     },
     'settings.auth_not_found': {
         en: 'Authentication information not found.',
         ja: '認証情報が見つかりません。',
         zh: '找不到认证信息。',
-        vi: 'Không tìm thấy thông tin xác thực.'
+        vi: 'Không tìm thấy thông tin xác thực.',
+        hi: 'प्रमाणीकरण जानकारी नहीं मिली।',
+        si: 'සත්‍යාපන තොරතුරු හමු නොවීය.',
+        ar: 'لم يتم العثور على معلومات المصادقة.',
+        tr: 'Kimlik doğrulama bilgisi bulunamadı.',
+        my: 'အထောက်အထားအချက်အလက် မတွေ့ပါ။',
+        ky: 'Аутентификация маалыматы табылган жок.',
+        ha: 'Ba a sami bayanan tabbatarwa ba.',
+        mn: 'Баталгаажуулалтын мэдээлэл олдсонгүй.'
     },
     'settings.delete_complete': {
         en: 'Account Deleted',
         ja: '退会完了',
         zh: '注销完成',
-        vi: 'Đã xóa tài khoản'
+        vi: 'Đã xóa tài khoản',
+        hi: 'खाता हटा दिया गया',
+        si: 'ගිණුම මකා දමන ලදී',
+        ar: 'تم حذف الحساب',
+        tr: 'Hesap Silindi',
+        my: 'အကောင့်ကို ဖျက်လိုက်ပြီ',
+        ky: 'Аккаунт өчүрүлдү',
+        ha: 'An share asusun',
+        mn: 'Данс устгагдлаа'
     },
     'settings.thank_you': {
         en: 'Thank you for using our service.',
         ja: 'ご利用ありがとうございました。',
         zh: '感谢您使用我们的服务。',
-        vi: 'Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.'
+        vi: 'Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.',
+        hi: 'हमारी सेवा का उपयोग करने के लिए धन्यवाद।',
+        si: 'අපගේ සේවය භාවිතා කිරීම ගැන ස්තූතියි.',
+        ar: 'شكراً لك على استخدام خدمتنا.',
+        tr: 'Hizmetimizi kullandığınız için teşekkür ederiz.',
+        my: 'ကျွန်ုပ်တို့၏ဝန်ဆောင်မှုကို အသုံးပြုပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။',
+        ky: 'Биздин кызматты колдонгонуңуз үчүн рахмат.',
+        ha: 'Mun gode maka da amfani da hidimominmu.',
+        mn: 'Манай үйлчилгээг ашигласанд баярлалаа.'
     },
     'settings.delete_error': {
         en: 'An error occurred while deleting your account.',
         ja: '退会処理中に問題が発生しました。',
         zh: '注销账户时出现问题。',
-        vi: 'Đã xảy ra lỗi khi xóa tài khoản.'
+        vi: 'Đã xảy ra lỗi khi xóa tài khoản.',
+        hi: 'आपका खाता हटाते समय त्रुटि हुई।',
+        si: 'ඔබේ ගිණුම මකන විට දෝෂයක් ඇති විය.',
+        ar: 'حدث خطأ أثناء حذف حسابك.',
+        tr: 'Hesabınızı silerken hata oluştu.',
+        my: 'သင့်အကောင့်ကို ဖျက်နေစဉ် အမှားတစ်ခု ဖြစ်ပေါ်ခဲ့သည်။',
+        ky: 'Аккаунтуңузду өчүрүү учурунда ката кетти.',
+        ha: 'An sami kuskure yayin share asusunka.',
+        mn: 'Таны дансыг устгах явцад алдаа гарлаа.'
     },
     'settings.language_change': {
         en: 'Language Changed',
         ja: '言語変更',
         zh: '语言更改',
-        vi: 'Đã thay đổi ngôn ngữ'
+        vi: 'Đã thay đổi ngôn ngữ',
+        hi: 'भाषा बदली गई',
+        si: 'භාෂාව වෙනස් කරන ලදී',
+        ar: 'تم تغيير اللغة',
+        tr: 'Dil Değiştirildi',
+        my: 'ဘာသာစကားကို ပြောင်းလဲလိုက်ပြီ',
+        ky: 'Тил өзгөртүлдү',
+        ha: 'An canza harshe',
+        mn: 'Хэл өөрчлөгдлөө'
     },
     'settings.restart_required': {
         en: 'Please restart the app to apply changes.',
         ja: 'アプリを再起動すると適用されます。',
         zh: '请重启应用以应用更改。',
-        vi: 'Vui lòng khởi động lại ứng dụng để áp dụng thay đổi.'
+        vi: 'Vui lòng khởi động lại ứng dụng để áp dụng thay đổi.',
+        hi: 'परिवर्तन लागू करने के लिए कृपया ऐप को पुनः आरंभ करें।',
+        si: 'වෙනස්කම් ක්‍රියාත්මක කිරීම සඳහා කරුණාකර යෙදුම නැවත ආරම්භ කරන්න.',
+        ar: 'يرجى إعادة تشغيل التطبيق لتطبيق التغييرات.',
+        tr: 'Değişiklikleri uygulamak için lütfen uygulamayı yeniden başlatın.',
+        my: 'ပြောင်းလဲမှုများကို အကောင်အထည်ဖော်ရန် အက်ပ်ကို ပြန်လည်စတင်ပါ။',
+        ky: 'Өзгөртүүлөрдү колдонуу үчүн колдонмону кайра баштаңыз.',
+        ha: 'Da fatan za a sake kunna app don aiwatar da canje-canje.',
+        mn: 'Өөрчлөлтийг хэрэгжүүлэхийн тулд аппыг дахин эхлүүлнэ үү.'
     },
     'settings.customer_service_info': {
         en: 'Have questions?\nCustomer Service: 1588-0000\nHours: Weekdays 09:00 - 18:00',
         ja: 'お問い合わせはこちら\nカスタマーセンター: 1588-0000\n営業時間: 平日 09:00 - 18:00',
         zh: '有疑问吗？\n客服中心：1588-0000\n工作时间：工作日 09:00 - 18:00',
-        vi: 'Có thắc mắc?\nTổng đài: 1588-0000\nGiờ làm việc: Thứ 2-6, 09:00 - 18:00'
+        vi: 'Có thắc mắc?\nTổng đài: 1588-0000\nGiờ làm việc: Thứ 2-6, 09:00 - 18:00',
+        hi: 'कोई प्रश्न है?\nग्राहक सेवा: 1588-0000\nसमय: सप्ताह के दिन 09:00 - 18:00',
+        si: 'ප්‍රශ්න තිබේද?\nපාරිභෝගික සේවය: 1588-0000\nකාලය: සතියේ දිනවල 09:00 - 18:00',
+        ar: 'هل لديك أسئلة؟\nخدمة العملاء: 1588-0000\nساعات العمل: أيام الأسبوع 09:00 - 18:00',
+        tr: 'Sorularınız mı var?\nMüşteri Hizmetleri: 1588-0000\nSaatler: Hafta içi 09:00 - 18:00',
+        my: 'မေးခွန်းများရှိပါသလား?\nဖောက်သည်ဝန်ဆောင်မှု: 1588-0000\nအချိန်: တနင်္လာ-သောကြာ 09:00 - 18:00',
+        ky: 'Суроолоруңуз барбы?\nКардарларды тейлөө: 1588-0000\nИш убактысы: Жума күндөрү 09:00 - 18:00',
+        ha: 'Kuna da tambayoyi?\nHidimar Abokan Ciniki: 1588-0000\nLokuta: Kwanakin aiki 09:00 - 18:00',
+        mn: 'Асуулт байна уу?\nХарилцагчийн үйлчилгээ: 1588-0000\nЦаг: Ажлын өдрүүд 09:00 - 18:00'
     },
     'settings.select_language': {
         en: 'Select Language',
         ja: '言語を選択',
         zh: '选择语言',
-        vi: 'Chọn ngôn ngữ'
+        vi: 'Chọn ngôn ngữ',
+        hi: 'भाषा चुनें',
+        si: 'භාෂාව තෝරන්න',
+        ar: 'اختر اللغة',
+        tr: 'Dil Seç',
+        my: 'ဘာသာစကားကို ရွေးချယ်ပါ',
+        ky: 'Тилди тандаңыз',
+        ha: 'Zabi Harshe',
+        mn: 'Хэл сонгох'
     },
     'settings.delete_confirm_title': {
         en: 'Are you sure you want to delete your account?',
         ja: '本当に退会しますか？',
         zh: '确定要注销账户吗？',
-        vi: 'Bạn có chắc muốn xóa tài khoản?'
+        vi: 'Bạn có chắc muốn xóa tài khoản?',
+        hi: 'क्या आप वाकई अपना खाता हटाना चाहते हैं?',
+        si: 'ඔබට ඇත්තටම ඔබේ ගිණුම මකා දැමීමට අවශ්‍යද?',
+        ar: 'هل أنت متأكد من أنك تريد حذف حسابك؟',
+        tr: 'Hesabınızı silmek istediğinizden emin misiniz?',
+        my: 'သင့်အကောင့်ကို ဖျက်လိုသည်မှာ သေချာပါသလား?',
+        ky: 'Аккаунтуңузду өчүрөөнү каалайсызбы?',
+        ha: 'Kana tabbatacce kana son share asusunka?',
+        mn: 'Та дансаа устгахдаа итгэлтэй байна уу?'
     },
     'settings.delete_warning': {
         en: 'All data will be deleted and cannot be recovered.',
         ja: '全てのデータが削除され\n復元できません。',
         zh: '所有数据将被删除\n且无法恢复。',
-        vi: 'Tất cả dữ liệu sẽ bị xóa\nvà không thể khôi phục.'
+        vi: 'Tất cả dữ liệu sẽ bị xóa\nvà không thể khôi phục.',
+        hi: 'सभी डेटा हटा दिया जाएगा\nऔर इसे पुनर्प्राप्त नहीं किया जा सकता।',
+        si: 'සියලුම දත්ත මකා දමනු ලබන අතර\nප්‍රතිසාධනය කළ නොහැක.',
+        ar: 'سيتم حذف جميع البيانات\nولا يمكن استردادها.',
+        tr: 'Tüm veriler silinecek\nve kurtarılamayacak.',
+        my: 'အချက်အလက်များအားလုံး ဖျက်လိုက်ပြီး\nပြန်လည်ရယူ၍ မရနိုင်ပါ။',
+        ky: 'Бардык маалыматтар өчүрүлөт\nжана калыбына келтирилбейт.',
+        ha: 'Za a share dukkan bayanai\nkuma ba za a iya dawo da su ba.',
+        mn: 'Бүх өгөгдөл устгагдах бөгөөд\nсэргээх боломжгүй болно.'
     },
     'settings.delete_button': {
         en: 'Delete Account',
         ja: '退会する',
         zh: '注销账户',
-        vi: 'Xóa tài khoản'
+        vi: 'Xóa tài khoản',
+        hi: 'खाता हटाएं',
+        si: 'ගිණුම මකන්න',
+        ar: 'حذف الحساب',
+        tr: 'Hesabı Sil',
+        my: 'အကောင့်ကို ဖျက်ပါ',
+        ky: 'Аккаунтту өчүрүү',
+        ha: 'Share Asusun',
+        mn: 'Данс устгах'
     },
 }

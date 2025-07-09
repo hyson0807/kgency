@@ -6,176 +6,408 @@ export const infoTranslations: TranslationData = {
         en: 'Set Preferences',
         ja: '希望条件設定',
         zh: '设置工作条件',
-        vi: 'Cài đặt điều kiện mong muốn'
+        vi: 'Cài đặt điều kiện mong muốn',
+        hi: 'प्राथमिकताएं सेट करें',
+        si: 'මනාපයන් සකසන්න',
+        ar: 'تعيين التفضيلات',
+        tr: 'Tercihleri Ayarla',
+        my: 'နှစ်သက်မှုများကို သတ်မှတ်ပါ',
+        ky: 'Каалоолорду коюу',
+        ha: 'Saita Zabin',
+        mn: 'Тохиргоо хийх'
     },
     'info.desired_location': {
         en: 'Desired Work Location',
         ja: '希望勤務地',
         zh: '希望工作地点',
-        vi: 'Địa điểm làm việc mong muốn'
+        vi: 'Địa điểm làm việc mong muốn',
+        hi: 'वांछित कार्य स्थान',
+        si: 'අපේක්ෂිත වැඩ ස්ථානය',
+        ar: 'موقع العمل المرغوب',
+        tr: 'İstenen Çalışma Yeri',
+        my: 'လိုချင်သောအလုပ်နေရာ',
+        ky: 'Каалаган жумуш орду',
+        ha: 'Wurin Aiki da ake So',
+        mn: 'Хүссэн ажлын газар'
     },
     'info.select_location': {
         en: 'Select location',
         ja: '地域を選択してください',
         zh: '请选择地区',
-        vi: 'Chọn khu vực'
+        vi: 'Chọn khu vực',
+        hi: 'स्थान चुनें',
+        si: 'ස්ථානය තෝරන්න',
+        ar: 'اختر الموقع',
+        tr: 'Konum seçin',
+        my: 'နေရာကို ရွေးချယ်ပါ',
+        ky: 'Жерди тандаңыз',
+        ha: 'Zabi wuri',
+        mn: 'Байршил сонгох'
     },
     'info.country': {
         en: 'Country',
         ja: '国',
         zh: '国家',
-        vi: 'Quốc gia'
+        vi: 'Quốc gia',
+        hi: 'देश',
+        si: 'රට',
+        ar: 'البلد',
+        tr: 'Ülke',
+        my: 'နိုင်ငံ',
+        ky: 'Өлкө',
+        ha: 'Ƙasa',
+        mn: 'Улс'
     },
     'info.select_country': {
         en: 'Select country',
         ja: '国を選択してください',
         zh: '请选择国家',
-        vi: 'Chọn quốc gia'
+        vi: 'Chọn quốc gia',
+        hi: 'देश चुनें',
+        si: 'රට තෝරන්න',
+        ar: 'اختر البلد',
+        tr: 'Ülke seçin',
+        my: 'နိုင်ငံကို ရွေးချယ်ပါ',
+        ky: 'Өлкөнү тандаңыз',
+        ha: 'Zabi ƙasa',
+        mn: 'Улс сонгох'
     },
     'info.search': {
         en: 'Search...',
         ja: '検索...',
         zh: '搜索...',
-        vi: 'Tìm kiếm...'
+        vi: 'Tìm kiếm...',
+        hi: 'खोजें...',
+        si: 'සොයන්න...',
+        ar: 'البحث...',
+        tr: 'Ara...',
+        my: 'ရှာဖွေပါ...',
+        ky: 'Издөө...',
+        ha: 'Nema...',
+        mn: 'Хайх...'
     },
     'info.save': {
         en: 'Save',
         ja: '保存',
         zh: '保存',
-        vi: 'Lưu'
+        vi: 'Lưu',
+        hi: 'सेव करें',
+        si: 'සුරකින්න',
+        ar: 'حفظ',
+        tr: 'Kaydet',
+        my: 'သိမ်းဆည်းပါ',
+        ky: 'Сактоо',
+        ha: 'Adana',
+        mn: 'Хадгалах'
     },
     'info.select_location_required': {
         en: 'Please select a location',
         ja: '地域を選択してください',
         zh: '请选择地区',
-        vi: 'Vui lòng chọn khu vực'
+        vi: 'Vui lòng chọn khu vực',
+        hi: 'कृपया स्थान चुनें',
+        si: 'කරුණාකර ස්ථානයක් තෝරන්න',
+        ar: 'يرجى اختيار موقع',
+        tr: 'Lütfen bir konum seçin',
+        my: 'ကျေးဇူးပြု၍ နေရာတစ်ခုကို ရွေးချယ်ပါ',
+        ky: 'Жерди тандаңыз',
+        ha: 'Da fatan za a zabi wuri',
+        mn: 'Байршил сонгоно уу'
     },
     'info.select_country_required': {
         en: 'Please select a country',
         ja: '国を選択してください',
         zh: '请选择国家',
-        vi: 'Vui lòng chọn quốc gia'
+        vi: 'Vui lòng chọn quốc gia',
+        hi: 'कृपया देश चुनें',
+        si: 'කරුණාකර රටක් තෝරන්න',
+        ar: 'يرجى اختيار بلد',
+        tr: 'Lütfen bir ülke seçin',
+        my: 'ကျေးဇူးပြု၍ နိုင်ငံတစ်ခုကို ရွေးချယ်ပါ',
+        ky: 'Өлкөнү тандаңыз',
+        ha: 'Da fatan za a zabi ƙasa',
+        mn: 'Улс сонгоно уу'
     },
     // 국가 선택 섹션
     'info.location_no_preference': {
         en: 'No Preference',
         ja: '指定なし',
         zh: '不限',
-        vi: 'Không quan trọng'
+        vi: 'Không quan trọng',
+        hi: 'कोई प्राथमिकता नहीं',
+        si: 'මනාපයක් නැත',
+        ar: 'لا تفضيل',
+        tr: 'Tercih Yok',
+        my: 'နှစ်သက်မှုမရှိ',
+        ky: 'Каалоо жок',
+        ha: 'Babu Zaɓi',
+        mn: 'Тохиргоогүй'
     },
     // 프로필 정보 관련
     'info.profile_info': {
         en: 'Profile Information',
         ja: 'プロフィール情報',
         zh: '个人信息',
-        vi: 'Thông tin cá nhân'
+        vi: 'Thông tin cá nhân',
+        hi: 'प्रोफ़ाइल जानकारी',
+        si: 'පැතිකඩ තොරතුරු',
+        ar: 'معلومات الملف الشخصي',
+        tr: 'Profil Bilgileri',
+        my: 'ပရိုဖိုင်အချက်အလက်',
+        ky: 'Профиль маалыматы',
+        ha: 'Bayanan Martaba',
+        mn: 'Хувийн мэдээлэл'
     },
     'info.name': {
         en: 'Name',
         ja: '名前',
         zh: '姓名',
-        vi: 'Họ tên'
+        vi: 'Họ tên',
+        hi: 'नाम',
+        si: 'නම',
+        ar: 'الاسم',
+        tr: 'İsim',
+        my: 'အမည်',
+        ky: 'Аты',
+        ha: 'Suna',
+        mn: 'Нэр'
     },
     'info.enter_name': {
         en: 'Enter your name',
         ja: '名前を入力してください',
         zh: '请输入姓名',
-        vi: 'Nhập họ tên'
+        vi: 'Nhập họ tên',
+        hi: 'अपना नाम दर्ज करें',
+        si: 'ඔබේ නම ඇතුළත් කරන්න',
+        ar: 'أدخل اسمك',
+        tr: 'Adınızı girin',
+        my: 'သင့်အမည်ကို ရိုက်ထည့်ပါ',
+        ky: 'Атыңызды киргизиңиз',
+        ha: 'Shigar da sunanka',
+        mn: 'Нэрээ оруулна уу'
     },
     'info.age': {
         en: 'Age',
         ja: '年齢',
         zh: '年龄',
-        vi: 'Tuổi'
+        vi: 'Tuổi',
+        hi: 'उम्र',
+        si: 'වයස',
+        ar: 'العمر',
+        tr: 'Yaş',
+        my: 'အသက်',
+        ky: 'Жашы',
+        ha: 'Shekaru',
+        mn: 'Нас'
     },
     'info.enter_age': {
         en: 'Enter your age',
         ja: '年齢を入力してください',
         zh: '请输入年龄',
-        vi: 'Nhập tuổi'
+        vi: 'Nhập tuổi',
+        hi: 'अपनी उम्र दर्ज करें',
+        si: 'ඔබේ වයස ඇතුළත් කරන්න',
+        ar: 'أدخل عمرك',
+        tr: 'Yaşınızı girin',
+        my: 'သင့်အသက်ကို ရိုက်ထည့်ပါ',
+        ky: 'Жашыңызды киргизиңиз',
+        ha: 'Shigar da shekarunka',
+        mn: 'Насаа оруулна уу'
     },
     'info.gender': {
         en: 'Gender',
         ja: '性別',
         zh: '性别',
-        vi: 'Giới tính'
+        vi: 'Giới tính',
+        hi: 'लिंग',
+        si: 'ලිංගිකත්වය',
+        ar: 'الجنس',
+        tr: 'Cinsiyet',
+        my: 'လိင်',
+        ky: 'Жынысы',
+        ha: 'Jinsi',
+        mn: 'Хүйс'
     },
     'info.select_gender': {
         en: 'Select gender',
         ja: '性別を選択してください',
         zh: '请选择性别',
-        vi: 'Chọn giới tính'
+        vi: 'Chọn giới tính',
+        hi: 'लिंग चुनें',
+        si: 'ලිංගිකත්වය තෝරන්න',
+        ar: 'اختر الجنس',
+        tr: 'Cinsiyet seçin',
+        my: 'လိင်ကို ရွေးချယ်ပါ',
+        ky: 'Жынысын тандаңыз',
+        ha: 'Zabi jinsi',
+        mn: 'Хүйс сонгох'
     },
     'info.gender_male': {
         en: 'Male',
         ja: '男性',
         zh: '男性',
-        vi: 'Nam'
+        vi: 'Nam',
+        hi: 'पुरुष',
+        si: 'පුරුෂ',
+        ar: 'ذكر',
+        tr: 'Erkek',
+        my: 'အမျိုးသား',
+        ky: 'Эркек',
+        ha: 'Namiji',
+        mn: 'Эрэгтэй'
     },
     'info.gender_female': {
         en: 'Female',
         ja: '女性',
         zh: '女性',
-        vi: 'Nữ'
+        vi: 'Nữ',
+        hi: 'महिला',
+        si: 'කාන්තා',
+        ar: 'أنثى',
+        tr: 'Kadın',
+        my: 'အမျိုးသမီး',
+        ky: 'Аял',
+        ha: 'Mace',
+        mn: 'Эмэгтэй'
     },
     'info.visa_type': {
         en: 'Visa Type',
         ja: 'ビザの種類',
         zh: '签证类型',
-        vi: 'Loại visa'
+        vi: 'Loại visa',
+        hi: 'वीज़ा प्रकार',
+        si: 'වීසා වර්ගය',
+        ar: 'نوع التأشيرة',
+        tr: 'Vize Türü',
+        my: 'ဗီဇာအမျိုးအစား',
+        ky: 'Виза түрү',
+        ha: 'Nau\'in Biza',
+        mn: 'Визний төрөл'
     },
     'info.select_visa': {
         en: 'Select visa type',
         ja: 'ビザを選択してください',
         zh: '请选择签证类型',
-        vi: 'Chọn loại visa'
+        vi: 'Chọn loại visa',
+        hi: 'वीज़ा प्रकार चुनें',
+        si: 'වීසා වර්ගය තෝරන්න',
+        ar: 'اختر نوع التأشيرة',
+        tr: 'Vize türünü seçin',
+        my: 'ဗီဇာအမျိုးအစားကို ရွေးချယ်ပါ',
+        ky: 'Виза түрүн тандаңыз',
+        ha: 'Zabi nau\'in biza',
+        mn: 'Визний төрлийг сонгоно уу'
     },
     'info.korean_level': {
         en: 'Korean Level',
         ja: '韓国語レベル',
         zh: '韩语水平',
-        vi: 'Trình độ tiếng Hàn'
+        vi: 'Trình độ tiếng Hàn',
+        hi: 'कोरियाई स्तर',
+        si: 'කොරියානු මට්ටම',
+        ar: 'مستوى الكورية',
+        tr: 'Korece Seviyesi',
+        my: 'ကိုရီးယားဘာသာစကားအဆင့်',
+        ky: 'Корей тил деңгээли',
+        ha: 'Matakin Harshen Korean',
+        mn: 'Солонгос хэлний түвшин'
     },
     'info.select_korean_level': {
         en: 'Select Korean level',
         ja: '韓国語レベルを選択してください',
         zh: '请选择韩语水平',
-        vi: 'Chọn trình độ tiếng Hàn'
+        vi: 'Chọn trình độ tiếng Hàn',
+        hi: 'कोरियाई स्तर चुनें',
+        si: 'කොරියානු මට්ටම තෝරන්න',
+        ar: 'اختر مستوى الكورية',
+        tr: 'Korece seviyesini seçin',
+        my: 'ကိုရီးယားဘာသာစကားအဆင့်ကို ရွေးချယ်ပါ',
+        ky: 'Корей тил деңгээлин тандаңыз',
+        ha: 'Zabi matakin harshen Korean',
+        mn: 'Солонгос хэлний түвшинг сонгоно уу'
     },
     'info.korean_beginner': {
         en: 'Beginner',
         ja: '初級',
         zh: '初级',
-        vi: 'Sơ cấp'
+        vi: 'Sơ cấp',
+        hi: 'शुरुआती',
+        si: 'ආරම්භක',
+        ar: 'مبتدئ',
+        tr: 'Başlangıç',
+        my: 'အစပိုင်း',
+        ky: 'Башталгыч',
+        ha: 'Mai farawa',
+        mn: 'Анхан шат'
     },
     'info.korean_intermediate': {
         en: 'Intermediate',
         ja: '中級',
         zh: '中级',
-        vi: 'Trung cấp'
+        vi: 'Trung cấp',
+        hi: 'मध्यम',
+        si: 'මධ්‍යස්ථ',
+        ar: 'متوسط',
+        tr: 'Orta',
+        my: 'အလယ်အလတ်',
+        ky: 'Орто',
+        ha: 'Matsakaici',
+        mn: 'Дунд шат'
     },
     'info.korean_advanced': {
         en: 'Advanced',
         ja: '上級',
         zh: '高级',
-        vi: 'Cao cấp'
+        vi: 'Cao cấp',
+        hi: 'उन्नत',
+        si: 'උසස්',
+        ar: 'متقدم',
+        tr: 'İleri',
+        my: 'အဆင့်မြင့်',
+        ky: 'Жогорку',
+        ha: 'Babba',
+        mn: 'Дээд шат'
     },
     'info.locations_selected': {
         en: '{{count}} selected',
         ja: '{{count}}個選択済み',
         zh: '已选择{{count}}个',
-        vi: 'Đã chọn {{count}}'
+        vi: 'Đã chọn {{count}}',
+        hi: '{{count}} चुने गए',
+        si: '{{count}} තෝරා ගන්නා ලදී',
+        ar: 'تم اختيار {{count}}',
+        tr: '{{count}} seçildi',
+        my: '{{count}} ရွေးချယ်ပြီး',
+        ky: '{{count}} тандалды',
+        ha: 'An zaba {{count}}',
+        mn: '{{count}} сонгосон'
     },
     'info.fill_all_profile': {
         en: 'Please fill in all profile information',
         ja: 'すべてのプロフィール情報を入力してください',
         zh: '请填写所有个人信息',
-        vi: 'Vui lòng điền đầy đủ thông tin cá nhân'
+        vi: 'Vui lòng điền đầy đủ thông tin cá nhân',
+        hi: 'कृपया सभी प्रोफ़ाइल जानकारी भरें',
+        si: 'කරුණාකර සියලුම පැතිකඩ තොරතුරු පුරවන්න',
+        ar: 'يرجى ملء جميع معلومات الملف الشخصي',
+        tr: 'Lütfen tüm profil bilgilerini doldurun',
+        my: 'ကျေးဇူးပြု၍ ပရိုဖိုင်အချက်အလက်များအားလုံးကို ဖြည့်စွက်ပါ',
+        ky: 'Профилдин бардык маалыматын толтуруңуз',
+        ha: 'Da fatan za a cika dukkan bayanan martaba',
+        mn: 'Бүх хувийн мэдээллийг бөглөнө үү'
     },
     'info.invalid_age': {
         en: 'Please enter a valid age',
         ja: '正しい年齢を入力してください',
         zh: '请输入有效年龄',
-        vi: 'Vui lòng nhập tuổi hợp lệ'
+        vi: 'Vui lòng nhập tuổi hợp lệ',
+        hi: 'कृपया मान्य उम्र दर्ज करें',
+        si: 'කරුණාකර වලංගු වයසක් ඇතුළත් කරන්න',
+        ar: 'يرجى إدخال عمر صحيح',
+        tr: 'Lütfen geçerli bir yaş girin',
+        my: 'ကျေးဇူးပြု၍ မှන်ကန်သောအသက်ကို ရိုက်ထည့်ပါ',
+        ky: 'Туура жашты киргизиңиз',
+        ha: 'Da fatan za a shigar da ingantaccen shekaru',
+        mn: 'Зөв насаа оруулна уу'
     }
 }

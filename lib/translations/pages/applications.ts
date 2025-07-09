@@ -6,120 +6,280 @@ export const applicationsTranslations: TranslationData = {
         en: 'Application History',
         ja: '応募履歴',
         zh: '申请记录',
-        vi: 'Lịch sử ứng tuyển'
+        vi: 'Lịch sử ứng tuyển',
+        hi: 'आवेदन इतिहास',
+        si: 'අයදුම්පත් ඉතිහාසය',
+        ar: 'تاريخ التطبيقات',
+        tr: 'Başvuru Geçmişi',
+        my: 'လျှောက်ထားမှုမှတ်တမ်း',
+        ky: 'Арыз тарыхы',
+        ha: 'Tarihin Aikace-aikace',
+        mn: 'Өргөдлийн түүх'
     },
     'applications.total_applications': {
         en: 'Total {{count}} applications',
         ja: '全{{count}}件の応募',
         zh: '共{{count}}个申请',
-        vi: 'Tổng cộng {{count}} đơn ứng tuyển'
+        vi: 'Tổng cộng {{count}} đơn ứng tuyển',
+        hi: 'कुल {{count}} आवेदन',
+        si: 'මුළු {{count}} අයදුම්පත්',
+        ar: 'إجمالي {{count}} طلبات',
+        tr: 'Toplam {{count}} başvuru',
+        my: 'စုစုပေါင်း {{count}} လျှောက်ထားမှု',
+        ky: 'Жалпы {{count}} арыз',
+        ha: 'Jimlar {{count}} aikace-aikace',
+        mn: 'Нийт {{count}} өргөдөл'
     },
     'applications.filter_all': {
         en: 'All',
         ja: '全て',
         zh: '全部',
-        vi: 'Tất cả'
+        vi: 'Tất cả',
+        hi: 'सभी',
+        si: 'සියල්ල',
+        ar: 'الكل',
+        tr: 'Tümü',
+        my: 'အားလုံး',
+        ky: 'Баары',
+        ha: 'Duka',
+        mn: 'Бүгд'
     },
     'applications.filter_pending': {
         en: 'Under Review',
         ja: '検討中',
         zh: '审核中',
-        vi: 'Đang xét duyệt'
+        vi: 'Đang xét duyệt',
+        hi: 'समीक्षाधीन',
+        si: 'සමාලෝචනයට යටත්ව',
+        ar: 'قيد المراجعة',
+        tr: 'İnceleniyor',
+        my: 'ပြန်လည်သုံးသပ်နေ',
+        ky: 'Каралып жатат',
+        ha: 'Ana Duba',
+        mn: 'Хянаж байна'
     },
     'applications.filter_reviewed': {
         en: 'Reviewed',
         ja: '検討完了',
         zh: '已审核',
-        vi: 'Đã xét duyệt'
+        vi: 'Đã xét duyệt',
+        hi: 'समीक्षित',
+        si: 'සමාලෝචනය කළ',
+        ar: 'تمت المراجعة',
+        tr: 'İncelendi',
+        my: 'ပြန်လည်သုံးသပ်ပြီး',
+        ky: 'Каралды',
+        ha: 'An Duba',
+        mn: 'Хянасан'
     },
     'applications.status_pending': {
         en: 'Under Review',
         ja: '検討中',
         zh: '审核中',
-        vi: 'Đang xét duyệt'
+        vi: 'Đang xét duyệt',
+        hi: 'समीक्षाधीन',
+        si: 'සමාලෝචනයට යටත්ව',
+        ar: 'قيد المراجعة',
+        tr: 'İnceleniyor',
+        my: 'ပြန်လည်သုံးသပ်နေ',
+        ky: 'Каралып жатат',
+        ha: 'Ana Duba',
+        mn: 'Хянаж байна'
     },
     'applications.status_reviewed': {
         en: 'Reviewed',
         ja: '検討完了',
         zh: '已审核',
-        vi: 'Đã xét duyệt'
+        vi: 'Đã xét duyệt',
+        hi: 'समीक्षित',
+        si: 'සමාලෝචනය කළ',
+        ar: 'تمت المراجعة',
+        tr: 'İncelendi',
+        my: 'ပြန်လည်သုံးသပ်ပြီး',
+        ky: 'Каралды',
+        ha: 'An Duba',
+        mn: 'Хянасан'
     },
     'applications.status_accepted': {
         en: 'Accepted',
         ja: '合格',
         zh: '已录取',
-        vi: 'Đã trúng tuyển'
+        vi: 'Đã trúng tuyển',
+        hi: 'स्वीकृत',
+        si: 'පිළිගත්',
+        ar: 'مقبول',
+        tr: 'Kabul Edildi',
+        my: 'လက်ခံပြီး',
+        ky: 'Кабыл алынды',
+        ha: 'An Karba',
+        mn: 'Хүлээн авсан'
     },
     'applications.status_rejected': {
         en: 'Rejected',
         ja: '不合格',
         zh: '未录取',
-        vi: 'Không trúng tuyển'
+        vi: 'Không trúng tuyển',
+        hi: 'अस्वीकृत',
+        si: 'ප්‍රතික්ෂේප කළ',
+        ar: 'مرفوض',
+        tr: 'Reddedildi',
+        my: 'ငြင်းပယ်ပြီး',
+        ky: 'Четке кагылды',
+        ha: 'An Ki',
+        mn: 'Татгалзсан'
     },
     'applications.applied_date': {
         en: 'Applied',
         ja: '応募日',
         zh: '申请日期',
-        vi: 'Ngày ứng tuyển'
+        vi: 'Ngày ứng tuyển',
+        hi: 'आवेदन की तारीख',
+        si: 'අයදුම් කළ දිනය',
+        ar: 'تاريخ التقديم',
+        tr: 'Başvuru Tarihi',
+        my: 'လျှောက်ထားသည့်ရက်',
+        ky: 'Арыз берген күн',
+        ha: 'Ranar Aikace',
+        mn: 'Өргөдөл гаргасан'
     },
     'applications.closed': {
         en: 'Closed',
         ja: '募集終了',
         zh: '已结束',
-        vi: 'Đã đóng'
+        vi: 'Đã đóng',
+        hi: 'बंद',
+        si: 'වසා ඇත',
+        ar: 'مغلق',
+        tr: 'Kapalı',
+        my: 'ပိတ်ပြီး',
+        ky: 'Жабык',
+        ha: 'An Rufe',
+        mn: 'Хаагдсан'
     },
     'applications.view_resume': {
         en: 'View Submitted Resume',
         ja: '提出した履歴書を見る',
         zh: '查看提交的简历',
-        vi: 'Xem hồ sơ đã nộp'
+        vi: 'Xem hồ sơ đã nộp',
+        hi: 'जमा किया गया रिज्यूमे देखें',
+        si: 'ඉදිරිපත් කළ ජීව දත්ත පත්‍රිකාව බලන්න',
+        ar: 'عرض السيرة الذاتية المرسلة',
+        tr: 'Gönderilen Özgeçmişi Görüntüle',
+        my: 'တင်သွင်းထားသော ကိုယ်ရေးအကျဉ်းကို ကြည့်ရန်',
+        ky: 'Тапшырылган резюмені көрүү',
+        ha: 'Duba Tarihin Rayuwa da aka Aikace',
+        mn: 'Илгээсэн намтар харах'
     },
     'applications.no_applications': {
         en: 'No applications yet',
         ja: 'まだ応募した求人がありません',
         zh: '还没有申请的职位',
-        vi: 'Chưa có đơn ứng tuyển nào'
+        vi: 'Chưa có đơn ứng tuyển nào',
+        hi: 'अभी तक कोई आवेदन नहीं',
+        si: 'තවම අයදුම්පත් නැත',
+        ar: 'لا توجد طلبات بعد',
+        tr: 'Henüz başvuru yok',
+        my: 'လျှောက်ထားမှုများ မရှိသေးပါ',
+        ky: 'Азырынча арыз жок',
+        ha: 'Babu aikace-aikace tukuna',
+        mn: 'Өргөдөл хараахан байхгүй'
     },
     'applications.no_pending': {
         en: 'No applications under review',
         ja: '検討中の応募がありません',
         zh: '没有审核中的申请',
-        vi: 'Không có đơn đang xét duyệt'
+        vi: 'Không có đơn đang xét duyệt',
+        hi: 'समीक्षाधीन कोई आवेदन नहीं',
+        si: 'සමාලෝචනයට යටත්ව අයදුම්පත් නැත',
+        ar: 'لا توجد طلبات قيد المراجعة',
+        tr: 'İncelenen başvuru yok',
+        my: 'ပြန်လည်သုံးသပ်နေသော လျှောက်ထားမှုများ မရှိပါ',
+        ky: 'Каралып жаткан арыз жок',
+        ha: 'Babu aikace-aikacen da ake duba',
+        mn: 'Хянагдаж буй өргөдөл байхгүй'
     },
     'applications.no_reviewed': {
         en: 'No reviewed applications',
         ja: '検討完了した応募がありません',
         zh: '没有已审核的申请',
-        vi: 'Không có đơn đã xét duyệt'
+        vi: 'Không có đơn đã xét duyệt',
+        hi: 'कोई समीक्षित आवेदन नहीं',
+        si: 'සමාලෝචනය කළ අයදුම්පත් නැත',
+        ar: 'لا توجد طلبات مراجعة',
+        tr: 'İncelenmiş başvuru yok',
+        my: 'ပြန်လည်သုံးသပ်ပြီးသော လျှောက်ထားမှုများ မရှိပါ',
+        ky: 'Каралган арыз жок',
+        ha: 'Babu aikace-aikacen da aka duba',
+        mn: 'Хянасан өргөдөл байхгүй'
     },
     'applications.go_to_postings': {
         en: 'Browse Jobs',
         ja: '求人を見る',
         zh: '查看职位',
-        vi: 'Xem tin tuyển dụng'
+        vi: 'Xem tin tuyển dụng',
+        hi: 'नौकरियां ब्राउज़ करें',
+        si: 'රැකියා බලන්න',
+        ar: 'تصفح الوظائف',
+        tr: 'İş İlanlarına Göz At',
+        my: 'အလုပ်အကိုင်များကို ကြည့်ရှုရန်',
+        ky: 'Жумуштарды карап көрүү',
+        ha: 'Duba Aikace-aikacen Aiki',
+        mn: 'Ажлын байр үзэх'
     },
     'applications.today': {
         en: 'Today',
         ja: '今日',
         zh: '今天',
-        vi: 'Hôm nay'
+        vi: 'Hôm nay',
+        hi: 'आज',
+        si: 'අද',
+        ar: 'اليوم',
+        tr: 'Bugün',
+        my: 'ယနေ့',
+        ky: 'Бүгүн',
+        ha: 'Yau',
+        mn: 'Өнөөдөр'
     },
     'applications.yesterday': {
         en: 'Yesterday',
         ja: '昨日',
         zh: '昨天',
-        vi: 'Hôm qua'
+        vi: 'Hôm qua',
+        hi: 'कल',
+        si: 'ඊයේ',
+        ar: 'أمس',
+        tr: 'Dün',
+        my: 'မနေ့က',
+        ky: 'Кече',
+        ha: 'Jiya',
+        mn: 'Өчигдөр'
     },
     'applications.days_ago': {
         en: '{{days}} days ago',
         ja: '{{days}}日前',
         zh: '{{days}}天前',
-        vi: '{{days}} ngày trước'
+        vi: '{{days}} ngày trước',
+        hi: '{{days}} दिन पहले',
+        si: 'දින {{days}} කට පෙර',
+        ar: 'منذ {{days}} أيام',
+        tr: '{{days}} gün önce',
+        my: '{{days}} ရက်အကြာက',
+        ky: '{{days}} күн мурун',
+        ha: 'Kwanaki {{days}} da suka wuce',
+        mn: '{{days}} хоногийн өмнө'
     },
     'applications.loading': {
         en: 'Loading...',
         ja: '読み込み中...',
         zh: '加载中...',
-        vi: 'Đang tải...'
+        vi: 'Đang tải...',
+        hi: 'लोड हो रहा है...',
+        si: 'පූරණය වෙමින්...',
+        ar: 'جاري التحميل...',
+        tr: 'Yükleniyor...',
+        my: 'တင်နေသည်...',
+        ky: 'Жүктөлүүдө...',
+        ha: 'Ana Lodawa...',
+        mn: 'Ачааллаж байна...'
     },
 }

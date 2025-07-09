@@ -6,66 +6,154 @@ export const homeTranslations : TranslationData = {
         en: 'K-gency',
         ja: 'K-gency',
         zh: 'K-gency',
-        vi: 'K-gency'
+        vi: 'K-gency',
+        hi: 'K-gency',
+        si: 'K-gency',
+        ar: 'K-gency',
+        tr: 'K-gency',
+        my: 'K-gency',
+        ky: 'K-gency',
+        ha: 'K-gency',
+        mn: 'K-gency'
     },
     'home.recommended_jobs': {
         en: 'Recommended Jobs',
         ja: 'おすすめの仕事',
         zh: '推荐工作',
-        vi: 'Công việc được đề xuất'
+        vi: 'Công việc được đề xuất',
+        hi: 'सुझाए गए नौकरियां',
+        si: 'නිර්දේශිත රැකියා',
+        ar: 'الوظائف الموصى بها',
+        tr: 'Önerilen İşler',
+        my: 'အကြံပြုထားသောအလုပ်များ',
+        ky: 'Сунушталган жумуштар',
+        ha: 'Aikace-aikacen da aka ba da shawara',
+        mn: 'Санал болгосон ажлууд'
     },
     'home.total_postings': {
         en: 'Total {{count}} postings',
         ja: '全{{count}}件の求人',
         zh: '共{{count}}个职位',
-        vi: 'Tổng cộng {{count}} tin tuyển dụng'
+        vi: 'Tổng cộng {{count}} tin tuyển dụng',
+        hi: 'कुल {{count}} पोस्टिंग',
+        si: 'මුළු {{count}} දැන්වීම්',
+        ar: 'إجمالي {{count}} إعلانات',
+        tr: 'Toplam {{count}} ilan',
+        my: 'စုစုပေါင်း {{count}} ကြေငြာများ',
+        ky: 'Жалпы {{count}} жарыялоо',
+        ha: 'Jimlar {{count}} sanarwa',
+        mn: 'Нийт {{count}} зар'
     },
     'home.matched_keywords': {
         en: 'Matched Keywords ({{count}})',
         ja: 'マッチしたキーワード ({{count}}個)',
         zh: '匹配关键词 ({{count}}个)',
-        vi: 'Từ khóa phù hợp ({{count}})'
+        vi: 'Từ khóa phù hợp ({{count}})',
+        hi: 'मैच किए गए कीवर्ड ({{count}})',
+        si: 'ගැලපෙන මූල පද ({{count}})',
+        ar: 'الكلمات المطابقة ({{count}})',
+        tr: 'Eşleşen Anahtar Kelimeler ({{count}})',
+        my: 'ကိုက်ညီသောအဓိကစကားလုံးများ ({{count}})',
+        ky: 'Дал келген ачкыч сөздөр ({{count}})',
+        ha: 'Mahimman Kalmomin da suka Dace ({{count}})',
+        mn: 'Таарсан түлхүүр үгс ({{count}})'
     },
     'home.no_matched_keywords': {
         en: 'No matched keywords',
         ja: 'マッチしたキーワードがありません',
         zh: '没有匹配的关键词',
-        vi: 'Không có từ khóa phù hợp'
+        vi: 'Không có từ khóa phù hợp',
+        hi: 'कोई मैच किए गए कीवर्ड नहीं',
+        si: 'ගැලපෙන මූල පද නැත',
+        ar: 'لا توجد كلمات مطابقة',
+        tr: 'Eşleşen anahtar kelime yok',
+        my: 'ကိုက်ညီသောအဓိကစကားလုံးများမရှိပါ',
+        ky: 'Дал келген ачкыч сөз жок',
+        ha: 'Babu mahimman kalmomin da suka dace',
+        mn: 'Таарсан түлхүүр үг байхгүй'
     },
     'home.applied': {
         en: 'Applied',
         ja: '応募済み',
         zh: '已申请',
-        vi: 'Đã ứng tuyển'
+        vi: 'Đã ứng tuyển',
+        hi: 'आवेदन किया गया',
+        si: 'අයදුම් කර ඇත',
+        ar: 'تم التقدم',
+        tr: 'Başvuruldu',
+        my: 'လျှောက်ထားပြီး',
+        ky: 'Арыз берилди',
+        ha: 'An aikace',
+        mn: 'Өргөдөл гаргасан'
     },
     'home.no_postings': {
         en: 'No matching job postings',
         ja: 'マッチする求人がありません',
         zh: '没有匹配的职位',
-        vi: 'Không có tin tuyển dụng phù hợp'
+        vi: 'Không có tin tuyển dụng phù hợp',
+        hi: 'कोई मैच करने वाली नौकरी पोस्टिंग नहीं',
+        si: 'ගැලපෙන රැකියා දැන්වීම් නැත',
+        ar: 'لا توجد إعلانات وظائف مطابقة',
+        tr: 'Eşleşen iş ilanı yok',
+        my: 'ကိုက်ညီသောအလုပ်ကြေငြာများမရှိပါ',
+        ky: 'Дал келген жумуш жарыялоосу жок',
+        ha: 'Babu sanarwar aiki da ta dace',
+        mn: 'Таарсан ажлын зар байхгүй'
     },
     'home.set_preferences': {
         en: 'Set Preferences',
         ja: '条件を設定する',
         zh: '设置条件',
-        vi: 'Cài đặt điều kiện'
+        vi: 'Cài đặt điều kiện',
+        hi: 'प्राथमिकताएं सेट करें',
+        si: 'මනාපයන් සකසන්න',
+        ar: 'تعيين التفضيلات',
+        tr: 'Tercihleri Ayarla',
+        my: 'နှစ်သက်မှုများကို သတ်မှတ်ပါ',
+        ky: 'Каалоолорду коюу',
+        ha: 'Saita Zabin',
+        mn: 'Тохиргоо хийх'
     },
     'home.set_keywords': {
         en: 'Set Keywords',
         ja: 'キーワード設定',
         zh: '设置关键词',
-        vi: 'Cài đặt từ khóa'
+        vi: 'Cài đặt từ khóa',
+        hi: 'कीवर्ड सेट करें',
+        si: 'මූල පද සකසන්න',
+        ar: 'تعيين الكلمات المفتاحية',
+        tr: 'Anahtar Kelimeler Ayarla',
+        my: 'အဓိကစကားလုံးများ သတ်မှတ်ပါ',
+        ky: 'Ачкыч сөздөрдү коюу',
+        ha: 'Saita Mahimman Kalmomi',
+        mn: 'Түлхүүр үг тохируулах'
     },
     'home.perfect_match': {
         en: 'Perfect match for you',
         ja: 'あなたにぴったりの条件',
         zh: '完美匹配条件',
-        vi: 'Điều kiện phù hợp hoàn hảo'
+        vi: 'Điều kiện phù hợp hoàn hảo',
+        hi: 'आपके लिए बिल्कुल सही मैच',
+        si: 'ඔබට පරිපූර්ණ ගැලපීමක්',
+        ar: 'مطابقة مثالية لك',
+        tr: 'Sizin için mükemmel eşleşme',
+        my: 'သင့်အတွက် ပြီးပြည့်စုံသော ကိုက်ညီမှု',
+        ky: 'Сизге абдан туура келген',
+        ha: 'Cikakkiyar dacewa gare ka',
+        mn: 'Танд төгс тохирох'
     },
     'home.company_prefers': {
         en: 'This company prefers {{country}} applicants!',
         ja: 'この会社は{{country}}の方を優遇しています！',
         zh: '这家公司优先考虑{{country}}求职者！',
-        vi: 'Công ty này ưu tiên người {{country}}!'
+        vi: 'Công ty này ưu tiên người {{country}}!',
+        hi: 'यह कंपनी {{country}} आवेदकों को प्राथमिकता देती है!',
+        si: 'මෙම සමාගම {{country}} අයදුම්කරුවන්ට මනාපය දක්වයි!',
+        ar: 'هذه الشركة تفضل المتقدمين من {{country}}!',
+        tr: 'Bu şirket {{country}} başvuru sahiplerini tercih ediyor!',
+        my: 'ဤကုမ္ပဏီသည် {{country}} လျှောက်ထားသူများကို ဦးစားပေးသည်!',
+        ky: 'Бул компания {{country}} арыз берүүчүлөрдү артыкчы көрөт!',
+        ha: 'Wannan kamfani ya fi son masu aikace daga {{country}}!',
+        mn: 'Энэ компани {{country}} өргөдөл гаргагчдыг илүүд үздэг!'
     },
 }
