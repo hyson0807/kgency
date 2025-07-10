@@ -469,7 +469,7 @@ const Keywords = () => {
                                     return country ? (
                                         <View
                                             key={countryId}
-                                            className="flex-row items-center bg-blue-500 px-3 py-2 rounded-full"
+                                            className="flex-row items-center justify-center bg-blue-500 px-3 py-2 rounded-full"
                                         >
                                             <Text className="text-white text-sm font-medium mr-2">
                                                 {country.keyword}

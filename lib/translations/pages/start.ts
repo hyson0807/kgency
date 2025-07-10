@@ -29,34 +29,6 @@ export const startTranslations: TranslationData = {
         ha: 'Za mu same muku cikakkiyar aikin\na cikin dakika 30 kawai',
         mn: 'Бид танд зөвхөн 30 секундэд\nтохирох ажлыг олж өгнө'
     },
-    'start.button': {
-        en: 'Get Started',
-        ja: '始める',
-        zh: '开始',
-        vi: 'Bắt đầu',
-        hi: 'शुरू करें',
-        si: 'ආරම්භ කරන්න',
-        ar: 'ابدأ',
-        tr: 'Başla',
-        my: 'စတင်ပါ',
-        ky: 'Баштоо',
-        ha: 'Fara',
-        mn: 'Эхлэх'
-    },
-    'start.employer_login': {
-        en: 'Employer Login',
-        ja: '求人者ログイン',
-        zh: '雇主登录',
-        vi: 'Đăng nhập nhà tuyển dụng',
-        hi: 'नियोक्ता लॉगिन',
-        si: 'සේවා යෝජකයා ප්‍රවේශය',
-        ar: 'تسجيل دخول صاحب العمل',
-        tr: 'İşveren Girişi',
-        my: 'အလုပ်ရှင် ဝင်ရောက်ခြင်း',
-        ky: 'Жумуш берүүчү кирүү',
-        ha: 'Shigar da Mai Daukar Aiki',
-        mn: 'Ажил олгогч нэвтрэх'
-    },
     'start.select_type': {
         en: 'Which service would you like to use?',
         ja: 'どのサービスをご利用になりますか？',
@@ -126,5 +98,5 @@ export const startTranslations: TranslationData = {
         ky: 'Кызматкерлерди издеп жатасызбы?\nБиз сизди таланттуу адамдар менен байланыштырабыз',
         ha: 'Kuna neman ma\'aikata?\nZa mu hada ku da hazaka',
         mn: 'Ажилтан хайж байна уу?\nБид танд авъяаслаг хүмүүсийг холбож өгнө'
-    }
+    },
 };

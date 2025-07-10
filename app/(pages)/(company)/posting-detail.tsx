@@ -286,19 +286,19 @@ export default function CompanyPostingDetail() {
                     <View className="p-6 border-b border-gray-100">
                         <Text className="text-lg font-semibold mb-4">근무 조건</Text>
 
-
-                        {/* 근무지역 */}
-                        {keywords.location && keywords.location.length > 0 && (
+                        {/* 가게 주소 추가 */}
+                        {posting?.job_address && (
                             <View className="flex-row items-center mb-3">
-                                <Ionicons name="location" size={20} color="#6b7280" />
+                                <Ionicons name="business-outline" size={20} color="#6b7280" />
                                 <View className="ml-3">
-                                    <Text className="text-xs text-gray-500">근무지역</Text>
-                                    <Text className="text-gray-700">
-                                        {keywords.location.map(k => k.keyword).join(', ')}
-                                    </Text>
+                                    <Text className="text-xs text-gray-500">가게 주소</Text>
+                                    <Text className="text-gray-700">{posting.job_address}</Text>
                                 </View>
                             </View>
                         )}
+
+
+
 
                         {/* 근무일 */}
                         {posting?.working_days && posting.working_days.length > 0 && (

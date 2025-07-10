@@ -16,9 +16,11 @@ interface JobPosting {
     holiday_system?: string;
     hiring_count: number;
     per_day?: string;
+    pay_day?: string; // pay_day 추가
     pay_day_negotiable?: boolean;
     is_active: boolean;
     created_at: string;
+    job_address?: string; // job_address 추가
     company: {
         id: string;
         name: string;
@@ -88,7 +90,7 @@ export const useMatchedJobPostings = () => {
         try {
             setError(null);
 
-            // 활성화된 모든 공고 가져오기
+            // 활성화된 모든 공고 가져오기 - job_address 포함
             const { data: postings, error } = await supabase
                 .from('job_postings')
                 .select(`
@@ -149,6 +151,21 @@ export const useMatchedJobPostings = () => {
                                 case '근무조건':
                                     matchedKeywords.conditions.push(jpk.keyword.keyword);
                                     break;
+                                case '지역':
+                                    matchedKeywords.location.push(jpk.keyword.keyword);
+                                    break;
+                                case '지역이동':
+                                    matchedKeywords.moveable.push(jpk.keyword.keyword);
+                                    break;
+                                case '성별':
+                                    matchedKeywords.gender.push(jpk.keyword.keyword);
+                                    break;
+                                case '나이대':
+                                    matchedKeywords.age.push(jpk.keyword.keyword);
+                                    break;
+                                case '비자':
+                                    matchedKeywords.visa.push(jpk.keyword.keyword);
+                                    break;
                             }
                         }
                     });
@@ -172,7 +189,7 @@ export const useMatchedJobPostings = () => {
         }
     };
 
-    // 특정 공고 가져오기
+    // 특정 공고 가져오기 - job_address 포함
     const fetchPostingById = async (postingId: string): Promise<JobPosting | null> => {
         try {
             const { data, error } = await supabase

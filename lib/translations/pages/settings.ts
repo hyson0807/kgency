@@ -465,4 +465,32 @@ export const settingsTranslations: TranslationData = {
         ha: 'Share Asusun',
         mn: 'Данс устгах'
     },
+    'settings.activate_posting': {
+        en: 'Activate Job Seeking',
+        ja: '求職活動を有効化',
+        zh: '激活求职状态',
+        vi: 'Kích hoạt tìm việc',
+        hi: 'नौकरी की तलाश सक्रिय करें',
+        si: 'රැකියා සෙවීම සක්‍රිය කරන්න',
+        ar: 'تفعيل البحث عن وظيفة',
+        tr: 'İş Aramayı Etkinleştir',
+        my: 'အလုပ်ရှာခြင်းကို ဖွင့်ပါ',
+        ky: 'Жумуш издөөнү иштетүү',
+        ha: 'Kunna Neman Aiki',
+        mn: 'Ажил хайлтыг идэвхжүүлэх'
+    },
+    'settings.activate_description': {
+        en: 'When activated, companies can view your profile',
+        ja: '有効にすると企業があなたのプロフィールを見ることができます',
+        zh: '激活后公司可以查看您的个人资料',
+        vi: 'Khi kích hoạt, các công ty có thể xem hồ sơ của bạn',
+        hi: 'सक्रिय करने पर कंपनियां आपकी प्रोफ़ाइल देख सकती हैं',
+        si: 'සක්‍රිය කළ විට, සමාගම්වලට ඔබේ පැතිකඩ බැලීමට හැකිය',
+        ar: 'عند التفعيل، يمكن للشركات رؤية ملفك الشخصي',
+        tr: 'Etkinleştirildiğinde şirketler profilinizi görebilir',
+        my: 'ဖွင့်လှစ်ထားသောအခါ ကုမ္ပဏီများက သင့်ပရိုဖိုင်ကို ကြည့်နိုင်သည်',
+        ky: 'Иштетилгенде компаниялар сиздин профилиңизди көрө алат',
+        ha: 'Idan an kunna, kamfanoni za su iya kallon bayananku',
+        mn: 'Идэвхжүүлсэн үед компаниуд таны профайлыг харж болно'
+    },
 }

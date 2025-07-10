@@ -15,7 +15,6 @@ const Start = () => {
         { code: 'ja', name: '日本語', flag: '🇯🇵' },
         { code: 'zh', name: '中文', flag: '🇨🇳' },
         { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-        { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
         { code: 'si', name: 'සිංහල', flag: '🇱🇰' },
         { code: 'ar', name: 'العربية', flag: '🇩🇿' },
         { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },

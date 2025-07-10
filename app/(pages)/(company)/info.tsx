@@ -28,6 +28,7 @@ const Info = () => {
     const [workingDays, setWorkingDays] = useState<string[]>([])
     const [salaryRange, setSalaryRange] = useState('')
     const [hiringCount, setHiringCount] = useState('1')
+    const [jobAddress, setJobAddress] = useState('')
 
     // 키워드 선택 상태 - 국가도 배열로 변경
     const [selectedCountries, setSelectedCountries] = useState<number[]>([])
@@ -265,6 +266,7 @@ const Info = () => {
                 setPayDay(posting.pay_day || '')
                 setPayDayNegotiable(posting.pay_day_negotiable || false)
                 setSalaryType(posting.salary_type || '')
+                setJobAddress(posting.job_address || '')
             }
 
             // 공고 키워드 로드
@@ -348,6 +350,7 @@ const Info = () => {
                 salary_type: salaryType,
                 pay_day: payDay,
                 pay_day_negotiable: payDayNegotiable,
+                job_address: jobAddress,
                 is_active: isPostingActive,
                 updated_at: new Date().toISOString()
             }
@@ -473,6 +476,17 @@ const Info = () => {
                             multiline
                             numberOfLines={4}
                             textAlignVertical="top"
+                        />
+                    </View>
+
+                    {/* 가게 주소 추가 */}
+                    <View className="mb-4">
+                        <Text className="text-gray-700 mb-2">가게 주소</Text>
+                        <TextInput
+                            className="border border-gray-300 rounded-lg p-3"
+                            placeholder="가게 주소"
+                            value={jobAddress}
+                            onChangeText={setJobAddress}
                         />
                     </View>
 

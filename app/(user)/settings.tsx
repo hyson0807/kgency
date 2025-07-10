@@ -14,6 +14,25 @@ const Settings = () => {
     const { profile, updateProfile } = useProfile()
     const { showModal, ModalComponent } = useModal()
     const [isJobSeekingActive, setIsJobSeekingActive] = useState(false)
+    const { t, language, changeLanguage } = useTranslation()
+
+    const [selectedLanguage, setSelectedLanguage] = useState(language)
+
+
+    const languages = [
+        { code: 'ko', name: '한국어', flag: '🇰🇷' },
+        { code: 'en', name: 'English', flag: '🇺🇸' },
+        { code: 'ja', name: '日本語', flag: '🇯🇵' },
+        { code: 'zh', name: '中文', flag: '🇨🇳' },
+        { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
+        { code: 'si', name: 'සිංහල', flag: '🇱🇰' },
+        { code: 'ar', name: 'العربية', flag: '🇩🇿' },
+        { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+        { code: 'my', name: 'မြန်မာ', flag: '🇲🇲' },
+        { code: 'ky', name: 'Кыргызча', flag: '🇰🇬' },
+        { code: 'ha', name: 'Hausa', flag: '🇳🇬' },
+        { code: 'mn', name: 'Монгол', flag: '🇲🇳' }
+    ];
 
     // 알림 설정 상태
     const [notificationSettings, setNotificationSettings] = useState({
@@ -26,9 +45,6 @@ const Settings = () => {
     const [languageModalVisible, setLanguageModalVisible] = useState(false)
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
 
-    // 언어 설정
-    const { t, language } = useTranslation()
-    const [selectedLanguage, setSelectedLanguage] = useState(language)
 
 
     // 앱 정보
@@ -129,19 +145,23 @@ const Settings = () => {
     }
 
     // 언어 변경
-    const handleLanguageChange = async (language: string) => {
+    const handleLanguageChange = async (lang: string) => {
         try {
-            await AsyncStorage.setItem('appLanguage', language)
-            setSelectedLanguage(language)
+            await changeLanguage(lang) // TranslationContext의 changeLanguage 사용
             setLanguageModalVisible(false)
 
             showModal(
                 t('settings.language_change', '언어 변경'),
-                t('settings.restart_required', '앱을 재시작하면 적용됩니다.'),
+                t('settings.restart_required', '앱을 재시작해주세요'), // 메시지 변경
                 'info'
             )
         } catch (error) {
             console.error('언어 설정 저장 실패:', error)
+            showModal(
+                t('settings.error', '오류'),
+                t('settings.language_change_error', '언어 변경 중 오류가 발생했습니다.'),
+                'warning'
+            )
         }
     }
 
@@ -208,9 +228,9 @@ const Settings = () => {
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                 <View className="flex-row items-center justify-between mb-4">
                     <View className="flex-1">
-                        <Text className="text-lg font-bold text-gray-800">{t('myposting.activate_posting', '구직공고 활성화')}</Text>
+                        <Text className="text-lg font-bold text-gray-800">{t('settings.activate_posting', '구직공고 활성화')}</Text>
                         <Text className="text-sm text-gray-600 mt-1">
-                            {t('myposting.activate_description', '활성화하면 회사에서 내 프로필을 볼 수 있습니다')}
+                            {t('settings.activate_description', '활성화하면 회사에서 내 프로필을 볼 수 있습니다')}
                         </Text>
                     </View>
                     <TouchableOpacity
@@ -286,16 +306,13 @@ const Settings = () => {
                         </View>
                         <View className="flex-row items-center">
                             <Text className="text-gray-600 mr-2">
-                                {selectedLanguage === 'ko' ? '한국어' :
-                                    selectedLanguage === 'en' ? 'English' :
-                                        selectedLanguage === 'ja' ? '日本語' :
-                                            selectedLanguage === 'zh' ? '中文' :
-                                                selectedLanguage === 'vi' ? 'Tiếng Việt' : '한국어'}
+                                {languages.find(lang => lang.code === language)?.name || '한국어'}
                             </Text>
                             <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                         </View>
                     </TouchableOpacity>
                 </View>
+
 
                 {/* 정보 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
@@ -373,41 +390,37 @@ const Settings = () => {
                 onRequestClose={() => setLanguageModalVisible(false)}
             >
                 <View className="flex-1 bg-black/50 justify-end">
-                    <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10">
+                    <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10 max-h-[500px]">
                         <View className="flex-row items-center justify-between mb-6">
-                            <Text className="text-xl font-bold">{t('settings.select_language', '언어 선택')}</Text>
+                            <Text className="text-xl font-bold">
+                                {t('settings.select_language', '언어 선택')}
+                            </Text>
                             <TouchableOpacity onPress={() => setLanguageModalVisible(false)}>
                                 <Ionicons name="close" size={24} color="#6b7280" />
                             </TouchableOpacity>
                         </View>
 
-                        <TouchableOpacity
-                            onPress={() => handleLanguageChange('ko')}
-                            className={`flex-row items-center justify-between p-4 rounded-lg mb-2 ${
-                                selectedLanguage === 'ko' ? 'bg-blue-50' : 'bg-gray-50'
-                            }`}
-                        >
-                            <Text className={`text-lg ${
-                                selectedLanguage === 'ko' ? 'text-blue-600 font-bold' : 'text-gray-700'
-                            }`}>한국어</Text>
-                            {selectedLanguage === 'ko' && (
-                                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
-                            )}
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            onPress={() => handleLanguageChange('en')}
-                            className={`flex-row items-center justify-between p-4 rounded-lg ${
-                                selectedLanguage === 'en' ? 'bg-blue-50' : 'bg-gray-50'
-                            }`}
-                        >
-                            <Text className={`text-lg ${
-                                selectedLanguage === 'en' ? 'text-blue-600 font-bold' : 'text-gray-700'
-                            }`}>English</Text>
-                            {selectedLanguage === 'en' && (
-                                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
-                            )}
-                        </TouchableOpacity>
+                        <ScrollView showsVerticalScrollIndicator={true} style={{ flexGrow: 0 }}>
+                            {languages.map((lang) => (
+                                <TouchableOpacity
+                                    key={lang.code}
+                                    onPress={() => handleLanguageChange(lang.code)}
+                                    className={`flex-row items-center justify-between p-4 rounded-lg mb-2 ${
+                                        selectedLanguage === lang.code ? 'bg-blue-50' : 'bg-gray-50'
+                                    }`}
+                                >
+                                    <View className="flex-row items-center">
+                                        <Text className="text-2xl mr-3">{lang.flag}</Text>
+                                        <Text className={`text-lg ${
+                                            selectedLanguage === lang.code ? 'text-blue-600 font-bold' : 'text-gray-700'
+                                        }`}>{lang.name}</Text>
+                                    </View>
+                                    {selectedLanguage === lang.code && (
+                                        <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
+                                    )}
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
                     </View>
                 </View>
             </Modal>

@@ -87,6 +87,7 @@ export const postingDetailTranslations: TranslationData = {
         ha: 'Kwanakin Aiki',
         mn: 'Ажлын өдрүүд'
     },
+
     'posting_detail.work_hours': {
         en: 'Working Hours',
         ja: '勤務時間',

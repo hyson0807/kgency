@@ -3,8 +3,8 @@ import React from 'react'
 
 const Message = () => {
     return (
-        <View>
-            <Text>Message</Text>
+        <View className="flex-1 items-center justify-center">
+            <Text>Message Updating Soon</Text>
         </View>
     )
 }

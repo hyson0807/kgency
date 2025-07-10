@@ -17,6 +17,7 @@ interface JobPosting {
     benefits?: string[]
     hiring_count: number
     created_at: string
+    job_address?: string // job_address 추가
     company: {
         id: string
         name: string
@@ -110,7 +111,7 @@ const Home = () => {
 
     const fetchMatchedPostings = async () => {
         try {
-            // 모든 활성 공고 가져오기
+            // 모든 활성 공고 가져오기 - job_address 추가
             const { data: postings, error } = await supabase
                 .from('job_postings')
                 .select(`
@@ -280,10 +281,11 @@ const Home = () => {
                             <Text className="text-sm text-gray-600 ml-2">{posting.working_hours}</Text>
                         </View>
                     )}
-                    {posting.company.address && (
+                    {/* job_address 표시 - company.address 대신 사용 */}
+                    {posting.job_address && (
                         <View className="flex-row items-center">
                             <Ionicons name="location-outline" size={14} color="#6b7280" />
-                            <Text className="text-sm text-gray-600 ml-2">{posting.company.address}</Text>
+                            <Text className="text-sm text-gray-600 ml-2">{posting.job_address}</Text>
                         </View>
                     )}
                 </View>
