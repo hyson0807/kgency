@@ -50,6 +50,39 @@ export default function Resume() {
         setError(null);
 
         try {
+            const selectedDays = params.selectedDays as string;
+            const daysNegotiable = params.daysNegotiable as string;
+            const selectedTimes = params.selectedTimes as string;
+            const timesNegotiable = params.timesNegotiable as string;
+
+            // 근무 요일 문자열 생성
+            let workDaysString = '';
+            if (selectedDays && selectedDays.trim()) {
+                workDaysString = selectedDays;
+                if (daysNegotiable === 'true') {
+                    workDaysString += ' (협의가능)';
+                }
+            } else if (daysNegotiable === 'true') {
+                workDaysString = '협의가능';
+            } else {
+                workDaysString = '없음';
+            }
+
+            // 시간대 문자열 생성
+            let workTimesString = '';
+            if (selectedTimes && selectedTimes.trim()) {
+                workTimesString = selectedTimes;
+                if (timesNegotiable === 'true') {
+                    workTimesString += ' (협의가능)';
+                }
+            } else if (timesNegotiable === 'true') {
+                workTimesString = '협의가능';
+            } else {
+                workTimesString = '없음';
+            }
+
+            console.log(workDaysString, workTimesString);
+
             console.log('AI 이력서 생성 요청:', {
                 user_id: user?.userId,
                 job_posting_id: jobPostingId,
@@ -61,6 +94,8 @@ export default function Resume() {
                 job_posting_id: jobPostingId,
                 company_id: companyId,
                 question: question,
+                workDaysString: workDaysString,    // 완성된 문자열로 전송
+                workTimesString: workTimesString   // 완성된 문자열로 전송
             });
 
             console.log('AI 이력서 생성 응답:', response.data);

@@ -26,13 +26,21 @@ export default function PostingDetail() {
     const { showModal, ModalComponent } = useModal()
 
     const dayTranslations: { [key: string]: { [lang: string]: string } } = {
-        '월': { en: 'Mon', vi: 'T2', th: 'จ.' },
-        '화': { en: 'Tue', vi: 'T3', th: 'อ.' },
-        '수': { en: 'Wed', vi: 'T4', th: 'พ.' },
-        '목': { en: 'Thu', vi: 'T5', th: 'พฤ.' },
-        '금': { en: 'Fri', vi: 'T6', th: 'ศ.' },
-        '토': { en: 'Sat', vi: 'T7', th: 'ส.' },
-        '일': { en: 'Sun', vi: 'CN', th: 'อา.' }
+        '월': {
+            en: 'Mon', ja: '月', zh: '周一', vi: 'T2', hi: 'सोम', si: 'සඳුදා', ar: 'الإثنين', tr: 'Pzt', my: 'တနင်္လာ', ky: 'Дүйшөмбү', mn: 'Даваа'
+        },
+        '화': {en: 'Tue', ja: '火', zh: '周二', vi: 'T3', hi: 'मंगल', si: 'අඟහරුවාදා', ar: 'الثلاثاء', tr: 'Sal', my: 'အင်္ဂါ', ky: 'Шейшемби', ha: 'Talata', mn: 'Мягмар'
+        },
+        '수': {en: 'Wed', ja: '水', zh: '周三', vi: 'T4', hi: 'बुध', si: 'බදාදා', ar: 'الأربعاء', tr: 'Çar', my: 'ဗုဒ္ဓဟူး', ky: 'Шаршемби', ha: 'Laraba', mn: 'Лхагва'
+        },
+        '목': {en: 'Thu', ja: '木', zh: '周四', vi: 'T5', hi: 'गुरु', si: 'බ්‍රහස්පතින්දා', ar: 'الخميس', tr: 'Per', my: 'ကြာသပတေး', ky: 'Бейшемби', ha: 'Alhamis', mn: 'Пүрэв'
+        },
+        '금': {en: 'Fri', ja: '金', zh: '周五', vi: 'T6', hi: 'शुक्र', si: 'සිකුරාදා', ar: 'الجمعة', tr: 'Cum', my: 'သောကြာ', ky: 'Жума', ha: 'Jumma a', mn: 'Баасан'
+        },
+        '토': {en: 'Sat', ja: '土', zh: '周六', vi: 'T7', hi: 'शनि', si: 'සෙනසුරාදා', ar: 'السبت', tr: 'Cmt', my: 'စနေ', ky: 'Ишемби', ha: 'Asabar', mn: 'Бямба'
+        },
+        '일': {en: 'Sun', ja: '日', zh: '周日', vi: 'CN', hi: 'रवि', si: 'ඉරිදා', ar: 'الأحد', tr: 'Paz', my: 'တနင်္ဂနွေ', ky: 'Жекшемби', ha: 'Lahadi', mn: 'Ням'
+        }
     };
 
     const [translatedData, setTranslatedData] = useState<{
@@ -300,7 +308,7 @@ export default function PostingDetail() {
 
 
                     {/* 급여타입 & 급여 */}
-                    {(posting.salary_type || posting.salary_range) && (
+                    {(posting.salary_range) && (
                         <View className="flex-row items-center mb-3">
                             <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
                                 <Ionicons name="cash-outline" size={18} color="#3b82f6" />
@@ -308,11 +316,11 @@ export default function PostingDetail() {
                             <View className="ml-3">
                                 <Text className="text-xs text-gray-500">{t('posting_detail.salary', '급여')}</Text>
                                 <Text className="text-base text-gray-800">
-                                    {posting.salary_type && `${posting.salary_type} `}
                                     {isTranslated && translatedData?.salary_range
                                         ? translatedData.salary_range
                                         : posting.salary_range
                                     }
+                                    {posting.salary_range_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
                                 </Text>
                             </View>
                         </View>

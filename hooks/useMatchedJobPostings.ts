@@ -8,7 +8,7 @@ interface JobPosting {
     title: string;
     description?: string;
     salary_range?: string;
-    salary_type?: string;
+    salary_range_negotiable?: boolean;
     working_hours?: string;
     working_hours_negotiable?: boolean;
     working_days?: string[];

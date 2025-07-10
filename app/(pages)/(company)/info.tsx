@@ -47,8 +47,8 @@ const Info = () => {
     const [workingHoursNegotiable, setWorkingHoursNegotiable] = useState(false)
     const [payDay, setPayDay] = useState('')
     const [payDayNegotiable, setPayDayNegotiable] = useState(false)
-    const [salaryType, setSalaryType] = useState('')
     const [workingDaysNegotiable, setWorkingDaysNegotiable] = useState(false)
+    const [salaryRangeNegotiable, setSalaryRangeNegotiable] = useState(false)
 
     const { showModal, ModalComponent, hideModal} = useModal()
 
@@ -117,13 +117,7 @@ const Info = () => {
         { label: '일', value: '일' }
     ]
 
-    // 급여 타입 데이터
-    const salaryTypes = [
-        { label: '시급', value: '시급' },
-        { label: '일급', value: '일급' },
-        { label: '월급', value: '월급' },
-        { label: '연봉', value: '연봉' }
-    ]
+
 
     // 요일 선택/해제 토글
     const toggleWorkingDay = (day: string) => {
@@ -261,11 +255,11 @@ const Info = () => {
                 setWorkingDays(posting.working_days || [])
                 setWorkingDaysNegotiable(posting.working_days_negotiable || false)
                 setSalaryRange(posting.salary_range || '')
+                setSalaryRangeNegotiable(posting.salary_range_negotiable || false)
                 setIsPostingActive(posting.is_active)
                 setWorkingHoursNegotiable(posting.working_hours_negotiable || false)
                 setPayDay(posting.pay_day || '')
                 setPayDayNegotiable(posting.pay_day_negotiable || false)
-                setSalaryType(posting.salary_type || '')
                 setJobAddress(posting.job_address || '')
             }
 
@@ -347,7 +341,7 @@ const Info = () => {
                 working_days: workingDays,
                 working_days_negotiable: workingDaysNegotiable,
                 salary_range: salaryRange,
-                salary_type: salaryType,
+                salary_range_negotiable: salaryRangeNegotiable,
                 pay_day: payDay,
                 pay_day_negotiable: payDayNegotiable,
                 job_address: jobAddress,
@@ -596,39 +590,34 @@ const Info = () => {
                         </View>
                     </View>
 
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">급여 타입</Text>
-                        <View className="flex-row flex-wrap gap-2">
-                            {salaryTypes.map(type => (
-                                <TouchableOpacity
-                                    key={type.value}
-                                    onPress={() => setSalaryType(type.value)}
-                                    className={`px-4 py-2 rounded-lg border-2 ${
-                                        salaryType === type.value
-                                            ? 'bg-blue-500 border-blue-500'
-                                            : 'bg-white border-gray-300'
-                                    }`}
-                                >
-                                    <Text className={`font-medium ${
-                                        salaryType === type.value
-                                            ? 'text-white'
-                                            : 'text-gray-700'
-                                    }`}>
-                                        {type.label}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </View>
+
 
                     <View className="mb-4">
                         <Text className="text-gray-700 mb-2">급여</Text>
+                        <View className="flex-row items-center gap-2">
+
                         <TextInput
-                            className="border border-gray-300 rounded-lg p-3"
+                            className="flex-1 border border-gray-300 rounded-lg p-3"
                             placeholder="예: 월 200-250만원"
                             value={salaryRange}
                             onChangeText={setSalaryRange}
                         />
+                        <TouchableOpacity
+                            onPress={() => setSalaryRangeNegotiable(!salaryRangeNegotiable)}
+                            className="flex-row items-center gap-2"
+                        >
+                            <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
+                                salaryRangeNegotiable
+                                    ? 'bg-blue-500 border-blue-500'
+                                    : 'bg-white border-gray-300'
+                            }`}>
+                                {salaryRangeNegotiable && (
+                                    <Text className="text-white text-xs">✓</Text>
+                                )}
+                            </View>
+                            <Text className="text-gray-700">협의가능</Text>
+                        </TouchableOpacity>
+                        </View>
                     </View>
 
                     <View className="mb-4">

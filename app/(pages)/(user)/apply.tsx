@@ -29,6 +29,13 @@ export default function Apply() {
     const [hasApplied, setHasApplied] = useState(false)
     const [saving, setSaving] = useState(false)
     const [question, setQuestion] = useState('')
+
+    // 새로운 상태 추가
+    const [selectedDays, setSelectedDays] = useState<string[]>([])
+    const [daysNegotiable, setDaysNegotiable] = useState(false)
+    const [selectedTimes, setSelectedTimes] = useState<string[]>([])
+    const [timesNegotiable, setTimesNegotiable] = useState(false)
+
     const { showModal, hideModal, ModalComponent } = useModal();
     const { t } = useTranslation()
 
@@ -78,6 +85,25 @@ export default function Apply() {
         { label: t('apply.visa_d2', 'D-2 (유학)'), value: 'D-2' },
         { label: t('apply.visa_d4', 'D-4 (일반연수)'), value: 'D-4' },
         { label: t('apply.visa_other', '기타'), value: '기타' }
+    ]
+
+    // 요일 옵션
+    const dayOptions = [
+        t('apply.day_mon', '월'),
+        t('apply.day_tue', '화'),
+        t('apply.day_wed', '수'),
+        t('apply.day_thu', '목'),
+        t('apply.day_fri', '금'),
+        t('apply.day_sat', '토'),
+        t('apply.day_sun', '일')
+    ]
+
+    // 시간대 옵션
+    const timeOptions = [
+        t('apply.time_morning', '오전'),
+        t('apply.time_afternoon', '오후'),
+        t('apply.time_evening', '저녁'),
+        t('apply.time_dawn', '새벽')
     ]
 
 
@@ -140,6 +166,24 @@ export default function Apply() {
         return true
     }
 
+    // 요일 선택 토글
+    const toggleDay = (day: string) => {
+        if (selectedDays.includes(day)) {
+            setSelectedDays(selectedDays.filter(d => d !== day))
+        } else {
+            setSelectedDays([...selectedDays, day])
+        }
+    }
+
+    // 시간대 선택 토글
+    const toggleTime = (time: string) => {
+        if (selectedTimes.includes(time)) {
+            setSelectedTimes(selectedTimes.filter(t => t !== time))
+        } else {
+            setSelectedTimes([...selectedTimes, time])
+        }
+    }
+
     const handleSubmit = async () => {
         // 중복 지원 체크
         if (hasApplied) {
@@ -186,7 +230,7 @@ export default function Apply() {
             });
 
             if (updated) {
-                // Resume 페이지로 이동
+                // Resume 페이지로 이동 - 새로운 파라미터 추가
                 router.push({
                     pathname: '/resume',
                     params: {
@@ -194,7 +238,12 @@ export default function Apply() {
                         companyId: String(companyId),
                         companyName: String(companyName),
                         jobTitle: String(jobTitle),
-                        question: String(question)
+                        question: String(question),
+                        // 새로운 파라미터 추가
+                        selectedDays: selectedDays.join(','),
+                        daysNegotiable: String(daysNegotiable),
+                        selectedTimes: selectedTimes.join(','),
+                        timesNegotiable: String(timesNegotiable)
                     }
                 });
             } else {
@@ -309,7 +358,7 @@ export default function Apply() {
                     </View>
 
                     {/* 경력 및 정보 */}
-                    <View className="mb-6">
+                    <View className="mb-6 gap-4">
                         <Text className="text-lg font-bold mb-4">{t('apply.career_info', '경력 및 정보')}</Text>
 
                         {/* 희망 근무 기간 */}
@@ -329,6 +378,78 @@ export default function Apply() {
                                         <Text className={`${
                                             howLong === period ? 'text-white' : 'text-gray-700'
                                         }`}>{period}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+
+                        {/* 희망 근무 요일 */}
+                        <View className="mb-4">
+                            <View className="flex-row items-center justify-start gap-4 mb-2">
+                                <Text className="text-gray-700">{t('apply.preferred_days', '희망 근무 요일')}</Text>
+                                <TouchableOpacity
+                                    onPress={() => setDaysNegotiable(!daysNegotiable)}
+                                    className={`px-3 py-1 rounded-lg border ${
+                                        daysNegotiable
+                                            ? 'bg-blue-500 border-blue-500'
+                                            : 'bg-white border-gray-300'
+                                    }`}
+                                >
+                                    <Text className={`text-sm ${
+                                        daysNegotiable ? 'text-white' : 'text-gray-700'
+                                    }`}>{t('apply.negotiable', '협의가능')}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View className="flex-row gap-2">
+                                {dayOptions.map((day) => (
+                                    <TouchableOpacity
+                                        key={day}
+                                        onPress={() => toggleDay(day)}
+                                        className={`flex-1 py-2 rounded-lg border items-center ${
+                                            selectedDays.includes(day)
+                                                ? 'bg-blue-500 border-blue-500'
+                                                : 'bg-white border-gray-300'
+                                        }`}
+                                    >
+                                        <Text className={`text-sm font-medium ${
+                                            selectedDays.includes(day) ? 'text-white' : 'text-gray-700'
+                                        }`}>{day}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+
+                        {/* 희망 시간대 */}
+                        <View className="mb-4">
+                            <View className="flex-row items-center justify-start gap-4 mb-2">
+                                <Text className="text-gray-700">{t('apply.preferred_time', '희망 시간대')}</Text>
+                                <TouchableOpacity
+                                    onPress={() => setTimesNegotiable(!timesNegotiable)}
+                                    className={`px-3 py-1 rounded-lg border ${
+                                        timesNegotiable
+                                            ? 'bg-blue-500 border-blue-500'
+                                            : 'bg-white border-gray-300'
+                                    }`}
+                                >
+                                    <Text className={`text-sm ${
+                                        timesNegotiable ? 'text-white' : 'text-gray-700'
+                                    }`}>{t('apply.negotiable', '협의가능')}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View className="flex-row gap-2">
+                                {timeOptions.map((time) => (
+                                    <TouchableOpacity
+                                        key={time}
+                                        onPress={() => toggleTime(time)}
+                                        className={`flex-1 py-2 rounded-lg border items-center ${
+                                            selectedTimes.includes(time)
+                                                ? 'bg-blue-500 border-blue-500'
+                                                : 'bg-white border-gray-300'
+                                        }`}
+                                    >
+                                        <Text className={`font-medium ${
+                                            selectedTimes.includes(time) ? 'text-white' : 'text-gray-700'
+                                        }`}>{time}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>

@@ -45,6 +45,7 @@ const Inbox = () => {
                     )
                 `)
                 .eq('receiver_id', user.userId)
+                .is('is_deleted', false)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -68,6 +69,8 @@ const Inbox = () => {
         if (!message.is_read) {
             markAsRead(message.id);
         }
+
+
 
         // view-resume 페이지로 이동
         router.push({

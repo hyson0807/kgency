@@ -127,7 +127,8 @@ export default function CompanyPostingDetail() {
                 params: {
                     applicationId: application.id,
                     userName: application.user.name,
-                    resume: application.message.content
+                    resume: application.message.content,
+                    userPhone: application.user.phone_number
                 }
             })
         }
@@ -329,14 +330,14 @@ export default function CompanyPostingDetail() {
                         )}
 
                         {/* 급여타입 & 급여 */}
-                        {(posting?.salary_type || posting?.salary_range) && (
+                        {(posting?.salary_range) && (
                             <View className="flex-row items-center mb-3">
                                 <Ionicons name="cash-outline" size={20} color="#6b7280" />
                                 <View className="ml-3">
                                     <Text className="text-xs text-gray-500">급여</Text>
                                     <Text className="text-gray-700">
-                                        {posting.salary_type && `${posting.salary_type} `}
                                         {posting.salary_range}
+                                        {posting.salary_range_negotiable && ' (협의가능)'}
                                     </Text>
                                 </View>
                             </View>

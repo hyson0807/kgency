@@ -1,12 +1,14 @@
 // app/(pages)/(company)/view-resume.tsx
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useEffect } from 'react'
+import React, {useEffect, useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
 import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
+import axios from 'axios'
+import { ActivityIndicator } from 'react-native'
 
 export default function ViewResume() {
     const { showModal, ModalComponent } = useModal()
@@ -20,6 +22,11 @@ export default function ViewResume() {
         subject,
         createdAt
     } = params
+
+    const [translatedResume, setTranslatedResume] = useState<string | null>(null)
+    const [isTranslated, setIsTranslated] = useState(false)
+    const [isTranslating, setIsTranslating] = useState(false)
+
 
     useEffect(() => {
         if (messageId) {
@@ -37,6 +44,49 @@ export default function ViewResume() {
                 .eq('id', messageId)
         } catch (error) {
             console.error('읽음 표시 실패:', error)
+        }
+    }
+
+    const handleTranslate = async () => {
+        const resumeText = Array.isArray(resume) ? resume[0] : resume
+
+        if (!resumeText) return
+
+        // 토글 기능
+        if (isTranslated && translatedResume) {
+            setIsTranslated(false)
+            return
+        }
+
+        // 이미 번역된 텍스트가 있으면 토글
+        if (translatedResume) {
+            setIsTranslated(true)
+            return
+        }
+
+        // 새로 번역
+        setIsTranslating(true)
+        try {
+            const response = await axios.post('https://kgencyserver-production.up.railway.app/translate', {
+                text: resumeText,
+                targetLang: 'ko' // 항상 한국어로 번역
+            })
+
+            if (response.data.success) {
+                setTranslatedResume(response.data.translatedText)
+                setIsTranslated(true)
+            } else {
+                throw new Error('번역 실패')
+            }
+        } catch (error) {
+            console.error('번역 오류:', error)
+            showModal(
+                '번역 실패',
+                '이력서를 번역하는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+                'warning'
+            )
+        } finally {
+            setIsTranslating(false)
         }
     }
 
@@ -77,9 +127,26 @@ export default function ViewResume() {
                     <Back />
                     <Text className="text-lg font-bold ml-4">이력서</Text>
                 </View>
-                <TouchableOpacity onPress={handleSaveResume}>
-                    <Ionicons name="bookmark-outline" size={24} color="#3b82f6" />
-                </TouchableOpacity>
+                <View className="flex-row items-center gap-3">
+                    {/* 번역 버튼 추가 */}
+                    <TouchableOpacity
+                        onPress={handleTranslate}
+                        disabled={isTranslating}
+                    >
+                        {isTranslating ? (
+                            <ActivityIndicator size="small" color="#3b82f6" />
+                        ) : (
+                            <Ionicons
+                                name={isTranslated ? "language" : "language-outline"}
+                                size={24}
+                                color={isTranslated ? "#10b981" : "#3b82f6"}
+                            />
+                        )}
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleSaveResume}>
+                        <Ionicons name="bookmark-outline" size={24} color="#3b82f6" />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             {/* 지원자 정보 */}
@@ -113,11 +180,21 @@ export default function ViewResume() {
             {/* 이력서 내용 */}
             <ScrollView className="flex-1 px-4 py-4">
                 <View className="bg-gray-50 p-6 rounded-xl">
+                    {isTranslated && (
+                        <View className="mb-3 pb-3 border-b border-gray-200">
+                            <View className="flex-row items-center">
+                                <Ionicons name="language" size={16} color="#10b981" />
+                                <Text className="text-sm text-green-600 ml-1">한국어로 번역됨</Text>
+                            </View>
+                        </View>
+                    )}
                     <Text className="text-base text-gray-800 leading-7">
-                        {Array.isArray(resume) ? resume[0] : resume}
+                        {isTranslated && translatedResume
+                            ? translatedResume
+                            : (Array.isArray(resume) ? resume[0] : resume)
+                        }
                     </Text>
                 </View>
-
             </ScrollView>
 
             {/* 하단 액션 버튼 */}

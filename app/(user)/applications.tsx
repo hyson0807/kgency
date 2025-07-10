@@ -67,6 +67,7 @@ const Applications = () => {
                     )
                 `)
                 .eq('user_id', user.userId)
+                // .is('deleted_at', null)
                 .order('applied_at', { ascending: false })
 
             // 필터 적용
@@ -121,6 +122,8 @@ const Applications = () => {
             })
         }
     }
+
+    // const handleDelete
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)

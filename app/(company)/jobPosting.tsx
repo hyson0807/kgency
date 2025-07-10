@@ -60,18 +60,19 @@ const JobPosting = () => {
             const { data, error } = await supabase
                 .from('job_postings')
                 .select(`
-                    *,
-                    applications (
-                        id
-                    ),
-                    job_posting_keywords:job_posting_keyword (
-                        keyword:keyword_id (
-                            keyword,
-                            category
-                        )
+                *,
+                applications (
+                    id
+                ),
+                job_posting_keywords:job_posting_keyword (
+                    keyword:keyword_id (
+                        keyword,
+                        category
                     )
-                `)
+                )
+            `)
                 .eq('company_id', user.userId)
+                .is('deleted_at', null)  // 삭제되지 않은 공고만 조회
                 .order('created_at', { ascending: false })
 
             if (error) throw error
@@ -124,18 +125,75 @@ const JobPosting = () => {
 
     const confirmDelete = async () => {
         try {
-            const { error } = await supabase
+            // 1. 권한 확인
+            const { data: posting, error: checkError } = await supabase
                 .from('job_postings')
-                .delete()
+                .select('company_id')
+                .eq('id', deleteModal.postingId)
+                .single()
+
+            if (checkError || !posting || posting.company_id !== user?.userId) {
+                console.error('삭제 권한이 없습니다')
+                setDeleteModal({ visible: false, postingId: '', title: '' })
+                return
+            }
+
+            // 2. 관련 applications의 status를 'reviewed'로 변경
+            const { error: appUpdateError } = await supabase
+                .from('applications')
+                .update({
+                    status: 'reviewed',
+                    reviewed_at: new Date().toISOString()
+                })
+                .eq('job_posting_id', deleteModal.postingId)
+
+            if (appUpdateError) {
+                console.error('지원 내역 상태 변경 실패:', appUpdateError)
+            }
+
+            // 2. 관련 applications도 soft delete 처리
+            const { error: appDeleteError } = await supabase
+                .from('applications')
+                .update({ deleted_at: new Date().toISOString() })
+                .eq('job_posting_id', deleteModal.postingId)
+
+            if (appDeleteError) {
+                console.error('지원 내역 삭제 처리 실패:', appDeleteError)
+            }
+
+            // 3. 메시지 soft delete 처리
+            const { data: applications } = await supabase
+                .from('applications')
+                .select('message_id')
+                .eq('job_posting_id', deleteModal.postingId)
+                .not('message_id', 'is', null)
+
+            if (applications && applications.length > 0) {
+                const messageIds = applications.map(app => app.message_id)
+
+                await supabase
+                    .from('messages')
+                    .update({ is_deleted: true })
+                    .in('id', messageIds)
+            }
+
+            // 4. 공고 soft delete 처리
+            const { error: deleteError } = await supabase
+                .from('job_postings')
+                .update({
+                    is_active: false,
+                    deleted_at: new Date().toISOString()
+                })
                 .eq('id', deleteModal.postingId)
 
-            if (error) throw error
+            if (deleteError) throw deleteError
 
+            // 5. 로컬 상태 업데이트
             setPostings(prev => prev.filter(p => p.id !== deleteModal.postingId))
             setDeleteModal({ visible: false, postingId: '', title: '' })
-            // 성공 메시지 제거
+
         } catch (error) {
-            console.error('삭제 실패:', error)
+            console.error('삭제 처리 실패:', error)
             setDeleteModal({ visible: false, postingId: '', title: '' })
         }
     }
