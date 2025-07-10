@@ -92,8 +92,6 @@ const UserLogin = () => {
                 );
 
                 if (result.success) {
-                    Alert.alert(t('alert.success', '성공'), t('alert.login_success', '로그인되었습니다!'));
-
                     if (response.data.onboardingStatus.completed) {
                         router.replace('/(user)/home');
                     } else {

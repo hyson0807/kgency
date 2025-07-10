@@ -312,4 +312,32 @@ export const postingDetailTranslations: TranslationData = {
         ha: 'Nau\'ukan Biza masu Cancanta',
         mn: 'Тохирох визний төрлүүд'
     },
+    'posting_detail.show_original': {
+        en: 'Show Original',
+        ja: '原文を表示',
+        zh: '显示原文',
+        vi: 'Xem bản gốc',
+        hi: 'मूल दिखाएं',
+        si: 'මුල් පිටපත පෙන්වන්න',
+        ar: 'إظهار الأصل',
+        tr: 'Orijinali Göster',
+        my: 'မူရင်းကိုပြပါ',
+        ky: 'Түпнусканы көрсөтүү',
+        ha: 'Nuna Asali',
+        mn: 'Эх хувилбарыг харуулах'
+    },
+    'posting_detail.translate': {
+        en: 'Translate',
+        ja: '翻訳する',
+        zh: '翻译',
+        vi: 'Dịch',
+        hi: 'अनुवाद करें',
+        si: 'පරිවර්තනය කරන්න',
+        ar: 'ترجم',
+        tr: 'Çevir',
+        my: 'ဘာသာပြန်ပါ',
+        ky: 'Которуу',
+        ha: 'Fassara',
+        mn: 'Орчуулах'
+    },
 }
