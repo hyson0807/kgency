@@ -210,7 +210,7 @@ const JobPosting = () => {
         return (
             <TouchableOpacity
                 onPress={() => router.push({
-                    pathname: '/(pages)/(company)/posting-detail',
+                    pathname: '/(pages)/(company)/posting-detail2',
                     params: { postingId: item.id }
                 })}
                 className={`mx-4 my-2 p-4 rounded-xl shadow-sm ${
@@ -260,7 +260,7 @@ const JobPosting = () => {
                         onPress={(e) => {
                             e.stopPropagation()
                             router.push({
-                                pathname: '/(pages)/(company)/info',
+                                pathname: '/(pages)/(company)/info2',
                                 params: { jobPostingId: item.id }
                             })
                         }}
@@ -333,7 +333,7 @@ const JobPosting = () => {
                             아직 등록한 공고가 없습니다
                         </Text>
                         <TouchableOpacity
-                            onPress={() => router.push('/(pages)/(company)/info')}
+                            onPress={() => router.push('/(pages)/(company)/info2')}
                             className="mt-4 px-6 py-3 bg-blue-500 rounded-xl"
                         >
                             <Text className="text-white font-medium">첫 공고 등록하기</Text>
@@ -352,7 +352,7 @@ const JobPosting = () => {
 
             {/* 플로팅 버튼 */}
             <TouchableOpacity
-                onPress={() => router.push('/(pages)/(company)/info')}
+                onPress={() => router.push('/(pages)/(company)/info2')}
                 className="absolute bottom-6 right-6 w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg"
                 style={{
                     shadowColor: '#000',

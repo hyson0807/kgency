@@ -13,7 +13,7 @@ import {useModal} from "@/hooks/useModal";
 import {Ionicons} from "@expo/vector-icons";
 
 //채용공고 등록 페이지
-const Info = () => {
+const Info2 = () => {
     const { user } = useAuth()
     const { keywords, loading: keywordsLoading } = useUserKeywords()
     const params = useLocalSearchParams()
@@ -1009,4 +1009,4 @@ const Info = () => {
     )
 }
 
-export default Info
+export default Info2

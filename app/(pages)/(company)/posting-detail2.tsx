@@ -486,7 +486,7 @@ export default function CompanyPostingDetail() {
                     <View className="p-6">
                         <TouchableOpacity
                             onPress={() => router.push({
-                                pathname: '/(pages)/(company)/info',
+                                pathname: '/(pages)/(company)/info2',
                                 params: { jobPostingId: postingId }
                             })}
                             className="bg-blue-500 py-3 rounded-xl mb-3"
