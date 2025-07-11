@@ -1,5 +1,5 @@
 // app/(pages)/(user)/posting-detail.tsx
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import {View, Text, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
@@ -11,9 +11,13 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from "@/contexts/TranslationContext";
 import axios from 'axios'
 import { useModal } from '@/hooks/useModal'
+import HiringFields from "@/components/posting-detail/HiringFields";
+import Header from "@/components/posting-detail/Header";
+import {WorkCondition} from "@/components/posting-detail/WorkCondition";
 
 
 export default function PostingDetail() {
+
     const params = useLocalSearchParams()
     const { postingId, companyId, companyName } = params
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings()
@@ -181,6 +185,8 @@ export default function PostingDetail() {
         }
     }
 
+
+
     if (loading) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -209,32 +215,7 @@ export default function PostingDetail() {
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
-            <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
-                <View className="flex-row items-center">
-                <Back />
-                <Text className="text-lg font-bold ml-4">{t('posting_detail.title', '채용 상세')}</Text>
-                </View>
-                {language !== 'ko' && ( // 한국어가 아닐 때만 번역 버튼 표시
-                    <TouchableOpacity
-                        onPress={handleTranslate}
-                        disabled={isTranslating}
-                        className={`flex-row items-center px-3 py-1.5 rounded-full ${
-                            isTranslated ? 'bg-green-100' : 'bg-blue-100'
-                        }`}
-                    >
-                        <Ionicons
-                            name={isTranslated ? "checkmark-circle" : "language"}
-                            size={16}
-                            color={isTranslated ? "#10b981" : "#3b82f6"}
-                        />
-                        <Text className={`ml-1 text-sm ${
-                            isTranslated ? 'text-green-600' : 'text-blue-600'
-                        }`}>
-                            {isTranslated ? t('posting_detail.show_original', '원본 보기') : t('posting_detail.translate', '번역하기')}
-                        </Text>
-                    </TouchableOpacity>
-                )}
-            </View>
+            <Header language={language} handleTranslate={handleTranslate} isTranslated={isTranslated} isTranslating={isTranslating} t={t} />
 
             <ScrollView
                 className="flex-1"
@@ -242,243 +223,11 @@ export default function PostingDetail() {
                 contentContainerStyle={{ paddingBottom: 100 }}
             >
                 {/* 회사 정보 */}
-                <View className="p-6 border-b border-gray-100">
-                    <Text className="text-sm text-gray-600 mb-1">{posting.company.name}</Text>
-                    <Text className="text-2xl font-bold mb-3">
-                        {isTranslated && translatedData?.title ? translatedData.title : posting.title}
-                    </Text>
-                </View>
-
-                {/* 주요 정보 */}
-                <View className="p-6 border-b border-gray-100">
-                    <Text className="text-lg font-semibold mb-4">{t('posting_detail.work_conditions', '근무 조건')}</Text>
-
-                    {/* 근무지역 */}
-                    {posting.job_address && posting.job_address.length > 0 && (
-                        <View className="flex-row items-center mb-3">
-                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="location-outline" size={18} color="#3b82f6" />
-                            </View>
-                            <View className="ml-3">
-                                <Text className="text-xs text-gray-500">{t('posting_detail.work_location', '근무지역')}</Text>
-                                <Text className="text-base text-gray-800">
-                                    {isTranslated && translatedData?.job_address ? translatedData.job_address : posting.job_address}
-                                </Text>
-                            </View>
-                        </View>
-                    )}
-
-                    {/* 근무일 */}
-                    {posting.working_days && posting.working_days.length > 0 && (
-                        <View className="flex-row items-center mb-3">
-                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="calendar-outline" size={18} color="#3b82f6" />
-                            </View>
-                            <View className="ml-3">
-                                <Text className="text-xs text-gray-500">{t('posting_detail.work_days', '근무일')}</Text>
-                                <Text className="text-base text-gray-800">
-                                    {isTranslated && translatedData?.working_days
-                                        ? translatedData.working_days.join(', ')
-                                        : posting.working_days.join(', ')
-                                    }
-                                    {posting.working_days_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
-                                </Text>
-                            </View>
-                        </View>
-                    )}
-
-                    {/* 근무시간 */}
-                    {posting.working_hours && (
-                        <View className="flex-row items-center mb-3">
-                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="time-outline" size={18} color="#3b82f6" />
-                            </View>
-                            <View className="ml-3">
-                                <Text className="text-xs text-gray-500">{t('posting_detail.work_hours', '근무시간')}</Text>
-                                <Text className="text-base text-gray-800">
-                                    {isTranslated && translatedData?.working_hours
-                                        ? translatedData.working_hours
-                                        : posting.working_hours
-                                    }
-                                    {posting.working_hours_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
-                                </Text>
-                            </View>
-                        </View>
-                    )}
-
-
-                    {/* 급여타입 & 급여 */}
-                    {(posting.salary_range) && (
-                        <View className="flex-row items-center mb-3">
-                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="cash-outline" size={18} color="#3b82f6" />
-                            </View>
-                            <View className="ml-3">
-                                <Text className="text-xs text-gray-500">{t('posting_detail.salary', '급여')}</Text>
-                                <Text className="text-base text-gray-800">
-                                    {isTranslated && translatedData?.salary_range
-                                        ? translatedData.salary_range
-                                        : posting.salary_range
-                                    }
-                                    {posting.salary_range_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
-                                </Text>
-                            </View>
-                        </View>
-                    )}
-
-                    {/* 급여일 */}
-                    {posting.pay_day && (
-                        <View className="flex-row items-center mb-3">
-                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="wallet-outline" size={18} color="#3b82f6" />
-                            </View>
-                            <View className="ml-3">
-                                <Text className="text-xs text-gray-500">{t('posting_detail.pay_day', '급여일')}</Text>
-                                <Text className="text-base text-gray-800">
-                                    {isTranslated && translatedData?.pay_day
-                                        ? translatedData.pay_day
-                                        : posting.pay_day
-                                    }
-                                    {posting.pay_day_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
-                                </Text>
-                            </View>
-                        </View>
-                    )}
-
-                    {posting.hiring_count && (
-                        <View className="flex-row items-center">
-                            <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="people-outline" size={18} color="#3b82f6" />
-                            </View>
-                            <View className="ml-3">
-                                <Text className="text-xs text-gray-500">{t('posting_detail.hiring_count', '모집인원')}</Text>
-                                <Text className="text-base text-gray-800">{posting.hiring_count}{t('posting_detail.people', '명')}</Text>
-                            </View>
-                        </View>
-                    )}
-                </View>
-
-                {/* 상세 설명 */}
-                {posting.description && (
-                    <View className="p-6 border-b border-gray-100">
-                        <View className="flex-row items-center justify-between mb-4">
-                            <Text className="text-lg font-semibold">
-                                {t('posting_detail.detail_description', '상세 설명')}
-                            </Text>
-                        </View>
-                        <Text className="text-gray-700 leading-6">
-                            {isTranslated && translatedData?.description ? translatedData.description : posting.description}
-                        </Text>
-                    </View>
-                )}
-
-
-
-                <View className="p-6 border-b border-gray-100">
-                    <Text className="text-lg font-semibold mb-4">{t('posting_detail.company_benefits', '회사의 강점!')}</Text>
-
-                    {keywords.conditions.length > 0 && (
-                        <View className="mb-4">
-                            <View className="flex-row flex-wrap gap-2">
-                                {keywords.conditions.map((keyword) => (
-                                    <View key={keyword.id} className="bg-orange-100 px-3 py-1 rounded-full">
-                                        <Text className="text-orange-700 text-sm">
-                                            {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
-                                        </Text>
-                                    </View>
-                                ))}
-                            </View>
-                        </View>
-                    )}
-                </View>
-
-
-
-
-
-
+                <WorkCondition posting={posting} isTranslated={isTranslated} translatedData={translatedData} t={t} />
 
                 {/* 채용 분야 */}
-                {keywords && (
-                    <View className="p-6">
-                        <Text className="text-lg font-semibold mb-4">{t('posting_detail.hiring_fields', '채용 분야')}</Text>
+                <HiringFields keywords={keywords} t={t} translateDB={translateDB} />
 
-
-                        {keywords.countries.length > 0 && (
-                            <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_countries', '대상 국가')}</Text>
-                                <View className="flex-row flex-wrap gap-2">
-                                    {keywords.countries.map((keyword) => (
-                                        <View key={keyword.id} className="bg-purple-100 px-3 py-1 rounded-full">
-                                            <Text className="text-purple-700 text-sm">
-                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
-                                            </Text>
-                                        </View>
-                                    ))}
-                                </View>
-                            </View>
-                        )}
-
-                        {keywords.jobs.length > 0 && (
-                            <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.job_positions', '모집 직종')}</Text>
-                                <View className="flex-row flex-wrap gap-2">
-                                    {keywords.jobs.map((keyword) => (
-                                        <View key={keyword.id} className="bg-orange-100 px-3 py-1 rounded-full">
-                                            <Text className="text-orange-700 text-sm">
-                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
-                                            </Text>
-                                        </View>
-                                    ))}
-                                </View>
-                            </View>
-                        )}
-                        {keywords.gender.length > 0 && (
-                            <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_gender', '모집 성별')}</Text>
-                                <View className="flex-row flex-wrap gap-2">
-                                    {keywords.gender.map((keyword) => (
-                                        <View key={keyword.id} className="bg-blue-100 px-3 py-1 rounded-full">
-                                            <Text className="text-blue-700 text-sm">
-                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
-                                            </Text>
-                                        </View>
-                                    ))}
-                                </View>
-                            </View>
-                        )}
-                        {keywords.age.length > 0 && (
-                            <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_age', '모집 나이대')}</Text>
-                                <View className="flex-row flex-wrap gap-2">
-                                    {keywords.age.map((keyword) => (
-                                        <View key={keyword.id} className="bg-green-100 px-3 py-1 rounded-full">
-                                            <Text className="text-green-700 text-sm">
-                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
-                                            </Text>
-                                        </View>
-                                    ))}
-                                </View>
-                            </View>
-                        )}
-                        {keywords.visa.length > 0 && (
-                            <View className="mb-4">
-                                <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.available_visa', '지원 가능한 비자')}</Text>
-                                <View className="flex-row flex-wrap gap-2">
-                                    {keywords.visa.map((keyword) => (
-                                        <View key={keyword.id} className="bg-yellow-100 px-3 py-1 rounded-full">
-                                            <Text className="text-yellow-700 text-sm">
-                                                {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
-                                            </Text>
-                                        </View>
-                                    ))}
-                                </View>
-                            </View>
-                        )}
-
-
-                    </View>
-                )}
             </ScrollView>
 
             {/* 하단 지원 버튼 */}
