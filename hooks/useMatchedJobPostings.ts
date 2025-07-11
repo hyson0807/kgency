@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import {useTranslation} from "@/contexts/TranslationContext";
 
 interface JobPosting {
     id: string;
@@ -55,9 +56,41 @@ interface MatchedPosting {
 export const useMatchedJobPostings = () => {
     const { user } = useAuth();
     const [matchedPostings, setMatchedPostings] = useState<MatchedPosting[]>([]);
+    const [appliedPostings, setAppliedPostings] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [userKeywordIds, setUserKeywordIds] = useState<number[]>([]);
+    const { translateDB } = useTranslation();
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await Promise.all([
+            fetchUserKeywords(),
+            fetchAppliedPostings()
+        ]);
+        setRefreshing(false);
+    };
+
+    const fetchAppliedPostings = async () => {
+        if (!user) return;
+
+        try {
+            const { data, error } = await supabase
+                .from('applications')
+                .select('job_posting_id')
+                .eq('user_id', user.userId);
+
+            if (error) throw error;
+
+            if (data) {
+                const postingIds = data.map(app => app.job_posting_id).filter(Boolean);
+                setAppliedPostings(postingIds);
+            }
+        } catch (error) {
+            console.error('지원 내역 조회 실패:', error);
+        }
+    };
 
     // 사용자 키워드 가져오기
     const fetchUserKeywords = async () => {
@@ -141,30 +174,40 @@ export const useMatchedJobPostings = () => {
 
                     posting.job_posting_keywords?.forEach((jpk: any) => {
                         if (matchedKeywordIds.includes(jpk.keyword.id)) {
+
+                            const translatedKeyword = translateDB(
+                                'keyword',
+                                'keyword',
+                                jpk.keyword.id?.toString() || '',
+                                jpk.keyword.keyword || ''
+                            );
+
+
+
                             switch (jpk.keyword.category) {
                                 case '국가':
-                                    matchedKeywords.countries.push(jpk.keyword.keyword);
+                                    matchedKeywords.countries.push(translatedKeyword);
                                     break;
                                 case '직종':
-                                    matchedKeywords.jobs.push(jpk.keyword.keyword);
+                                    matchedKeywords.jobs.push(translatedKeyword);
                                     break;
                                 case '근무조건':
-                                    matchedKeywords.conditions.push(jpk.keyword.keyword);
+                                    matchedKeywords.conditions.push(translatedKeyword);
                                     break;
                                 case '지역':
-                                    matchedKeywords.location.push(jpk.keyword.keyword);
+                                    matchedKeywords.location.push(translatedKeyword);
                                     break;
                                 case '지역이동':
-                                    matchedKeywords.moveable.push(jpk.keyword.keyword);
+                                    matchedKeywords.moveable.push(translatedKeyword);
                                     break;
                                 case '성별':
-                                    matchedKeywords.gender.push(jpk.keyword.keyword);
+                                    matchedKeywords.gender.push(translatedKeyword);
                                     break;
                                 case '나이대':
-                                    matchedKeywords.age.push(jpk.keyword.keyword);
+                                    matchedKeywords.age.push(translatedKeyword);
                                     break;
                                 case '비자':
-                                    matchedKeywords.visa.push(jpk.keyword.keyword);
+                                    matchedKeywords.visa.push(translatedKeyword);
                                     break;
                             }
                         }
@@ -250,6 +293,7 @@ export const useMatchedJobPostings = () => {
     useEffect(() => {
         if (user) {
             fetchUserKeywords();
+            fetchAppliedPostings();
         } else {
             setLoading(false);
         }
@@ -269,6 +313,9 @@ export const useMatchedJobPostings = () => {
         totalPostings: matchedPostings.length,
         refreshPostings,
         fetchPostingById,
-        getPostingKeywords
+        getPostingKeywords,
+        appliedPostings,
+        refreshing,
+        onRefresh,
     };
 };

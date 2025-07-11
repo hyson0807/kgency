@@ -1,14 +1,14 @@
 import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState, useCallback } from 'react'
+import React from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
-import { useAuth } from "@/contexts/AuthContext"
 import { router } from "expo-router"
 import Header_home from "@/components/user_home/Header_home"
-import { supabase } from "@/lib/supabase"
 import { Ionicons } from '@expo/vector-icons'
-import {useTranslation} from "@/contexts/TranslationContext";
-import {JobPostingCard} from "@/components/user_home/JobPostingCard";
+import { useTranslation } from "@/contexts/TranslationContext"
+import { JobPostingCard } from "@/components/user_home/JobPostingCard"
+import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 
+// 타입은 hooks/useMatchedJobPostings에서 import
 interface JobPosting {
     id: string
     title: string
@@ -18,7 +18,7 @@ interface JobPosting {
     benefits?: string[]
     hiring_count: number
     created_at: string
-    job_address?: string // job_address 추가
+    job_address?: string
     company: {
         id: string
         name: string
@@ -50,181 +50,16 @@ interface MatchedPosting {
 }
 
 const Home = () => {
-    const { t, translateDB } = useTranslation();
-    const { user } = useAuth()
-    const [matchedPostings, setMatchedPostings] = useState<MatchedPosting[]>([])
-    const [loading, setLoading] = useState(true)
-    const [refreshing, setRefreshing] = useState(false)
-    const [appliedPostings, setAppliedPostings] = useState<string[]>([])
-    const [userKeywordIds, setUserKeywordIds] = useState<number[]>([])
+    const { t, translateDB } = useTranslation()
 
-    useEffect(() => {
-        if (user) {
-            fetchUserKeywords()
-            fetchAppliedPostings()
-        }
-    }, [user])
-
-    useEffect(() => {
-        if (userKeywordIds.length > 0) {
-            fetchMatchedPostings()
-        }
-    }, [userKeywordIds])
-
-    const fetchUserKeywords = async () => {
-        if (!user) return
-
-        try {
-            const { data, error } = await supabase
-                .from('user_keyword')
-                .select('keyword_id')
-                .eq('user_id', user.userId)
-
-            if (error) throw error
-
-            if (data) {
-                setUserKeywordIds(data.map(uk => uk.keyword_id))
-            }
-        } catch (error) {
-            console.error('사용자 키워드 조회 실패:', error)
-        }
-    }
-
-    const fetchAppliedPostings = async () => {
-        if (!user) return
-
-        try {
-            const { data, error } = await supabase
-                .from('applications')
-                .select('job_posting_id')
-                .eq('user_id', user.userId)
-
-            if (error) throw error
-
-            if (data) {
-                const postingIds = data.map(app => app.job_posting_id).filter(Boolean)
-                setAppliedPostings(postingIds)
-            }
-        } catch (error) {
-            console.error('지원 내역 조회 실패:', error)
-        }
-    }
-
-    const fetchMatchedPostings = async () => {
-        try {
-            // 모든 활성 공고 가져오기 - job_address 추가
-            const { data: postings, error } = await supabase
-                .from('job_postings')
-                .select(`
-                    *,
-                    company:company_id (
-                        id,
-                        name,
-                        address,
-                        description
-                    ),
-                    job_posting_keywords:job_posting_keyword (
-                        keyword:keyword_id (
-                            id,
-                            keyword,
-                            category
-                        )
-                    )
-                `)
-                .eq('is_active', true)
-                .order('created_at', { ascending: false })
-
-            if (error) throw error
-
-            if (postings) {
-                // 매칭 점수 계산
-                const matched = postings.map(posting => {
-                    const postingKeywordIds = posting.job_posting_keywords?.map(
-                        (jpk: any) => jpk.keyword.id
-                    ) || []
-
-                    // 매칭된 키워드 찾기
-                    const matchedKeywordIds = userKeywordIds.filter(ukId =>
-                        postingKeywordIds.includes(ukId)
-                    )
-
-                    // 카테고리별로 분류
-                    const matchedKeywords = {
-                        countries: [] as string[],
-                        jobs: [] as string[],
-                        conditions: [] as string[],
-                        location: [] as string[],
-                        moveable: [] as string[],
-                        gender: [] as string[],
-                        age: [] as string[],
-                        visa: [] as string[],
-                    }
-
-                    posting.job_posting_keywords?.forEach((jpk: any) => {
-                        if (matchedKeywordIds.includes(jpk.keyword.id)) {
-                            // DB에서 번역된 키워드 가져오기
-                            const translatedKeyword = translateDB(
-                                'keyword',
-                                'keyword',
-                                jpk.keyword.id?.toString() || '',
-                                jpk.keyword.keyword || ''
-                            )
-
-                            switch (jpk.keyword.category) {
-                                case '국가':
-                                    matchedKeywords.countries.push(translatedKeyword)
-                                    break
-                                case '직종':
-                                    matchedKeywords.jobs.push(translatedKeyword)
-                                    break
-                                case '근무조건':
-                                    matchedKeywords.conditions.push(translatedKeyword)
-                                    break
-                                case '지역':
-                                    matchedKeywords.location.push(translatedKeyword)
-                                    break
-                                case '지역이동':
-                                    matchedKeywords.moveable.push(translatedKeyword)
-                                    break
-                                case '성별':
-                                    matchedKeywords.gender.push(translatedKeyword)
-                                    break
-                                case '나이대':
-                                    matchedKeywords.age.push(translatedKeyword)
-                                    break
-                                case '비자':
-                                    matchedKeywords.visa.push(translatedKeyword)
-                                    break
-                            }
-                        }
-                    })
-
-                    return {
-                        posting,
-                        matchedCount: matchedKeywordIds.length,
-                        matchedKeywords
-                    }
-                })
-
-                // 매칭 점수 높은 순으로 정렬
-                matched.sort((a, b) => b.matchedCount - a.matchedCount)
-                setMatchedPostings(matched)
-            }
-        } catch (error) {
-            console.error('공고 조회 실패:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const onRefresh = useCallback(async () => {
-        setRefreshing(true)
-        await Promise.all([
-            fetchUserKeywords(),
-            fetchAppliedPostings()
-        ])
-        setRefreshing(false)
-    }, [user])
+    // 커스텀 훅에서 모든 데이터와 함수 가져오기
+    const {
+        matchedPostings,
+        loading,
+        refreshing,
+        appliedPostings,
+        onRefresh
+    } = useMatchedJobPostings()
 
     const handlePostingPress = (posting: JobPosting) => {
         router.push({
@@ -237,12 +72,10 @@ const Home = () => {
         })
     }
 
-
-
     const renderPosting = ({ item }: { item: MatchedPosting }) => {
-        const { posting, matchedCount, matchedKeywords } = item;
-        const hasApplied = appliedPostings.includes(posting.id);
-        const hasMatches = matchedCount > 0;
+        const { posting, matchedCount, matchedKeywords } = item
+        const hasApplied = appliedPostings.includes(posting.id)
+        const hasMatches = matchedCount > 0
 
         return (
             <JobPostingCard
@@ -252,10 +85,10 @@ const Home = () => {
                 translateDB={translateDB}
                 hasMatches={hasMatches}
                 matchedKeywords={matchedKeywords}
-                t={t} />
-        );
-    };
-
+                t={t}
+            />
+        )
+    }
 
     const renderHeader = () => (
         <View className="bg-white p-4 mb-2">
@@ -328,7 +161,6 @@ const Home = () => {
                     </View>
                 }
             />
-
         </SafeAreaView>
     )
 }
