@@ -31,7 +31,7 @@ const company_Layout = () => {
             />
 
             <Tabs.Screen
-                name="jobPosting"
+                name="myJobPostings"
                 options={{
                     tabBarLabel: '내 공고',
                     tabBarIcon: ({size, color}) => <Entypo name="add-to-list" size={size} color={color} />
