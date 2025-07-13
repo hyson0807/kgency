@@ -1,4 +1,4 @@
-import {View, Text, ScrollView, TouchableOpacity, TextInput} from 'react-native'
+import {View, Text, ScrollView, TouchableOpacity} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useUserKeywords} from "@/hooks/useUserKeywords";
@@ -6,12 +6,13 @@ import {useProfile} from "@/hooks/useProfile";
 import LoadingScreen from "@/components/LoadingScreen";
 import WorkConditionsSelector from "@/components/WorkConditionsSelector";
 import JobPreferencesSelector from "@/components/JobPreferencesSelector";
-import { Dropdown } from 'react-native-element-dropdown';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import Back from "@/components/back";
 import {useModal} from "@/hooks/useModal";
 import { useTranslation } from "@/contexts/TranslationContext"
+import {Profile} from "@/components/user_keyword(info)/Profile";
+import {LocationSelector} from "@/components/user_keyword(info)/Location";
+import {Country} from "@/components/user_keyword(info)/Country";
 
 const Info = () => {
     const {profile, updateProfile} = useProfile();
@@ -21,8 +22,8 @@ const Info = () => {
     const [selectedJobs, setSelectedJobs] = useState<number[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<number[]>([]);
     const { keywords, user_keywords, loading, fetchKeywords, updateKeywords } = useUserKeywords();
-    const { showModal, hideModal, ModalComponent } = useModal();
-    const { t, translateDB } = useTranslation()
+    const { showModal, ModalComponent } = useModal();
+    const { t } = useTranslation()
 
     // 프로필 정보 상태
     const [name, setName] = useState('');
@@ -31,44 +32,7 @@ const Info = () => {
     const [visa, setVisa] = useState<string | null>(null);
     const [koreanLevel, setKoreanLevel] = useState<string | null>(null);
 
-    // 드롭다운 옵션
-    const genderOptions = [
-        { label: t('info.gender_male', '남성'), value: '남성' },
-        { label: t('info.gender_female', '여성'), value: '여성' }
-    ];
 
-    const visaOptions = [
-        { label: 'F-2', value: 'F-2' },
-        { label: 'F-4', value: 'F-4' },
-        { label: 'F-5', value: 'F-5' },
-        { label: 'F-6', value: 'F-6' },
-        { label: 'E-9', value: 'E-9' },
-        { label: 'H-2', value: 'H-2' },
-        { label: 'D-2', value: 'D-2' },
-        { label: 'D-4', value: 'D-4' }
-    ];
-
-    const koreanLevelOptions = [
-        { label: t('info.korean_beginner', '초급'), value: '초급' },
-        { label: t('info.korean_intermediate', '중급'), value: '중급' },
-        { label: t('info.korean_advanced', '고급'), value: '고급' }
-    ];
-
-    // 카테고리별 키워드 필터링
-    const locationOptions = keywords
-        .filter(k => k.category === '지역')
-        .map(location => ({
-            label: translateDB('keyword', 'keyword', location.id.toString(), location.keyword),
-            value: location.id,
-        }));
-
-
-    const countryOptions = keywords
-        .filter(k => k.category === '국가')
-        .map(country => ({
-            label: translateDB('keyword', 'keyword', country.id.toString(), country.keyword),
-            value: country.id
-        }));
 
     const moveableKeyword = keywords.find(k => k.category === '지역이동');
     const jobKeywords = keywords.filter(k => k.category === '직종');
@@ -185,16 +149,7 @@ const Info = () => {
         );
     };
 
-    // 지역이동 가능 토글
-    const toggleMoveable = () => {
-        if (moveableKeyword) {
-            if (selectedMoveable === moveableKeyword.id) {
-                setSelectedMoveable(null);
-            } else {
-                setSelectedMoveable(moveableKeyword.id);
-            }
-        }
-    };
+
 
     const handleSaveAndNext = async () => {
         // 프로필 정보 필수 입력 확인
@@ -302,256 +257,33 @@ const Info = () => {
                     contentContainerStyle={{ paddingBottom: 20 }}
                 >
                     {/* 프로필 정보 섹션 */}
-                    <View className="p-4 border-b border-gray-100">
-                        <Text className="text-lg font-bold mb-4">{t('info.profile_info', '프로필 정보')}</Text>
-
-                        {/* 이름 */}
-                        <View className="mb-4">
-                            <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.name', '이름')} *</Text>
-                            <TextInput
-                                className="border border-gray-300 rounded-lg p-3"
-                                placeholder={t('info.enter_name', '이름을 입력하세요')}
-                                value={name}
-                                onChangeText={setName}
-                            />
-                        </View>
-
-                        {/* 나이 */}
-                        <View className="mb-4">
-                            <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.age', '나이')} *</Text>
-                            <TextInput
-                                className="border border-gray-300 rounded-lg p-3"
-                                placeholder={t('info.enter_age', '나이를 입력하세요')}
-                                value={age}
-                                onChangeText={setAge}
-                                keyboardType="numeric"
-                                maxLength={3}
-                            />
-                        </View>
-
-                        {/* 성별 */}
-                        <View className="mb-4">
-                            <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.gender', '성별')} *</Text>
-                            <Dropdown
-                                style={{
-                                    height: 45,
-                                    borderColor: '#d1d5db',
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    paddingHorizontal: 12,
-                                    backgroundColor: 'white',
-                                }}
-                                placeholderStyle={{
-                                    fontSize: 14,
-                                    color: '#9ca3af'
-                                }}
-                                selectedTextStyle={{
-                                    fontSize: 14,
-                                }}
-                                data={genderOptions}
-                                labelField="label"
-                                valueField="value"
-                                placeholder={t('info.select_gender', '성별을 선택하세요')}
-                                value={gender}
-                                onChange={item => {
-                                    setGender(item.value);
-                                }}
-                            />
-                        </View>
-
-                        {/* 비자 */}
-                        <View className="mb-4">
-                            <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.visa_type', '비자 종류')} *</Text>
-                            <Dropdown
-                                style={{
-                                    height: 45,
-                                    borderColor: '#d1d5db',
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    paddingHorizontal: 12,
-                                    backgroundColor: 'white',
-                                }}
-                                placeholderStyle={{
-                                    fontSize: 14,
-                                    color: '#9ca3af'
-                                }}
-                                selectedTextStyle={{
-                                    fontSize: 14,
-                                }}
-                                data={visaOptions}
-                                labelField="label"
-                                valueField="value"
-                                placeholder={t('info.select_visa', '비자를 선택하세요')}
-                                value={visa}
-                                onChange={item => {
-                                    setVisa(item.value);
-                                }}
-                            />
-                        </View>
-
-                        {/* 한국어 실력 */}
-                        <View className="mb-4">
-                            <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.korean_level', '한국어 실력')} *</Text>
-                            <Dropdown
-                                style={{
-                                    height: 45,
-                                    borderColor: '#d1d5db',
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    paddingHorizontal: 12,
-                                    backgroundColor: 'white',
-                                }}
-                                placeholderStyle={{
-                                    fontSize: 14,
-                                    color: '#9ca3af'
-                                }}
-                                selectedTextStyle={{
-                                    fontSize: 14,
-                                }}
-                                data={koreanLevelOptions}
-                                labelField="label"
-                                valueField="value"
-                                placeholder={t('info.select_korean_level', '한국어 실력을 선택하세요')}
-                                value={koreanLevel}
-                                onChange={item => {
-                                    setKoreanLevel(item.value);
-                                }}
-                            />
-                        </View>
-                    </View>
+                    <Profile
+                        formData={{
+                            name,
+                            age,
+                            gender,
+                            visa,
+                            koreanLevel,
+                        }}
+                        handler={{
+                            setName,
+                            setAge,
+                            setGender,
+                            setVisa,
+                            setKoreanLevel,
+                        }} />
 
                     {/* 지역 선택 섹션 */}
-                    <View className="p-4">
-                        <Text className="text-base font-semibold mb-3">{t('info.desired_location', '희망 근무 지역')}</Text>
-                        <View className="p-3 bg-gray-50 rounded-xl">
-                            <Dropdown
-                                style={{
-                                    height: 45,
-                                    borderColor: '#d1d5db',
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    paddingHorizontal: 12,
-                                    backgroundColor: 'white',
-                                }}
-                                placeholderStyle={{
-                                    fontSize: 14,
-                                    color: '#9ca3af'
-                                }}
-                                selectedTextStyle={{
-                                    fontSize: 14,
-                                }}
-                                inputSearchStyle={{
-                                    height: 40,
-                                    fontSize: 14,
-                                }}
-                                iconStyle={{
-                                    width: 20,
-                                    height: 20,
-                                }}
-                                data={locationOptions}
-                                search
-                                maxHeight={300}
-                                labelField="label"
-                                valueField="value"
-                                placeholder={selectedLocations.length > 0 ? t('info.locations_selected', `${selectedLocations.length}개 선택됨`, { count: selectedLocations.length }) : t('info.select_location', '지역을 선택하세요')}
-                                searchPlaceholder={t('info.search', '검색...')}
-                                value={null}
-                                onChange={item => {
-                                    if (item.value && !selectedLocations.includes(item.value)) {
-                                        setSelectedLocations([...selectedLocations, item.value]);
-                                    }
-                                }}
-                            />
-
-                            {/* 선택된 지역들 태그로 표시 */}
-                            {selectedLocations.length > 0 && (
-                                <View className="flex-row flex-wrap gap-2 mt-3">
-                                    {selectedLocations.map(locationId => {
-                                        const location = keywords.find(k => k.id === locationId);
-                                        return location ? (
-                                            <View
-                                                key={locationId}
-                                                className="flex-row items-center bg-blue-500 px-3 py-2 rounded-full"
-                                            >
-                                                <Text className="text-white text-sm font-medium mr-2">
-                                                    {translateDB('keyword', 'keyword', location.id.toString(), location.keyword)}
-                                                </Text>
-                                                <TouchableOpacity onPress={() => {
-                                                    setSelectedLocations(prev => prev.filter(id => id !== locationId));
-                                                }}>
-                                                    <Ionicons name="close-circle" size={18} color="white" />
-                                                </TouchableOpacity>
-                                            </View>
-                                        ) : null;
-                                    })}
-                                </View>
-                            )}
-
-                            {/* 지역이동 가능 토글 */}
-                            {moveableKeyword && (
-                                <TouchableOpacity
-                                    onPress={toggleMoveable}
-                                    className="mt-3 flex-row items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
-                                >
-                                    <Text className="text-sm text-gray-700">
-                                        {translateDB('keyword', 'keyword', moveableKeyword.id.toString(), moveableKeyword.keyword)}
-                                    </Text>
-                                    <View className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
-                                        selectedMoveable === moveableKeyword.id
-                                            ? 'bg-blue-500 border-blue-500'
-                                            : 'bg-white border-gray-300'
-                                    }`}>
-                                        {selectedMoveable === moveableKeyword.id && (
-                                            <Ionicons name="checkmark" size={12} color="white" />
-                                        )}
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    </View>
+                    <LocationSelector
+                        keywords={keywords}
+                        selectedLocations={selectedLocations}
+                        selectedMoveable={selectedMoveable}
+                        onLocationChange={setSelectedLocations}
+                        onMoveableToggle={setSelectedMoveable}
+                    />
 
                     {/* 국가 선택 섹션 */}
-                    <View className="p-4">
-                        <Text className="text-base font-semibold mb-3">{t('info.country', '국가')}</Text>
-                        <View className="p-3 bg-gray-50 rounded-xl">
-                            <Dropdown
-                                style={{
-                                    height: 45,
-                                    borderColor: '#d1d5db',
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    paddingHorizontal: 12,
-                                    backgroundColor: 'white',
-                                }}
-                                placeholderStyle={{
-                                    fontSize: 14,
-                                    color: '#9ca3af'
-                                }}
-                                selectedTextStyle={{
-                                    fontSize: 14,
-                                }}
-                                inputSearchStyle={{
-                                    height: 40,
-                                    fontSize: 14,
-                                }}
-                                iconStyle={{
-                                    width: 20,
-                                    height: 20,
-                                }}
-                                data={countryOptions}
-                                search
-                                maxHeight={300}
-                                labelField="label"
-                                valueField="value"
-                                placeholder={t('info.select_country', '국가를 선택하세요')}
-                                searchPlaceholder={t('info.search', '검색...')}
-                                value={selectedCountry}
-                                onChange={item => {
-                                    setSelectedCountry(item.value);
-                                }}
-                            />
-                        </View>
-                    </View>
+                    <Country keywords={keywords} selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} />
 
                     {/* 희망직종 섹션 */}
                     <JobPreferencesSelector

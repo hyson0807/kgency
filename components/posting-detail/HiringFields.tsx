@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface Keyword {
     id: number;
@@ -17,11 +18,12 @@ interface Keywords {
 
 interface HiringFieldsProps {
     keywords: Keywords;
-    t: (key: string, defaultValue: string) => string;
     translateDB: (table: string, column: string, id: string, defaultValue: string) => string;
 }
 
-const HiringFields = ({ keywords, t, translateDB }: HiringFieldsProps) => {
+const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
+    const { t } = useTranslation();
+
     if (!keywords) return null;
 
     return (

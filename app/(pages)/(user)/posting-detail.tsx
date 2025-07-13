@@ -223,10 +223,10 @@ export default function PostingDetail() {
                 contentContainerStyle={{ paddingBottom: 100 }}
             >
                 {/* 회사 정보 */}
-                <WorkCondition posting={posting} isTranslated={isTranslated} translatedData={translatedData} t={t} />
+                <WorkCondition posting={posting} isTranslated={isTranslated} translatedData={translatedData} />
 
                 {/* 채용 분야 */}
-                <HiringFields keywords={keywords} t={t} translateDB={translateDB} />
+                <HiringFields keywords={keywords} translateDB={translateDB} />
 
             </ScrollView>
 
