@@ -12,14 +12,14 @@ interface HeaderProps {
     t: (key: string, defaultValue: string) => string;
 }
 
-export const Header: React.FC<HeaderProps> = ({
+export const Header = ({
     language,
     handleTranslate,
     isTranslated,
     isTranslating,
     t
 
-}) => (
+}: HeaderProps) => (
     <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
         <View className="flex-row items-center">
             <Back />

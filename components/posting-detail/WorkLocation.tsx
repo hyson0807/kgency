@@ -15,12 +15,7 @@ interface WorkLocationComponentProps {
     t: (key: string, defaultValue: string) => string;
 }
 
-const WorkLocationComponent: React.FC<WorkLocationComponentProps> = ({
-                                                                         posting,
-                                                                         isTranslated,
-                                                                         translatedData,
-                                                                         t
-                                                                     }) => {
+const WorkLocationComponent = ({posting, isTranslated, translatedData, t}: WorkLocationComponentProps) => {
     const { showModal } = useModal();
 
     const address = isTranslated && translatedData?.job_address

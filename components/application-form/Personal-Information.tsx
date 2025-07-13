@@ -17,7 +17,7 @@ interface PersonalInformationProps {
 
 
 
-export const PersonalInformation: React.FC<PersonalInformationProps> = ({
+export const PersonalInformation = ({
     t,
     name,
     setName,
@@ -28,7 +28,7 @@ export const PersonalInformation: React.FC<PersonalInformationProps> = ({
     visa,
     setVisa,
 
-}) => {
+}: PersonalInformationProps) => {
 
     const genderOptions = [
         { label: t('apply.gender_male', '남성'), value: '남성' },

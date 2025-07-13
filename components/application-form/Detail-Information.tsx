@@ -31,12 +31,12 @@ interface DetailInformationProps {
 }
 
 
-export const DetailInfromation: React.FC<DetailInformationProps> = ({
+export const DetailInfromation = ({
     t,
     formData,
     handlers
 
-}) => {
+}: DetailInformationProps) => {
     const {
         howLong,
         selectedDays,

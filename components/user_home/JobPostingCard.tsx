@@ -52,7 +52,7 @@ interface JobPostingCardProps {
 }
 
 
-export const JobPostingCard: React.FC<JobPostingCardProps> = ({
+export const JobPostingCard = ({
 
     handlePostingPress,
     posting,
@@ -62,7 +62,7 @@ export const JobPostingCard: React.FC<JobPostingCardProps> = ({
     matchedKeywords,
     t,
 
-}) => (
+}: JobPostingCardProps) => (
     <TouchableOpacity
         onPress={() => handlePostingPress(posting)}
         className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"

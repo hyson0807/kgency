@@ -1,257 +1,31 @@
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
-import React, { useState, useEffect, useCallback } from 'react'
+import { View, Text, FlatList, RefreshControl } from 'react-native'
+import React, { useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
-import { supabase } from '@/lib/supabase'
-import { Ionicons } from '@expo/vector-icons'
-import { router } from 'expo-router'
 import { useTranslation } from "@/contexts/TranslationContext";
+import {Tap} from "@/components/submitted-applications/Tap";
+import {Empty} from "@/components/submitted-applications/Empty";
+import {ApplicationItem} from "@/components/submitted-applications/ApplicationItem";
+import LoadingScreen from "@/components/LoadingScreen";
+import {useApplications} from "@/hooks/useApplications";
 
-interface Application {
-    id: string
-    applied_at: string
-    status: string
-    job_posting: {
-        id: string
-        title: string
-        is_active: boolean
-        salary_range?: string
-        working_hours?: string
-        company: {
-            id: string
-            name: string
-            address?: string
-        }
-    }
-    message?: {
-        content: string
-    }
-}
+
 
 const Applications = () => {
     const { user } = useAuth()
-    const [applications, setApplications] = useState<Application[]>([])
-    const [loading, setLoading] = useState(true)
-    const [refreshing, setRefreshing] = useState(false)
     const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'reviewed'>('all')
     const { t } = useTranslation()
 
-    useEffect(() => {
-        if (user) {
-            fetchApplications()
-        }
-    }, [user, activeFilter])
 
-    const fetchApplications = async () => {
-        if (!user) return
+    //fetching applications
+    const {
+        applications,
+        loading,
+        refreshing,
+        onRefresh
+    } = useApplications({ user, activeFilter })
 
-        try {
-            let query = supabase
-                .from('applications')
-                .select(`
-                    *,
-                    job_posting:job_posting_id (
-                        id,
-                        title,
-                        is_active,
-                        salary_range,
-                        working_hours,
-                        company:company_id (
-                            id,
-                            name,
-                            address
-                        )
-                    ),
-                    message:message_id (
-                        content
-                    )
-                `)
-                .eq('user_id', user.userId)
-                // .is('deleted_at', null)
-                .order('applied_at', { ascending: false })
-
-            // 필터 적용
-            if (activeFilter === 'pending') {
-                query = query.eq('status', 'pending')
-            } else if (activeFilter === 'reviewed') {
-                query = query.in('status', ['reviewed', 'accepted', 'rejected'])
-            }
-
-            const { data, error } = await query
-
-            if (error) throw error
-
-            setApplications(data || [])
-        } catch (error) {
-            console.error('지원 내역 조회 실패:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const onRefresh = useCallback(async () => {
-        setRefreshing(true)
-        await fetchApplications()
-        setRefreshing(false)
-    }, [user, activeFilter])
-
-    const handleViewPosting = (application: Application) => {
-        if (application.job_posting) {
-            router.push({
-                pathname: '/(pages)/(user)/posting-detail',
-                params: {
-                    postingId: application.job_posting.id,
-                    companyId: application.job_posting.company.id,
-                    companyName: application.job_posting.company.name
-                }
-            })
-        }
-    }
-
-    const handleViewResume = (application: Application) => {
-        if (application.message) {
-            router.push({
-                pathname: '/(pages)/(user)/view-my-resume',
-                params: {
-                    applicationId: application.id,
-                    companyName: application.job_posting.company.name,
-                    jobTitle: application.job_posting.title,
-                    resume: application.message.content,
-                    appliedAt: application.applied_at
-                }
-            })
-        }
-    }
-
-    // const handleDelete
-
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString)
-        const now = new Date()
-        const diffTime = Math.abs(now.getTime() - date.getTime())
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-        if (diffDays === 0) {
-            return t('applications.today', '오늘') + ` ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
-        } else if (diffDays === 1) {
-            return t('applications.yesterday', '어제')
-        } else if (diffDays < 7) {
-            return t('applications.days_ago', `${diffDays}일 전`, { days: diffDays })
-        } else {
-            return `${date.getMonth() + 1}/${date.getDate()}`
-        }
-    }
-
-    const getStatusInfo = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return { text: t('applications.status_pending', '검토중'), color: 'text-orange-600', bgColor: 'bg-orange-100' }
-            case 'reviewed':
-                return { text: t('applications.status_reviewed', '검토완료'), color: 'text-blue-600', bgColor: 'bg-blue-100' }
-            case 'accepted':
-                return { text: t('applications.status_accepted', '합격'), color: 'text-green-600', bgColor: 'bg-green-100' }
-            case 'rejected':
-                return { text: t('applications.status_rejected', '불합격'), color: 'text-red-600', bgColor: 'bg-red-100' }
-            default:
-                return { text: status, color: 'text-gray-600', bgColor: 'bg-gray-100' }
-        }
-    }
-
-    const renderApplication = ({ item }: { item: Application }) => {
-        const statusInfo = getStatusInfo(item.status)
-        const isPostingActive = item.job_posting?.is_active
-
-        return (
-            <TouchableOpacity
-                onPress={() => handleViewPosting(item)}
-                className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
-                activeOpacity={0.7}
-            >
-                {/* 상태 뱃지 */}
-                <View className="flex-row justify-between items-start mb-2">
-                    <View className="flex-1">
-                        <Text className="text-sm text-gray-600">
-                            {item.job_posting.company.name}
-                        </Text>
-                        <Text className="text-lg font-bold text-gray-800 pr-4">
-                            {item.job_posting.title}
-                        </Text>
-                    </View>
-                    <View className={`px-3 py-1 rounded-full ${statusInfo.bgColor}`}>
-                        <Text className={`text-xs font-medium ${statusInfo.color}`}>
-                            {statusInfo.text}
-                        </Text>
-                    </View>
-                </View>
-
-                {/* 공고 정보 */}
-                {/*<View className="mb-3">*/}
-                {/*    {item.job_posting.salary_range && (*/}
-                {/*        <View className="flex-row items-center mb-1">*/}
-                {/*            <Ionicons name="cash-outline" size={14} color="#6b7280" />*/}
-                {/*            <Text className="text-sm text-gray-600 ml-2">*/}
-                {/*                {item.job_posting.salary_range}*/}
-                {/*            </Text>*/}
-                {/*        </View>*/}
-                {/*    )}*/}
-                {/*    {item.job_posting.working_hours && (*/}
-                {/*        <View className="flex-row items-center mb-1">*/}
-                {/*            <Ionicons name="time-outline" size={14} color="#6b7280" />*/}
-                {/*            <Text className="text-sm text-gray-600 ml-2">*/}
-                {/*                {item.job_posting.working_hours}*/}
-                {/*            </Text>*/}
-                {/*        </View>*/}
-                {/*    )}*/}
-                {/*    <View className="flex-row items-center">*/}
-                {/*        <Ionicons name="location-outline" size={14} color="#6b7280" />*/}
-                {/*        <Text className="text-sm text-gray-600 ml-2">*/}
-                {/*            {item.job_posting.company.address || '주소 미입력'}*/}
-                {/*        </Text>*/}
-                {/*    </View>*/}
-                {/*</View>*/}
-
-                {/* 지원 정보 */}
-                <View className="flex-row items-center justify-between pt-3 border-t border-gray-100">
-                    <Text className="text-sm text-gray-500">
-                        {t('applications.applied_date', '지원일')}: {formatDate(item.applied_at)}
-                    </Text>
-
-                    {!isPostingActive && (
-                        <View className="bg-gray-100 px-2 py-1 rounded">
-                            <Text className="text-xs text-gray-600">{t('applications.closed', '모집마감')}</Text>
-                        </View>
-                    )}
-                </View>
-
-                {/* 이력서 보기 버튼 */}
-                {item.message && (
-                    <TouchableOpacity
-                        onPress={(e) => {
-                            e.stopPropagation()
-                            handleViewResume(item)
-                        }}
-                        className="mt-3 flex-row items-center justify-center"
-                    >
-                        <Ionicons name="document-text-outline" size={16} color="#3b82f6" />
-                        <Text className="text-blue-600 text-sm font-medium ml-1">
-                            {t('applications.view_resume', '제출한 이력서 보기')}
-                        </Text>
-                    </TouchableOpacity>
-                )}
-            </TouchableOpacity>
-        )
-    }
-
-    if (loading) {
-        return (
-            <SafeAreaView className="flex-1 bg-gray-50">
-                <View className="flex-1 justify-center items-center">
-                    <ActivityIndicator size="large" color="#3b82f6" />
-                    <Text className="mt-2 text-gray-600">{t('applications.loading', '로딩 중...')}</Text>
-                </View>
-            </SafeAreaView>
-        )
-    }
+    if (loading) return <LoadingScreen />
 
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
@@ -263,55 +37,16 @@ const Applications = () => {
                         {t('applications.total_applications', `총 ${applications.length}개의 지원`, { count: applications.length })}
                     </Text>
                 </View>
-
                 {/* 필터 탭 */}
-                <View className="flex-row px-4">
-                    <TouchableOpacity
-                        onPress={() => setActiveFilter('all')}
-                        className={`mr-4 pb-3 ${
-                            activeFilter === 'all' ? 'border-b-2 border-blue-500' : ''
-                        }`}
-                    >
-                        <Text className={`${
-                            activeFilter === 'all' ? 'text-blue-500 font-bold' : 'text-gray-600'
-                        }`}>
-                            {t('applications.filter_all', '전체')}
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => setActiveFilter('pending')}
-                        className={`mr-4 pb-3 ${
-                            activeFilter === 'pending' ? 'border-b-2 border-blue-500' : ''
-                        }`}
-                    >
-                        <Text className={`${
-                            activeFilter === 'pending' ? 'text-blue-500 font-bold' : 'text-gray-600'
-                        }`}>
-                            {t('applications.filter_pending', '검토중')}
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => setActiveFilter('reviewed')}
-                        className={`pb-3 ${
-                            activeFilter === 'reviewed' ? 'border-b-2 border-blue-500' : ''
-                        }`}
-                    >
-                        <Text className={`${
-                            activeFilter === 'reviewed' ? 'text-blue-500 font-bold' : 'text-gray-600'
-                        }`}>
-                            {t('applications.filter_reviewed', '검토완료')}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                <Tap setActiveFilter={setActiveFilter} activeFilter={activeFilter} t={t} />
             </View>
+
 
             {/* 지원 내역 리스트 */}
             <FlatList
                 data={applications}
                 keyExtractor={(item) => item.id}
-                renderItem={renderApplication}
+                renderItem={({item}) => <ApplicationItem item={item} t={t} /> }
                 contentContainerStyle={applications.length === 0 ? { flex: 1 } : { paddingVertical: 8 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
@@ -323,24 +58,7 @@ const Applications = () => {
                     />
                 }
                 ListEmptyComponent={
-                    <View className="flex-1 justify-center items-center p-8">
-                        <Ionicons name="document-text-outline" size={80} color="#9ca3af" />
-                        <Text className="text-gray-500 text-lg mt-4">
-                            {activeFilter === 'all'
-                                ? t('applications.no_applications', '아직 지원한 공고가 없습니다')
-                                : activeFilter === 'pending'
-                                    ? t('applications.no_pending', '검토중인 지원이 없습니다')
-                                    : t('applications.no_reviewed', '검토 완료된 지원이 없습니다')}
-                        </Text>
-                        {activeFilter === 'all' && (
-                            <TouchableOpacity
-                                onPress={() => router.push('/(user)/home')}
-                                className="mt-4 px-6 py-3 bg-blue-500 rounded-xl"
-                            >
-                                <Text className="text-white font-medium">{t('applications.go_to_postings', '공고 보러가기')}</Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
+                    <Empty activeFilter={activeFilter} t={t} />
                 }
             />
         </SafeAreaView>

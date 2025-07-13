@@ -21,7 +21,7 @@ interface HiringFieldsProps {
     translateDB: (table: string, column: string, id: string, defaultValue: string) => string;
 }
 
-const HiringFields: React.FC<HiringFieldsProps> = ({ keywords, t, translateDB }) => {
+const HiringFields = ({ keywords, t, translateDB }: HiringFieldsProps) => {
     if (!keywords) return null;
 
     return (

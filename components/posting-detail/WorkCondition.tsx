@@ -10,13 +10,7 @@ interface WorkConditionProps {
     t: (key: string, defaultValue: string) => string,
 }
 
-export const WorkCondition: React.FC<WorkConditionProps> = ({
-    posting,
-    isTranslated,
-    translatedData,
-    t,
-
-}) => (
+export const WorkCondition = ({posting, isTranslated, translatedData, t}: WorkConditionProps) => (
     <View className="flex-1">
         <View className="p-6 border-b border-gray-100">
             <Text className="text-sm text-gray-600 mb-1">{posting.company.name}</Text>
