@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useUserKeywords} from "@/hooks/useUserKeywords";
 import {useProfile} from "@/hooks/useProfile";
-import LoadingScreen from "@/components/LoadingScreen";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import WorkConditionsSelector from "@/components/WorkConditionsSelector";
 import JobPreferencesSelector from "@/components/JobPreferencesSelector";
 import { router } from 'expo-router';

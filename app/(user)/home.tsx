@@ -1,12 +1,13 @@
-import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native'
+import { View, Text, FlatList, RefreshControl, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
-import Header_home from "@/components/user_home/Header_home"
 import { Ionicons } from '@expo/vector-icons'
 import { useTranslation } from "@/contexts/TranslationContext"
 import { JobPostingCard } from "@/components/user_home/JobPostingCard"
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
+import {Header} from "@/components/common/Header";
+import LoadingScreen from "@/components/common/LoadingScreen";
 
 // 타입은 hooks/useMatchedJobPostings에서 import
 interface JobPosting {
@@ -115,19 +116,13 @@ const Home = () => {
 
     if (loading) {
         return (
-            <SafeAreaView className="flex-1 bg-gray-50">
-                <Header_home />
-                <View className="flex-1 items-center justify-center">
-                    <ActivityIndicator size="large" color="#3b82f6" />
-                    <Text className="text-gray-600 mt-2">{t('home.loading', '로딩 중...')}</Text>
-                </View>
-            </SafeAreaView>
+            <LoadingScreen />
         )
     }
 
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
-            <Header_home />
+            <Header/>
 
             <FlatList
                 data={matchedPostings}

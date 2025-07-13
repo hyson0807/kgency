@@ -1,10 +1,14 @@
-import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native'
+import { View, Text, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from '@/lib/supabase'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import {SecondHeader} from "@/components/company_home(home2)/SecondHeader";
+import {Header} from "@/components/common/Header";
+import LoadingScreen from "@/components/common/LoadingScreen";
+import {UserCard} from "@/components/company_home(home2)/UserCard";
 
 interface UserKeyword {
     keyword: {
@@ -154,142 +158,23 @@ const Home2 = () => {
         })
     }
 
-    const renderJobSeeker = ({ item }: { item: MatchedJobSeeker }) => {
-        const { user: jobSeeker, matchedCount, matchedKeywords } = item
-        const hasMatches = matchedCount > 0
-
-        // 모든 키워드를 한 줄로
-        const allKeywords = jobSeeker.user_keywords?.map(uk => uk.keyword.keyword).join(', ') || ''
-
-        return (
-            <TouchableOpacity
-                onPress={() => handleJobSeekerPress(jobSeeker)}
-                className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
-                activeOpacity={0.7}
-            >
-                {/* 매칭 뱃지 */}
-                {hasMatches && (
-                    <View className="absolute top-4 right-4 bg-blue-500 px-3 py-1 rounded-full">
-                        <Text className="text-white text-xs font-medium">매칭 {matchedCount}개</Text>
-                    </View>
-                )}
-
-                {/* 기본 정보 */}
-                <View className="mb-3">
-                    <Text className="text-lg font-bold text-gray-800 pr-20">
-                        {jobSeeker.name || '이름 미등록'}
-                    </Text>
-
-                    <View className="flex-row flex-wrap gap-3 mt-2">
-                        {jobSeeker.user_info?.age && (
-                            <View className="flex-row items-center">
-                                <Ionicons name="person-outline" size={14} color="#6b7280" />
-                                <Text className="text-sm text-gray-600 ml-1">
-                                    {jobSeeker.user_info.age}세
-                                </Text>
-                            </View>
-                        )}
-
-                        {jobSeeker.user_info?.gender && (
-                            <Text className="text-sm text-gray-600">
-                                {jobSeeker.user_info.gender}
-                            </Text>
-                        )}
-
-                        {jobSeeker.user_info?.visa && (
-                            <View className="flex-row items-center">
-                                <Ionicons name="document-text-outline" size={14} color="#6b7280" />
-                                <Text className="text-sm text-gray-600 ml-1">
-                                    {jobSeeker.user_info.visa}
-                                </Text>
-                            </View>
-                        )}
-
-                        {jobSeeker.user_info?.korean_level && (
-                            <View className="flex-row items-center">
-                                <Ionicons name="language-outline" size={14} color="#6b7280" />
-                                <Text className="text-sm text-gray-600 ml-1">
-                                    한국어 {jobSeeker.user_info.korean_level}
-                                </Text>
-                            </View>
-                        )}
-                    </View>
-                </View>
-
-                {/* 키워드 표시 */}
-                <View className="border-t border-gray-100 pt-3">
-                    {hasMatches ? (
-                        <>
-                            <Text className="text-sm text-gray-700 font-semibold mb-2">
-                                🎯 우리 회사와 딱 맞는 조건
-                            </Text>
-
-                            <View className="flex-row flex-wrap gap-2">
-                                {matchedKeywords.map((keyword, index) => (
-                                    <View
-                                        key={index}
-                                        className="bg-green-100 px-4 py-2 rounded-3xl flex-row items-center justify-center"
-                                    >
-                                        <Text className="text-green-700 mr-1">✓</Text>
-                                        <Text className="text-green-700 text-sm font-bold" numberOfLines={1}>
-                                            {keyword}
-                                        </Text>
-                                    </View>
-                                ))}
-                            </View>
-                        </>
-                    ) : (
-                        <Text className="text-sm text-gray-500">
-                            매칭된 키워드가 없습니다
-                        </Text>
-                    )}
-                </View>
-            </TouchableOpacity>
-        )
-    }
-
-    const renderHeader = () => (
-        <View className="bg-white p-4 mb-2">
-            <View className="flex-row items-center justify-between">
-                <View>
-                    <Text className="text-lg font-bold text-gray-800">구직자 목록</Text>
-                    {/*<Text className="text-sm text-gray-600 mt-1">*/}
-                    {/*    총 {matchedJobSeekers.length}명의 구직자*/}
-                    {/*</Text>*/}
-                </View>
-                <TouchableOpacity
-                    onPress={() => router.push('/(pages)/(company)/keywords')}
-                    className="bg-blue-100 px-4 py-2 rounded-lg"
-                >
-                    <Text className="text-blue-600 font-medium py-2">우리 회사랑 맞는 인재 찾기!</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-    )
 
     if (loading) {
         return (
-            <SafeAreaView className="flex-1 bg-gray-50">
-                <View className="flex-1 items-center justify-center">
-                    <ActivityIndicator size="large" color="#3b82f6" />
-                    <Text className="text-gray-600 mt-2">로딩 중...</Text>
-                </View>
-            </SafeAreaView>
+            <LoadingScreen />
         )
     }
 
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
             {/* 헤더 */}
-            <View className="bg-white px-4 py-3 border-b border-gray-200">
-                <Text className="text-2xl font-bold">K-gency</Text>
-            </View>
+            <Header />
 
             <FlatList
                 data={matchedJobSeekers}
                 keyExtractor={(item) => item.user.id}
-                renderItem={renderJobSeeker}
-                ListHeaderComponent={renderHeader}
+                renderItem={({item}) => <UserCard item={item} onPress={handleJobSeekerPress}/>}
+                ListHeaderComponent={() => <SecondHeader/> }
                 contentContainerStyle={{ paddingBottom: 20 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
