@@ -198,6 +198,34 @@ export const applyTranslations: TranslationData = {
         ha: 'Lokacin Aiki da ake So',
         mn: 'Хүссэн ажлын хугацаа'
     },
+    'apply.preferred_days': {
+        en: 'Preferred Working Days',
+        ja: '希望勤務曜日',
+        zh: '希望工作日',
+        vi: 'Ngày làm việc mong muốn',
+        hi: 'पसंदीदा कार्य दिवस',
+        si: 'කැමති වැඩ කරන දින',
+        ar: 'أيام العمل المفضلة',
+        tr: 'Tercih Edilen Çalışma Günleri',
+        my: 'အလုပ်လုပ်လိုသောရက်များ',
+        ky: 'Каалаган иштөө күндөрү',
+        ha: 'Ranakun Aiki da Ake So',
+        mn: 'Ажиллахыг хүсч буй өдрүүд'
+    },
+    'apply.preferred_time': {
+        en: 'Preferred Time Slot',
+        ja: '希望時間帯',
+        zh: '希望时间段',
+        vi: 'Khung giờ mong muốn',
+        hi: 'पसंदीदा समय स्लॉट',
+        si: 'කැමති කාල කලාපය',
+        ar: 'الفترة الزمنية المفضلة',
+        tr: 'Tercih Edilen Zaman Dilimi',
+        my: 'အလုပ်လုပ်လိုသောအချိန်',
+        ky: 'Каалаган убакыт',
+        ha: 'Lokacin da Ake So',
+        mn: 'Ажиллахыг хүсч буй цаг'
+    },
     'apply.related_experience': {
         en: 'Related Experience',
         ja: '関連経験',

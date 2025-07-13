@@ -157,7 +157,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                         .insert({
                             sender_id: user?.userId,
                             receiver_id: companyId,
-                            subject: t('resume.application_subject', `[${jobTitle}] 입사 지원서`),
+                            subject: `${jobTitle} 입사 지원서`,
                             content: isEditing ? editedResume : resume
                         })
                         .select()

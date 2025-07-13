@@ -1,6 +1,5 @@
 import {View, Text, TouchableOpacity} from 'react-native'
 import React from 'react'
-import Fontisto from '@expo/vector-icons/Fontisto';
 
 const HeaderHome = () => {
     return (
