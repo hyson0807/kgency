@@ -129,18 +129,18 @@ export const homeTranslations : TranslationData = {
         mn: 'Түлхүүр үг тохируулах'
     },
     'home.perfect_match': {
-        en: 'Perfect match for you',
-        ja: 'あなたにぴったりの条件',
-        zh: '完美匹配条件',
-        vi: 'Điều kiện phù hợp hoàn hảo',
-        hi: 'आपके लिए बिल्कुल सही मैच',
-        si: 'ඔබට පරිපූර්ණ ගැලපීමක්',
-        ar: 'مطابقة مثالية لك',
-        tr: 'Sizin için mükemmel eşleşme',
-        my: 'သင့်အတွက် ပြီးပြည့်စုံသော ကိုက်ညီမှု',
-        ky: 'Сизге абдан туура келген',
-        ha: 'Cikakkiyar dacewa gare ka',
-        mn: 'Танд төгс тохирох'
+        en: 'This company wants the following conditions you selected',
+        ja: 'この会社はあなたが選択した以下の条件を求めています',
+        zh: '该公司需要您选择的以下条件',
+        vi: 'Công ty này muốn các điều kiện bạn đã chọn dưới đây',
+        hi: 'यह कंपनी आपके द्वारा चुनी गई निम्नलिखित शर्तों को चाहती है',
+        si: 'මෙම සමාගම ඔබ තෝරා ගත් පහත කොන්දේසි අවශ්‍ය කරයි',
+        ar: 'تريد هذه الشركة الشروط التالية التي اخترتها',
+        tr: 'Bu şirket seçtiğiniz aşağıdaki koşulları istiyor',
+        my: 'ဤကုမ္ပဏီသည် သင်ရွေးချယ်ထားသော အောက်ပါအခြေအနေများကို လိုချင်ပါသည်',
+        ky: 'Бул компания сиз тандаган төмөнкү шарттарды каалайт',
+        ha: 'Wannan kamfani yana son sharuɗɗan da kuka zaɓa a ƙasa',
+        mn: 'Энэ компани таны сонгосон дараах нөхцөлүүдийг хүсч байна'
     },
     'home.company_prefers': {
         en: 'This company prefers {{country}} applicants!',

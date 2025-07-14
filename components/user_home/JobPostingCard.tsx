@@ -113,7 +113,7 @@ export const JobPostingCard = ({
         {hasMatches ? (
             <View className="border-t border-gray-100 pt-3">
                 <Text className="text-sm text-gray-700 font-semibold mb-2">
-                    {t('home.perfect_match', '나와 딱 맞는 조건')}
+                    {t('home.perfect_match', '해당 회사는 고객님이 선택하신 아래 조건들을 원합니다')}
                 </Text>
 
                 <View className="flex-row flex-wrap gap-2">

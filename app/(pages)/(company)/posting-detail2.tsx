@@ -22,13 +22,22 @@ interface Application {
         address?: string
         user_info?: {
             age?: number;
-            gender?:string;
-            visa?:string;
-            how_long?:string;
-            topic?:string;
-            korean_level?:string;
-            experience?:string;
-            experience_content?:string; }
+            gender?: string;
+            visa?: string;
+            how_long?: string;
+            topic?: string;
+            korean_level?: string;
+            experience?: string;
+            experience_content?: string;
+        }
+        user_keyword?: {
+            keyword_id: number;
+            keywords: {
+                id: number;
+                keyword: string;
+                category: string;
+            }
+        }[]
     }
     message?: {
         content: string
@@ -76,33 +85,41 @@ export default function CompanyPostingDetail() {
             const { data, error } = await supabase
                 .from('applications')
                 .select(`
-                    *,
-                    user:user_id (
-                        id,
-                        name,
-                        phone_number,
-                        address,
-                        user_info!user_info_user_id_fkey (
-                            age,
-                            gender,
-                            visa,
-                            how_long,
-                            topic,
-                            korean_level,
-                            experience,
-                            experience_content
-                        )
+                *,
+                user:user_id (
+                    id,
+                    name,
+                    phone_number,
+                    address,
+                    user_info!user_info_user_id_fkey (
+                        age,
+                        gender,
+                        visa,
+                        how_long,
+                        topic,
+                        korean_level,
+                        experience,
+                        experience_content
                     ),
-                    message:message_id (
-                        content,
-                        is_read
+                    user_keyword (
+                        keyword_id,
+                        keywords:keyword (
+                            id,
+                            keyword,
+                            category
+                        )
                     )
-                `)
+                ),
+                message:message_id (
+                    content,
+                    is_read
+                )
+            `)
                 .eq('job_posting_id', postingId)
                 .order('applied_at', { ascending: false })
 
             if (error) throw error
-            setApplications(data || [])
+            setApplications((data as Application[]) || [])
         } catch (error) {
             console.error('지원자 로드 실패:', error)
         }
@@ -174,7 +191,7 @@ export default function CompanyPostingDetail() {
                 <FlatList
                     data={applications}
                     keyExtractor={(item) => item.id}
-                    renderItem={({item}) => <ApplicantCard item={item} /> }
+                    renderItem={({item}) => <ApplicantCard item={item} postingId={postingId as string}/> }
                     contentContainerStyle={applications.length === 0 ? { flex: 1 } : { paddingVertical: 8 }}
                     ListEmptyComponent={
                         <View className="flex-1 justify-center items-center p-8">
