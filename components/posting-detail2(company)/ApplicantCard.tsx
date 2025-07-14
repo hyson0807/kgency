@@ -181,13 +181,16 @@ export const ApplicantCard = ({ item, postingId }: ApplicantCardProps) => {
 
                 <TouchableOpacity
                     onPress={() => {
-                        showModal(
-                            '연락처 복사',
-                            `${item.user.name}님의 연락처가 복사되었습니다.\n${item.user.phone_number}`,
-                            'info'
-                        )
+                        router.push({
+                            pathname: '/(pages)/(company)/interview-schedule',
+                            params: {
+                                applicationId: item.id,
+                                userId: item.user.id,
+                                postingId: postingId
+                            }
+                        })
                     }}
-                    className="flex-1 bg-blue-500  py-3 rounded-lg flex-row items-center justify-center"
+                    className="flex-1 bg-blue-500 py-3 rounded-lg flex-row items-center justify-center"
                 >
                     <AntDesign name="calendar" size={18} color="white" />
                     <Text className="text-white font-medium ml-2">면접 확정하기</Text>

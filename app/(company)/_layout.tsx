@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons"
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Feather from '@expo/vector-icons/Feather';
-
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const company_Layout = () => {
     return (
@@ -35,6 +35,15 @@ const company_Layout = () => {
                 options={{
                     tabBarLabel: '내 공고',
                     tabBarIcon: ({size, color}) => <Entypo name="add-to-list" size={size} color={color} />
+                }}
+            />
+
+            <Tabs.Screen
+                name="interview-calendar"
+                options={{
+                    tabBarLabel: '면접일정',
+
+                    tabBarIcon: ({size, color}) => <FontAwesome name="calendar-check-o" size={size} color={color} />
                 }}
             />
 

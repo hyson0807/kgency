@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
-
+import { supabase } from '@/lib/supabase'
 
 interface Application {
     id: string
@@ -31,6 +31,36 @@ interface ApplicationItemProps {
 }
 
 export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
+    const [hasInterviewSchedule, setHasInterviewSchedule] = useState(false)
+    const [hasConfirmedInterview, setHasConfirmedInterview] = useState(false)
+
+    useEffect(() => {
+        checkInterviewStatus()
+    }, [item.id])
+
+    const checkInterviewStatus = async () => {
+        // 면접 일정이 제안되었는지 확인
+        const { data: scheduleData } = await supabase
+            .from('interview_schedules')
+            .select('id')
+            .eq('application_id', item.id)
+            .single()
+
+        if (scheduleData) {
+            setHasInterviewSchedule(true)
+
+            // 면접이 확정되었는지 확인
+            const { data: confirmedData } = await supabase
+                .from('confirmed_interviews')
+                .select('id')
+                .eq('application_id', item.id)
+                .single()
+
+            if (confirmedData) {
+                setHasConfirmedInterview(true)
+            }
+        }
+    }
 
     const getStatusInfo = (status: string) => {
         switch (status) {
@@ -42,6 +72,8 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                 return { text: t('applications.status_accepted', '합격'), color: 'text-green-600', bgColor: 'bg-green-100' }
             case 'rejected':
                 return { text: t('applications.status_rejected', '불합격'), color: 'text-red-600', bgColor: 'bg-red-100' }
+            case 'interview_scheduled':
+                return { text: t('applications.status_interview', '면접예정'), color: 'text-purple-600', bgColor: 'bg-purple-100' }
             default:
                 return { text: status, color: 'text-gray-600', bgColor: 'bg-gray-100' }
         }
@@ -118,7 +150,6 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                 </View>
             </View>
 
-
             {/* 지원 정보 */}
             <View className="flex-row items-center justify-between pt-3 border-t border-gray-100">
                 <Text className="text-sm text-gray-500">
@@ -144,6 +175,48 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                     <Ionicons name="document-text-outline" size={16} color="#3b82f6" />
                     <Text className="text-blue-600 text-sm font-medium ml-1">
                         {t('applications.view_resume', '제출한 이력서 보기')}
+                    </Text>
+                </TouchableOpacity>
+            )}
+
+            {/* 면접 확정 상태 */}
+            {item.status === 'interview_scheduled' && (
+                <View className="bg-green-50 border border-green-200 p-3 rounded-lg mt-3">
+                    <Text className="text-green-700 font-semibold">
+                        ✅ 면접이 확정되었습니다
+                    </Text>
+                    <TouchableOpacity
+                        onPress={(e) => {
+                            e.stopPropagation()
+                            router.push({
+                                pathname: '/(pages)/(user)/interview-details',
+                                params: { applicationId: item.id }
+                            })
+                        }}
+                        className="mt-2"
+                    >
+                        <Text className="text-green-600 underline">면접 정보 확인하기</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {/* 면접 일정 선택 대기 중 */}
+            {hasInterviewSchedule && !hasConfirmedInterview && item.status !== 'interview_scheduled' && (
+                <TouchableOpacity
+                    onPress={(e) => {
+                        e.stopPropagation()
+                        router.push({
+                            pathname: '/(pages)/(user)/interview-selection',
+                            params: { applicationId: item.id }
+                        })
+                    }}
+                    className="bg-blue-50 border border-blue-200 p-3 rounded-lg mt-3"
+                >
+                    <Text className="text-blue-700 font-semibold">
+                        📅 면접 시간을 선택해주세요
+                    </Text>
+                    <Text className="text-blue-600 text-sm mt-1">
+                        회사에서 면접 가능 시간을 제안했습니다
                     </Text>
                 </TouchableOpacity>
             )}
