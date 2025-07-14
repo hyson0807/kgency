@@ -1,6 +1,8 @@
 import {Text, TouchableOpacity, View} from "react-native";
-import React from "react";
+import React, {useEffect} from "react";
 import {router} from "expo-router";
+import {useProfileById} from "@/hooks/useProfileById";
+
 
 interface Message {
     id: string;
@@ -24,6 +26,16 @@ export const MessageCard = ({
     item,
     markAsRead,
                             }: MessageCardProps) => {
+
+    const { fetchProfileById, profile } = useProfileById();
+    const senderId = item.sender_id
+
+    useEffect(() => {
+       fetchProfileById(senderId)
+    }, [])
+    console.log(profile?.user_info?.age)
+
+
 
     const handleMessagePress = (message: Message) => {
         // 메시지를 읽음 표시

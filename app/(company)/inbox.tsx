@@ -23,7 +23,6 @@ interface Message {
 }
 
 const Inbox = () => {
-    const { user } = useAuth();
     const { profile } = useProfile();
     const { user_keywords } = useUserKeywords();
     const { messages, loading, fetchMessages, markAsRead } = useMessages();
