@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
 import axios from 'axios'
 import { ActivityIndicator } from 'react-native'
+import {api} from "@/lib/api";
 
 export default function ViewResume() {
     const { showModal, ModalComponent } = useModal()
@@ -67,13 +68,13 @@ export default function ViewResume() {
         // 새로 번역
         setIsTranslating(true)
         try {
-            const response = await axios.post('https://kgencyserver-production.up.railway.app/translate', {
+            const response = await api('POST', '/api/translate/translate', {
                 text: resumeText,
                 targetLang: 'ko' // 항상 한국어로 번역
             })
 
-            if (response.data.success) {
-                setTranslatedResume(response.data.translatedText)
+            if (response.success) {
+                setTranslatedResume(response.translatedText)
                 setIsTranslated(true)
             } else {
                 throw new Error('번역 실패')

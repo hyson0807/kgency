@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext";
+import {authAPI} from "@/lib/api";
 
 const Settings = () => {
     const { logout, user,checkAuthState } = useAuth()
@@ -103,23 +104,8 @@ const Settings = () => {
         if (!user) return
 
         try {
-            // 토큰 가져오기
-            const token = await AsyncStorage.getItem('authToken');
-            if (!token) {
-                showModal(t('settings.error', '오류'), t('settings.auth_not_found', '인증 정보를 찾을 수 없습니다.'), 'warning')
-                return;
-            }
-
-            // 서버 API 호출
-            const response = await fetch('https://kgencyserver-production.up.railway.app/delete-account', {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const result = await response.json();
+            // 서버 API 호출 (토큰은 자동으로 처리됨)
+            const result = await authAPI.deleteAccount();
 
             if (result.success) {
                 // 로컬 데이터 삭제
@@ -134,13 +120,23 @@ const Settings = () => {
             } else {
                 throw new Error(result.error || '회원 탈퇴 처리 중 문제가 발생했습니다.')
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('회원 탈퇴 실패:', error);
-            showModal(
-                t('settings.error', '오류'),
-                t('settings.delete_error', '회원 탈퇴 처리 중 문제가 발생했습니다.'),
-                'warning'
-            )
+
+            // 토큰이 없거나 만료된 경우
+            if (error.response?.status === 401) {
+                showModal(
+                    t('settings.error', '오류'),
+                    t('settings.auth_not_found', '인증 정보를 찾을 수 없습니다.'),
+                    'warning'
+                )
+            } else {
+                showModal(
+                    t('settings.error', '오류'),
+                    t('settings.delete_error', '회원 탈퇴 처리 중 문제가 발생했습니다.'),
+                    'warning'
+                )
+            }
         }
     }
 

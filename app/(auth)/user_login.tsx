@@ -7,6 +7,7 @@ import {useAuth} from "@/contexts/AuthContext";
 import {router} from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
 import {useTranslation} from "@/contexts/TranslationContext";
+import { api } from '@/lib/api';
 
 const UserLogin = () => {
     const { login } = useAuth();
@@ -51,8 +52,8 @@ const UserLogin = () => {
         try {
             const formattedPhone = `+82${cleanPhone.slice(1)}`;
 
-            const response = await axios.post('https://kgencyserver-production.up.railway.app/send-otp', {phone: formattedPhone})
-            if (response.data.success) {
+            const response = await api ('POST','/api/auth/send-otp', {phone: formattedPhone})
+            if (response.success) {
                 Alert.alert(t('alert.send_complete', '전송 완료'), t('alert.code_sent', '인증번호가 전송되었습니다'));
                 setInputOtp(true);
                 setResendTimer(180); // 3분 타이머
@@ -78,31 +79,25 @@ const UserLogin = () => {
             const cleanPhone = phone.replace(/-/g, '');
             const formattedPhone = `+82${cleanPhone.slice(1)}`;
 
-            const response = await axios.post('https://kgencyserver-production.up.railway.app/verify-otp', {
+            const response = await api ('POST','/api/auth/verify-otp', {
                 phone: formattedPhone,
                 otp: otp,
                 userType: 'user'
             });
 
-            if (response.data.success) {
-                const result = await login(
-                    response.data.token,
-                    response.data.user,
-                    response.data.onboardingStatus
-                );
+            const result = await login(
+                response.token,
+                response.user,
+                response.onboardingStatus
+            );
 
-                if (result.success) {
-                    if (response.data.onboardingStatus.completed) {
-                        router.replace('/(user)/home');
-                    } else {
-                        router.replace('/(pages)/(user)/info');
-                    }
-                } else {
-                    Alert.alert(t('alert.error', '오류'), t('alert.login_error', '로그인 처리 중 오류가 발생했습니다'));
-                }
+            if (response.onboardingStatus.completed) {
+                router.replace('/(user)/home');
             } else {
-                Alert.alert(t('alert.auth_failed', '인증 실패'), response.data.error || t('alert.code_mismatch', '인증번호가 일치하지 않습니다'));
+                router.replace('/(pages)/(user)/info');
             }
+
+
         } catch (error) {
             console.error(error);
             Alert.alert(t('alert.error', '오류'), t('alert.auth_error', '인증 처리 중 오류가 발생했습니다'));

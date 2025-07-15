@@ -6,9 +6,9 @@ import { router, useLocalSearchParams } from 'expo-router'
 import Back from '@/components/back'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
-import axios from 'axios'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
+import {api} from "@/lib/api";
 
 export default function Resume() {
     const params = useLocalSearchParams();
@@ -89,7 +89,7 @@ export default function Resume() {
                 company_id: companyId
             });
 
-            const response = await axios.post('https://kgencyserver-production.up.railway.app/generate-resume-for-posting', {
+            const response = await api('POST', '/api/ai/generate-resume', {
                 user_id: user?.userId,
                 job_posting_id: jobPostingId,
                 company_id: companyId,
@@ -98,17 +98,17 @@ export default function Resume() {
                 workTimesString: workTimesString   // 완성된 문자열로 전송
             });
 
-            console.log('AI 이력서 생성 응답:', response.data);
+            console.log('AI 이력서 생성 응답:', response);
 
-            if (response.data.success && response.data.resume) {
-                setResume(response.data.resume);
-                setEditedResume(response.data.resume);
+            if (response.success && response.resume) {
+                setResume(response.resume);
+                setEditedResume(response.resume);
             } else {
-                throw new Error(response.data.error || t('resume.ai_generation_failed', 'AI 이력서 생성에 실패했습니다.'));
+                throw new Error(response.error || t('resume.ai_generation_failed', 'AI 이력서 생성에 실패했습니다.'));
             }
         } catch (error: any) {
             console.error('AI 이력서 생성 오류:', error);
-            setError(error.response?.data?.error || error.message || t('resume.ai_generation_error', 'AI 이력서 생성 중 오류가 발생했습니다.'));
+            setError(error.response?.error || error.message || t('resume.ai_generation_error', 'AI 이력서 생성 중 오류가 발생했습니다.'));
 
             // 오류 발생 시 기본 이력서 템플릿 제공
             const fallbackResume = `안녕하세요, ${companyName} 채용 담당자님

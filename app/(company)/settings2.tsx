@@ -7,6 +7,7 @@ import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/hooks/useModal'
+import {api, authAPI} from "@/lib/api";
 
 const Settings2 = () => {
     const { logout, user } = useAuth()
@@ -79,49 +80,26 @@ const Settings2 = () => {
 
     // 회원 탈퇴 처리
     const handleDeleteAccount = async () => {
-        if (!user) return
-
         try {
-            // 토큰 가져오기
-            const token = await AsyncStorage.getItem('authToken');
-            if (!token) {
-                showModal('오류', '인증 정보를 찾을 수 없습니다.', 'warning')
-                return;
-            }
+            // 토큰은 api 함수에서 자동으로 처리됨!
+            const result = await authAPI.deleteAccount();
 
-            // 서버 API 호출
-            const response = await fetch('https://kgencyserver-production.up.railway.app/delete-account', {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+            // 성공 시 처리
+            console.log('회원 탈퇴 완료:', result);
 
-            const result = await response.json();
+            // 로컬 데이터 삭제
+            await AsyncStorage.clear();
 
-            if (result.success) {
-                // 로컬 데이터 삭제
-                await AsyncStorage.clear();
+            // 로그인 화면으로 이동
+            router.replace('/start');
 
-                showModal(
-                    '회원 탈퇴 완료',
-                    '그동안 이용해주셔서 감사합니다.',
-                    'info',
-                    () => logout()
-                )
-            } else {
-                throw new Error(result.error || '회원 탈퇴 처리 중 문제가 발생했습니다.')
-            }
-        } catch (error) {
-            console.error('회원 탈퇴 실패:', error)
-            showModal(
-                '오류',
-                '회원 탈퇴 처리 중 문제가 발생했습니다.',
-                'warning'
-            )
+        } catch (error: any) {
+            console.error('회원 탈퇴 실패:', error);
+            // 에러 메시지 표시
+            showModal('오류', error.error || '회원 탈퇴 중 문제가 발생했습니다.', 'warning');
         }
-    }
+    };
+
 
     // 언어 변경
     const handleLanguageChange = async (language: string) => {
@@ -204,7 +182,7 @@ const Settings2 = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => router.push('/(company)/jobPosting')}
+                        onPress={() => router.push('/(company)/myJobPostings')}
                         className="flex-row items-center justify-between py-3"
                     >
                         <View className="flex-row items-center">

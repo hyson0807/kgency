@@ -9,11 +9,11 @@ import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from "@/contexts/TranslationContext";
-import axios from 'axios'
 import { useModal } from '@/hooks/useModal'
 import HiringFields from "@/components/posting-detail/HiringFields";
 import Header from "@/components/posting-detail/Header";
 import {WorkCondition} from "@/components/posting-detail/WorkCondition";
+import {api} from "@/lib/api";
 
 
 export default function PostingDetail() {
@@ -151,13 +151,13 @@ export default function PostingDetail() {
                 { key: 'pay_day', text: posting.pay_day || '' }
             ].filter(item => item.text)
 
-            const response = await axios.post('https://kgencyserver-production.up.railway.app/translate-batch', {
+            const response = await api('POST', '/api/translate/translate-batch', {
                 texts: textsToTranslate,
                 targetLang: language === 'ko' ? 'ko' : language
             })
 
-            if (response.data.success) {
-                const translations = response.data.translations
+            if (response.success) {
+                const translations = response.translations
 
                 // 번역 결과를 객체로 변환
                 const translatedResult: any = {
