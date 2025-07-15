@@ -40,6 +40,16 @@ export default function SetInterviewSlots() {
         // 해당 날짜에 이미 설정된 시간들이 있으면 불러오기
         const existingSlots = dateTimeMap[day.dateString] || []
         setSelectedTimes(existingSlots.map(slot => slot.startTime))
+
+        // 기존 슬롯이 있으면 location과 interviewType도 설정
+        if (existingSlots.length > 0) {
+            setLocation(existingSlots[0].location || '')
+            setInterviewType(existingSlots[0].interviewType || '대면')
+        } else {
+            // 새로운 날짜 선택 시 초기화
+            setLocation('')
+            setInterviewType('대면')
+        }
     }
 
     const handleTimeToggle = (time: string) => {
@@ -56,14 +66,39 @@ export default function SetInterviewSlots() {
             return
         }
 
-        if (!location.trim()) {
-            showModal('알림', '면접 장소를 입력해주세요.')
-            return
-        }
-
+        // 시간이 선택되지 않은 경우 삭제 확인
         if (selectedTimes.length === 0) {
-            showModal('알림', '최소 1개의 시간대를 선택해주세요.')
-            return
+            // 기존에 해당 날짜에 시간이 있었는지 확인
+            if (dateTimeMap[selectedDate] && dateTimeMap[selectedDate].length > 0) {
+                // 삭제 확인 모달
+                showModal(
+                    '확인',
+                    `${selectedDate}의 모든 면접 시간대를 삭제하시겠습니까?`,
+                    'confirm',
+                    async () => {
+                        // 삭제 처리
+                        const response = await api('POST', '/api/company/interview-slots', {
+                            companyId: user?.userId,
+                            date: selectedDate,
+                            slots: []
+                        })
+
+                        if (response?.success) {
+                            // 로컬 상태에서도 삭제
+                            setDateTimeMap(prev => {
+                                const newMap = { ...prev }
+                                delete newMap[selectedDate]
+                                return newMap
+                            })
+                            showModal('성공', `${selectedDate}의 면접 시간대가 삭제되었습니다.`, 'info')
+                        }
+                    }
+                )
+                return
+            } else {
+                showModal('알림', '최소 1개의 시간대를 선택해주세요.')
+                return
+            }
         }
 
         // 선택된 시간들을 TimeSlot 형식으로 변환
@@ -81,51 +116,23 @@ export default function SetInterviewSlots() {
             }
         })
 
-        const response = await api ('POST', '/api/company/interview-slots', {
+        const response = await api('POST', '/api/company/interview-slots', {
             companyId: user?.userId,
             slots: slots
         })
-        console.log('Response:', response)
 
-        // 날짜별로 저장
-        setDateTimeMap(prev => ({
-            ...prev,
-            [selectedDate]: slots
-        }))
+        if (response?.success) {
+            // 날짜별로 저장
+            setDateTimeMap(prev => ({
+                ...prev,
+                [selectedDate]: slots
+            }))
 
-        showModal('성공', `${selectedDate}의 면접 시간대가 저장되었습니다.`, 'info')
-
-        // 다음 날짜 설정을 위해 초기화
-        setSelectedTimes([])
+            showModal('성공', `${selectedDate}의 면접 시간대가 저장되었습니다.`, 'info')
+        }
     }
 
-    // const handleSubmitAll = async () => {
-    //     const allSlots = Object.values(dateTimeMap).flat()
-    //
-    //     if (allSlots.length === 0) {
-    //         showModal('알림', '설정된 면접 시간대가 없습니다.')
-    //         return
-    //     }
-    //
-    //     setLoading(true)
-    //     try {
-    //         // 백엔드로 데이터 전송
-    //         const payload = {
-    //             companyId: user?.userId,
-    //             slots: allSlots
-    //         }
-    //
-    //         // TODO: 실제 API 호출
-    //         console.log('Sending to backend:', payload)
-    //         showModal('성공', '면접 가능 시간대가 모두 저장되었습니다.', 'info')
-    //         setTimeout(() => router.back(), 1500)
-    //     } catch (error) {
-    //         console.error('Error:', error)
-    //         showModal('오류', '저장에 실패했습니다.')
-    //     } finally {
-    //         setLoading(false)
-    //     }
-    // }
+
 
     // 설정된 날짜들 표시를 위한 markedDates 생성
     const markedDates = {
@@ -147,6 +154,37 @@ export default function SetInterviewSlots() {
     const fetchSlot = async () => {
         const result = await api('GET', '/api/company/interview-slots?companyId=' + user?.userId)
         console.log(result)
+
+        if (result?.data && Array.isArray(result.data)) {
+            // 날짜별로 그룹화
+            const groupedSlots: Record<string, TimeSlot[]> = {}
+
+            result.data.forEach((slot: any) => {
+                // start_time에서 날짜와 시간 추출
+                const startDateTime = new Date(slot.start_time)
+                const date = startDateTime.toISOString().split('T')[0]
+                const startTime = startDateTime.toTimeString().slice(0, 5)
+
+                const endDateTime = new Date(slot.end_time)
+                const endTime = endDateTime.toTimeString().slice(0, 5)
+
+                const timeSlot: TimeSlot = {
+                    date: date,
+                    startTime: startTime,
+                    endTime: endTime,
+                    location: slot.location,
+                    interviewType: slot.interview_type
+                }
+
+                if (!groupedSlots[date]) {
+                    groupedSlots[date] = []
+                }
+                groupedSlots[date].push(timeSlot)
+            })
+
+            // dateTimeMap 업데이트
+            setDateTimeMap(groupedSlots)
+        }
     }
 
     return (
@@ -157,41 +195,11 @@ export default function SetInterviewSlots() {
             </View>
 
             <ScrollView className="flex-1">
-                {/* 면접 타입 선택 */}
-                <View className="p-4">
-                    <Text className="text-base font-semibold mb-2">면접 방식</Text>
-                    <View className="flex-row gap-2">
-                        {(['대면', '화상', '전화'] as const).map((type) => (
-                            <TouchableOpacity
-                                key={type}
-                                onPress={() => setInterviewType(type)}
-                                className={`px-4 py-2 rounded-lg border ${
-                                    interviewType === type
-                                        ? 'bg-blue-500 border-blue-500'
-                                        : 'bg-white border-gray-300'
-                                }`}
-                            >
-                                <Text className={interviewType === type ? 'text-white' : 'text-gray-700'}>
-                                    {type}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </View>
 
-                {/* 면접 장소 입력 */}
-                <View className="p-4">
-                    <Text className="text-base font-semibold mb-2">면접 장소</Text>
-                    <TextInput
-                        value={location}
-                        onChangeText={setLocation}
-                        placeholder="예: 서울시 강남구 테헤란로 123 5층"
-                        className="border border-gray-300 rounded-lg px-4 py-3"
-                    />
-                </View>
+
 
                 {/* 캘린더 */}
-                <View className="px-4">
+                <View className="px-4 mt-4">
                     <Text className="text-base font-semibold mb-2">날짜 선택</Text>
                     <Calendar
                         current={new Date().toISOString().split('T')[0]}
