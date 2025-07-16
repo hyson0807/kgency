@@ -37,14 +37,14 @@ export default function InterviewSchedule() {
             if (response?.success) {
                 showModal('성공', '면접이 제안되었습니다. 지원자가 시간을 선택할 수 있습니다.', 'info')
 
-                // 알림 발송 (선택사항)
-                // await api('POST', '/api/notifications', {
-                //     userId: userId, // 지원자 ID
-                //     type: 'interview_proposal',
-                //     message: '면접 제안이 도착했습니다. 가능한 시간을 선택해주세요.'
-                // })
-
-                router.back()
+                // 새로고침 신호와 함께 돌아가기
+                router.replace({
+                    pathname: '/(pages)/(company)/posting-detail2',
+                    params: {
+                        postingId: postingId,
+                        refresh: 'true'
+                    }
+                })
             }
         } catch (error) {
             console.error('Failed to submit proposal:', error)

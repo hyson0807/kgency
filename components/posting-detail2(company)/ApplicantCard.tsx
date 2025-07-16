@@ -43,12 +43,16 @@ interface Application {
 interface ApplicantCardProps {
     item: Application;
     postingId: string;
+    proposalStatus?: string; // prop 추가
+    onStatusChange?: () => void; // 상태 변경 콜백 추가
 }
 
-export const ApplicantCard = ({ item, postingId }: ApplicantCardProps) => {
+export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStatusChange }: ApplicantCardProps) => {
     const { showModal } = useModal();
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings();
     const [matchedKeywords, setMatchedKeywords] = useState<{ id: number; keyword: string; category: string }[]>([]);
+
+
 
     useEffect(() => {
         const loadPostingAndMatchKeywords = async () => {
@@ -118,6 +122,47 @@ export const ApplicantCard = ({ item, postingId }: ApplicantCardProps) => {
         }
     };
 
+    const renderInterviewButton = () => {
+        switch (proposalStatus) {
+            case 'pending':
+                return (
+                    <View className="flex-1 bg-orange-100 py-3 rounded-lg flex-row items-center justify-center">
+                        <AntDesign name="clockcircleo" size={18} color="#ea580c" />
+                        <Text className="text-orange-600 font-medium ml-2">면접 제안됨</Text>
+                    </View>
+                );
+
+            case 'scheduled':
+                return (
+                    <View className="flex-1 bg-green-100 py-3 rounded-lg flex-row items-center justify-center">
+                        <AntDesign name="checkcircleo" size={18} color="#16a34a" />
+                        <Text className="text-green-600 font-medium ml-2">면접 확정됨</Text>
+                    </View>
+                );
+
+            default: // 'none'
+                return (
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.push({
+                                pathname: '/(pages)/(company)/interview-schedule',
+                                params: {
+                                    applicationId: item.id,
+                                    userId: item.user.id,
+                                    postingId: postingId,
+                                    onComplete: 'refresh' // 완료 신호
+                                }
+                            })
+                        }}
+                        className="flex-1 bg-blue-500 py-3 rounded-lg flex-row items-center justify-center"
+                    >
+                        <AntDesign name="calendar" size={18} color="white" />
+                        <Text className="text-white font-medium ml-2">면접 제안하기</Text>
+                    </TouchableOpacity>
+                );
+        }
+    };
+
     return (
         <View className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm gap-3">
             <View className="flex-row items-center gap-5">
@@ -179,22 +224,7 @@ export const ApplicantCard = ({ item, postingId }: ApplicantCardProps) => {
                     <Text className="font-medium ml-2">이력서 보기</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={() => {
-                        router.push({
-                            pathname: '/(pages)/(company)/interview-schedule',
-                            params: {
-                                applicationId: item.id,
-                                userId: item.user.id,
-                                postingId: postingId
-                            }
-                        })
-                    }}
-                    className="flex-1 bg-blue-500 py-3 rounded-lg flex-row items-center justify-center"
-                >
-                    <AntDesign name="calendar" size={18} color="white" />
-                    <Text className="text-white font-medium ml-2">면접 제안하기</Text>
-                </TouchableOpacity>
+                {renderInterviewButton()}
             </View>
         </View>
     )
