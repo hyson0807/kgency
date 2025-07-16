@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Calendar } from 'react-native-calendars'
 import { useModal } from '@/hooks/useModal'
@@ -28,6 +28,10 @@ export default function SetInterviewSlots() {
     // 날짜별로 선택된 시간들을 저장
     const [dateTimeMap, setDateTimeMap] = useState<Record<string, TimeSlot[]>>({})
 
+    // 예약된 시간 슬롯을 저장할 state 추가
+    const [bookedSlots, setBookedSlots] = useState<Record<string, string[]>>({})
+
+
     // 10시부터 18시까지 30분 단위 시간 슬롯 생성
     const timeSlots = []
     for (let hour = 10; hour < 18; hour++) {
@@ -53,6 +57,12 @@ export default function SetInterviewSlots() {
     }
 
     const handleTimeToggle = (time: string) => {
+        // 예약된 시간은 선택 불가
+        if (bookedSlots[selectedDate]?.includes(time)) {
+            showModal('알림', '이미 예약된 시간대입니다.')
+            return
+        }
+
         if (selectedTimes.includes(time)) {
             setSelectedTimes(selectedTimes.filter(t => t !== time))
         } else {
@@ -65,6 +75,17 @@ export default function SetInterviewSlots() {
             showModal('알림', '날짜를 선택해주세요.')
             return
         }
+
+        // 예약된 시간은 유지하고 나머지만 업데이트
+        const existingBookedSlots = dateTimeMap[selectedDate]?.filter(slot =>
+            bookedSlots[selectedDate]?.includes(slot.startTime)
+        ) || []
+
+        if (selectedTimes.length === 0 && existingBookedSlots.length > 0) {
+            showModal('알림', '예약된 시간대가 있어 모든 시간을 삭제할 수 없습니다.')
+            return
+        }
+
 
         // 시간이 선택되지 않은 경우 삭제 확인
         if (selectedTimes.length === 0) {
@@ -153,14 +174,12 @@ export default function SetInterviewSlots() {
 
     const fetchSlot = async () => {
         const result = await api('GET', '/api/company/interview-slots?companyId=' + user?.userId)
-        console.log(result)
 
         if (result?.data && Array.isArray(result.data)) {
-            // 날짜별로 그룹화
             const groupedSlots: Record<string, TimeSlot[]> = {}
+            const bookedSlotsMap: Record<string, string[]> = {}
 
             result.data.forEach((slot: any) => {
-                // start_time에서 날짜와 시간 추출
                 const startDateTime = new Date(slot.start_time)
                 const date = startDateTime.toISOString().split('T')[0]
                 const startTime = startDateTime.toTimeString().slice(0, 5)
@@ -178,12 +197,19 @@ export default function SetInterviewSlots() {
 
                 if (!groupedSlots[date]) {
                     groupedSlots[date] = []
+                    bookedSlotsMap[date] = []
                 }
+
                 groupedSlots[date].push(timeSlot)
+
+                // 예약된 슬롯이면 기록
+                if (slot.is_booked) {
+                    bookedSlotsMap[date].push(startTime)
+                }
             })
 
-            // dateTimeMap 업데이트
             setDateTimeMap(groupedSlots)
+            setBookedSlots(bookedSlotsMap)
         }
     }
 
@@ -217,22 +243,51 @@ export default function SetInterviewSlots() {
                         <Text className="text-base font-semibold mb-2">
                             {selectedDate} 가능 시간 선택
                         </Text>
+
+                        {/* 예약된 시간이 있으면 안내 메시지 */}
+                        {bookedSlots[selectedDate]?.length > 0 && (
+                            <View className="bg-yellow-50 p-3 rounded-lg mb-3">
+                                <Text className="text-sm text-yellow-800">
+                                    ⚠️ 이미 예약된 시간대는 변경할 수 없습니다.
+                                </Text>
+                            </View>
+                        )}
+
                         <View className="flex-row flex-wrap gap-2">
-                            {timeSlots.map((time) => (
-                                <TouchableOpacity
-                                    key={time}
-                                    onPress={() => handleTimeToggle(time)}
-                                    className={`px-4 py-2 rounded-lg border ${
-                                        selectedTimes.includes(time)
-                                            ? 'bg-blue-500 border-blue-500'
-                                            : 'bg-white border-gray-300'
-                                    }`}
-                                >
-                                    <Text className={selectedTimes.includes(time) ? 'text-white' : 'text-gray-700'}>
-                                        {time}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
+                            {timeSlots.map((time) => {
+                                const isBooked = bookedSlots[selectedDate]?.includes(time)
+                                const isSelected = selectedTimes.includes(time)
+
+                                return (
+                                    <TouchableOpacity
+                                        key={time}
+                                        onPress={() => handleTimeToggle(time)}
+                                        disabled={isBooked}
+                                        className={`px-4 py-2 rounded-lg border relative ${
+                                            isBooked
+                                                ? 'bg-gray-100 border-gray-300'
+                                                : isSelected
+                                                    ? 'bg-blue-500 border-blue-500'
+                                                    : 'bg-white border-gray-300'
+                                        }`}
+                                    >
+                                        <Text className={
+                                            isBooked
+                                                ? 'text-gray-400'
+                                                : isSelected
+                                                    ? 'text-white'
+                                                    : 'text-gray-700'
+                                        }>
+                                            {time}
+                                        </Text>
+                                        {isBooked && (
+                                            <Text className="text-xs text-gray-400 absolute -bottom-2">
+                                                예약됨
+                                            </Text>
+                                        )}
+                                    </TouchableOpacity>
+                                )
+                            })}
                         </View>
 
                         {/* 현재 날짜 저장 버튼 */}
@@ -248,9 +303,12 @@ export default function SetInterviewSlots() {
                 )}
 
 
+
             </ScrollView>
 
             <ModalComponent />
         </SafeAreaView>
     )
 }
+
+

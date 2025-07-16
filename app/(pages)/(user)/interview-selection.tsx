@@ -1,203 +1,272 @@
+// app/(pages)/(user)/interview-selection.tsx
 import React, { useState, useEffect } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
-import { supabase } from '@/lib/supabase'
-import { useModal } from '@/hooks/useModal'
-import { useAuth } from '@/contexts/AuthContext'
-import Back from '@/components/back'
 import { Ionicons } from '@expo/vector-icons'
+import { api } from '@/lib/api'
+import Back from '@/components/back'
+import { useModal } from '@/hooks/useModal'
 
 interface TimeSlot {
     id: string
-    interview_date: string
     start_time: string
     end_time: string
-    is_selected: boolean
+    location: string
+    interview_type: string
+    is_available: boolean
 }
 
 export default function InterviewSelection() {
-    const { applicationId } = useLocalSearchParams()
-    const { user } = useAuth()
-    const { showModal, ModalComponent } = useModal()
+    const params = useLocalSearchParams()
+    const {
+        applicationId,
+        companyId,
+        proposalId,
+        companyName,
+        jobTitle,
+        proposalLocation
+    } = params
 
-    const [schedule, setSchedule] = useState<any>(null)
-    const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
+    const { showModal, ModalComponent } = useModal()
+    const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
+    const [selectedSlotId, setSelectedSlotId] = useState<string>('')
     const [loading, setLoading] = useState(true)
-    const [confirming, setConfirming] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
 
     useEffect(() => {
-        loadInterviewSchedule()
+        fetchAvailableSlots()
     }, [])
 
-    const loadInterviewSchedule = async () => {
+    const fetchAvailableSlots = async () => {
         try {
-            // 면접 일정 정보 가져오기
-            const { data: scheduleData, error: scheduleError } = await supabase
-                .from('interview_schedules')
-                .select(`
-          *,
-          job_posting:job_postings!inner(
-            title,
-            company:profiles!inner(
-              name
-            )
-          )
-        `)
-                .eq('application_id', applicationId)
-                .single()
+            setLoading(true)
+            const response = await api('GET', `/api/interview-proposals/user/${applicationId}`)
 
-            if (scheduleError) throw scheduleError
-
-            setSchedule(scheduleData)
-
-            // 시간 슬롯 가져오기 (다른 사람이 선택한 것 제외)
-            const { data: slotsData, error: slotsError } = await supabase
-                .from('interview_time_slots')
-                .select('*')
-                .eq('schedule_id', scheduleData.id)
-                .eq('is_selected', false)
-                .gte('interview_date', new Date().toISOString().split('T')[0])
-                .order('interview_date')
-                .order('start_time')
-
-            if (slotsError) throw slotsError
-
-            setTimeSlots(slotsData || [])
+            if (response?.success && response.data?.availableSlots) {
+                setAvailableSlots(response.data.availableSlots)
+            }
         } catch (error) {
-            console.error('Error loading schedule:', error)
-            showModal('오류', '면접 일정을 불러오는데 실패했습니다.')
+            console.error('Failed to fetch available slots:', error)
+            showModal('오류', '면접 시간대를 불러오는데 실패했습니다.')
         } finally {
             setLoading(false)
         }
     }
 
-    const handleTimeSelect = async (slot: TimeSlot) => {
-        showModal(
-            '면접 시간 확정',
-            `${slot.interview_date} ${slot.start_time}에 면접을 확정하시겠습니까?`,
-            'confirm',
-            () => confirmInterview(slot),
-            true
-        )
-    }
+    const formatDateTime = (dateTimeString: string) => {
+        const date = new Date(dateTimeString)
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+        const weekDay = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
+        const hours = date.getHours()
+        const minutes = date.getMinutes()
 
-    const confirmInterview = async (slot: TimeSlot) => {
-        setConfirming(true)
-        try {
-            // 트랜잭션으로 처리
-            const { error: updateSlotError } = await supabase
-                .from('interview_time_slots')
-                .update({ is_selected: true })
-                .eq('id', slot.id)
-
-            if (updateSlotError) throw updateSlotError
-
-            const { error: confirmError } = await supabase
-                .from('confirmed_interviews')
-                .insert({
-                    application_id: applicationId,
-                    time_slot_id: slot.id,
-                    user_id: user?.userId,
-                    company_id: schedule.company_id,
-                    job_posting_id: schedule.job_posting_id,
-                    interview_location: schedule.interview_location
-                })
-
-            if (confirmError) throw confirmError
-
-            // 지원서 상태 업데이트
-            const { error: appError } = await supabase
-                .from('applications')
-                .update({ status: 'interview_scheduled' })
-                .eq('id', applicationId)
-
-            if (appError) throw appError
-
-            showModal('성공', '면접 일정이 확정되었습니다!', 'info')
-            router.replace('/')
-        } catch (error) {
-            console.error('Error confirming interview:', error)
-            showModal('오류', '면접 확정에 실패했습니다.')
-        } finally {
-            setConfirming(false)
+        return {
+            date: `${month}월 ${day}일 (${weekDay})`,
+            time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
         }
     }
 
+    const groupSlotsByDate = (slots: TimeSlot[]) => {
+        const grouped: Record<string, TimeSlot[]> = {}
+
+        slots.forEach(slot => {
+            const dateKey = new Date(slot.start_time).toDateString()
+            if (!grouped[dateKey]) {
+                grouped[dateKey] = []
+            }
+            grouped[dateKey].push(slot)
+        })
+
+        return grouped
+    }
+
+    const handleSelectSlot = (slotId: string) => {
+        setSelectedSlotId(slotId)
+    }
+
+    const handleSubmit = async () => {
+        if (!selectedSlotId) {
+            showModal('알림', '면접 시간을 선택해주세요.')
+            return
+        }
+
+        setSubmitting(true)
+        try {
+            const response = await api('POST', '/api/interview-schedules/user', {
+                proposalId: proposalId as string,
+                interviewSlotId: selectedSlotId
+            })
+
+            if (response?.success) {
+                showModal('성공', '면접 일정이 확정되었습니다.', 'info')
+                router.back()
+            }
+        } catch (error) {
+            console.error('Failed to submit interview schedule:', error)
+            showModal('오류', '면접 일정 선택에 실패했습니다.')
+        } finally {
+            setSubmitting(false)
+        }
+    }
+
+    const groupedSlots = groupSlotsByDate(availableSlots)
+
     if (loading) {
         return (
-            <SafeAreaView className="flex-1 bg-white justify-center items-center">
-                <ActivityIndicator size="large" color="#3b82f6" />
+            <SafeAreaView className="flex-1 bg-white">
+                <View className="flex-1 justify-center items-center">
+                    <ActivityIndicator size="large" color="#3b82f6" />
+                </View>
             </SafeAreaView>
         )
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
-            <View className="flex-row items-center p-4 border-b border-gray-200">
-                <Back />
-                <Text className="text-lg font-bold ml-4">면접 시간 선택</Text>
+        <SafeAreaView className="flex-1 bg-gray-50">
+            <View className="bg-white border-b border-gray-200">
+                <View className="flex-row items-center p-4">
+                    <Back />
+                    <Text className="text-lg font-bold ml-4">면접 시간 선택</Text>
+                </View>
             </View>
 
             <ScrollView className="flex-1">
-                {/* 공고 정보 */}
-                <View className="p-4 bg-blue-50 m-4 rounded-lg">
-                    <Text className="text-lg font-semibold text-blue-600">
-                        {schedule?.job_posting.title}
-                    </Text>
-                    <Text className="text-gray-600 mt-1">
-                        {schedule?.job_posting.company.name}
-                    </Text>
+                {/* 회사 정보 */}
+                <View className="bg-white p-4 mb-2">
+                    <Text className="text-sm text-gray-600">회사</Text>
+                    <Text className="text-base font-semibold">{companyName}</Text>
+                    <Text className="text-sm text-gray-600 mt-1">직무</Text>
+                    <Text className="text-base">{jobTitle}</Text>
                 </View>
 
-                {/* 면접 장소 */}
-                <View className="px-4 mb-4">
-                    <View className="flex-row items-center bg-gray-50 p-4 rounded-lg">
-                        <Ionicons name="location" size={24} color="#6b7280" />
-                        <View className="ml-3 flex-1">
-                            <Text className="text-sm text-gray-500">면접 장소</Text>
-                            <Text className="font-medium">{schedule?.interview_location}</Text>
+                {/* 면접 장소 (제안된 장소) */}
+                {proposalLocation && (
+                    <View className="bg-white p-4 mb-2">
+                        <View className="flex-row items-center">
+                            <Ionicons name="location-outline" size={20} color="#6b7280" />
+                            <Text className="text-sm text-gray-600 ml-2">면접 장소</Text>
                         </View>
+                        <Text className="text-base mt-1">{proposalLocation}</Text>
                     </View>
-                </View>
+                )}
 
-                {/* 시간 선택 */}
-                <View className="px-4">
-                    <Text className="text-lg font-semibold mb-3">
-                        면접 가능 시간을 선택해주세요
-                    </Text>
+                {/* 시간대 선택 */}
+                <View className="bg-white p-4">
+                    <Text className="text-base font-semibold mb-4">면접 가능 시간대를 선택해주세요</Text>
 
-                    {timeSlots.length === 0 ? (
-                        <Text className="text-gray-500 text-center py-8">
-                            선택 가능한 시간이 없습니다.
-                        </Text>
+                    {Object.keys(groupedSlots).length === 0 ? (
+                        <View className="py-8 items-center">
+                            <Text className="text-gray-500">선택 가능한 시간대가 없습니다.</Text>
+                        </View>
                     ) : (
-                        timeSlots.map((slot) => (
-                            <TouchableOpacity
-                                key={slot.id}
-                                onPress={() => handleTimeSelect(slot)}
-                                className="bg-white border border-gray-200 p-4 rounded-lg mb-3"
-                            >
-                                <View className="flex-row items-center justify-between">
-                                    <View>
-                                        <Text className="font-semibold text-lg">
-                                            {new Date(slot.interview_date).toLocaleDateString('ko-KR', {
-                                                month: 'long',
-                                                day: 'numeric',
-                                                weekday: 'short'
-                                            })}
-                                        </Text>
-                                        <Text className="text-blue-600 mt-1">
-                                            {slot.start_time} - {slot.end_time}
-                                        </Text>
-                                    </View>
-                                    <Ionicons name="chevron-forward" size={24} color="#6b7280" />
+                        Object.entries(groupedSlots).map(([dateKey, slots]) => {
+                            const { date } = formatDateTime(slots[0].start_time)
+
+                            return (
+                                <View key={dateKey} className="mb-6">
+                                    <Text className="text-sm font-semibold text-gray-700 mb-3">
+                                        {date}
+                                    </Text>
+
+                                    {slots.map((slot) => {
+                                        const startTime = formatDateTime(slot.start_time).time
+                                        const endTime = formatDateTime(slot.end_time).time
+                                        const isSelected = selectedSlotId === slot.id
+
+                                        return (
+                                            <TouchableOpacity
+                                                key={slot.id}
+                                                onPress={() => handleSelectSlot(slot.id)}
+                                                className={`mb-3 p-4 rounded-lg border ${
+                                                    isSelected
+                                                        ? 'border-blue-500 bg-blue-50'
+                                                        : 'border-gray-300 bg-white'
+                                                }`}
+                                            >
+                                                <View className="flex-row justify-between items-center">
+                                                    <View className="flex-1">
+                                                        <Text className={`text-base font-medium ${
+                                                            isSelected ? 'text-blue-700' : 'text-gray-800'
+                                                        }`}>
+                                                            {startTime} - {endTime}
+                                                        </Text>
+
+                                                        {/* 면접 유형 */}
+                                                        <View className="flex-row items-center mt-2">
+                                                            <Ionicons
+                                                                name={
+                                                                    slot.interview_type === '화상'
+                                                                        ? 'videocam-outline'
+                                                                        : slot.interview_type === '전화'
+                                                                            ? 'call-outline'
+                                                                            : 'people-outline'
+                                                                }
+                                                                size={16}
+                                                                color="#6b7280"
+                                                            />
+                                                            <Text className="text-sm text-gray-600 ml-1">
+                                                                {slot.interview_type} 면접
+                                                            </Text>
+                                                        </View>
+
+                                                        {/* 개별 장소 (slots의 location) */}
+                                                        {slot.location && (
+                                                            <View className="flex-row items-center mt-1">
+                                                                <Ionicons
+                                                                    name="location-outline"
+                                                                    size={16}
+                                                                    color="#6b7280"
+                                                                />
+                                                                <Text className="text-sm text-gray-600 ml-1">
+                                                                    {slot.location}
+                                                                </Text>
+                                                            </View>
+                                                        )}
+                                                    </View>
+
+                                                    <View className={`w-6 h-6 rounded-full border-2 ${
+                                                        isSelected
+                                                            ? 'border-blue-500 bg-blue-500'
+                                                            : 'border-gray-300'
+                                                    }`}>
+                                                        {isSelected && (
+                                                            <Ionicons
+                                                                name="checkmark"
+                                                                size={16}
+                                                                color="white"
+                                                                style={{ marginLeft: 2, marginTop: 2 }}
+                                                            />
+                                                        )}
+                                                    </View>
+                                                </View>
+                                            </TouchableOpacity>
+                                        )
+                                    })}
                                 </View>
-                            </TouchableOpacity>
-                        ))
+                            )
+                        })
                     )}
                 </View>
             </ScrollView>
+
+            {/* 하단 버튼 */}
+            <View className="bg-white border-t border-gray-200 p-4">
+                <TouchableOpacity
+                    onPress={handleSubmit}
+                    disabled={!selectedSlotId || submitting}
+                    className={`py-4 rounded-lg ${
+                        !selectedSlotId || submitting
+                            ? 'bg-gray-300'
+                            : 'bg-blue-500'
+                    }`}
+                >
+                    <Text className="text-center text-white font-semibold">
+                        {submitting ? '처리중...' : '면접 일정 확정하기'}
+                    </Text>
+                </TouchableOpacity>
+            </View>
 
             <ModalComponent />
         </SafeAreaView>

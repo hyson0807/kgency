@@ -18,22 +18,30 @@ interface ApiResponse<T = any> {
 export const api = async <T = any>(
     method: Method,
     endpoint: string,
-    data: any = null  // any 타입으로 변경
+    data: any = null
 ): Promise<T> => {
     try {
         const token = await AsyncStorage.getItem('authToken');
 
         console.log('API 요청:', `${SERVER_URL}${endpoint}`);
 
-        const response = await axios({
+        const config: any = {
             method,
             url: `${SERVER_URL}${endpoint}`,
-            data,
             headers: {
                 'Authorization': token ? `Bearer ${token}` : '',
                 'Content-Type': 'application/json'
             }
-        });
+        };
+
+        // ✅ GET일 경우엔 data → params로 전달
+        if (method === 'GET' && data) {
+            config.params = data;
+        } else if (data) {
+            config.data = data;
+        }
+
+        const response = await axios(config);
 
         return response.data;
     } catch (error: any) {

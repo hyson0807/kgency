@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
-import { supabase } from '@/lib/supabase'
+import { api } from '@/lib/api'
+import {InterviewDetailModal} from "@/components/submitted-applications/InterviewDetailModal";
 
 interface Application {
     id: string
@@ -25,57 +26,56 @@ interface Application {
     }
 }
 
+interface InterviewProposal {
+    id: string
+    application_id: string
+    company_id: string
+    location: string
+    status: string
+    created_at: string
+    profiles?: {
+        id: string
+        name: string
+    }
+}
+
 interface ApplicationItemProps {
     item: Application;
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
 }
 
 export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
-    const [hasInterviewSchedule, setHasInterviewSchedule] = useState(false)
-    const [hasConfirmedInterview, setHasConfirmedInterview] = useState(false)
+    const [interviewProposal, setInterviewProposal] = useState<InterviewProposal | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [showDetailModal, setShowDetailModal] = useState(false) // 추가
+    const [interviewDetails, setInterviewDetails] = useState<any>(null) // 추가
 
     useEffect(() => {
         checkInterviewStatus()
     }, [item.id])
 
+
+
     const checkInterviewStatus = async () => {
-        // 면접 일정이 제안되었는지 확인
-        const { data: scheduleData } = await supabase
-            .from('interview_schedules')
-            .select('id')
-            .eq('application_id', item.id)
-            .single()
+        try {
+            setLoading(true)
 
-        if (scheduleData) {
-            setHasInterviewSchedule(true)
+            // 백엔드 API 호출
+            const response = await api('GET', '/api/interview-proposals/user/' + item.id)
 
-            // 면접이 확정되었는지 확인
-            const { data: confirmedData } = await supabase
-                .from('confirmed_interviews')
-                .select('id')
-                .eq('application_id', item.id)
-                .single()
+            console.log(response.data.proposal.status)
 
-            if (confirmedData) {
-                setHasConfirmedInterview(true)
+            // pending 또는 scheduled 상태 모두 저장하도록 수정
+            if (response?.success && response.data?.proposal &&
+                (response.data.proposal.status === 'pending' || response.data.proposal.status === 'scheduled')) {
+                setInterviewProposal(response.data.proposal)
             }
-        }
-    }
-
-    const getStatusInfo = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return { text: t('applications.status_pending', '검토중'), color: 'text-orange-600', bgColor: 'bg-orange-100' }
-            case 'reviewed':
-                return { text: t('applications.status_reviewed', '검토완료'), color: 'text-blue-600', bgColor: 'bg-blue-100' }
-            case 'accepted':
-                return { text: t('applications.status_accepted', '합격'), color: 'text-green-600', bgColor: 'bg-green-100' }
-            case 'rejected':
-                return { text: t('applications.status_rejected', '불합격'), color: 'text-red-600', bgColor: 'bg-red-100' }
-            case 'interview_scheduled':
-                return { text: t('applications.status_interview', '면접예정'), color: 'text-purple-600', bgColor: 'bg-purple-100' }
-            default:
-                return { text: status, color: 'text-gray-600', bgColor: 'bg-gray-100' }
+        } catch (error) {
+            // 404 에러는 정상적인 케이스 (제안이 없는 경우)
+            console.log('No interview proposal found for application:', item.id)
+            setInterviewProposal(null)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -124,10 +124,42 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
         }
     }
 
-    const statusInfo = getStatusInfo(item.status)
-    const isPostingActive = item.job_posting?.is_active
+    const handleInterviewSelection = () => {
+        if (!interviewProposal) return;
+
+        router.push({
+            pathname: '/(pages)/(user)/interview-selection',
+            params: {
+                applicationId: item.id,
+                companyId: interviewProposal.company_id,
+                proposalId: interviewProposal.id,
+                companyName: item.job_posting.company.name,
+                jobTitle: item.job_posting.title,
+                proposalLocation: interviewProposal.location
+            }
+        })
+    }
+
+    const fetchInterviewDetails = async () => {
+        try {
+            // 면접 예약 정보 조회 API 호출
+            const response = await api('GET', `/api/interview-schedules/by-proposal/${interviewProposal?.id}`)
+
+            if (response?.success && response.data) {
+                setInterviewDetails(response.data)
+                setShowDetailModal(true)
+            }
+        } catch (error) {
+            console.error('Failed to fetch interview details:', error)
+        }
+    }
+
+    const handleShowInterviewDetails = () => {
+        fetchInterviewDetails()
+    }
 
     return (
+        <>
         <TouchableOpacity
             onPress={() => handleViewPosting(item)}
             className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
@@ -143,11 +175,6 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                         {item.job_posting.title}
                     </Text>
                 </View>
-                <View className={`px-3 py-1 rounded-full ${statusInfo.bgColor}`}>
-                    <Text className={`text-xs font-medium ${statusInfo.color}`}>
-                        {statusInfo.text}
-                    </Text>
-                </View>
             </View>
 
             {/* 지원 정보 */}
@@ -155,12 +182,6 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                 <Text className="text-sm text-gray-500">
                     {t('applications.applied_date', '지원일')}: {formatDate(item.applied_at)}
                 </Text>
-
-                {!isPostingActive && (
-                    <View className="bg-gray-100 px-2 py-1 rounded">
-                        <Text className="text-xs text-gray-600">{t('applications.closed', '모집마감')}</Text>
-                    </View>
-                )}
             </View>
 
             {/* 이력서 보기 버튼 */}
@@ -170,56 +191,64 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                         e.stopPropagation()
                         handleViewResume(item)
                     }}
-                    className="mt-3 flex-row items-center justify-center"
+                    className="mt-2 flex-row items-center justify-center bg-gray-50 py-2 rounded-lg"
                 >
-                    <Ionicons name="document-text-outline" size={16} color="#3b82f6" />
-                    <Text className="text-blue-600 text-sm font-medium ml-1">
+                    <Ionicons name="document-text-outline" size={16} color="black" />
+                    <Text className="text-sm font-medium ml-1">
                         {t('applications.view_resume', '제출한 이력서 보기')}
                     </Text>
                 </TouchableOpacity>
             )}
 
-            {/* 면접 확정 상태 */}
-            {item.status === 'interview_scheduled' && (
-                <View className="bg-green-50 border border-green-200 p-3 rounded-lg mt-3">
-                    <Text className="text-green-700 font-semibold">
-                        ✅ 면접이 확정되었습니다
-                    </Text>
-                    <TouchableOpacity
-                        onPress={(e) => {
-                            e.stopPropagation()
-                            router.push({
-                                pathname: '/(pages)/(user)/interview-details',
-                                params: { applicationId: item.id }
-                            })
-                        }}
-                        className="mt-2"
-                    >
-                        <Text className="text-green-600 underline">면접 정보 확인하기</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {/* 면접 일정 선택 대기 중 */}
-            {hasInterviewSchedule && !hasConfirmedInterview && item.status !== 'interview_scheduled' && (
+            {/* 면접 시간 선택 버튼 - proposal이 존재하고 pending 상태일 때만 표시 */}
+            {!loading && interviewProposal && interviewProposal.status === 'pending' && (
                 <TouchableOpacity
                     onPress={(e) => {
                         e.stopPropagation()
-                        router.push({
-                            pathname: '/(pages)/(user)/interview-selection',
-                            params: { applicationId: item.id }
-                        })
+                        handleInterviewSelection()
                     }}
-                    className="bg-blue-50 border border-blue-200 p-3 rounded-lg mt-3"
+                    className="mt-2 flex-row items-center justify-center bg-green-50 py-2 rounded-lg"
                 >
-                    <Text className="text-blue-700 font-semibold">
-                        📅 면접 시간을 선택해주세요
-                    </Text>
-                    <Text className="text-blue-600 text-sm mt-1">
-                        회사에서 면접 가능 시간을 제안했습니다
+                    <Ionicons name="calendar-outline" size={16} color="#10b981" />
+                    <Text className="text-green-600 text-sm font-medium ml-1">
+                        {t('applications.select_interview_time', '면접 시간 선택하기')}
                     </Text>
                 </TouchableOpacity>
             )}
+
+            {/* 면접 확정 표시 - proposal이 존재하고 scheduled 상태일 때 표시 */}
+            {!loading && interviewProposal && interviewProposal.status === 'scheduled' && (
+                <TouchableOpacity
+                    onPress={(e) => {
+                        e.stopPropagation()
+                        handleShowInterviewDetails()
+                    }}
+                    className="mt-2 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
+                >
+                    <Ionicons name="checkmark-circle" size={16} color="#3b82f6" />
+                    <Text className="text-blue-600 text-sm font-medium ml-1">
+                        {t('applications.interview_confirmed', '면접 확정')}
+                    </Text>
+                </TouchableOpacity>
+            )}
+
+
         </TouchableOpacity>
+            {/* 면접 상세 모달 */}
+            <InterviewDetailModal
+                visible={showDetailModal}
+                onClose={() => setShowDetailModal(false)}
+                details={interviewDetails ? {
+                    companyName: item.job_posting.company.name,
+                    jobTitle: item.job_posting.title,
+                    location: interviewDetails.location || interviewProposal?.location,
+                    dateTime: interviewDetails.interview_slot?.start_time,
+                    interviewType: interviewDetails.interview_slot?.interview_type
+                } : null}
+                t={t}
+            />
+            </>
+
+
     )
 }

@@ -193,7 +193,7 @@ export const ApplicantCard = ({ item, postingId }: ApplicantCardProps) => {
                     className="flex-1 bg-blue-500 py-3 rounded-lg flex-row items-center justify-center"
                 >
                     <AntDesign name="calendar" size={18} color="white" />
-                    <Text className="text-white font-medium ml-2">면접 확정하기</Text>
+                    <Text className="text-white font-medium ml-2">면접 제안하기</Text>
                 </TouchableOpacity>
             </View>
         </View>
