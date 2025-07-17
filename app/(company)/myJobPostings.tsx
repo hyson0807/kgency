@@ -1,5 +1,6 @@
-import { View, Text, FlatList, RefreshControl } from 'react-native'
+import { View, Text, FlatList, RefreshControl, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
+import { router } from 'expo-router'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from '@/lib/supabase'
@@ -8,6 +9,7 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import {PostingCard} from "@/components/myJobPostings(company)/PostingCard";
 import {FloatingButton} from "@/components/myJobPostings(company)/FloatingButton";
 import {Empty} from "@/components/myJobPostings(company)/Empty";
+import {Ionicons} from "@expo/vector-icons";
 
 interface MyJobPostings {
     id: string
@@ -216,10 +218,21 @@ const JobPosting = () => {
         <SafeAreaView className="flex-1 bg-gray-50">
             {/* 헤더 */}
             <View className="bg-white px-4 py-3 border-b border-gray-200">
-                <Text className="text-2xl font-bold">내 채용공고</Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                    총 {postings.length}개의 공고
-                </Text>
+                <View className="flex-row items-center justify-between">
+                    <View>
+                        <Text className="text-2xl font-bold">내 채용공고</Text>
+                        <Text className="text-sm text-gray-600 mt-1">
+                            총 {postings.length}개의 공고
+                        </Text>
+                    </View>
+                    <TouchableOpacity
+                        onPress={() => router.push('/(pages)/(company)/interview-calendar')}
+                        className="bg-blue-500 px-4 py-2 rounded-lg flex-row items-center"
+                    >
+                        <Ionicons name="calendar" size={20} color="white" />
+                        <Text className="text-white font-medium ml-2">면접 일정</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
             {/* 공고 목록 */}

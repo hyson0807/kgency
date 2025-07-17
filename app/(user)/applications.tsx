@@ -1,6 +1,7 @@
-import { View, Text, FlatList, RefreshControl } from 'react-native'
-import React, { useState } from 'react'
+import {View, Text, FlatList, RefreshControl, TouchableOpacity} from 'react-native'
+import React, {useCallback, useState} from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
+import { useFocusEffect } from '@react-navigation/native'
 import { useAuth } from "@/contexts/AuthContext"
 import { useTranslation } from "@/contexts/TranslationContext";
 import {Tap} from "@/components/submitted-applications/Tap";
@@ -8,6 +9,8 @@ import {Empty} from "@/components/submitted-applications/Empty";
 import {ApplicationItem} from "@/components/submitted-applications/ApplicationItem";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import {useApplications} from "@/hooks/useApplications";
+import {router} from "expo-router";
+import {Ionicons} from "@expo/vector-icons";
 
 
 
@@ -15,7 +18,7 @@ const Applications = () => {
     const { user } = useAuth()
     const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'reviewed'>('all')
     const { t } = useTranslation()
-
+    const [refreshKey, setRefreshKey] = useState(0)
 
     //fetching applications
     const {
@@ -25,6 +28,14 @@ const Applications = () => {
         onRefresh
     } = useApplications({ user, activeFilter })
 
+    // 화면에 포커스될 때마다 실행
+    useFocusEffect(
+        useCallback(() => {
+            // ApplicationItem 컴포넌트들을 강제로 리렌더링
+            setRefreshKey(prev => prev + 1)
+        }, [])
+    )
+
     if (loading) return <LoadingScreen />
 
     return (
@@ -32,10 +43,21 @@ const Applications = () => {
             {/* 헤더 */}
             <View className="bg-white border-b border-gray-200">
                 <View className="p-4">
-                    <Text className="text-2xl font-bold">{t('applications.title', '지원 내역')}</Text>
-                    <Text className="text-sm text-gray-600 mt-1">
-                        {t('applications.total_applications', `총 ${applications.length}개의 지원`, { count: applications.length })}
-                    </Text>
+                    <View className="flex-row items-center justify-between">
+                        <View>
+                            <Text className="text-2xl font-bold">{t('applications.title', '지원 내역')}</Text>
+                            <Text className="text-sm text-gray-600 mt-1">
+                                {t('applications.total_applications', `총 ${applications.length}개의 지원`, { count: applications.length })}
+                            </Text>
+                        </View>
+                        <TouchableOpacity
+                            onPress={() => router.push('/(pages)/(user)/interview-calendar-user')}
+                            className="bg-blue-500 px-3 py-2 rounded-lg flex-row items-center"
+                        >
+                            <Ionicons name="calendar" size={18} color="white" />
+                            <Text className="text-white text-sm font-medium ml-1">면접 일정</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 {/* 필터 탭 */}
                 <Tap setActiveFilter={setActiveFilter} activeFilter={activeFilter} t={t} />
@@ -46,7 +68,7 @@ const Applications = () => {
             <FlatList
                 data={applications}
                 keyExtractor={(item) => item.id}
-                renderItem={({item}) => <ApplicationItem item={item} t={t} /> }
+                renderItem={({item}) => <ApplicationItem key={`${item.id}-${refreshKey}`} item={item} t={t} /> }
                 contentContainerStyle={applications.length === 0 ? { flex: 1 } : { paddingVertical: 8 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={

@@ -3,8 +3,7 @@ import {Tabs} from "expo-router";
 import { Ionicons } from "@expo/vector-icons"
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import Feather from '@expo/vector-icons/Feather';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+
 
 const company_Layout = () => {
     return (
@@ -39,22 +38,14 @@ const company_Layout = () => {
             />
 
             <Tabs.Screen
-                name="interview-calendar"
+                name="interviewSlots"
                 options={{
-                    tabBarLabel: '면접일정',
-
-                    tabBarIcon: ({size, color}) => <FontAwesome name="calendar-check-o" size={size} color={color} />
+                    tabBarLabel: '면접시간대',
+                    tabBarIcon: ({size, color}) => <MaterialIcons name="schedule" size={size} color={color} />
                 }}
             />
 
-            <Tabs.Screen
-                name="inbox"
-                options={{
-                    tabBarLabel: '메시지',
 
-                    tabBarIcon: ({size, color}) => <Feather name="mail" size={size} color={color} />
-                }}
-            />
             <Tabs.Screen
                 name="settings2"
                 options={{
@@ -63,13 +54,7 @@ const company_Layout = () => {
                 }}
             />
 
-            <Tabs.Screen
-                name="interviewSlots"
-                options={{
-                    tabBarLabel: '면접시간대',
-                    tabBarIcon: ({size, color}) => <MaterialIcons name="settings" size={size} color={color} />
-                }}
-            />
+
         </Tabs>
     )
 }
