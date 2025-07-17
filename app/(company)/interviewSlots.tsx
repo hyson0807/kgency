@@ -11,7 +11,6 @@ interface TimeSlot {
     date: string
     startTime: string
     endTime: string
-    location: string
     interviewType: '대면' | '화상' | '전화'
 }
 
@@ -21,7 +20,6 @@ export default function SetInterviewSlots() {
 
     const [selectedDate, setSelectedDate] = useState('')
     const [selectedTimes, setSelectedTimes] = useState<string[]>([])
-    const [location, setLocation] = useState('')
     const [interviewType, setInterviewType] = useState<'대면' | '화상' | '전화'>('대면')
     const [loading, setLoading] = useState(false)
 
@@ -41,17 +39,24 @@ export default function SetInterviewSlots() {
 
     const handleDateSelect = (day: any) => {
         setSelectedDate(day.dateString)
+
         // 해당 날짜에 이미 설정된 시간들이 있으면 불러오기
         const existingSlots = dateTimeMap[day.dateString] || []
-        setSelectedTimes(existingSlots.map(slot => slot.startTime))
 
-        // 기존 슬롯이 있으면 location과 interviewType도 설정
+        // 예약된 시간 확인
+        const bookedTimesForDate = bookedSlots[day.dateString] || []
+
+        // 모든 기존 시간을 선택 (예약된 시간 포함)
+        const allExistingTimes = existingSlots.map(slot => slot.startTime)
+
+        // 예약된 시간이 없으면 기존처럼, 있으면 예약된 시간도 포함
+        setSelectedTimes(allExistingTimes)
+
+        // 기존 슬롯이 있으면 interviewType 설정
         if (existingSlots.length > 0) {
-            setLocation(existingSlots[0].location || '')
             setInterviewType(existingSlots[0].interviewType || '대면')
         } else {
             // 새로운 날짜 선택 시 초기화
-            setLocation('')
             setInterviewType('대면')
         }
     }
@@ -76,28 +81,41 @@ export default function SetInterviewSlots() {
             return
         }
 
-        // 예약된 시간은 유지하고 나머지만 업데이트
-        const existingBookedSlots = dateTimeMap[selectedDate]?.filter(slot =>
-            bookedSlots[selectedDate]?.includes(slot.startTime)
-        ) || []
+        // 예약된 시간 확인
+        const bookedTimesForDate = bookedSlots[selectedDate] || []
 
-        if (selectedTimes.length === 0 && existingBookedSlots.length > 0) {
-            showModal('알림', '예약된 시간대가 있어 모든 시간을 삭제할 수 없습니다.')
-            return
-        }
+        // 선택된 시간 중에 예약된 시간이 있는지 확인
+        const hasBookedTimeInSelection = selectedTimes.some(time =>
+            bookedTimesForDate.includes(time)
+        )
 
+        // 예약된 시간은 무조건 포함되어야 함
+        const mustIncludeBookedTimes = [...bookedTimesForDate]
 
-        // 시간이 선택되지 않은 경우 삭제 확인
-        if (selectedTimes.length === 0) {
+        // 새로 선택된 시간 (예약되지 않은 시간만)
+        const newlySelectedTimes = selectedTimes.filter(time =>
+            !bookedTimesForDate.includes(time)
+        )
+
+        // 최종 시간 목록 = 예약된 시간 + 새로 선택된 시간
+        const finalTimes = [...new Set([...mustIncludeBookedTimes, ...newlySelectedTimes])]
+
+        // 시간이 하나도 없는 경우 (예약된 시간도 없고 선택된 시간도 없음)
+        if (finalTimes.length === 0) {
             // 기존에 해당 날짜에 시간이 있었는지 확인
             if (dateTimeMap[selectedDate] && dateTimeMap[selectedDate].length > 0) {
-                // 삭제 확인 모달
+                // 예약된 시간이 있으면 삭제 불가
+                if (bookedTimesForDate.length > 0) {
+                    showModal('알림', '예약된 시간대가 있어 모든 시간을 삭제할 수 없습니다.')
+                    return
+                }
+
+                // 예약된 시간이 없으면 삭제 확인
                 showModal(
                     '확인',
                     `${selectedDate}의 모든 면접 시간대를 삭제하시겠습니까?`,
                     'confirm',
                     async () => {
-                        // 삭제 처리
                         const response = await api('POST', '/api/company/interview-slots', {
                             companyId: user?.userId,
                             date: selectedDate,
@@ -105,7 +123,6 @@ export default function SetInterviewSlots() {
                         })
 
                         if (response?.success) {
-                            // 로컬 상태에서도 삭제
                             setDateTimeMap(prev => {
                                 const newMap = { ...prev }
                                 delete newMap[selectedDate]
@@ -123,31 +140,37 @@ export default function SetInterviewSlots() {
         }
 
         // 선택된 시간들을 TimeSlot 형식으로 변환
-        const slots: TimeSlot[] = selectedTimes.map(time => {
+        const slots = finalTimes.map(time => {
             const [hour, minute] = time.split(':')
             const endHour = minute === '30' ? parseInt(hour) + 1 : parseInt(hour)
             const endMinute = minute === '30' ? '00' : '30'
 
+            // 기존 슬롯 정보가 있으면 사용, 없으면 새로 생성
+            const existingSlot = dateTimeMap[selectedDate]?.find(s => s.startTime === time)
+
             return {
                 date: selectedDate,
                 startTime: time,
-                endTime: `${endHour.toString().padStart(2, '0')}:${endMinute}`,
-                location: location,
-                interviewType: interviewType
+                endTime: existingSlot?.endTime || `${endHour.toString().padStart(2, '0')}:${endMinute}`,
+                interviewType: existingSlot?.interviewType || interviewType
             }
         })
 
         const response = await api('POST', '/api/company/interview-slots', {
             companyId: user?.userId,
+            date: selectedDate,
             slots: slots
         })
 
         if (response?.success) {
-            // 날짜별로 저장
+            // 예약된 시간을 포함한 전체 시간으로 업데이트
             setDateTimeMap(prev => ({
                 ...prev,
                 [selectedDate]: slots
             }))
+
+            // 선택된 시간도 예약된 시간을 포함하도록 업데이트
+            setSelectedTimes(finalTimes)
 
             showModal('성공', `${selectedDate}의 면접 시간대가 저장되었습니다.`, 'info')
         }
@@ -191,7 +214,6 @@ export default function SetInterviewSlots() {
                     date: date,
                     startTime: startTime,
                     endTime: endTime,
-                    location: slot.location,
                     interviewType: slot.interview_type
                 }
 
