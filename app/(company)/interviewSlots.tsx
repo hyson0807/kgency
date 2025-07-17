@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react'
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Calendar } from 'react-native-calendars'
 import { useModal } from '@/hooks/useModal'
 import Back from '@/components/back'
 import { useAuth } from '@/contexts/AuthContext'
 import {api} from "@/lib/api";
+import { Ionicons } from '@expo/vector-icons'
 
 interface TimeSlot {
     date: string
@@ -22,6 +23,7 @@ export default function SetInterviewSlots() {
     const [selectedTimes, setSelectedTimes] = useState<string[]>([])
     const [interviewType, setInterviewType] = useState<'대면' | '화상' | '전화'>('대면')
     const [loading, setLoading] = useState(false)
+    const [refreshing, setRefreshing] = useState(false)
 
     // 날짜별로 선택된 시간들을 저장
     const [dateTimeMap, setDateTimeMap] = useState<Record<string, TimeSlot[]>>({})
@@ -123,11 +125,8 @@ export default function SetInterviewSlots() {
                         })
 
                         if (response?.success) {
-                            setDateTimeMap(prev => {
-                                const newMap = { ...prev }
-                                delete newMap[selectedDate]
-                                return newMap
-                            })
+                            // 서버에서 최신 데이터를 다시 가져옴
+                            await fetchSlot()
                             showModal('성공', `${selectedDate}의 면접 시간대가 삭제되었습니다.`, 'info')
                         }
                     }
@@ -163,20 +162,12 @@ export default function SetInterviewSlots() {
         })
 
         if (response?.success) {
-            // 예약된 시간을 포함한 전체 시간으로 업데이트
-            setDateTimeMap(prev => ({
-                ...prev,
-                [selectedDate]: slots
-            }))
-
-            // 선택된 시간도 예약된 시간을 포함하도록 업데이트
-            setSelectedTimes(finalTimes)
+            // 서버에서 최신 데이터를 다시 가져옴
+            await fetchSlot()
 
             showModal('성공', `${selectedDate}의 면접 시간대가 저장되었습니다.`, 'info')
         }
     }
-
-
 
     // 설정된 날짜들 표시를 위한 markedDates 생성
     const markedDates = {
@@ -232,20 +223,46 @@ export default function SetInterviewSlots() {
 
             setDateTimeMap(groupedSlots)
             setBookedSlots(bookedSlotsMap)
+
+            // 현재 선택된 날짜가 있다면 해당 날짜의 시간들을 다시 설정
+            if (selectedDate && groupedSlots[selectedDate]) {
+                const updatedTimes = groupedSlots[selectedDate].map(slot => slot.startTime)
+                setSelectedTimes(updatedTimes)
+            }
         }
+    }
+
+    // 새로고침 함수
+    const handleRefresh = async () => {
+        setRefreshing(true)
+        await fetchSlot()
+        setRefreshing(false)
+        showModal('알림', '면접 시간대가 업데이트되었습니다.', 'info')
     }
 
     return (
         <SafeAreaView className="flex-1 bg-white">
-            <View className="flex-row items-center p-4 border-b border-gray-200">
-                <Back />
-                <Text className="text-lg font-bold ml-4">면접 가능 시간대 설정</Text>
+            <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
+                <View className="flex-row items-center">
+                    <Back />
+                    <Text className="text-lg font-bold ml-4">면접 가능 시간대 설정</Text>
+                </View>
+
+                {/* 새로고침 버튼 */}
+                <TouchableOpacity
+                    onPress={handleRefresh}
+                    disabled={refreshing}
+                    className="p-2"
+                >
+                    {refreshing ? (
+                        <ActivityIndicator size="small" color="#3b82f6" />
+                    ) : (
+                        <Ionicons name="refresh" size={24} color="#3b82f6" />
+                    )}
+                </TouchableOpacity>
             </View>
 
             <ScrollView className="flex-1">
-
-
-
                 {/* 캘린더 */}
                 <View className="px-4 mt-4">
                     <Text className="text-base font-semibold mb-2">날짜 선택</Text>
@@ -256,8 +273,6 @@ export default function SetInterviewSlots() {
                         markedDates={markedDates}
                     />
                 </View>
-
-
 
                 {/* 시간 선택 */}
                 {selectedDate && (
@@ -323,14 +338,9 @@ export default function SetInterviewSlots() {
                         </TouchableOpacity>
                     </View>
                 )}
-
-
-
             </ScrollView>
 
             <ModalComponent />
         </SafeAreaView>
     )
 }
-
-
