@@ -1,6 +1,6 @@
 // app/(pages)/(user)/posting-detail.tsx
-import {View, Text, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native'
-import React, { useEffect, useState } from 'react'
+import {View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Animated} from 'react-native'
+import React, { useEffect, useState, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -19,7 +19,7 @@ import {api} from "@/lib/api";
 export default function PostingDetail() {
 
     const params = useLocalSearchParams()
-    const { postingId, companyId, companyName } = params
+    const { postingId, companyId, companyName, suitability } = params
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings()
     const { user } = useAuth()
 
@@ -28,6 +28,10 @@ export default function PostingDetail() {
     const [hasApplied, setHasApplied] = useState(false)
     const { t, translateDB, language } = useTranslation()
     const { showModal, ModalComponent } = useModal()
+
+    // 애니메이션을 위한 ref
+    const scaleAnim = useRef(new Animated.Value(1)).current
+    const glowAnim = useRef(new Animated.Value(0)).current
 
     const dayTranslations: { [key: string]: { [lang: string]: string } } = {
         '월': {
@@ -70,6 +74,43 @@ export default function PostingDetail() {
         setTranslatedData(null)
         setIsTranslated(false)
     }, [language])
+
+    useEffect(() => {
+        // 면접 즉시 확정 버튼 애니메이션
+        if (suitability === 'perfect' && !hasApplied) {
+            // 펄스 애니메이션
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(scaleAnim, {
+                        toValue: 1.05,
+                        duration: 1000,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(scaleAnim, {
+                        toValue: 1,
+                        duration: 1000,
+                        useNativeDriver: true,
+                    }),
+                ]),
+            ).start()
+
+            // 글로우 애니메이션
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(glowAnim, {
+                        toValue: 1,
+                        duration: 1500,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(glowAnim, {
+                        toValue: 0,
+                        duration: 1500,
+                        useNativeDriver: true,
+                    }),
+                ]),
+            ).start()
+        }
+    }, [suitability, hasApplied])
 
     const loadPostingDetail = async () => {
         if (!postingId) return
@@ -116,6 +157,30 @@ export default function PostingDetail() {
                 jobTitle: posting?.title
             }
         })
+    }
+
+    const handleInstantInterview = () => {
+        showModal(
+            '면접 즉시 확정',
+            '완벽한 매칭입니다! 면접 일정을 즉시 확정하시겠습니까?',
+            'confirm', // type
+            () => {
+                // onConfirm 콜백
+                router.push({
+                    pathname: '/(pages)/(user)/application-form',
+                    params: {
+                        jobPostingId: postingId,
+                        companyId: posting?.company.id || companyId,
+                        companyName: posting?.company.name || companyName,
+                        jobTitle: posting?.title,
+                        instantInterview: 'true'
+                    }
+                })
+            },
+            true, // showCancel
+            '확정', // confirmText
+            '취소' // cancelText
+        )
     }
 
     const handleTranslate = async () => {
@@ -233,19 +298,62 @@ export default function PostingDetail() {
             {/* 하단 지원 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-8 pt-2" >
                 {hasApplied ? (
-                    <View className="bg-gray-300 py-4 rounded-xl items-center">
+                    <View className="bg-gray-300 py-4 rounded-xl items-center mx-4 my-2">
                         <View className="flex-row items-center">
                             <Ionicons name="checkmark-circle" size={20} color="#4b5563" />
                             <Text className="text-gray-700 font-bold text-lg ml-2">{t('posting_detail.already_applied', '이미 지원한 공고')}</Text>
                         </View>
                     </View>
                 ) : (
-                    <TouchableOpacity
-                        className="bg-blue-500 py-4 rounded-xl items-center mx-4 my-2"
-                        onPress={handleApply}
-                    >
-                        <Text className="text-white text-lg font-bold">{t('posting_detail.apply', '지원하기')}</Text>
-                    </TouchableOpacity>
+                    <>
+                        {/* 면접 즉시 확정 버튼 - suitability가 perfect일 때만 표시 */}
+                        {suitability === 'perfect' && (
+                            <Animated.View
+                                style={{
+                                    transform: [{ scale: scaleAnim }],
+                                    opacity: glowAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [0.8, 1]
+                                    })
+                                }}
+                                className="mx-4 mb-3"
+                            >
+                                <TouchableOpacity
+                                    className="bg-gradient-to-r from-purple-600 to-pink-600 py-4 rounded-xl items-center shadow-lg"
+                                    style={{
+                                        backgroundColor: '#8b5cf6',
+                                        shadowColor: '#8b5cf6',
+                                        shadowOffset: { width: 0, height: 4 },
+                                        shadowOpacity: 0.3,
+                                        shadowRadius: 8,
+                                        elevation: 8,
+                                    }}
+                                    onPress={handleInstantInterview}
+                                    activeOpacity={0.8}
+                                >
+                                    <View className="flex-row items-center">
+                                        <Ionicons name="flash" size={24} color="white" />
+                                        <Text className="text-white text-lg font-bold ml-2">
+                                            {t('posting_detail.instant_interview', '면접 즉시 확정')}
+                                        </Text>
+                                        <View className="ml-2 bg-white/20 px-2 py-1 rounded-full">
+                                            <Text className="text-white text-xs font-semibold">
+                                                {t('posting_detail.perfect_match', '완벽 매칭')}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            </Animated.View>
+                        )}
+
+                        {/* 일반 지원하기 버튼 */}
+                        <TouchableOpacity
+                            className="bg-blue-500 py-4 rounded-xl items-center mx-4 my-2"
+                            onPress={handleApply}
+                        >
+                            <Text className="text-white text-lg font-bold">{t('posting_detail.apply', '지원하기')}</Text>
+                        </TouchableOpacity>
+                    </>
                 )}
             </View>
             <ModalComponent />

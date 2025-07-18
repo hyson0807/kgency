@@ -8,6 +8,7 @@ import { JobPostingCard } from "@/components/user_home/JobPostingCard"
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import {Header} from "@/components/common/Header";
 import LoadingScreen from "@/components/common/LoadingScreen";
+import { SuitabilityResult } from '@/lib/suitability';
 
 // 타입은 hooks/useMatchedJobPostings에서 import
 interface JobPosting {
@@ -35,6 +36,7 @@ interface JobPosting {
     }[]
 }
 
+// MatchedPosting 인터페이스에 suitability 추가
 interface MatchedPosting {
     posting: JobPosting
     matchedCount: number
@@ -48,10 +50,11 @@ interface MatchedPosting {
         age: string[]
         visa: string[]
     }
+    suitability: SuitabilityResult // 추가
 }
 
 const Home = () => {
-    const { t, translateDB } = useTranslation()
+    const { t } = useTranslation()
 
     // 커스텀 훅에서 모든 데이터와 함수 가져오기
     const {
@@ -62,31 +65,20 @@ const Home = () => {
         onRefresh
     } = useMatchedJobPostings()
 
-    const handlePostingPress = (posting: JobPosting) => {
-        router.push({
-            pathname: '/(pages)/(user)/posting-detail',
-            params: {
-                postingId: posting.id,
-                companyId: posting.company.id,
-                companyName: posting.company.name
-            }
-        })
-    }
+
 
     const renderPosting = ({ item }: { item: MatchedPosting }) => {
-        const { posting, matchedCount, matchedKeywords } = item
+        const { posting, matchedCount, matchedKeywords, suitability } = item
         const hasApplied = appliedPostings.includes(posting.id)
         const hasMatches = matchedCount > 0
 
         return (
             <JobPostingCard
-                handlePostingPress={handlePostingPress}
                 posting={posting}
                 hasApplied={hasApplied}
-                translateDB={translateDB}
                 hasMatches={hasMatches}
                 matchedKeywords={matchedKeywords}
-                t={t}
+                suitability={suitability} // 추가
             />
         )
     }

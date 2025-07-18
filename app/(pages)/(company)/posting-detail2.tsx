@@ -240,6 +240,7 @@ export default function CompanyPostingDetail() {
                             item={item}
                             postingId={postingId as string}
                             proposalStatus={proposalStatuses[item.id] || 'none'}
+                            onStatusChange={onRefresh} // 상태 변경 시 새로고침
                         />
                     )}
                     contentContainerStyle={

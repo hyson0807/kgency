@@ -1,8 +1,9 @@
 // hooks/useMatchedJobPostings.ts
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import {useTranslation} from "@/contexts/TranslationContext";
+import {api} from "@/lib/api";
+import { SuitabilityCalculator, SuitabilityResult } from '@/lib/suitability';
 
 interface JobPosting {
     id: string;
@@ -40,7 +41,7 @@ interface JobPosting {
 
 interface MatchedPosting {
     posting: JobPosting;
-    matchedCount: number;
+    matchedCount: number; // 기존 유지 (하위 호환성)
     matchedKeywords: {
         countries: string[];
         jobs: string[];
@@ -51,6 +52,7 @@ interface MatchedPosting {
         age: string[];
         visa: string[];
     };
+    suitability: SuitabilityResult; // 새로 추가
 }
 
 export const useMatchedJobPostings = () => {
@@ -62,6 +64,10 @@ export const useMatchedJobPostings = () => {
     const [userKeywordIds, setUserKeywordIds] = useState<number[]>([]);
     const { translateDB } = useTranslation();
     const [refreshing, setRefreshing] = useState(false);
+
+    // 적합도 계산기 인스턴스
+    const suitabilityCalculator = new SuitabilityCalculator();
+
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -76,15 +82,13 @@ export const useMatchedJobPostings = () => {
         if (!user) return;
 
         try {
-            const { data, error } = await supabase
-                .from('applications')
-                .select('job_posting_id')
-                .eq('user_id', user.userId);
+            const response = await api('GET', `/api/applications/user/${user.userId}`);
 
-            if (error) throw error;
-
-            if (data) {
-                const postingIds = data.map(app => app.job_posting_id).filter(Boolean);
+            if (response && response.data) {
+                // API 응답에서 job_posting_id만 추출
+                const postingIds = response.data
+                    .map((app: any) => app.job_posting_id)
+                    .filter(Boolean);
                 setAppliedPostings(postingIds);
             }
         } catch (error) {
@@ -97,15 +101,10 @@ export const useMatchedJobPostings = () => {
         if (!user) return;
 
         try {
-            const { data, error } = await supabase
-                .from('user_keyword')
-                .select('keyword_id')
-                .eq('user_id', user.userId);
+            const response = await api('GET', `/api/user-keyword/user/${user.userId}`);
 
-            if (error) throw error;
-
-            if (data) {
-                setUserKeywordIds(data.map(uk => uk.keyword_id));
+            if (response && response.data) {
+                setUserKeywordIds(response.data.map((uk: any) => uk.keyword_id));
             }
         } catch (error) {
             console.error('사용자 키워드 조회 실패:', error);
@@ -123,45 +122,21 @@ export const useMatchedJobPostings = () => {
         try {
             setError(null);
 
-            // 활성화된 모든 공고 가져오기 - job_address 포함
-            const { data: postings, error } = await supabase
-                .from('job_postings')
-                .select(`
-                    *,
-                    company:company_id (
-                        id,
-                        name,
-                        address,
-                        description,
-                        phone_number
-                    ),
-                    job_posting_keywords:job_posting_keyword (
-                        keyword:keyword_id (
-                            id,
-                            keyword,
-                            category
-                        )
-                    )
-                `)
-                .eq('is_active', true)
-                .order('created_at', { ascending: false });
+            const response = await api('GET', '/api/job-postings');
 
-            if (error) throw error;
+            if (response && response.data) {
+                const postings = response.data;
 
-            if (postings) {
-                // 매칭 점수 계산
-                const matched = postings.map(posting => {
-                    const postingKeywordIds = posting.job_posting_keywords?.map(
-                        (jpk: any) => jpk.keyword.id
-                    ) || [];
-
-                    // 매칭된 키워드 찾기
-                    const matchedKeywordIds = userKeywordIds.filter(ukId =>
-                        postingKeywordIds.includes(ukId)
+                // 적합도 계산 및 매칭 처리
+                const matched: MatchedPosting[] = postings.map((posting: JobPosting): MatchedPosting => {
+                    // 적합도 계산
+                    const suitability = suitabilityCalculator.calculate(
+                        userKeywordIds,
+                        posting.job_posting_keywords || []
                     );
 
-                    // 카테고리별로 분류
-                    const matchedKeywords = {
+                    // 번역된 키워드로 변환 (UI 표시용)
+                    const translatedMatchedKeywords = {
                         countries: [] as string[],
                         jobs: [] as string[],
                         conditions: [] as string[],
@@ -172,9 +147,9 @@ export const useMatchedJobPostings = () => {
                         visa: [] as string[],
                     };
 
+                    // 매칭된 키워드만 번역
                     posting.job_posting_keywords?.forEach((jpk: any) => {
-                        if (matchedKeywordIds.includes(jpk.keyword.id)) {
-
+                        if (userKeywordIds.includes(jpk.keyword.id)) {
                             const translatedKeyword = translateDB(
                                 'keyword',
                                 'keyword',
@@ -182,32 +157,30 @@ export const useMatchedJobPostings = () => {
                                 jpk.keyword.keyword || ''
                             );
 
-
-
                             switch (jpk.keyword.category) {
                                 case '국가':
-                                    matchedKeywords.countries.push(translatedKeyword);
+                                    translatedMatchedKeywords.countries.push(translatedKeyword);
                                     break;
                                 case '직종':
-                                    matchedKeywords.jobs.push(translatedKeyword);
+                                    translatedMatchedKeywords.jobs.push(translatedKeyword);
                                     break;
                                 case '근무조건':
-                                    matchedKeywords.conditions.push(translatedKeyword);
+                                    translatedMatchedKeywords.conditions.push(translatedKeyword);
                                     break;
                                 case '지역':
-                                    matchedKeywords.location.push(translatedKeyword);
+                                    translatedMatchedKeywords.location.push(translatedKeyword);
                                     break;
                                 case '지역이동':
-                                    matchedKeywords.moveable.push(translatedKeyword);
+                                    translatedMatchedKeywords.moveable.push(translatedKeyword);
                                     break;
                                 case '성별':
-                                    matchedKeywords.gender.push(translatedKeyword);
+                                    translatedMatchedKeywords.gender.push(translatedKeyword);
                                     break;
                                 case '나이대':
-                                    matchedKeywords.age.push(translatedKeyword);
+                                    translatedMatchedKeywords.age.push(translatedKeyword);
                                     break;
                                 case '비자':
-                                    matchedKeywords.visa.push(translatedKeyword);
+                                    translatedMatchedKeywords.visa.push(translatedKeyword);
                                     break;
                             }
                         }
@@ -215,13 +188,22 @@ export const useMatchedJobPostings = () => {
 
                     return {
                         posting: posting as JobPosting,
-                        matchedCount: matchedKeywordIds.length,
-                        matchedKeywords
+                        matchedCount: suitability.details.matchedKeywords.countries.length +
+                            suitability.details.matchedKeywords.jobs.length +
+                            suitability.details.matchedKeywords.conditions.length +
+                            suitability.details.matchedKeywords.location.length +
+                            suitability.details.matchedKeywords.moveable.length +
+                            suitability.details.matchedKeywords.gender.length +
+                            suitability.details.matchedKeywords.age.length +
+                            suitability.details.matchedKeywords.visa.length,
+                        matchedKeywords: translatedMatchedKeywords,
+                        suitability
                     };
                 });
 
-                // 매칭 점수 높은 순으로 정렬
-                matched.sort((a, b) => b.matchedCount - a.matchedCount);
+                // 적합도 점수 높은 순으로 정렬
+                matched.sort((a, b) => b.suitability.score - a.suitability.score);
+
                 setMatchedPostings(matched);
             }
         } catch (error) {
@@ -235,30 +217,13 @@ export const useMatchedJobPostings = () => {
     // 특정 공고 가져오기 - job_address 포함
     const fetchPostingById = async (postingId: string): Promise<JobPosting | null> => {
         try {
-            const { data, error } = await supabase
-                .from('job_postings')
-                .select(`
-                    *,
-                    company:company_id (
-                        id,
-                        name,
-                        address,
-                        description,
-                        phone_number
-                    ),
-                    job_posting_keywords:job_posting_keyword (
-                        keyword:keyword_id (
-                            id,
-                            keyword,
-                            category
-                        )
-                    )
-                `)
-                .eq('id', postingId)
-                .single();
+            const response = await api('GET', `/api/job-postings/${postingId}`);
 
-            if (error) throw error;
-            return data as JobPosting;
+            if (response && response.data) {
+                return response.data as JobPosting;
+            }
+
+            return null;
         } catch (error) {
             console.error('공고 상세 조회 실패:', error);
             return null;

@@ -5,11 +5,13 @@ import { useModal } from "@/hooks/useModal";
 import { router } from "expo-router";
 import { useMatchedJobPostings } from "@/hooks/useMatchedJobPostings";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { api } from "@/lib/api";
 
 interface Application {
     id: string
     applied_at: string
     status: string
+    type?: string  // type 필드 추가
     user: {
         id: string
         name: string
@@ -43,16 +45,15 @@ interface Application {
 interface ApplicantCardProps {
     item: Application;
     postingId: string;
-    proposalStatus?: string; // prop 추가
-    onStatusChange?: () => void; // 상태 변경 콜백 추가
+    proposalStatus?: string;
+    onStatusChange?: () => void; // 상태 변경 콜백
 }
 
 export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStatusChange }: ApplicantCardProps) => {
-    const { showModal } = useModal();
+    const { showModal, ModalComponent } = useModal();
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings();
     const [matchedKeywords, setMatchedKeywords] = useState<{ id: number; keyword: string; category: string }[]>([]);
-
-
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         const loadPostingAndMatchKeywords = async () => {
@@ -98,6 +99,53 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
         }
     }
 
+    const handleCancelProposal = async () => {
+        const confirmMessage = item.type === 'company_invited'
+            ? '회사가 제안한 지원서이므로 면접 제안과 함께 지원서도 삭제됩니다. 계속하시겠습니까?'
+            : '면접 제안을 취소하시겠습니까?';
+
+        showModal(
+            '면접 제안 취소',
+            confirmMessage,
+            'warning',
+            async () => {
+                try {
+                    setIsDeleting(true);
+                    const response = await api('DELETE', `/api/interview-proposals/company/${item.id}`);
+
+                    if (response?.success) {
+                        showModal(
+                            '성공',
+                            response.message || '면접 제안이 취소되었습니다.',
+                            'info'
+                        );
+
+                        // 상태 변경 콜백 실행 (화면 새로고침)
+                        if (onStatusChange) {
+                            setTimeout(() => {
+                                onStatusChange();
+                            }, 1500); // 성공 메시지를 잠시 보여준 후 새로고침
+                        }
+                    } else {
+                        throw new Error(response?.message || '면접 제안 취소에 실패했습니다.');
+                    }
+                } catch (error) {
+                    console.error('면접 제안 취소 실패:', error);
+                    showModal(
+                        '오류',
+                        '면접 제안 취소에 실패했습니다.',
+                        'warning'
+                    );
+                } finally {
+                    setIsDeleting(false);
+                }
+            },
+            true, // showCancel
+            '확인',
+            '취소'
+        );
+    }
+
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
         return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
@@ -126,9 +174,21 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
         switch (proposalStatus) {
             case 'pending':
                 return (
-                    <View className="flex-1 bg-orange-100 py-3 rounded-lg flex-row items-center justify-center">
-                        <AntDesign name="clockcircleo" size={18} color="#ea580c" />
-                        <Text className="text-orange-600 font-medium ml-2">면접 제안됨</Text>
+                    <View className="flex-1 gap-2">
+                        <View className="bg-orange-100 py-3 rounded-lg flex-row items-center justify-center">
+                            <AntDesign name="clockcircleo" size={18} color="#ea580c" />
+                            <Text className="text-orange-600 font-medium ml-2">면접 제안됨</Text>
+                        </View>
+                        <TouchableOpacity
+                            onPress={handleCancelProposal}
+                            disabled={isDeleting}
+                            className="bg-red-500 py-2 rounded-lg flex-row items-center justify-center"
+                        >
+                            <AntDesign name="close" size={16} color="white" />
+                            <Text className="text-white text-sm font-medium ml-1">
+                                {isDeleting ? '취소 중...' : '면접 제안 취소'}
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                 );
 
@@ -150,7 +210,7 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                                     applicationId: item.id,
                                     userId: item.user.id,
                                     postingId: postingId,
-                                    onComplete: 'refresh' // 완료 신호
+                                    onComplete: 'refresh'
                                 }
                             })
                         }}
@@ -164,68 +224,71 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
     };
 
     return (
-        <View className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm gap-3">
-            <View className="flex-row items-center gap-5">
-                <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
-                    <Text className="text-2xl font-bold">{item.user.name.charAt(0)}</Text>
-                </View>
-                <View>
-                    <View className="flex-row items-center gap-2">
-                        <Text className="text-lg font-bold">{item.user.name}</Text>
-                        {item.message && !item.message.is_read && (
-                            <View className="bg-blue-500 px-2 py-0.5 rounded-full">
-                                <Text className="text-xs text-white">새 이력서</Text>
-                            </View>
-                        )}
-                        <Text className="text-sm text-gray-600">{formatDate(item.applied_at)}</Text>
+        <>
+            <View className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm gap-3">
+                <View className="flex-row items-center gap-5">
+                    <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
+                        <Text className="text-2xl font-bold">{item.user.name.charAt(0)}</Text>
                     </View>
-                    <View className="flex-row items-center gap-5">
+                    <View>
                         <View className="flex-row items-center gap-2">
-                            <Text className="text-sm text-gray-600">{item.user.user_info?.age}세 {item.user.user_info?.gender}</Text>
-                            <Text className="text-sm text-gray-600">{item.user.user_info?.visa}</Text>
-                            {locationKeyword && (
-                                <>
-                                    <Text className="text-sm text-gray-600">📍{locationKeyword}</Text>
-                                </>
+                            <Text className="text-lg font-bold">{item.user.name}</Text>
+                            {item.message && !item.message.is_read && (
+                                <View className="bg-blue-500 px-2 py-0.5 rounded-full">
+                                    <Text className="text-xs text-white">새 이력서</Text>
+                                </View>
                             )}
+                            <Text className="text-sm text-gray-600">{formatDate(item.applied_at)}</Text>
+                        </View>
+                        <View className="flex-row items-center gap-5">
+                            <View className="flex-row items-center gap-2">
+                                <Text className="text-sm text-gray-600">{item.user.user_info?.age}세 {item.user.user_info?.gender}</Text>
+                                <Text className="text-sm text-gray-600">{item.user.user_info?.visa}</Text>
+                                {locationKeyword && (
+                                    <>
+                                        <Text className="text-sm text-gray-600">📍{locationKeyword}</Text>
+                                    </>
+                                )}
+                            </View>
                         </View>
                     </View>
                 </View>
-            </View>
 
-            <View className="flex bg-gray-100 rounded-xl p-2">
-                <Text className="text-start flex-shrink" numberOfLines={2}>{item.message?.content}</Text>
-            </View>
-
-            {/* 매칭된 키워드 표시 */}
-            {matchedKeywords.length > 0 && (
-                <View className="flex-row flex-wrap gap-2 ">
-                    <Text className="text-sm text-gray-600 w-full mb-1">해당 지원자는 사장님이 선택하신 아래 조건들을 선택했습니다</Text>
-                    {matchedKeywords.map((keyword) => (
-                        <View
-                            key={keyword.id}
-                            className={`px-3 py-1 rounded-full ${getCategoryColor(keyword.category)}`}
-                        >
-                            <Text className="text-xs font-medium">
-                                ✓ {keyword.keyword}
-                            </Text>
-                        </View>
-                    ))}
+                <View className="flex bg-gray-100 rounded-xl p-2">
+                    <Text className="text-start flex-shrink" numberOfLines={2}>{item.message?.content}</Text>
                 </View>
-            )}
 
-            {/* 버튼들 */}
-            <View className="flex-row gap-2 pt-3 border-t border-gray-100">
-                <TouchableOpacity
-                    onPress={() => handleViewResume(item)}
-                    className="flex-1 bg-gray-100 py-3 rounded-lg flex-row items-center justify-center"
-                >
-                    <Ionicons name="document-text-outline" size={18} color="black" />
-                    <Text className="font-medium ml-2">이력서 보기</Text>
-                </TouchableOpacity>
+                {/* 매칭된 키워드 표시 */}
+                {matchedKeywords.length > 0 && (
+                    <View className="flex-row flex-wrap gap-2 ">
+                        <Text className="text-sm text-gray-600 w-full mb-1">해당 지원자는 사장님이 선택하신 아래 조건들을 선택했습니다</Text>
+                        {matchedKeywords.map((keyword) => (
+                            <View
+                                key={keyword.id}
+                                className={`px-3 py-1 rounded-full ${getCategoryColor(keyword.category)}`}
+                            >
+                                <Text className="text-xs font-medium">
+                                    ✓ {keyword.keyword}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                )}
 
-                {renderInterviewButton()}
+                {/* 버튼들 */}
+                <View className="flex-row gap-2 pt-3 border-t border-gray-100">
+                    <TouchableOpacity
+                        onPress={() => handleViewResume(item)}
+                        className="flex-1 bg-gray-100 py-3 rounded-lg flex-row items-center justify-center"
+                    >
+                        <Ionicons name="document-text-outline" size={18} color="black" />
+                        <Text className="font-medium ml-2">이력서 보기</Text>
+                    </TouchableOpacity>
+
+                    {renderInterviewButton()}
+                </View>
             </View>
-        </View>
+            <ModalComponent />
+        </>
     )
 }
