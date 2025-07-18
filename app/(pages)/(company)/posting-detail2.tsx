@@ -1,6 +1,6 @@
 // app/(pages)/(company)/posting-detail2.tsx
 import React, { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native'
+import { View, Text, TouchableOpacity, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -11,7 +11,6 @@ import { PostingDetail } from "@/components/posting-detail2(company)/PostingDeta
 import { ApplicantCard } from "@/components/posting-detail2(company)/ApplicantCard"
 
 // Hooks & Utils
-import { supabase } from '@/lib/supabase'
 import { api } from "@/lib/api"
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import { useModal } from '@/hooks/useModal'
@@ -111,46 +110,17 @@ export default function CompanyPostingDetail() {
 
     const loadApplications = async () => {
         try {
-            const { data, error } = await supabase
-                .from('applications')
-                .select(`
-                    *,
-                    user:user_id (
-                        id,
-                        name,
-                        phone_number,
-                        address,
-                        user_info!user_info_user_id_fkey (
-                            age,
-                            gender,
-                            visa,
-                            how_long,
-                            topic,
-                            korean_level,
-                            experience,
-                            experience_content
-                        ),
-                        user_keyword (
-                            keyword_id,
-                            keywords:keyword (
-                                id,
-                                keyword,
-                                category
-                            )
-                        )
-                    ),
-                    message:message_id (
-                        content,
-                        is_read
-                    )
-                `)
-                .eq('job_posting_id', postingId)
-                .order('applied_at', { ascending: false })
+            // 서버 API 호출로 변경
+            const response = await api('GET', `/api/applications/company/${postingId}`)
 
-            if (error) throw error
-            setApplications((data as Application[]) || [])
+            if (response?.success) {
+                setApplications(response.data || [])
+            } else {
+                throw new Error(response?.message || '지원자 정보를 불러오는데 실패했습니다.')
+            }
         } catch (error) {
             console.error('지원자 로드 실패:', error)
+            showModal('오류', '지원자 정보를 불러오는데 실패했습니다.', 'warning')
         }
     }
 
