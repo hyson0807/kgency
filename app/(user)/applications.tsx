@@ -12,28 +12,25 @@ import {useApplications} from "@/hooks/useApplications";
 import {router} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
 
-
-
 const Applications = () => {
     const { user } = useAuth()
     const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'reviewed'>('all')
     const { t } = useTranslation()
-    const [refreshKey, setRefreshKey] = useState(0)
 
     //fetching applications
     const {
         applications,
         loading,
         refreshing,
-        onRefresh
+        onRefresh,
+        fetchApplications
     } = useApplications({ user, activeFilter })
 
-    // 화면에 포커스될 때마다 실행
+    // 화면에 포커스될 때마다 데이터 새로고침
     useFocusEffect(
         useCallback(() => {
-            // ApplicationItem 컴포넌트들을 강제로 리렌더링
-            setRefreshKey(prev => prev + 1)
-        }, [])
+            fetchApplications()
+        }, [fetchApplications])
     )
 
     if (loading) return <LoadingScreen />
@@ -63,12 +60,11 @@ const Applications = () => {
                 <Tap setActiveFilter={setActiveFilter} activeFilter={activeFilter} t={t} />
             </View>
 
-
             {/* 지원 내역 리스트 */}
             <FlatList
                 data={applications}
                 keyExtractor={(item) => item.id}
-                renderItem={({item}) => <ApplicationItem key={`${item.id}-${refreshKey}`} item={item} t={t} /> }
+                renderItem={({item}) => <ApplicationItem item={item} t={t} />}
                 contentContainerStyle={applications.length === 0 ? { flex: 1 } : { paddingVertical: 8 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={

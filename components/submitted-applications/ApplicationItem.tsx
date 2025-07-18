@@ -1,9 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
 import { api } from '@/lib/api'
 import {InterviewDetailModal} from "@/components/submitted-applications/InterviewDetailModal";
+
+interface InterviewProposal {
+    id: string
+    application_id: string
+    company_id: string
+    location: string
+    status: string
+    created_at: string
+    profiles?: {
+        id: string
+        name: string
+    }
+}
 
 interface Application {
     id: string
@@ -24,19 +37,7 @@ interface Application {
     message?: {
         content: string
     }
-}
-
-interface InterviewProposal {
-    id: string
-    application_id: string
-    company_id: string
-    location: string
-    status: string
-    created_at: string
-    profiles?: {
-        id: string
-        name: string
-    }
+    interviewProposal?: InterviewProposal | null
 }
 
 interface ApplicationItemProps {
@@ -45,39 +46,8 @@ interface ApplicationItemProps {
 }
 
 export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
-    const [interviewProposal, setInterviewProposal] = useState<InterviewProposal | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [showDetailModal, setShowDetailModal] = useState(false) // 추가
-    const [interviewDetails, setInterviewDetails] = useState<any>(null) // 추가
-
-    useEffect(() => {
-        checkInterviewStatus()
-    }, [item.id])
-
-
-
-    const checkInterviewStatus = async () => {
-        try {
-            setLoading(true)
-
-            // 백엔드 API 호출
-            const response = await api('GET', '/api/interview-proposals/user/' + item.id)
-
-            console.log(response.data.proposal.status)
-
-            // pending 또는 scheduled 상태 모두 저장하도록 수정
-            if (response?.success && response.data?.proposal &&
-                (response.data.proposal.status === 'pending' || response.data.proposal.status === 'scheduled')) {
-                setInterviewProposal(response.data.proposal)
-            }
-        } catch (error) {
-            // 404 에러는 정상적인 케이스 (제안이 없는 경우)
-            console.log('No interview proposal found for application:', item.id)
-            setInterviewProposal(null)
-        } finally {
-            setLoading(false)
-        }
-    }
+    const [showDetailModal, setShowDetailModal] = useState(false)
+    const [interviewDetails, setInterviewDetails] = useState<any>(null)
 
     const handleViewPosting = (application: Application) => {
         if (application.job_posting) {
@@ -125,17 +95,17 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
     }
 
     const handleInterviewSelection = () => {
-        if (!interviewProposal) return;
+        if (!item.interviewProposal) return;
 
         router.push({
             pathname: '/(pages)/(user)/interview-selection',
             params: {
                 applicationId: item.id,
-                companyId: interviewProposal.company_id,
-                proposalId: interviewProposal.id,
+                companyId: item.interviewProposal.company_id,
+                proposalId: item.interviewProposal.id,
                 companyName: item.job_posting.company.name,
                 jobTitle: item.job_posting.title,
-                proposalLocation: interviewProposal.location
+                proposalLocation: item.interviewProposal.location
             }
         })
     }
@@ -143,7 +113,7 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
     const fetchInterviewDetails = async () => {
         try {
             // 면접 예약 정보 조회 API 호출
-            const response = await api('GET', `/api/interview-schedules/by-proposal/${interviewProposal?.id}`)
+            const response = await api('GET', `/api/interview-schedules/by-proposal/${item.interviewProposal?.id}`)
 
             if (response?.success && response.data) {
                 setInterviewDetails(response.data)
@@ -160,80 +130,79 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
 
     return (
         <>
-        <TouchableOpacity
-            onPress={() => handleViewPosting(item)}
-            className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
-            activeOpacity={0.7}
-        >
-            {/* 상태 뱃지 */}
-            <View className="flex-row justify-between items-start mb-2">
-                <View className="flex-1">
-                    <Text className="text-sm text-gray-600">
-                        {item.job_posting.company.name}
-                    </Text>
-                    <Text className="text-lg font-bold text-gray-800 pr-4">
-                        {item.job_posting.title}
+            <TouchableOpacity
+                onPress={() => handleViewPosting(item)}
+                className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
+                activeOpacity={0.7}
+            >
+                {/* 상태 뱃지 */}
+                <View className="flex-row justify-between items-start mb-2">
+                    <View className="flex-1">
+                        <Text className="text-sm text-gray-600">
+                            {item.job_posting.company.name}
+                        </Text>
+                        <Text className="text-lg font-bold text-gray-800 pr-4">
+                            {item.job_posting.title}
+                        </Text>
+                    </View>
+                </View>
+
+                {/* 지원 정보 */}
+                <View className="flex-row items-center justify-between pt-3 border-t border-gray-100">
+                    <Text className="text-sm text-gray-500">
+                        {t('applications.applied_date', '지원일')}: {formatDate(item.applied_at)}
                     </Text>
                 </View>
-            </View>
 
-            {/* 지원 정보 */}
-            <View className="flex-row items-center justify-between pt-3 border-t border-gray-100">
-                <Text className="text-sm text-gray-500">
-                    {t('applications.applied_date', '지원일')}: {formatDate(item.applied_at)}
-                </Text>
-            </View>
+                {/* 이력서 보기 버튼 */}
+                {item.message && (
+                    <TouchableOpacity
+                        onPress={(e) => {
+                            e.stopPropagation()
+                            handleViewResume(item)
+                        }}
+                        className="mt-2 flex-row items-center justify-center bg-gray-50 py-2 rounded-lg"
+                    >
+                        <Ionicons name="document-text-outline" size={16} color="black" />
+                        <Text className="text-sm font-medium ml-1">
+                            {t('applications.view_resume', '제출한 이력서 보기')}
+                        </Text>
+                    </TouchableOpacity>
+                )}
 
-            {/* 이력서 보기 버튼 */}
-            {item.message && (
-                <TouchableOpacity
-                    onPress={(e) => {
-                        e.stopPropagation()
-                        handleViewResume(item)
-                    }}
-                    className="mt-2 flex-row items-center justify-center bg-gray-50 py-2 rounded-lg"
-                >
-                    <Ionicons name="document-text-outline" size={16} color="black" />
-                    <Text className="text-sm font-medium ml-1">
-                        {t('applications.view_resume', '제출한 이력서 보기')}
-                    </Text>
-                </TouchableOpacity>
-            )}
+                {/* 면접 시간 선택 버튼 - proposal이 존재하고 pending 상태일 때만 표시 */}
+                {item.interviewProposal && item.interviewProposal.status === 'pending' && (
+                    <TouchableOpacity
+                        onPress={(e) => {
+                            e.stopPropagation()
+                            handleInterviewSelection()
+                        }}
+                        className="mt-2 flex-row items-center justify-center bg-green-50 py-2 rounded-lg"
+                    >
+                        <Ionicons name="calendar-outline" size={16} color="#10b981" />
+                        <Text className="text-green-600 text-sm font-medium ml-1">
+                            {t('applications.select_interview_time', '면접 시간 선택하기')}
+                        </Text>
+                    </TouchableOpacity>
+                )}
 
-            {/* 면접 시간 선택 버튼 - proposal이 존재하고 pending 상태일 때만 표시 */}
-            {!loading && interviewProposal && interviewProposal.status === 'pending' && (
-                <TouchableOpacity
-                    onPress={(e) => {
-                        e.stopPropagation()
-                        handleInterviewSelection()
-                    }}
-                    className="mt-2 flex-row items-center justify-center bg-green-50 py-2 rounded-lg"
-                >
-                    <Ionicons name="calendar-outline" size={16} color="#10b981" />
-                    <Text className="text-green-600 text-sm font-medium ml-1">
-                        {t('applications.select_interview_time', '면접 시간 선택하기')}
-                    </Text>
-                </TouchableOpacity>
-            )}
+                {/* 면접 확정 표시 - proposal이 존재하고 scheduled 상태일 때 표시 */}
+                {item.interviewProposal && item.interviewProposal.status === 'scheduled' && (
+                    <TouchableOpacity
+                        onPress={(e) => {
+                            e.stopPropagation()
+                            handleShowInterviewDetails()
+                        }}
+                        className="mt-2 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
+                    >
+                        <Ionicons name="checkmark-circle" size={16} color="#3b82f6" />
+                        <Text className="text-blue-600 text-sm font-medium ml-1">
+                            {t('applications.interview_confirmed', '면접 확정')}
+                        </Text>
+                    </TouchableOpacity>
+                )}
+            </TouchableOpacity>
 
-            {/* 면접 확정 표시 - proposal이 존재하고 scheduled 상태일 때 표시 */}
-            {!loading && interviewProposal && interviewProposal.status === 'scheduled' && (
-                <TouchableOpacity
-                    onPress={(e) => {
-                        e.stopPropagation()
-                        handleShowInterviewDetails()
-                    }}
-                    className="mt-2 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
-                >
-                    <Ionicons name="checkmark-circle" size={16} color="#3b82f6" />
-                    <Text className="text-blue-600 text-sm font-medium ml-1">
-                        {t('applications.interview_confirmed', '면접 확정')}
-                    </Text>
-                </TouchableOpacity>
-            )}
-
-
-        </TouchableOpacity>
             {/* 면접 상세 모달 */}
             <InterviewDetailModal
                 visible={showDetailModal}
@@ -241,14 +210,12 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                 details={interviewDetails ? {
                     companyName: item.job_posting.company.name,
                     jobTitle: item.job_posting.title,
-                    location: interviewDetails.location || interviewProposal?.location,
+                    location: interviewDetails.location || item.interviewProposal?.location,
                     dateTime: interviewDetails.interview_slot?.start_time,
                     interviewType: interviewDetails.interview_slot?.interview_type
                 } : null}
                 t={t}
             />
-            </>
-
-
+        </>
     )
 }
