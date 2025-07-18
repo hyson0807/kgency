@@ -1,5 +1,5 @@
-import {supabase} from "@/lib/supabase";
-import {useCallback, useEffect, useState} from "react";
+import { useCallback, useEffect, useState } from "react";
+import { api } from "@/lib/api";
 
 interface userType {
     userId: string;
@@ -41,62 +41,47 @@ interface UseApplicationsReturn {
     onRefresh: () => Promise<void>;
 }
 
-export const useApplications =  ({ user, activeFilter }: useApplicationsProps ): UseApplicationsReturn => {
+export const useApplications = ({ user, activeFilter }: useApplicationsProps): UseApplicationsReturn => {
     const [applications, setApplications] = useState<Application[]>([])
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
 
-    const fetchApplications = useCallback( async () => {
+    const fetchApplications = useCallback(async () => {
         if (!user) {
             setLoading(false)
             return
         }
 
         try {
+            // API 엔드포인트 호출
+            const response = await api('GET', `/api/applications/user/${user.userId}`)
 
-            let query = supabase
-                .from('applications')
-                .select(`
-                    *,
-                    job_posting:job_posting_id (
-                        id,
-                        title,
-                        is_active,
-                        salary_range,
-                        working_hours,
-                        company:company_id (
-                            id,
-                            name,
-                            address
-                        )
-                    ),
-                    message:message_id (
-                        content
-                    )
-                `)
-                .eq('user_id', user.userId)
-                // .is('deleted_at', null)
-                .order('applied_at', { ascending: false })
+            console.log('API 응답:', response)
 
-            // 필터 적용
-            if (activeFilter === 'pending') {
-                query = query.eq('status', 'pending')
-            } else if (activeFilter === 'reviewed') {
-                query = query.in('status', ['reviewed', 'accepted', 'rejected'])
+            // response 자체가 이미 { success: true, data: [...] } 형태
+            if (!response.success) {
+                throw new Error('데이터 조회 실패')
             }
 
-            const { data, error } = await query
+            let filteredData = response.data || []
 
-            if (error) throw error
+            // 클라이언트 사이드 필터링
+            if (activeFilter === 'pending') {
+                filteredData = filteredData.filter((app: Application) => app.status === 'pending')
+            } else if (activeFilter === 'reviewed') {
+                filteredData = filteredData.filter((app: Application) =>
+                    ['reviewed', 'accepted', 'rejected'].includes(app.status)
+                )
+            }
 
-            setApplications(data || [])
+            setApplications(filteredData)
         } catch (error) {
             console.error('지원 내역 조회 실패:', error)
+            setApplications([])
         } finally {
             setLoading(false)
         }
     }, [user, activeFilter])
-
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true)
@@ -114,6 +99,5 @@ export const useApplications =  ({ user, activeFilter }: useApplicationsProps ):
         refreshing,
         fetchApplications,
         onRefresh,
-
     }
 }
