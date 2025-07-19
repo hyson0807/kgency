@@ -12,6 +12,19 @@ interface WorkConditionProps {
 
 export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkConditionProps) => {
     const { t } = useTranslation();
+    
+    // 요일 순서 정의
+    const dayOrder = ['월', '화', '수', '목', '금', '토', '일'];
+    
+    // 근무일을 요일 순서대로 정렬하는 함수
+    const sortWorkingDays = (days: string[]) => {
+        return days.sort((a, b) => {
+            const indexA = dayOrder.indexOf(a);
+            const indexB = dayOrder.indexOf(b);
+            return indexA - indexB;
+        });
+    };
+    
     return (
         <View className="flex-1">
             <View className="p-6 border-b border-gray-100">
@@ -44,8 +57,8 @@ export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkCon
                             <Text className="text-xs text-gray-500">{t('posting_detail.work_days', '근무일')}</Text>
                             <Text className="text-base text-gray-800">
                                 {isTranslated && translatedData?.working_days
-                                    ? translatedData.working_days.join(', ')
-                                    : posting.working_days.join(', ')
+                                    ? sortWorkingDays(translatedData.working_days).join(', ')
+                                    : sortWorkingDays(posting.working_days).join(', ')
                                 }
                                 {posting.working_days_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
                             </Text>
