@@ -21,6 +21,7 @@ const Info = () => {
     const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
     const [selectedJobs, setSelectedJobs] = useState<number[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<number[]>([]);
+    const [selectedWorkDays, setSelectedWorkDays] = useState<number[]>([]);
     const { keywords, user_keywords, loading, fetchKeywords, updateKeywords } = useUserKeywords();
     const { showModal, ModalComponent } = useModal();
     const { t } = useTranslation()
@@ -37,6 +38,18 @@ const Info = () => {
     const moveableKeyword = keywords.find(k => k.category === '지역이동');
     const jobKeywords = keywords.filter(k => k.category === '직종');
     const conditionKeywords = keywords.filter(k => k.category === '근무조건');
+
+    // 근무요일 정렬 함수
+    const sortWorkDays = (a: any, b: any) => {
+        const dayOrder = ['월', '화', '수', '목', '금', '토', '일'];
+        const aIndex = dayOrder.indexOf(a.keyword);
+        const bIndex = dayOrder.indexOf(b.keyword);
+        return aIndex - bIndex;
+    };
+
+    const workDayKeywords = keywords
+        .filter(k => k.category === '근무요일')
+        .sort(sortWorkDays);
 
     // 프로필 정보 로드
     useEffect(() => {
@@ -93,6 +106,12 @@ const Info = () => {
                 .filter(uk => uk.keyword && uk.keyword.category === '근무조건')
                 .map(uk => uk.keyword_id);
             setSelectedConditions(existingConditions);
+
+            // 근무요일
+            const existingWorkDays = user_keywords
+                .filter(uk => uk.keyword && uk.keyword.category === '근무요일')
+                .map(uk => uk.keyword_id);
+            setSelectedWorkDays(existingWorkDays);
         }
     }, [user_keywords, moveableKeyword]);
 
@@ -131,6 +150,14 @@ const Info = () => {
         return visaKeyword?.id || null;
     };
 
+    // 한국어수준을 키워드 ID로 변환
+    const getKoreanLevelKeywordId = (koreanLevelValue: string): number | null => {
+        const koreanLevelKeyword = keywords.find(k =>
+            k.category === '한국어수준' && k.keyword === koreanLevelValue
+        );
+        return koreanLevelKeyword?.id || null;
+    };
+
     // 직종 선택/해제 토글
     const toggleJob = (jobId: number) => {
         setSelectedJobs(prev =>
@@ -146,6 +173,15 @@ const Info = () => {
             prev.includes(conditionId)
                 ? prev.filter(id => id !== conditionId)
                 : [...prev, conditionId]
+        );
+    };
+
+    // 근무요일 선택/해제 토글
+    const toggleWorkDay = (workDayId: number) => {
+        setSelectedWorkDays(prev =>
+            prev.includes(workDayId)
+                ? prev.filter(id => id !== workDayId)
+                : [...prev, workDayId]
         );
     };
 
@@ -196,6 +232,7 @@ const Info = () => {
             const ageKeywordId = getAgeKeywordId(age);
             const genderKeywordId = getGenderKeywordId(gender);
             const visaKeywordId = getVisaKeywordId(visa);
+            const koreanLevelKeywordId = getKoreanLevelKeywordId(koreanLevel);
 
             // 키워드 ID가 없는 경우 경고
             if (!ageKeywordId) {
@@ -207,6 +244,9 @@ const Info = () => {
             if (!visaKeywordId) {
                 console.warn('비자 키워드를 찾을 수 없습니다:', visa);
             }
+            if (!koreanLevelKeywordId) {
+                console.warn('한국어수준 키워드를 찾을 수 없습니다:', koreanLevel);
+            }
 
             // 3. 모든 선택된 키워드 ID 모으기
             const allSelectedKeywords = [
@@ -214,9 +254,11 @@ const Info = () => {
                 selectedCountry,
                 ...selectedJobs,
                 ...selectedConditions,
+                ...selectedWorkDays,  // 근무요일 추가
                 ageKeywordId,
                 genderKeywordId,
-                visaKeywordId
+                visaKeywordId,
+                koreanLevelKeywordId  // 한국어수준 추가
             ].filter((id): id is number => id !== null && id !== undefined);
 
             // 지역이동 가능이 선택되었으면 추가
@@ -281,6 +323,34 @@ const Info = () => {
                         onLocationChange={setSelectedLocations}
                         onMoveableToggle={setSelectedMoveable}
                     />
+
+                    {/* 희망근무 요일 섹션 */}
+                    <View className="p-4 border-t border-gray-100">
+                        <Text className="text-base font-semibold mb-3">
+                            {t('info.preferred_work_days', '희망근무 요일')}
+                        </Text>
+                        <View className="flex-row flex-wrap gap-2">
+                            {workDayKeywords.map((workDay) => (
+                                <TouchableOpacity
+                                    key={workDay.id}
+                                    onPress={() => toggleWorkDay(workDay.id)}
+                                    className={`px-4 py-2 rounded-full border ${
+                                        selectedWorkDays.includes(workDay.id)
+                                            ? 'bg-blue-500 border-blue-500'
+                                            : 'bg-white border-gray-300'
+                                    }`}
+                                >
+                                    <Text className={`text-sm ${
+                                        selectedWorkDays.includes(workDay.id)
+                                            ? 'text-white font-medium'
+                                            : 'text-gray-700'
+                                    }`}>
+                                        {workDay.keyword}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
 
                     {/* 국가 선택 섹션 */}
                     <Country keywords={keywords} selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} />

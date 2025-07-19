@@ -163,7 +163,7 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                 {hasMatches ? (
                     <>
                         <Text className="text-sm text-gray-700 font-semibold mb-2">
-                            해당 지원자는 사장님이 선택하신 아래 조건들을 선택했습니다
+                            해당 지원자는 사장님과 동일한 키워드를 선택했습니다
                         </Text>
 
                         <View className="flex-row flex-wrap gap-2">

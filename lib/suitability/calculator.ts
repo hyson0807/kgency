@@ -22,42 +22,94 @@ export class SuitabilityCalculator {
     }
 
     /**
-     * 적합도 계산 메인 함수
+     * 적합도 계산 메인 함수 (새로운 방식)
      */
     calculate(
         userKeywordIds: number[],
         jobKeywords: JobKeyword[]
     ): SuitabilityResult {
-        // 1. 카테고리별 매칭 계산
-        const categoryScores = this.calculateCategoryScores(userKeywordIds, jobKeywords);
+        let totalScore = 0;
+        const categoryScores: Record<string, { matched: number; total: number; score: number; weight: number }> = {};
+        const matchedKeywords = this.initializeMatchedKeywords();
 
-        // 2. 기본 점수 계산 (카테고리 가중치 적용)
-        let baseScore = this.calculateBaseScore(categoryScores);
+        // 먼저 지역 매칭 확인 (필수)
+        const locationMatch = this.checkLocationMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        const hasLocationMatch = locationMatch.matched > 0;
 
-        // 3. 개별 키워드 보너스 계산
-        const keywordBonus = this.calculateKeywordBonus(userKeywordIds, jobKeywords);
+        // 지역 점수 계산 추가 (35%)
+        if (hasLocationMatch) {
+            totalScore += 35; // 지역 매칭 시 35점 추가
+        }
+        categoryScores['지역'] = { ...locationMatch, score: hasLocationMatch ? 35 : 0, weight: 35 };
 
-        // 4. 조합 보너스 계산
-        const { bonus: combinationBonus, applied: appliedBonuses } =
-            this.calculateCombinationBonus(userKeywordIds, jobKeywords);
+        // 성별 매칭 확인 (필수)
+        const genderMatch = this.checkGenderMatchRequired(userKeywordIds, jobKeywords, matchedKeywords);
+        const hasGenderMatch = genderMatch.matched > 0;
+        categoryScores['성별필수체크'] = { ...genderMatch, weight: 0 };
 
-        // 5. 필수 키워드 체크
-        const missingRequired = this.checkRequiredKeywords(userKeywordIds, jobKeywords);
+        // 1. 희망직종 (30%)
+        const jobScore = this.calculateJobMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += jobScore.score;
+        categoryScores['직종'] = { ...jobScore, weight: 30 };
 
-        // 6. 필수 키워드 누락 시 패널티
-        if (missingRequired.length > 0) {
-            baseScore = baseScore * 0.5; // 50% 감점
+        // 2. 근무 가능 요일 (10%)
+        const workDayScore = this.calculateWorkDayMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += workDayScore.score;
+        categoryScores['근무요일'] = { ...workDayScore, weight: 10 };
+
+        // 3. 한국어 실력 (5% 보너스)
+        const koreanScore = this.calculateKoreanLevelMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += koreanScore.score;
+        categoryScores['한국어수준'] = { ...koreanScore, weight: 5 };
+
+        // 4. 비자 유형 (5%)
+        const visaScore = this.calculateVisaMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += visaScore.score;
+        categoryScores['비자'] = { ...visaScore, weight: 5 };
+
+        // 5. 성별 (4%)
+        const genderScore = this.calculateGenderMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += genderScore.score;
+        categoryScores['성별'] = { ...genderScore, weight: 4 };
+
+        // 6. 나이대 (3%)
+        const ageScore = this.calculateAgeMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += ageScore.score;
+        categoryScores['나이대'] = { ...ageScore, weight: 3 };
+
+        // 7. 비자지원 여부 (2%)
+        const visaSupportScore = this.calculateVisaSupportMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += visaSupportScore.score;
+        categoryScores['비자지원'] = { ...visaSupportScore, weight: 2 };
+
+        // 8. 식사 제공 여부 (2%)
+        const mealScore = this.calculateMealProvidedMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += mealScore.score;
+        categoryScores['식사제공'] = { ...mealScore, weight: 2 };
+
+        // 9. 국적 (2%)
+        const countryScore = this.calculateCountryMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += countryScore.score;
+        categoryScores['국가'] = { ...countryScore, weight: 2 };
+
+        // 10. 기타 근무조건 (1%)
+        const otherConditionsScore = this.calculateOtherConditionsMatch(userKeywordIds, jobKeywords, matchedKeywords);
+        totalScore += otherConditionsScore.score;
+        categoryScores['기타조건'] = { ...otherConditionsScore, weight: 1 };
+
+        // 필수 항목 미매칭 시 패널티
+        const missingRequired = [];
+        if (!hasLocationMatch) {
+            totalScore = totalScore * 0.3; // 30%만 남김
+            missingRequired.push('지역');
         }
 
-        // 7. 최종 점수 계산 (0-100 범위로 정규화)
-        const totalScore = Math.min(100, Math.max(0,
-            baseScore + keywordBonus + combinationBonus
-        ));
+        if (!hasGenderMatch) {
+            totalScore = totalScore * 0.5; // 50%만 남김
+            missingRequired.push('성별');
+        }
 
-        // 8. 매칭된 키워드 정리
-        const matchedKeywords = this.organizeMatchedKeywords(userKeywordIds, jobKeywords);
-
-        // 9. 레벨 결정
+        // 레벨 결정
         const level = this.determineLevel(totalScore);
 
         return {
@@ -65,142 +117,421 @@ export class SuitabilityCalculator {
             level,
             details: {
                 categoryScores,
-                bonusPoints: keywordBonus + combinationBonus,
+                bonusPoints: 0, // 새 방식에서는 보너스 없음
                 matchedKeywords,
                 missingRequired,
-                appliedBonuses
+                appliedBonuses: []
             }
         };
     }
 
     /**
-     * 카테고리별 매칭 점수 계산
+     * 1. 희망직종 매칭 (30%)
      */
-    private calculateCategoryScores(
+    private calculateJobMatch(
         userKeywordIds: number[],
-        jobKeywords: JobKeyword[]
-    ): Record<string, { matched: number; total: number; score: number }> {
-        const scores: Record<string, { matched: number; total: number; score: number }> = {};
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const jobKeywordsInPosting = jobKeywords.filter(k => k.keyword.category === '직종');
+        const matchedJobs = jobKeywordsInPosting.filter(k => userKeywordIds.includes(k.keyword.id));
 
-        // 카테고리별로 그룹화
-        const jobKeywordsByCategory = this.groupByCategory(jobKeywords);
+        matchedJobs.forEach(k => matchedKeywords.jobs.push(k.keyword.keyword));
 
-        Object.entries(jobKeywordsByCategory).forEach(([category, keywords]) => {
-            const keywordIds = keywords.map(k => k.keyword.id);
-            const matched = keywordIds.filter(id => userKeywordIds.includes(id)).length;
-            const total = keywords.length;
+        if (jobKeywordsInPosting.length === 0) {
+            return { matched: 1, total: 1, score: 30 }; // 직종 무관인 경우 만점
+        }
 
-            scores[category] = {
-                matched,
-                total,
-                score: total > 0 ? (matched / total) * 100 : 0
-            };
-        });
+        const matchRate = matchedJobs.length / jobKeywordsInPosting.length;
+        let score = matchRate * 30;
 
-        return scores;
+        // 100% 매칭 시 추가 보너스 5점
+        if (matchRate === 1 && matchedJobs.length > 0) {
+            score += 5;
+        }
+
+        return {
+            matched: matchedJobs.length,
+            total: jobKeywordsInPosting.length,
+            score: score
+        };
     }
 
     /**
-     * 기본 점수 계산 (카테고리 가중치 적용)
+     * 2. 근무 가능 요일 매칭 (10%)
      */
-    private calculateBaseScore(
-        categoryScores: Record<string, { matched: number; total: number; score: number }>
-    ): number {
-        let weightedScore = 0;
+    private calculateWorkDayMatch(
+        userKeywordIds: number[],
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const workDayKeywordsInPosting = jobKeywords.filter(k => k.keyword.category === '근무요일');
 
-        Object.entries(categoryScores).forEach(([category, { score }]) => {
-            const weight = this.rules.categoryWeights[category] || 0;
-            weightedScore += (score * weight) / 100;
-        });
+        // 공고의 요구 요일이 없으면 0점 (없을 수 없다고 했지만 안전장치)
+        if (workDayKeywordsInPosting.length === 0) {
+            return { matched: 0, total: 0, score: 0 };
+        }
 
-        return weightedScore;
+        // 유저의 근무 가능 요일
+        const userWorkDayKeywords = jobKeywords.filter(k =>
+            k.keyword.category === '근무요일' && userKeywordIds.includes(k.keyword.id)
+        );
+
+        // 유저가 요일을 선택하지 않은 경우 0점
+        if (userWorkDayKeywords.length === 0) {
+            return { matched: 0, total: workDayKeywordsInPosting.length, score: 0 };
+        }
+
+        // 공고 요일 중 유저가 가능한 요일 찾기
+        const matchedWorkDays = workDayKeywordsInPosting.filter(k =>
+            userKeywordIds.includes(k.keyword.id)
+        );
+
+        matchedWorkDays.forEach(k => matchedKeywords.workDays?.push(k.keyword.keyword));
+
+        // 매칭률 = 매칭된 요일 수 / 공고 요구 요일 수
+        const matchRate = matchedWorkDays.length / workDayKeywordsInPosting.length;
+
+        return {
+            matched: matchedWorkDays.length,
+            total: workDayKeywordsInPosting.length,
+            score: matchRate * 10  // 15 → 10으로 변경
+        };
     }
 
     /**
-     * 개별 키워드 보너스 계산
+     * 3. 한국어 실력 매칭 (5% 보너스)
      */
-    private calculateKeywordBonus(
+    private calculateKoreanLevelMatch(
         userKeywordIds: number[],
-        jobKeywords: JobKeyword[]
-    ): number {
-        let bonus = 0;
-        const jobKeywordIds = jobKeywords.map(k => k.keyword.id);
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const koreanKeywordsInPosting = jobKeywords.filter(k => k.keyword.category === '한국어수준');
 
-        userKeywordIds.forEach(userKeywordId => {
-            if (jobKeywordIds.includes(userKeywordId)) {
-                const keywordBonus = this.rules.keywordBonus[userKeywordId.toString()] || 0;
-                bonus += keywordBonus;
+        if (koreanKeywordsInPosting.length === 0) {
+            return { matched: 0, total: 0, score: 0 }; // 한국어 무관인 경우 보너스 없음
+        }
+
+        // 한국어 수준: 초급(1), 중급(2), 고급(3)으로 가정
+        const levelMap: { [key: string]: number } = {
+            '초급': 1,
+            '중급': 2,
+            '고급': 3
+        };
+
+        const userKoreanLevel = jobKeywords.find(k =>
+            k.keyword.category === '한국어수준' && userKeywordIds.includes(k.keyword.id)
+        );
+
+        if (!userKoreanLevel) {
+            return { matched: 0, total: 1, score: 0 }; // 한국어 수준 미선택 시 보너스 없음 (감점도 없음)
+        }
+
+        const requiredLevel = koreanKeywordsInPosting[0];
+        const userLevel = levelMap[userKoreanLevel.keyword.keyword] || 0;
+        const requiredLevelNum = levelMap[requiredLevel.keyword.keyword] || 0;
+
+        if (userLevel >= requiredLevelNum) {
+            matchedKeywords.koreanLevel?.push(userKoreanLevel.keyword.keyword);
+            // 요구 수준 충족 시 보너스
+            if (userLevel === requiredLevelNum) {
+                return { matched: 1, total: 1, score: 3 }; // 정확히 일치: 3점 보너스
+            } else if (userLevel > requiredLevelNum) {
+                return { matched: 1, total: 1, score: 5 }; // 초과 달성: 5점 보너스
             }
-        });
+        }
 
-        return bonus;
+        // 요구 수준 미달이어도 감점 없음
+        return { matched: 0, total: 1, score: 0 };
     }
 
     /**
-     * 조합 보너스 계산
+     * 4. 비자 유형 매칭 (5%)
      */
-    private calculateCombinationBonus(
+    private calculateVisaMatch(
         userKeywordIds: number[],
-        jobKeywords: JobKeyword[]
-    ): { bonus: number; applied: string[] } {
-        let totalBonus = 0;
-        const applied: string[] = [];
-        const jobKeywordIds = jobKeywords.map(k => k.keyword.id);
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const visaKeywordsInPosting = jobKeywords.filter(k => k.keyword.category === '비자');
+        const userVisa = jobKeywords.find(k =>
+            k.keyword.category === '비자' && userKeywordIds.includes(k.keyword.id)
+        );
 
-        this.rules.combinationBonuses.forEach(combo => {
-            const matchedInUser = combo.keywords.filter(id => userKeywordIds.includes(id));
-            const matchedInJob = combo.keywords.filter(id => jobKeywordIds.includes(id));
+        if (visaKeywordsInPosting.length === 0) {
+            return { matched: 1, total: 1, score: 5 }; // 비자 무관인 경우 만점
+        }
 
-            const isMatched = combo.requiredAll
-                ? matchedInUser.length === combo.keywords.length &&
-                matchedInJob.length === combo.keywords.length
-                : matchedInUser.length > 0 && matchedInJob.length > 0;
+        if (userVisa && visaKeywordsInPosting.some(k => k.keyword.id === userVisa.keyword.id)) {
+            matchedKeywords.visa.push(userVisa.keyword.keyword);
+            return { matched: 1, total: 1, score: 5 };
+        }
 
-            if (isMatched) {
-                totalBonus += combo.bonus;
-                applied.push(combo.name);
-            }
-        });
-
-        return { bonus: totalBonus, applied };
+        return { matched: 0, total: 1, score: 0 };
     }
 
     /**
-     * 필수 키워드 체크
+     * 5. 성별 매칭 (4%)
+     */
+    private calculateGenderMatch(
+        userKeywordIds: number[],
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const genderKeywordsInPosting = jobKeywords.filter(k => k.keyword.category === '성별');
+
+        if (genderKeywordsInPosting.length === 0) {
+            return { matched: 1, total: 1, score: 4 }; // 성별 무관인 경우 만점
+        }
+
+        const matchedGender = genderKeywordsInPosting.filter(k =>
+            userKeywordIds.includes(k.keyword.id)
+        );
+
+        if (matchedGender.length > 0) {
+            matchedGender.forEach(k => matchedKeywords.gender.push(k.keyword.keyword));
+            return { matched: 1, total: 1, score: 4 };
+        }
+
+        return { matched: 0, total: 1, score: 0 };
+    }
+
+    /**
+     * 성별 매칭 확인 (필수)
+     */
+    private checkGenderMatchRequired(
+        userKeywordIds: number[],
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const genderKeywordsInPosting = jobKeywords.filter(k => k.keyword.category === '성별');
+
+        if (genderKeywordsInPosting.length === 0) {
+            // 공고에 성별이 명시되지 않은 경우는 매칭으로 간주 (성별 무관)
+            return { matched: 1, total: 1, score: 0 };
+        }
+
+        // 유저의 성별 키워드 찾기
+        const userGenderKeyword = jobKeywords.find(k =>
+            k.keyword.category === '성별' && userKeywordIds.includes(k.keyword.id)
+        );
+
+        if (!userGenderKeyword) {
+            // 유저가 성별을 선택하지 않은 경우
+            return { matched: 0, total: 1, score: 0 };
+        }
+
+        // 유저의 성별이 공고의 성별 요구사항과 일치하는지 확인
+        const isMatched = genderKeywordsInPosting.some(k =>
+            k.keyword.id === userGenderKeyword.keyword.id
+        );
+
+        if (isMatched) {
+            return { matched: 1, total: 1, score: 0 };
+        }
+
+        return { matched: 0, total: 1, score: 0 };
+    }
+
+    /**
+     * 6. 나이대 매칭 (3%)
+     */
+    private calculateAgeMatch(
+        userKeywordIds: number[],
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const ageKeywordsInPosting = jobKeywords.filter(k => k.keyword.category === '나이대');
+
+        if (ageKeywordsInPosting.length === 0) {
+            return { matched: 1, total: 1, score: 3 }; // 나이 무관인 경우 만점
+        }
+
+        const userAge = jobKeywords.find(k =>
+            k.keyword.category === '나이대' && userKeywordIds.includes(k.keyword.id)
+        );
+
+        if (!userAge) {
+            return { matched: 0, total: 1, score: 0 };
+        }
+
+        // 정확히 일치하는 경우
+        if (ageKeywordsInPosting.some(k => k.keyword.id === userAge.keyword.id)) {
+            matchedKeywords.age.push(userAge.keyword.keyword);
+            return { matched: 1, total: 1, score: 3 };
+        }
+
+        // 나이대가 일치하지 않는 경우 부분 점수 (인접 나이대는 1.5점)
+        const ageOrder = ['20-25세', '25-30세', '30-35세', '35세 이상'];
+        const userAgeIndex = ageOrder.indexOf(userAge.keyword.keyword);
+        const acceptableAges = ageKeywordsInPosting.map(k => k.keyword.keyword);
+
+        // 인접 나이대인지 확인
+        for (const acceptableAge of acceptableAges) {
+            const acceptableIndex = ageOrder.indexOf(acceptableAge);
+            if (Math.abs(userAgeIndex - acceptableIndex) === 1) {
+                return { matched: 0, total: 1, score: 1.5 }; // 인접 나이대는 50% 점수
+            }
+        }
+
+        return { matched: 0, total: 1, score: 0 };
+    }
+
+    /**
+     * 7. 비자지원 여부 매칭 (2%)
+     */
+    private calculateVisaSupportMatch(
+        userKeywordIds: number[],
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const visaSupportId = 49; // 비자지원 키워드 ID
+        const hasVisaSupport = jobKeywords.some(k =>
+            k.keyword.id === visaSupportId && userKeywordIds.includes(visaSupportId)
+        );
+
+        if (hasVisaSupport) {
+            matchedKeywords.conditions.push('비자지원');
+            return { matched: 1, total: 1, score: 2 };
+        }
+
+        return { matched: 0, total: 1, score: 0 };
+    }
+
+    /**
+     * 8. 식사 제공 여부 매칭 (2%)
+     */
+    private calculateMealProvidedMatch(
+        userKeywordIds: number[],
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const mealProvidedId = 46; // 식사제공 키워드 ID
+        const hasMealProvided = jobKeywords.some(k =>
+            k.keyword.id === mealProvidedId && userKeywordIds.includes(mealProvidedId)
+        );
+
+        if (hasMealProvided) {
+            matchedKeywords.conditions.push('식사제공');
+            return { matched: 1, total: 1, score: 2 };
+        }
+
+        return { matched: 0, total: 1, score: 0 };
+    }
+
+    /**
+     * 9. 국적 매칭 (2%)
+     */
+    private calculateCountryMatch(
+        userKeywordIds: number[],
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const countryKeywordsInPosting = jobKeywords.filter(k => k.keyword.category === '국가');
+
+        if (countryKeywordsInPosting.length === 0) {
+            return { matched: 1, total: 1, score: 2 }; // 국적 무관인 경우 만점
+        }
+
+        const matchedCountries = countryKeywordsInPosting.filter(k =>
+            userKeywordIds.includes(k.keyword.id)
+        );
+
+        if (matchedCountries.length > 0) {
+            matchedCountries.forEach(k => matchedKeywords.countries.push(k.keyword.keyword));
+            return { matched: 1, total: 1, score: 2 };
+        }
+
+        return { matched: 0, total: 1, score: 0 };
+    }
+
+    /**
+     * 10. 기타 근무조건 매칭 (1%)
+     */
+    private calculateOtherConditionsMatch(
+        userKeywordIds: number[],
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        // 비자지원, 식사제공을 제외한 나머지 근무조건
+        const otherConditionIds = [44, 45, 47, 48]; // 고급여, 숙소제공, 주말근무, 통근버스
+        const otherConditions = jobKeywords.filter(k =>
+            k.keyword.category === '근무조건' &&
+            otherConditionIds.includes(k.keyword.id)
+        );
+
+        if (otherConditions.length === 0) {
+            return { matched: 0, total: 0, score: 1 }; // 기타 조건이 없으면 기본 1점
+        }
+
+        const matchedOthers = otherConditions.filter(k =>
+            userKeywordIds.includes(k.keyword.id)
+        );
+
+        matchedOthers.forEach(k => matchedKeywords.conditions.push(k.keyword.keyword));
+
+        const matchRate = matchedOthers.length / otherConditions.length;
+        return {
+            matched: matchedOthers.length,
+            total: otherConditions.length,
+            score: matchRate * 1 // 가중치 1%
+        };
+    }
+
+    /**
+     * 지역 매칭 확인 (필수)
+     */
+    private checkLocationMatch(
+        userKeywordIds: number[],
+        jobKeywords: JobKeyword[],
+        matchedKeywords: any
+    ): { matched: number; total: number; score: number } {
+        const locationKeywordsInPosting = jobKeywords.filter(k => k.keyword.category === '지역');
+
+        if (locationKeywordsInPosting.length === 0) {
+            // 공고에 지역이 명시되지 않은 경우는 매칭으로 간주
+            return { matched: 1, total: 1, score: 0 };
+        }
+
+        // 유저의 지역 키워드 찾기
+        const userLocationKeyword = jobKeywords.find(k =>
+            k.keyword.category === '지역' && userKeywordIds.includes(k.keyword.id)
+        );
+
+        if (!userLocationKeyword) {
+            // 유저가 지역을 선택하지 않은 경우
+            return { matched: 0, total: 1, score: 0 };
+        }
+
+        // 유저의 지역이 공고의 지역 목록에 있는지 확인
+        const isMatched = locationKeywordsInPosting.some(k =>
+            k.keyword.id === userLocationKeyword.keyword.id
+        );
+
+        if (isMatched) {
+            matchedKeywords.location.push(userLocationKeyword.keyword.keyword);
+            return { matched: 1, total: 1, score: 0 };
+        }
+
+        return { matched: 0, total: 1, score: 0 };
+    }
+
+    /**
+     * 필수 키워드 체크 (현재는 사용하지 않음)
      */
     private checkRequiredKeywords(
         userKeywordIds: number[],
         jobKeywords: JobKeyword[]
     ): string[] {
-        const missing: string[] = [];
-
-        Object.entries(this.rules.requiredKeywords).forEach(([category, requiredIds]) => {
-            if (!requiredIds || requiredIds.length === 0) return;
-
-            const jobKeywordIds = jobKeywords
-                .filter(k => k.keyword.category === category)
-                .map(k => k.keyword.id);
-
-            const hasRequired = requiredIds.some(reqId =>
-                userKeywordIds.includes(reqId) && jobKeywordIds.includes(reqId)
-            );
-
-            if (!hasRequired) {
-                missing.push(category);
-            }
-        });
-
-        return missing;
+        return [];
     }
 
     /**
-     * 매칭된 키워드 정리
+     * 매칭된 키워드 초기화
      */
-    private organizeMatchedKeywords(
-        userKeywordIds: number[],
-        jobKeywords: JobKeyword[]
-    ): SuitabilityResult['details']['matchedKeywords'] {
-        const matched = {
+    private initializeMatchedKeywords() {
+        return {
             countries: [] as string[],
             jobs: [] as string[],
             conditions: [] as string[],
@@ -208,41 +539,10 @@ export class SuitabilityCalculator {
             moveable: [] as string[],
             gender: [] as string[],
             age: [] as string[],
-            visa: [] as string[]
+            visa: [] as string[],
+            workDays: [] as string[],
+            koreanLevel: [] as string[]
         };
-
-        jobKeywords.forEach(({ keyword }) => {
-            if (userKeywordIds.includes(keyword.id)) {
-                switch (keyword.category) {
-                    case '국가':
-                        matched.countries.push(keyword.keyword);
-                        break;
-                    case '직종':
-                        matched.jobs.push(keyword.keyword);
-                        break;
-                    case '근무조건':
-                        matched.conditions.push(keyword.keyword);
-                        break;
-                    case '지역':
-                        matched.location.push(keyword.keyword);
-                        break;
-                    case '지역이동':
-                        matched.moveable.push(keyword.keyword);
-                        break;
-                    case '성별':
-                        matched.gender.push(keyword.keyword);
-                        break;
-                    case '나이대':
-                        matched.age.push(keyword.keyword);
-                        break;
-                    case '비자':
-                        matched.visa.push(keyword.keyword);
-                        break;
-                }
-            }
-        });
-
-        return matched;
     }
 
     /**
@@ -256,23 +556,6 @@ export class SuitabilityCalculator {
         if (score >= scoreLevels.good) return 'good';
         if (score >= scoreLevels.fair) return 'fair';
         return 'low';
-    }
-
-    /**
-     * 카테고리별로 키워드 그룹화
-     */
-    private groupByCategory(keywords: JobKeyword[]): Record<string, JobKeyword[]> {
-        const grouped: Record<string, JobKeyword[]> = {};
-
-        keywords.forEach(keyword => {
-            const category = keyword.keyword.category;
-            if (!grouped[category]) {
-                grouped[category] = [];
-            }
-            grouped[category].push(keyword);
-        });
-
-        return grouped;
     }
 
     /**

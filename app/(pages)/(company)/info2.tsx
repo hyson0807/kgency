@@ -38,6 +38,7 @@ const Info2 = () => {
     const [selectedAgeRanges, setSelectedAgeRanges] = useState<number[]>([])
     const [selectedGenders, setSelectedGenders] = useState<number[]>([])
     const [selectedVisas, setSelectedVisas] = useState<number[]>([])
+    const [selectedKoreanLevels, setSelectedKoreanLevels] = useState<number[]>([])
 
     // 공고 활성화 상태
     const [isPostingActive, setIsPostingActive] = useState(true)
@@ -61,7 +62,8 @@ const Info2 = () => {
     const ageRangeKeywords = keywords.filter(k => k.category === '나이대')
     const visaKeywords = keywords.filter(k => k.category === '비자')
     const genderKeywords = keywords.filter(k => k.category === '성별')
-
+    const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준')
+    const workDayKeywords = keywords.filter(k => k.category === '근무요일')  // 추가
 
 
     const locationOptions = keywords
@@ -103,6 +105,15 @@ const Info2 = () => {
         ...visaKeywords.map(visa => ({
             label: visa.keyword,
             value: visa.id
+        }))
+    ]
+
+    // 한국어 수준 드롭다운 옵션 추가
+    const koreanLevelOptions = [
+        { label: '상관없음', value: 'all' },
+        ...koreanLevelKeywords.map(level => ({
+            label: level.keyword,
+            value: level.id
         }))
     ]
 
@@ -208,6 +219,25 @@ const Info2 = () => {
         setSelectedVisas(prev => prev.filter(id => id !== visaId))
     }
 
+    // 한국어 수준 선택 처리 함수 추가
+    const handleKoreanLevelSelect = (item: any) => {
+        if (item.value === 'all') {
+            // "상관없음" 선택 시 모든 수준 선택
+            const allKoreanLevelIds = koreanLevelKeywords.map(k => k.id)
+            setSelectedKoreanLevels(allKoreanLevelIds)
+        } else {
+            // 개별 수준 선택
+            if (!selectedKoreanLevels.includes(item.value)) {
+                setSelectedKoreanLevels([...selectedKoreanLevels, item.value])
+            }
+        }
+    }
+
+    // 한국어 수준 제거 함수 추가
+    const removeKoreanLevel = (koreanLevelId: number) => {
+        setSelectedKoreanLevels(prev => prev.filter(id => id !== koreanLevelId))
+    }
+
     // 직종 선택/해제 토글
     const toggleJob = (jobId: number) => {
         setSelectedJobs(prev =>
@@ -281,6 +311,9 @@ const Info2 = () => {
                 const tempAgeRanges: number[] = []
                 const tempVisas: number[] = []
                 const tempGenders: number[] = []
+                const tempKoreanLevels: number[] = []
+                const tempWorkDays: string[] = []  // 요일 문자열 배열
+
 
                 keywords.forEach(keyword => {
                     if (keywordIds.includes(keyword.id)) {
@@ -298,6 +331,10 @@ const Info2 = () => {
                             tempVisas.push(keyword.id)
                         } else if (keyword.category === '성별') {
                             tempGenders.push(keyword.id)
+                        } else if (keyword.category === '한국어수준') {
+                            tempKoreanLevels.push(keyword.id)
+                        } else if (keyword.category === '근무요일') {  // 추가
+                            tempWorkDays.push(keyword.keyword)  // keyword 값(월,화,수...)을 배열에 추가
                         }
                     }
                 })
@@ -308,6 +345,7 @@ const Info2 = () => {
                 setSelectedAgeRanges(tempAgeRanges)
                 setSelectedVisas(tempVisas)
                 setSelectedGenders(tempGenders)
+                setSelectedKoreanLevels(tempKoreanLevels)
             }
         } catch (error) {
             console.error('공고 로드 실패:', error)
@@ -379,6 +417,13 @@ const Info2 = () => {
                     .delete()
                     .eq('job_posting_id', savedPostingId)
 
+                const selectedWorkDayKeywordIds = workingDays
+                    .map(day => {
+                        const keyword = workDayKeywords.find(k => k.keyword === day)
+                        return keyword?.id
+                    })
+                    .filter((id): id is number => id !== undefined)
+
                 // 새 키워드 추가
                 const allSelectedKeywords = [
                     ...selectedCountries,
@@ -387,7 +432,9 @@ const Info2 = () => {
                     ...(selectedLocation ? [selectedLocation] : []),
                     ...selectedAgeRanges,
                     ...selectedVisas,
-                    ...selectedGenders
+                    ...selectedGenders,
+                    ...selectedKoreanLevels,
+                    ...selectedWorkDayKeywordIds  // 근무요일 키워드 ID 추가
                 ].filter(Boolean)
 
                 if (allSelectedKeywords.length > 0) {
@@ -596,27 +643,27 @@ const Info2 = () => {
                         <Text className="text-gray-700 mb-2">급여</Text>
                         <View className="flex-row items-center gap-2">
 
-                        <TextInput
-                            className="flex-1 border border-gray-300 rounded-lg p-3"
-                            placeholder="예: 월 200-250만원"
-                            value={salaryRange}
-                            onChangeText={setSalaryRange}
-                        />
-                        <TouchableOpacity
-                            onPress={() => setSalaryRangeNegotiable(!salaryRangeNegotiable)}
-                            className="flex-row items-center gap-2"
-                        >
-                            <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                                salaryRangeNegotiable
-                                    ? 'bg-blue-500 border-blue-500'
-                                    : 'bg-white border-gray-300'
-                            }`}>
-                                {salaryRangeNegotiable && (
-                                    <Text className="text-white text-xs">✓</Text>
-                                )}
-                            </View>
-                            <Text className="text-gray-700">협의가능</Text>
-                        </TouchableOpacity>
+                            <TextInput
+                                className="flex-1 border border-gray-300 rounded-lg p-3"
+                                placeholder="예: 월 200-250만원"
+                                value={salaryRange}
+                                onChangeText={setSalaryRange}
+                            />
+                            <TouchableOpacity
+                                onPress={() => setSalaryRangeNegotiable(!salaryRangeNegotiable)}
+                                className="flex-row items-center gap-2"
+                            >
+                                <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
+                                    salaryRangeNegotiable
+                                        ? 'bg-blue-500 border-blue-500'
+                                        : 'bg-white border-gray-300'
+                                }`}>
+                                    {salaryRangeNegotiable && (
+                                        <Text className="text-white text-xs">✓</Text>
+                                    )}
+                                </View>
+                                <Text className="text-gray-700">협의가능</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
 
@@ -951,6 +998,80 @@ const Info2 = () => {
                         {selectedVisas.length > 0 && (
                             <Text className="text-sm text-gray-500 mt-2">
                                 {selectedVisas.length}개 비자 선택됨
+                            </Text>
+                        )}
+                    </View>
+
+                    {/* 한국어 수준 선택 - 추가 */}
+                    <View className="mb-6 p-6">
+                        <Text className="text-lg font-semibold mb-3">선호 한국어 수준</Text>
+                        <Text className="text-sm text-gray-500 mb-3">여러 수준을 선택할 수 있습니다</Text>
+
+                        <Dropdown
+                            style={{
+                                height: 50,
+                                borderColor: '#d1d5db',
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                paddingHorizontal: 12,
+                                backgroundColor: 'white',
+                                marginBottom: 12,
+                            }}
+                            placeholderStyle={{
+                                fontSize: 14,
+                                color: '#9ca3af'
+                            }}
+                            selectedTextStyle={{
+                                fontSize: 14,
+                            }}
+                            inputSearchStyle={{
+                                height: 40,
+                                fontSize: 14,
+                            }}
+                            iconStyle={{
+                                width: 20,
+                                height: 20,
+                            }}
+                            data={koreanLevelOptions}
+                            search
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder="한국어 수준을 선택하세요"
+                            searchPlaceholder="검색..."
+                            value={null}
+                            onChange={handleKoreanLevelSelect}
+                        />
+
+                        {/* 선택된 한국어 수준들 태그로 표시 */}
+                        {selectedKoreanLevels.length > 0 ? (
+                            <View className="flex-row flex-wrap gap-2">
+                                {selectedKoreanLevels.map(koreanLevelId => {
+                                    const koreanLevel = koreanLevelKeywords.find(k => k.id === koreanLevelId)
+                                    return koreanLevel ? (
+                                        <View
+                                            key={koreanLevelId}
+                                            className="flex-row items-center bg-blue-500 px-3 py-2 rounded-full"
+                                        >
+                                            <Text className="text-white text-sm font-medium mr-2">
+                                                {koreanLevel.keyword}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => removeKoreanLevel(koreanLevelId)}>
+                                                <Ionicons name="close-circle" size={18} color="white" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    ) : null
+                                })}
+                            </View>
+                        ) : (
+                            <Text className="text-sm text-gray-500 text-center">
+                                선택된 한국어 수준이 없습니다
+                            </Text>
+                        )}
+
+                        {selectedKoreanLevels.length > 0 && (
+                            <Text className="text-sm text-gray-500 mt-2">
+                                {selectedKoreanLevels.length}개 수준 선택됨
                             </Text>
                         )}
                     </View>

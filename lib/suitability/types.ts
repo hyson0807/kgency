@@ -1,3 +1,4 @@
+// lib/suitability/types.ts
 
 // 적합도 계산 결과
 export interface SuitabilityResult {
@@ -8,6 +9,7 @@ export interface SuitabilityResult {
             matched: number;
             total: number;
             score: number;
+            weight?: number;
         }>;
         bonusPoints: number;
         matchedKeywords: {
@@ -19,6 +21,8 @@ export interface SuitabilityResult {
             gender: string[];
             age: string[];
             visa: string[];
+            workDays?: string[];
+            koreanLevel?: string[];
         };
         missingRequired: string[];
         appliedBonuses: string[]; // 적용된 보너스 설명
@@ -51,7 +55,7 @@ export interface SuitabilityRules {
 
     // 필수 키워드 (카테고리별)
     requiredKeywords: {
-        [category: string]: number[] | null; // null이면 필수 아님
+        [category: string]: number[] | null | 'required'; // 'required' 추가
     };
 
     // 점수 구간별 레벨
