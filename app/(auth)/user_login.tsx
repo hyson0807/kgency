@@ -1,17 +1,18 @@
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ActivityIndicator} from 'react-native'
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator} from 'react-native'
 import React, {useState, useEffect, useRef} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import Back from "@/components/back";
-import axios from "axios";
 import {useAuth} from "@/contexts/AuthContext";
 import {router} from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
 import {useTranslation} from "@/contexts/TranslationContext";
 import { api } from '@/lib/api';
+import { useModal } from '@/hooks/useModal';
 
 const UserLogin = () => {
     const { login } = useAuth();
     const { t } = useTranslation();
+    const { showModal, ModalComponent } = useModal();
 
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
@@ -44,7 +45,7 @@ const UserLogin = () => {
     const sendOtp = async () => {
         const cleanPhone = phone.replace(/[^0-9]/g, '');
         if(!cleanPhone || cleanPhone.length !== 11) {
-            Alert.alert(t('alert.notification', '알림'), t('alert.enter_valid_phone', '올바른 휴대폰 번호를 입력해주세요'));
+            showModal(t('alert.notification', '알림'), t('alert.enter_valid_phone', '올바른 휴대폰 번호를 입력해주세요'));
             return;
         }
         setLoading(true);
@@ -54,16 +55,15 @@ const UserLogin = () => {
 
             const response = await api ('POST','/api/auth/send-otp', {phone: formattedPhone})
             if (response.success) {
-                Alert.alert(t('alert.send_complete', '전송 완료'), t('alert.code_sent', '인증번호가 전송되었습니다'));
                 setInputOtp(true);
                 setResendTimer(180); // 3분 타이머
                 setTimeout(() => otpInputRef.current?.focus(), 100);
             } else {
-                Alert.alert(t('alert.send_failed', '전송 실패'), response.data.error || t('alert.code_send_error', '인증번호 전송에 실패했습니다'));
+                showModal(t('alert.send_failed', '전송 실패'), response.data.error || t('alert.code_send_error', '인증번호 전송에 실패했습니다'), 'warning');
             }
         } catch (error) {
             console.error(error);
-            Alert.alert(t('alert.error', '오류'), t('alert.check_network', '네트워크 연결을 확인해주세요'));
+            showModal(t('alert.error', '오류'), t('alert.check_network', '네트워크 연결을 확인해주세요'), 'warning');
         } finally {
             setLoading(false);
         }
@@ -71,7 +71,7 @@ const UserLogin = () => {
 
     const verifyOtp = async () => {
         if (!otp || otp.length !== 6) {
-            Alert.alert(t('alert.notification', '알림'), t('alert.enter_6_digits', '6자리 인증번호를 입력해주세요'));
+            showModal(t('alert.notification', '알림'), t('alert.enter_6_digits', '6자리 인증번호를 입력해주세요'));
             return;
         }
         setLoading(true);
@@ -100,7 +100,7 @@ const UserLogin = () => {
 
         } catch (error) {
             console.error(error);
-            Alert.alert(t('alert.error', '오류'), t('alert.auth_error', '인증 처리 중 오류가 발생했습니다'));
+            showModal(t('alert.error', '오류'), t('alert.auth_error', '인증 처리 중 오류가 발생했습니다'), 'warning');
         } finally {
             setLoading(false);
         }
@@ -250,6 +250,7 @@ const UserLogin = () => {
                     )}
                 </View>
             </KeyboardAvoidingView>
+            <ModalComponent />
         </SafeAreaView>
     )
 }
