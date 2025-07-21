@@ -26,34 +26,16 @@ export default function InterviewSchedule() {
             return
         }
 
-        setLoading(true)
-        try {
-            const response = await api('POST', '/api/interview-proposals/company', {
-                applicationId,
-                companyId: user?.userId,
+        // 다음 페이지로 이동 (면접 시간 선택)
+        router.push({
+            pathname: '/(pages)/(company)/interview-proposal-time',
+            params: {
+                applicationId: applicationId as string,
+                userId: userId as string,
+                postingId: postingId as string,
                 location: location.trim()
-            })
-
-            if (response?.success) {
-                showModal('성공', '면접이 제안되었습니다. 지원자가 시간을 선택할 수 있습니다.', 'info')
-
-                //Applicaion의 상태를 proposed
-
-                // 새로고침 신호와 함께 돌아가기
-                router.replace({
-                    pathname: '/(pages)/(company)/posting-detail2',
-                    params: {
-                        postingId: postingId,
-                        refresh: 'true'
-                    }
-                })
             }
-        } catch (error) {
-            console.error('Failed to submit proposal:', error)
-            showModal('오류', '면접 제안에 실패했습니다.')
-        } finally {
-            setLoading(false)
-        }
+        })
     }
 
     return (
@@ -109,7 +91,7 @@ export default function InterviewSchedule() {
                         }`}
                     >
                         <Text className="text-center text-white font-semibold">
-                            {loading ? '처리중...' : '면접 일정 제안하기'}
+                            다음
                         </Text>
                     </TouchableOpacity>
                 </View>
