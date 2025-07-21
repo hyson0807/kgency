@@ -22,6 +22,7 @@ interface Application {
     id: string
     applied_at: string
     status: string
+    type: 'user_initiated' | 'company_invited'
     job_posting: {
         id: string
         title: string

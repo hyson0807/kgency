@@ -9,7 +9,7 @@ interface userType {
 
 interface useApplicationsProps {
     user: userType | null;
-    activeFilter: 'all' | 'pending' | 'reviewed';
+    activeFilter: 'all' | 'user_initiated' | 'company_invited';
 }
 
 interface InterviewProposal {
@@ -29,6 +29,7 @@ interface Application {
     id: string
     applied_at: string
     status: string
+    type: 'user_initiated' | 'company_invited'
     job_posting: {
         id: string
         title: string
@@ -112,13 +113,11 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
 
             let filteredData = response.data || []
 
-            // 클라이언트 사이드 필터링
-            if (activeFilter === 'pending') {
-                filteredData = filteredData.filter((app: Application) => app.status === 'pending')
-            } else if (activeFilter === 'reviewed') {
-                filteredData = filteredData.filter((app: Application) =>
-                    ['reviewed', 'accepted', 'rejected'].includes(app.status)
-                )
+            // 클라이언트 사이드 필터링 - type 기반
+            if (activeFilter === 'user_initiated') {
+                filteredData = filteredData.filter((app: Application) => app.type === 'user_initiated')
+            } else if (activeFilter === 'company_invited') {
+                filteredData = filteredData.filter((app: Application) => app.type === 'company_invited')
             }
 
             // 면접 상태 확인

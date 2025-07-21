@@ -14,7 +14,7 @@ import {Ionicons} from "@expo/vector-icons";
 
 const Applications = () => {
     const { user } = useAuth()
-    const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'reviewed'>('all')
+    const [activeFilter, setActiveFilter] = useState<'all' | 'user_initiated' | 'company_invited'>('all')
     const { t } = useTranslation()
 
     //fetching applications

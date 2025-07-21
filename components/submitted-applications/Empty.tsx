@@ -4,7 +4,7 @@ import {Text, TouchableOpacity, View} from "react-native";
 import {router} from "expo-router";
 
 interface EmptyProps {
-    activeFilter: 'all' | 'pending' | 'reviewed'
+    activeFilter: 'all' | 'user_initiated' | 'company_invited'
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
 }
 
@@ -16,9 +16,9 @@ export const Empty = ({activeFilter, t}: EmptyProps) => {
             <Text className="text-gray-500 text-lg mt-4">
                 {activeFilter === 'all'
                     ? t('applications.no_applications', '아직 지원한 공고가 없습니다')
-                    : activeFilter === 'pending'
-                        ? t('applications.no_pending', '검토중인 지원이 없습니다')
-                        : t('applications.no_reviewed', '검토 완료된 지원이 없습니다')}
+                    : activeFilter === 'user_initiated'
+                        ? t('applications.no_user_initiated', '내가 지원한 공고가 없습니다')
+                        : t('applications.no_company_invited', '회사에서 초대한 지원이 없습니다')}
             </Text>
             {activeFilter === 'all' && (
                 <TouchableOpacity
