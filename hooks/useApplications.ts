@@ -104,7 +104,6 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
             // API 엔드포인트 호출
             const response = await api('GET', `/api/applications/user/${user.userId}`)
 
-            console.log('API 응답:', response)
 
             // response 자체가 이미 { success: true, data: [...] } 형태
             if (!response.success) {

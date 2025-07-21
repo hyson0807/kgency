@@ -50,13 +50,6 @@ const user_Layout = () => {
                 }}
             />
 
-            <Tabs.Screen
-                name="message"
-                options={{
-                    tabBarLabel: t('tab.message', '메시지'),
-                    tabBarIcon: ({size, color}) => <Feather name="mail" size={size} color={color} />
-                }}
-            />
 
             <Tabs.Screen
                 name="settings"
