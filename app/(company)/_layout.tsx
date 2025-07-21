@@ -37,13 +37,6 @@ const company_Layout = () => {
                 }}
             />
 
-            <Tabs.Screen
-                name="interviewSlots"
-                options={{
-                    tabBarLabel: '면접시간대',
-                    tabBarIcon: ({size, color}) => <MaterialIcons name="schedule" size={size} color={color} />
-                }}
-            />
 
 
             <Tabs.Screen
