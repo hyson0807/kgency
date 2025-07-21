@@ -225,13 +225,7 @@ const JobPosting = () => {
                             총 {postings.length}개의 공고
                         </Text>
                     </View>
-                    <TouchableOpacity
-                        onPress={() => router.push('/(pages)/(company)/interview-calendar')}
-                        className="bg-blue-500 px-4 py-2 rounded-lg flex-row items-center"
-                    >
-                        <Ionicons name="calendar" size={20} color="white" />
-                        <Text className="text-white font-medium ml-2">면접 일정</Text>
-                    </TouchableOpacity>
+
                 </View>
             </View>
 
