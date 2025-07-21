@@ -100,6 +100,8 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
     }
 
     const handleCancelProposal = async () => {
+        if (isDeleting) return; // 이미 진행 중이면 중복 실행 방지
+        
         const confirmMessage = item.type === 'company_invited'
             ? '회사가 제안한 지원서이므로 면접 제안과 함께 지원서도 삭제됩니다. 계속하시겠습니까?'
             : '면접 제안을 취소하시겠습니까?';
@@ -114,28 +116,17 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     const response = await api('DELETE', `/api/interview-proposals/company/${item.id}`);
 
                     if (response?.success) {
-                        showModal(
-                            '성공',
-                            response.message || '면접 제안이 취소되었습니다.',
-                            'info'
-                        );
-
-                        // 상태 변경 콜백 실행 (화면 새로고침)
+                        // 성공 시 상태 변경 콜백 실행 (모달 없이)
                         if (onStatusChange) {
-                            setTimeout(() => {
-                                onStatusChange();
-                            }, 1500); // 성공 메시지를 잠시 보여준 후 새로고침
+                            onStatusChange();
                         }
                     } else {
-                        throw new Error(response?.message || '면접 제안 취소에 실패했습니다.');
+                        // 에러 메시지를 console에만 출력하고 모달은 표시하지 않음
+                        console.error('면접 제안 취소 실패:', response?.message || '면접 제안 취소에 실패했습니다.');
                     }
                 } catch (error) {
+                    // 에러 메시지를 console에만 출력하고 모달은 표시하지 않음
                     console.error('면접 제안 취소 실패:', error);
-                    showModal(
-                        '오류',
-                        '면접 제안 취소에 실패했습니다.',
-                        'warning'
-                    );
                 } finally {
                     setIsDeleting(false);
                 }
