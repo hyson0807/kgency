@@ -1,6 +1,7 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import { SuitabilityResult } from '@/lib/suitability/types';
 
 interface UserKeyword {
     keyword: {
@@ -35,6 +36,7 @@ interface MatchedJobSeeker {
     matchedCount: number;
     matchedKeywords: string[];
     matchedKeywordsWithCategory?: MatchedKeywordWithCategory[]; // 카테고리 정보를 포함한 키워드
+    suitability?: SuitabilityResult;
 }
 
 interface UserCardProps {
@@ -43,8 +45,28 @@ interface UserCardProps {
 }
 
 export const UserCard = ({ item, onPress }: UserCardProps) => {
-    const { user: jobSeeker, matchedCount, matchedKeywords, matchedKeywordsWithCategory } = item;
+    const { user: jobSeeker, matchedCount, matchedKeywords, matchedKeywordsWithCategory, suitability } = item;
     const hasMatches = matchedCount > 0;
+    
+    // 적합도 레벨에 따른 색상과 텍스트
+    const getSuitabilityInfo = (level?: string) => {
+        switch (level) {
+            case 'perfect':
+                return { color: 'bg-purple-500', text: '완벽한 매칭', textColor: 'text-white' };
+            case 'excellent':
+                return { color: 'bg-blue-500', text: '매우 적합', textColor: 'text-white' };
+            case 'good':
+                return { color: 'bg-green-500', text: '적합', textColor: 'text-white' };
+            case 'fair':
+                return { color: 'bg-yellow-500', text: '보통', textColor: 'text-white' };
+            case 'low':
+                return { color: 'bg-gray-400', text: '낮음', textColor: 'text-white' };
+            default:
+                return null;
+        }
+    };
+    
+    const suitabilityInfo = suitability ? getSuitabilityInfo(suitability.level) : null;
 
     // 카테고리별 색상 설정
     const getCategoryColor = (category: string) => {
@@ -103,10 +125,19 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
             className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
             activeOpacity={0.7}
         >
-            {/* 매칭 뱃지 */}
-            {hasMatches && (
-                <View className="absolute top-4 right-4 bg-blue-500 px-3 py-1 rounded-full">
-                    <Text className="text-white text-xs font-medium">매칭 {matchedCount}개</Text>
+            {/* 적합도 뱃지 */}
+            {suitability && suitabilityInfo && (
+                <View className="absolute top-4 right-4 flex-row items-center gap-2">
+                    <View className={`${suitabilityInfo.color} px-3 py-1 rounded-full`}>
+                        <Text className={`${suitabilityInfo.textColor} text-xs font-bold`}>
+                            {suitability.score}%
+                        </Text>
+                    </View>
+                    <View className="bg-gray-100 px-2 py-1 rounded-full">
+                        <Text className="text-gray-700 text-xs font-medium">
+                            {suitabilityInfo.text}
+                        </Text>
+                    </View>
                 </View>
             )}
 
@@ -162,9 +193,16 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
             <View className="border-t border-gray-100 pt-3">
                 {hasMatches ? (
                     <>
-                        <Text className="text-sm text-gray-700 font-semibold mb-2">
-                            해당 지원자는 사장님과 동일한 키워드를 선택했습니다
-                        </Text>
+                        <View className="flex-row justify-between items-center mb-2">
+                            <Text className="text-sm text-gray-700 font-semibold">
+                                매칭된 키워드
+                            </Text>
+                            {suitability && (
+                                <Text className="text-xs text-gray-500">
+                                    카테고리별 점수 확인 가능
+                                </Text>
+                            )}
+                        </View>
 
                         <View className="flex-row flex-wrap gap-2">
                             {keywordsWithCategory.map((item, index) => (
@@ -181,11 +219,41 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                                 </View>
                             ))}
                         </View>
+                        
+                        {/* 적합도 세부 정보 미리보기 */}
+                        {suitability && suitability.details && (
+                            <View className="mt-3 p-3 bg-gray-50 rounded-lg">
+                                <View className="flex-row flex-wrap gap-2">
+                                    {Object.entries(suitability.details.categoryScores)
+                                        .filter(([_, score]) => score.score > 0)
+                                        .slice(0, 6)
+                                        .map(([category, score]) => (
+                                            <View key={category} className="flex-row items-center">
+                                                <Text className="text-xs text-gray-600">{category}</Text>
+                                                <Text className="text-xs font-bold text-gray-800 ml-1">
+                                                    {Math.round(score.score)}%
+                                                </Text>
+                                            </View>
+                                        ))
+                                    }
+                                    {Object.entries(suitability.details.categoryScores).filter(([_, score]) => score.score > 0).length > 3 && (
+                                        <Text className="text-xs text-gray-500">...</Text>
+                                    )}
+                                </View>
+                            </View>
+                        )}
                     </>
                 ) : (
-                    <Text className="text-sm text-gray-500">
-                        매칭된 키워드가 없습니다
-                    </Text>
+                    <View>
+                        <Text className="text-sm text-gray-500">
+                            매칭된 키워드가 없습니다
+                        </Text>
+                        {suitability && suitability.score > 0 && (
+                            <Text className="text-xs text-gray-400 mt-1">
+                                (지역 또는 기타 요소로 {suitability.score}% 적합도)
+                            </Text>
+                        )}
+                    </View>
                 )}
             </View>
         </TouchableOpacity>

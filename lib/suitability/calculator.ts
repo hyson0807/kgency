@@ -142,18 +142,19 @@ export class SuitabilityCalculator {
             return { matched: 1, total: 1, score: 30 }; // 직종 무관인 경우 만점
         }
 
-        const matchRate = matchedJobs.length / jobKeywordsInPosting.length;
-        let score = matchRate * 30;
-
-        // 100% 매칭 시 추가 보너스 5점
-        if (matchRate === 1 && matchedJobs.length > 0) {
-            score += 5;
+        // 매칭된 직종이 있으면 30점, 없으면 0점
+        if (matchedJobs.length > 0) {
+            return {
+                matched: matchedJobs.length,
+                total: jobKeywordsInPosting.length,
+                score: 30
+            };
         }
 
         return {
-            matched: matchedJobs.length,
+            matched: 0,
             total: jobKeywordsInPosting.length,
-            score: score
+            score: 0
         };
     }
 

@@ -9,6 +9,8 @@ import {SecondHeader} from "@/components/company_home(home2)/SecondHeader";
 import {Header} from "@/components/common/Header";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import {UserCard} from "@/components/company_home(home2)/UserCard";
+import { SuitabilityCalculator } from '@/lib/suitability/calculator'
+import { SuitabilityResult } from '@/lib/suitability/types'
 
 interface UserKeyword {
     keyword: {
@@ -33,10 +35,19 @@ interface JobSeeker {
     user_keywords?: UserKeyword[]
 }
 
+interface CompanyKeyword {
+    keyword: {
+        id: number
+        keyword: string
+        category: string
+    }
+}
+
 interface MatchedJobSeeker {
     user: JobSeeker
     matchedCount: number
     matchedKeywords: string[]
+    suitability?: SuitabilityResult
 }
 
 const Home2 = () => {
@@ -45,6 +56,8 @@ const Home2 = () => {
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
     const [companyKeywordIds, setCompanyKeywordIds] = useState<number[]>([])
+    const [companyKeywords, setCompanyKeywords] = useState<CompanyKeyword[]>([])
+    const calculator = new SuitabilityCalculator()
 
     useEffect(() => {
         if (user) {
@@ -65,13 +78,23 @@ const Home2 = () => {
         try {
             const { data, error } = await supabase
                 .from('company_keyword')
-                .select('keyword_id')
+                .select(`
+                    keyword_id,
+                    keyword:keyword_id (
+                        id,
+                        keyword,
+                        category
+                    )
+                `)
                 .eq('company_id', user.userId)
 
             if (error) throw error
 
             if (data) {
                 setCompanyKeywordIds(data.map(ck => ck.keyword_id))
+                setCompanyKeywords(data.map(ck => ({
+                    keyword: ck.keyword as any
+                })))
             }
         } catch (error) {
             console.error('회사 키워드 조회 실패:', error)
@@ -122,15 +145,31 @@ const Home2 = () => {
                         ?.filter((uk: any) => matchedKeywordIds.includes(uk.keyword.id))
                         .map((uk: any) => uk.keyword.keyword) || []
 
+                    // 적합도 계산
+                    let suitability: SuitabilityResult | undefined = undefined
+                    if (companyKeywords.length > 0) {
+                        // 회사 키워드를 적합도 계산기가 사용하는 형식으로 변환
+                        const companyKeywordsForCalculator = companyKeywords.map(ck => ({
+                            keyword: ck.keyword
+                        }))
+                        
+                        suitability = calculator.calculate(userKeywordIds, companyKeywordsForCalculator)
+                    }
+
                     return {
                         user: jobSeeker as JobSeeker,
                         matchedCount: matchedKeywordIds.length,
-                        matchedKeywords
+                        matchedKeywords,
+                        suitability
                     }
                 })
 
-                // 매칭 점수 높은 순으로 정렬
-                matched.sort((a, b) => b.matchedCount - a.matchedCount)
+                // 적합도 점수 높은 순으로 정렬 (적합도가 없는 경우 매칭 카운트로 정렬)
+                matched.sort((a, b) => {
+                    const scoreA = a.suitability?.score || a.matchedCount
+                    const scoreB = b.suitability?.score || b.matchedCount
+                    return scoreB - scoreA
+                })
                 setMatchedJobSeekers(matched)
             }
         } catch (error) {
