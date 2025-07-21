@@ -33,6 +33,8 @@ const Keywords = () => {
     const [selectedVisas, setSelectedVisas] = useState<number[]>([])
     const [selectedJobs, setSelectedJobs] = useState<number[]>([])
     const [selectedConditions, setSelectedConditions] = useState<number[]>([])
+    const [selectedWorkDays, setSelectedWorkDays] = useState<number[]>([])
+    const [selectedKoreanLevel, setSelectedKoreanLevel] = useState<number | null>(null)
 
     const { showModal, ModalComponent, hideModal} = useModal()
 
@@ -51,6 +53,8 @@ const Keywords = () => {
     const jobKeywords = keywords.filter(k => k.category === '직종')
     const conditionKeywords = keywords.filter(k => k.category === '근무조건')
     const moveableKeyword = keywords.find(k => k.category === '지역이동')
+    const workDayKeywords = keywords.filter(k => k.category === '근무요일')
+    const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준')
 
     // 국가 드롭다운 옵션 (상관없음 포함)
     const countryOptions = [
@@ -182,6 +186,18 @@ const Keywords = () => {
                 .filter(k => k.category === '근무조건' && companyKeywords.includes(k.id))
                 .map(k => k.id)
             setSelectedConditions(conditions)
+
+            // 근무요일
+            const workDays = keywords
+                .filter(k => k.category === '근무요일' && companyKeywords.includes(k.id))
+                .map(k => k.id)
+            setSelectedWorkDays(workDays)
+
+            // 한국어수준
+            const koreanLevel = keywords.find(k =>
+                k.category === '한국어수준' && companyKeywords.includes(k.id)
+            )
+            if (koreanLevel) setSelectedKoreanLevel(koreanLevel.id)
         }
     }, [companyKeywords, keywords, moveableKeyword])
 
@@ -271,6 +287,20 @@ const Keywords = () => {
         )
     }
 
+    // 근무요일 선택/해제
+    const toggleWorkDay = (dayId: number) => {
+        setSelectedWorkDays(prev =>
+            prev.includes(dayId)
+                ? prev.filter(id => id !== dayId)
+                : [...prev, dayId]
+        )
+    }
+
+    // 한국어 수준 선택
+    const handleKoreanLevelSelect = (levelId: number) => {
+        setSelectedKoreanLevel(levelId)
+    }
+
     // 지역이동 가능 토글
     const toggleMoveable = () => {
         if (moveableKeyword) {
@@ -303,7 +333,9 @@ const Keywords = () => {
                 ...selectedAges,
                 ...selectedVisas,
                 ...selectedJobs,
-                ...selectedConditions
+                ...selectedConditions,
+                ...selectedWorkDays,
+                selectedKoreanLevel
             ].filter(Boolean) // null 제거
 
             // 새로운 키워드 추가
@@ -702,13 +734,80 @@ const Keywords = () => {
                     title="모집 직종"
                 />
 
-                 {/*근무조건 선택*/}
-                {/*<WorkConditionsSelector*/}
-                {/*    conditions={conditionKeywords}*/}
-                {/*    selectedConditions={selectedConditions}*/}
-                {/*    onToggle={toggleCondition}*/}
-                {/*    title="제공 조건"*/}
-                {/*/>*/}
+                {/* 근무요일 선택 */}
+                <View className="p-6">
+                    <Text className="text-xl font-bold mb-4">선호하는 근무요일</Text>
+                    <View className="p-4 bg-gray-50 rounded-xl">
+                        <View className="flex-row justify-between gap-1">
+                            {workDayKeywords
+                                .sort((a, b) => {
+                                    const dayOrder = ['월', '화', '수', '목', '금', '토', '일'];
+                                    return dayOrder.indexOf(a.keyword) - dayOrder.indexOf(b.keyword);
+                                })
+                                .map(day => (
+                                <TouchableOpacity
+                                    key={day.id}
+                                    onPress={() => toggleWorkDay(day.id)}
+                                    className={`px-2 py-2 rounded-lg border-2 flex-1 ${
+                                        selectedWorkDays.includes(day.id)
+                                            ? 'bg-indigo-500 border-indigo-500'
+                                            : 'bg-white border-gray-300'
+                                    }`}
+                                >
+                                    <Text className={`text-sm font-medium text-center ${
+                                        selectedWorkDays.includes(day.id)
+                                            ? 'text-white'
+                                            : 'text-gray-700'
+                                    }`}>
+                                        {day.keyword}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        {selectedWorkDays.length === 0 && (
+                            <Text className="text-sm text-gray-500 mt-3 text-center">
+                                선택된 근무요일이 없습니다
+                            </Text>
+                        )}
+                    </View>
+                </View>
+
+                {/* 한국어 수준 선택 */}
+                <View className="p-6">
+                    <Text className="text-xl font-bold mb-4">한국어 수준 요구사항</Text>
+                    <View className="p-4 bg-gray-50 rounded-xl">
+                        <View className="flex-row flex-wrap gap-3">
+                            {koreanLevelKeywords.map(level => (
+                                <TouchableOpacity
+                                    key={level.id}
+                                    onPress={() => handleKoreanLevelSelect(level.id)}
+                                    className={`px-4 py-3 rounded-xl border-2 ${
+                                        selectedKoreanLevel === level.id
+                                            ? 'bg-red-500 border-red-500'
+                                            : 'bg-white border-gray-300'
+                                    }`}
+                                >
+                                    <Text className={`text-base font-medium ${
+                                        selectedKoreanLevel === level.id
+                                            ? 'text-white'
+                                            : 'text-gray-700'
+                                    }`}>
+                                        {level.keyword}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        {selectedKoreanLevel === null && (
+                            <Text className="text-sm text-gray-500 mt-3 text-center">
+                                선택된 한국어 수준이 없습니다
+                            </Text>
+                        )}
+                    </View>
+                </View>
+
+
 
                 {/* 선택된 키워드 요약 */}
                 <View className="mx-6 p-4 bg-blue-50 rounded-xl">
@@ -722,7 +821,9 @@ const Keywords = () => {
                         ...selectedAges,
                         ...selectedVisas,
                         ...selectedJobs,
-                        ...selectedConditions
+                        ...selectedConditions,
+                        ...selectedWorkDays,
+                        selectedKoreanLevel
                     ].filter(Boolean).length}개
                     </Text>
                 </View>

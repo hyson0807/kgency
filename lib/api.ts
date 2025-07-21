@@ -7,6 +7,7 @@ const SERVER_URL = __DEV__
     : 'https://kgencyserver-production.up.railway.app';
 
 // http://192.168.0.15:5004
+//커밋
 // 'http://192.168.0.20:5004'
 // API 응답 타입 (서버 응답에 맞춰 수정)
 interface ApiResponse<T = any> {
