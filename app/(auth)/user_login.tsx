@@ -114,7 +114,7 @@ const UserLogin = () => {
     }, [otp]);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView className="flex-1">
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 className="flex-1"
@@ -255,11 +255,6 @@ const UserLogin = () => {
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
-    }
-})
+
 
 export default UserLogin
