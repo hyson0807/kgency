@@ -9,7 +9,8 @@ import { ko } from 'date-fns/locale'
 
 // Components
 import Back from '@/components/back'
-import { InterviewScheduleCard } from '@/components/interview-calendar/InterviewScheduleCard'
+import { InterviewScheduleTab } from '@/components/interview-calendar/InterviewScheduleTab'
+import { InterviewSlotsTab } from '@/components/interview-calendar/InterviewSlotsTab'
 
 // Hooks & Utils
 import { api } from '@/lib/api'
@@ -420,139 +421,25 @@ export default function InterviewCalendar() {
 
                 {/* 탭별 컨텐츠 */}
                 {activeTab === 'schedule' ? (
-                    /* 면접 일정 탭 */
-                    <View className="mt-4 px-4">
-                        <View className="flex-row items-center justify-between mb-3">
-                            <Text className="text-lg font-bold">
-                                {formatDateHeader(selectedDate)}
-                            </Text>
-                            <View className="bg-blue-100 px-3 py-1 rounded-full">
-                                <Text className="text-blue-600 text-sm font-medium">
-                                    {selectedDateSchedules.length}건
-                                </Text>
-                            </View>
-                        </View>
-
-                        {selectedDateSchedules.length === 0 ? (
-                            <View className="bg-white rounded-xl p-8 items-center">
-                                <Ionicons name="calendar-outline" size={60} color="#cbd5e0" />
-                                <Text className="text-gray-500 mt-4">
-                                    예정된 면접이 없습니다
-                                </Text>
-                            </View>
-                        ) : (
-                            <View className="space-y-3">
-                                {selectedDateSchedules.map((schedule) => (
-                                    <InterviewScheduleCard
-                                        key={schedule.id}
-                                        schedule={schedule}
-                                        onCancel={() => handleCancelInterview(schedule.id)}
-                                    />
-                                ))}
-                            </View>
-                        )}
-                    </View>
+                    <InterviewScheduleTab
+                        selectedDate={selectedDate}
+                        selectedDateSchedules={selectedDateSchedules}
+                        formatDateHeader={formatDateHeader}
+                        onCancelInterview={handleCancelInterview}
+                    />
                 ) : (
-                    /* 시간대 설정 탭 */
-                    <View className="px-4 mt-4">
-                        <View className="flex-row items-center justify-between mb-3">
-                            <Text className="text-lg font-bold">
-                                {formatDateHeader(selectedDate)}
-                            </Text>
-                            <TouchableOpacity
-                                onPress={() => fetchSlots()}
-                                className="p-2"
-                            >
-                                <Ionicons name="refresh" size={20} color="#3b82f6" />
-                            </TouchableOpacity>
-                        </View>
-
-                        {selectedDate && (
-                            <View>
-                                {/* 예약된 시간이 있으면 안내 메시지 */}
-                                {bookedSlots[selectedDate]?.length > 0 && (
-                                    <View className="bg-yellow-50 p-3 rounded-lg mb-3">
-                                        <Text className="text-sm text-yellow-800">
-                                            ⚠️ 이미 예약된 시간대는 변경할 수 없습니다.
-                                        </Text>
-                                    </View>
-                                )}
-
-                                <View className="bg-white rounded-xl p-4">
-                                    <Text className="text-base font-medium mb-3">면접 유형 선택</Text>
-                                    <View className="flex-row gap-2 mb-4">
-                                        {(['대면', '화상', '전화'] as const).map((type) => (
-                                            <TouchableOpacity
-                                                key={type}
-                                                onPress={() => setInterviewType(type)}
-                                                className={`px-4 py-2 rounded-lg border ${
-                                                    interviewType === type
-                                                        ? 'bg-blue-500 border-blue-500'
-                                                        : 'bg-white border-gray-300'
-                                                }`}
-                                            >
-                                                <Text className={
-                                                    interviewType === type
-                                                        ? 'text-white'
-                                                        : 'text-gray-700'
-                                                }>
-                                                    {type}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </View>
-
-                                    <Text className="text-base font-medium mb-3">가능 시간 선택</Text>
-                                    <View className="flex-row flex-wrap gap-2">
-                                        {timeSlots.map((time) => {
-                                            const isBooked = bookedSlots[selectedDate]?.includes(time)
-                                            const isSelected = selectedTimes.includes(time)
-
-                                            return (
-                                                <TouchableOpacity
-                                                    key={time}
-                                                    onPress={() => handleTimeToggle(time)}
-                                                    disabled={isBooked}
-                                                    className={`px-4 py-2 rounded-lg border relative ${
-                                                        isBooked
-                                                            ? 'bg-gray-100 border-gray-300'
-                                                            : isSelected
-                                                                ? 'bg-blue-500 border-blue-500'
-                                                                : 'bg-white border-gray-300'
-                                                    }`}
-                                                >
-                                                    <Text className={
-                                                        isBooked
-                                                            ? 'text-gray-400'
-                                                            : isSelected
-                                                                ? 'text-white'
-                                                                : 'text-gray-700'
-                                                    }>
-                                                        {time}
-                                                    </Text>
-                                                    {isBooked && (
-                                                        <Text className="text-xs text-gray-400 absolute -bottom-2">
-                                                            예약됨
-                                                        </Text>
-                                                    )}
-                                                </TouchableOpacity>
-                                            )
-                                        })}
-                                    </View>
-
-                                    {/* 저장 버튼 */}
-                                    <TouchableOpacity
-                                        onPress={handleSaveForDate}
-                                        className="mt-4 py-3 bg-blue-500 rounded-lg"
-                                    >
-                                        <Text className="text-center text-white font-semibold">
-                                            {selectedDate} 시간대 저장
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        )}
-                    </View>
+                    <InterviewSlotsTab
+                        selectedDate={selectedDate}
+                        formatDateHeader={formatDateHeader}
+                        onRefresh={fetchSlots}
+                        bookedSlots={bookedSlots[selectedDate] || []}
+                        interviewType={interviewType}
+                        onInterviewTypeChange={setInterviewType}
+                        timeSlots={timeSlots}
+                        selectedTimes={selectedTimes}
+                        onTimeToggle={handleTimeToggle}
+                        onSaveForDate={handleSaveForDate}
+                    />
                 )}
             </ScrollView>
 
