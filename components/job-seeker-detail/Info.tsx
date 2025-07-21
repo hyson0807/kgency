@@ -1,4 +1,4 @@
-import {Text, TouchableOpacity, View} from "react-native";
+import {Text, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import React from "react";
 
@@ -30,12 +30,10 @@ interface JobSeekerDetail {
 
 interface InfoProps {
     jobSeeker: JobSeekerDetail,
-    handleCopyPhone: () => void
 }
 
 export const Info = ({
     jobSeeker,
-    handleCopyPhone
                      }: InfoProps) => {
 
     return (
@@ -57,13 +55,6 @@ export const Info = ({
                         </View>
                     </View>
                 </View>
-                <TouchableOpacity
-                    onPress={handleCopyPhone}
-                    className="bg-blue-500 px-4 py-2 rounded-lg flex-row items-center"
-                >
-                    <Ionicons name="call" size={16} color="white" />
-                    <Text className="text-white font-medium ml-2">전화번호 복사</Text>
-                </TouchableOpacity>
             </View>
 
             {/* 기본 정보 그리드 */}

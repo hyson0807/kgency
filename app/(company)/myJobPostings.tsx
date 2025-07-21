@@ -179,6 +179,8 @@ const JobPosting = () => {
                     .in('id', messageIds)
             }
 
+            //이부분에 넣어주면 되겠지?
+
             // 5. 공고 soft delete 처리
             const { error: deleteError } = await supabase
                 .from('job_postings')

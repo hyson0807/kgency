@@ -49,6 +49,8 @@ interface GroupedKeywords {
     gender?: string[]
     age?: string[]
     visa?: string[]
+    workDays?: string[]
+    koreanLevel?: string[]
 }
 
 export default function JobSeekerDetail() {
@@ -67,7 +69,9 @@ export default function JobSeekerDetail() {
         conditions: [],
         gender: [],
         age: [],
-        visa: []
+        visa: [],
+        workDays: [],
+        koreanLevel: []
     })
 
     const [showLocationModal, setShowLocationModal] = useState(false)
@@ -145,7 +149,9 @@ export default function JobSeekerDetail() {
                         conditions: [],
                         gender: [],
                         age: [],
-                        visa: []
+                        visa: [],
+                        workDays: [],
+                        koreanLevel: []
                     }
 
                     keywords.forEach(uk => {
@@ -174,6 +180,12 @@ export default function JobSeekerDetail() {
                                     break
                                 case '비자':
                                     grouped.conditions.push(uk.keyword.keyword)
+                                    break
+                                case '근무요일':
+                                    grouped.workDays!.push(uk.keyword.keyword)
+                                    break
+                                case '한국어수준':
+                                    grouped.koreanLevel!.push(uk.keyword.keyword)
                                     break
                             }
                         }
@@ -301,7 +313,7 @@ export default function JobSeekerDetail() {
                 contentContainerStyle={{ paddingBottom: 100 }}
             >
                 {/* 기본 정보 */}
-                <Info jobSeeker={jobSeeker} handleCopyPhone={handleCopyPhone} />
+                <Info jobSeeker={jobSeeker} />
 
                 <UserKeywords groupedKeywords={groupedKeywords} />
                 
