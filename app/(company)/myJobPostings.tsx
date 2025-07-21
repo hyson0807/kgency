@@ -179,9 +179,27 @@ const JobPosting = () => {
                     .in('id', messageIds)
             }
 
-            //이부분에 넣어주면 되겠지?
+            // 5. interview_proposals 삭제 처리
+            const { data: relatedApplications } = await supabase
+                .from('applications')
+                .select('id')
+                .eq('job_posting_id', postingId)
 
-            // 5. 공고 soft delete 처리
+            if (relatedApplications && relatedApplications.length > 0) {
+                const applicationIds = relatedApplications.map(app => app.id)
+                
+                // interview_proposals 테이블에서 해당 application들의 레코드 삭제
+                const { error: proposalDeleteError } = await supabase
+                    .from('interview_proposals')
+                    .delete()
+                    .in('application_id', applicationIds)
+
+                if (proposalDeleteError) {
+                    console.error('면접 제안 삭제 실패:', proposalDeleteError)
+                }
+            }
+
+            // 6. 공고 soft delete 처리
             const { error: deleteError } = await supabase
                 .from('job_postings')
                 .update({
@@ -192,7 +210,7 @@ const JobPosting = () => {
 
             if (deleteError) throw deleteError
 
-            // 6. 로컬 상태 업데이트
+            // 7. 로컬 상태 업데이트
             setPostings(prev => prev.filter(p => p.id !== postingId))
 
         } catch (error) {
