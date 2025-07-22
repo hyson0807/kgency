@@ -1,9 +1,9 @@
 // hooks/useProfile.ts
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {router} from "expo-router";
+import { api } from '@/lib/api';
 
 // 타입 정의
 interface Profile {
@@ -55,45 +55,25 @@ export const useProfile = () => {
         try {
             setError(null);
 
-            // 기본 프로필 정보 가져오기
-            const { data: profileData, error: profileError } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.userId)
-                .single();
+            const response = await api('GET', '/api/profiles');
 
-            // 유저가 삭제된 경우 처리
-            if (profileError && profileError.code === 'PGRST116') {
-                console.log('유저 프로필이 존재하지 않습니다');
+            if (!response.success) {
+                if (response.error === '프로필이 존재하지 않습니다.') {
+                    console.log('유저 프로필이 존재하지 않습니다');
 
-                // 로컬 스토리지 정리
-                await AsyncStorage.removeItem('authToken');
-                await AsyncStorage.removeItem('userData');
-                await AsyncStorage.removeItem('userProfile');
+                    // 로컬 스토리지 정리
+                    await AsyncStorage.removeItem('authToken');
+                    await AsyncStorage.removeItem('userData');
+                    await AsyncStorage.removeItem('userProfile');
 
-                // 로그인 페이지로 리다이렉트
-                router.replace('/start');
-                return;
-            }
-
-            if (profileError) throw profileError;
-
-            let fullProfile: FullProfile = profileData;
-
-            // user 타입인 경우 user_info 가져오기
-            if (profileData.user_type === 'user') {
-                const { data: userInfo, error: userInfoError } = await supabase
-                    .from('user_info')
-                    .select('*')
-                    .eq('user_id', user.userId)
-                    .single();
-
-                if (!userInfoError && userInfo) {
-                    fullProfile.user_info = userInfo;
+                    // 로그인 페이지로 리다이렉트
+                    router.replace('/start');
+                    return;
                 }
+                throw new Error(response.error);
             }
 
-
+            const fullProfile: FullProfile = response.data;
             setProfile(fullProfile);
             // AsyncStorage에도 저장
             await AsyncStorage.setItem('userProfile', JSON.stringify(fullProfile));
@@ -116,49 +96,13 @@ export const useProfile = () => {
         try {
             setError(null);
 
-            // 1. profiles 테이블 업데이트
-            if (updates.profile) {
-                const { error } = await supabase
-                    .from('profiles')
-                    .update(updates.profile)
-                    .eq('id', user.userId);
+            const response = await api('PUT', '/api/profiles', updates);
 
-                if (error) throw error;
+            if (!response.success) {
+                throw new Error(response.error);
             }
 
-            // 2. user_info 테이블 업데이트
-            if (updates.userInfo && profile.user_type === 'user') {
-                // user_info가 이미 있는지 확인
-                const { data: existing } = await supabase
-                    .from('user_info')
-                    .select('id')
-                    .eq('user_id', user.userId)
-                    .single();
-
-                if (existing) {
-                    // 업데이트
-                    const { error } = await supabase
-                        .from('user_info')
-                        .update(updates.userInfo)
-                        .eq('user_id', user.userId);
-
-                    if (error) throw error;
-                } else {
-                    // 새로 생성
-                    const { error } = await supabase
-                        .from('user_info')
-                        .insert({
-                            ...updates.userInfo,
-                            user_id: user.userId
-                        });
-
-                    if (error) throw error;
-                }
-            }
-
-
-
-            // 4. 다시 가져오기
+            // 프로필 다시 가져오기
             await fetchProfile();
 
             console.log('프로필 업데이트 성공');
@@ -173,7 +117,22 @@ export const useProfile = () => {
 
     // 프로필 새로고침
     const refreshProfile = async () => {
-        await fetchProfile();
+        try {
+            const response = await api('POST', '/api/profiles/refresh');
+
+            if (!response.success) {
+                throw new Error(response.error);
+            }
+
+            const fullProfile: FullProfile = response.data;
+            setProfile(fullProfile);
+            // AsyncStorage에도 저장
+            await AsyncStorage.setItem('userProfile', JSON.stringify(fullProfile));
+
+        } catch (error) {
+            console.error('프로필 새로고침 실패:', error);
+            setError('프로필 새로고침에 실패했습니다.');
+        }
     };
 
     // 컴포넌트 마운트 시 프로필 가져오기

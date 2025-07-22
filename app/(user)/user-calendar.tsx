@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Linking } from 'react-native'
+import { View, Text, ScrollView, ActivityIndicator, Linking } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Calendar, LocaleConfig } from 'react-native-calendars'
 import { Ionicons } from '@expo/vector-icons'

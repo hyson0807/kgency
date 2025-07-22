@@ -1,4 +1,4 @@
-import {View, Text, FlatList, RefreshControl, TouchableOpacity} from 'react-native'
+import {View, Text, FlatList, RefreshControl} from 'react-native'
 import React, {useCallback, useState} from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useFocusEffect } from '@react-navigation/native'
@@ -9,8 +9,6 @@ import {Empty} from "@/components/submitted-applications/Empty";
 import {ApplicationItem} from "@/components/submitted-applications/ApplicationItem";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import {useApplications} from "@/hooks/useApplications";
-import {router} from "expo-router";
-import {Ionicons} from "@expo/vector-icons";
 
 const Applications = () => {
     const { user } = useAuth()
@@ -47,13 +45,6 @@ const Applications = () => {
                                 {t('applications.total_applications', `총 ${applications.length}개의 지원`, { count: applications.length })}
                             </Text>
                         </View>
-                        <TouchableOpacity
-                            onPress={() => router.push('/(pages)/(user)/interview-calendar-user')}
-                            className="bg-blue-500 px-3 py-2 rounded-lg flex-row items-center"
-                        >
-                            <Ionicons name="calendar" size={18} color="white" />
-                            <Text className="text-white text-sm font-medium ml-1">면접 일정</Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
                 {/* 필터 탭 */}

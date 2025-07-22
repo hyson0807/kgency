@@ -9,6 +9,7 @@ import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import {Header} from "@/components/common/Header";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import { SuitabilityResult } from '@/lib/suitability';
+import {Header_Home} from "@/components/user_home/Header";
 
 // 타입은 hooks/useMatchedJobPostings에서 import
 interface JobPosting {
@@ -83,28 +84,6 @@ const Home = () => {
         )
     }
 
-    const renderHeader = () => (
-        <View className="bg-white p-4 mb-2">
-            <View className="flex-row items-center justify-between">
-                <View>
-                    <Text className="text-lg font-bold text-gray-800">
-                        {t('home.recommended_jobs', '추천 일자리')}
-                    </Text>
-                    <Text className="text-sm text-gray-600 mt-1">
-                        {t('home.total_postings', `총 ${matchedPostings.length}개의 공고`, {
-                            count: matchedPostings.length
-                        })}
-                    </Text>
-                </View>
-                <TouchableOpacity
-                    onPress={() => router.push('/(pages)/(user)/info')}
-                    className="bg-blue-100 px-4 py-2 rounded-lg"
-                >
-                    <Text className="text-blue-600 font-medium">{t('home.set_keywords', '대표 키워드 설정')}</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-    )
 
     if (loading) {
         return (
@@ -120,7 +99,7 @@ const Home = () => {
                 data={matchedPostings}
                 keyExtractor={(item) => item.posting.id}
                 renderItem={renderPosting}
-                ListHeaderComponent={renderHeader}
+                ListHeaderComponent={<Header_Home matchedPostings={matchedPostings}/>}
                 contentContainerStyle={{ paddingBottom: 20 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
