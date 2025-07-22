@@ -196,6 +196,14 @@ const Keywords = () => {
         }))
     }
 
+    // 전체 삭제 핸들러 (상관없음 해제용)
+    const handleRemoveAll = (category: keyof SelectedKeywords) => {
+        setSelectedKeywords(prev => ({
+            ...prev,
+            [category]: []
+        }))
+    }
+
     // 통합된 토글 핸들러
     const toggleKeyword = (category: keyof SelectedKeywords, id: number) => {
         const currentArray = selectedKeywords[category] as number[]
@@ -304,6 +312,7 @@ const Keywords = () => {
                     selectedIds={selectedKeywords.countries}
                     onSelect={(item) => handleMultiSelect('countries', item)}
                     onRemove={(id) => handleRemove('countries', id)}
+                    onRemoveAll={() => handleRemoveAll('countries')}
                     emptyText="선택된 국가가 없습니다"
                     enableSearch={true}
                 />
@@ -316,6 +325,7 @@ const Keywords = () => {
                     selectedIds={selectedKeywords.genders}
                     onSelect={(item) => handleMultiSelect('genders', item)}
                     onRemove={(id) => handleRemove('genders', id)}
+                    onRemoveAll={() => handleRemoveAll('genders')}
                     emptyText="선택된 성별이 없습니다"
                 />
 
@@ -327,6 +337,7 @@ const Keywords = () => {
                     selectedIds={selectedKeywords.ages}
                     onSelect={(item) => handleMultiSelect('ages', item)}
                     onRemove={(id) => handleRemove('ages', id)}
+                    onRemoveAll={() => handleRemoveAll('ages')}
                     emptyText="선택된 나이대가 없습니다"
                 />
 
@@ -338,6 +349,7 @@ const Keywords = () => {
                     selectedIds={selectedKeywords.visas}
                     onSelect={(item) => handleMultiSelect('visas', item)}
                     onRemove={(id) => handleRemove('visas', id)}
+                    onRemoveAll={() => handleRemoveAll('visas')}
                     emptyText="선택된 비자가 없습니다"
                 />
 
