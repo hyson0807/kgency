@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Switch, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Switch, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
@@ -8,9 +8,12 @@ import Back from '@/components/back'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 import { useUserKeywords } from '@/hooks/useUserKeywords'
-import {Dropdown} from "react-native-element-dropdown";
 import {useModal} from "@/hooks/useModal";
 import { MultiSelectKeywordSelector } from '@/components/common/MultiSelectKeywordSelector';
+import { JobBasicInfoForm } from '@/components/register_jobPosting(info2)/JobBasicInfoForm'
+import { WorkScheduleForm } from '@/components/register_jobPosting(info2)/WorkScheduleForm'
+import { SalaryInfoForm } from '@/components/register_jobPosting(info2)/SalaryInfoForm'
+import { WorkLocationForm } from '@/components/register_jobPosting(info2)/WorkLocationForm'
 
 //채용공고 등록 페이지
 const Info2 = () => {
@@ -74,16 +77,6 @@ const Info2 = () => {
         }))
 
 
-    // 요일 데이터
-    const weekDays = [
-        { label: '월', value: '월' },
-        { label: '화', value: '화' },
-        { label: '수', value: '수' },
-        { label: '목', value: '목' },
-        { label: '금', value: '금' },
-        { label: '토', value: '토' },
-        { label: '일', value: '일' }
-    ]
 
 
 
@@ -428,217 +421,48 @@ const Info2 = () => {
                 contentContainerStyle={{ paddingBottom: 100 }}
             >
                 {/* 채용 정보 */}
-                <View className="p-6 border-b border-gray-100">
-                    <Text className="text-xl font-bold mb-4">채용 정보</Text>
+                <JobBasicInfoForm
+                    jobTitle={jobTitle}
+                    setJobTitle={setJobTitle}
+                    jobDescription={jobDescription}
+                    setJobDescription={setJobDescription}
+                    jobAddress={jobAddress}
+                    setJobAddress={setJobAddress}
+                    hiringCount={hiringCount}
+                    setHiringCount={setHiringCount}
+                />
 
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">채용 제목 *</Text>
-                        <TextInput
-                            className="border border-gray-300 rounded-lg p-3"
-                            placeholder="예: 주방 보조 직원 모집"
-                            value={jobTitle}
-                            onChangeText={setJobTitle}
-                        />
-                    </View>
+                <View className="px-6">
+                    <WorkLocationForm
+                        locationOptions={locationOptions}
+                        selectedLocation={selectedLocation}
+                        setSelectedLocation={setSelectedLocation}
+                    />
 
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">업무 내용</Text>
-                        <TextInput
-                            className="border border-gray-300 rounded-lg p-3 min-h-[100px]"
-                            placeholder="업무 내용을 간단히 알려주세요!"
-                            value={jobDescription}
-                            onChangeText={setJobDescription}
-                            multiline
-                            numberOfLines={4}
-                            textAlignVertical="top"
-                        />
-                    </View>
+                    <WorkScheduleForm
+                        workingHours={workingHours}
+                        setWorkingHours={setWorkingHours}
+                        workingHoursNegotiable={workingHoursNegotiable}
+                        setWorkingHoursNegotiable={setWorkingHoursNegotiable}
+                        workingDays={workingDays}
+                        toggleWorkingDay={toggleWorkingDay}
+                        workingDaysNegotiable={workingDaysNegotiable}
+                        setWorkingDaysNegotiable={setWorkingDaysNegotiable}
+                    />
 
-                    {/* 가게 주소 추가 */}
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">가게 주소</Text>
-                        <TextInput
-                            className="border border-gray-300 rounded-lg p-3"
-                            placeholder="가게 주소"
-                            value={jobAddress}
-                            onChangeText={setJobAddress}
-                        />
-                    </View>
-
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">근무 지역</Text>
-                        <Dropdown
-                            style={{
-                                height: 50,
-                                borderColor: '#d1d5db',
-                                borderWidth: 1,
-                                borderRadius: 8,
-                                paddingHorizontal: 12,
-                            }}
-                            placeholderStyle={{
-                                fontSize: 14,
-                                color: '#9ca3af'
-                            }}
-                            selectedTextStyle={{
-                                fontSize: 14,
-                            }}
-                            inputSearchStyle={{
-                                height: 40,
-                                fontSize: 14,
-                            }}
-                            iconStyle={{
-                                width: 20,
-                                height: 20,
-                            }}
-                            data={locationOptions}
-                            search
-                            maxHeight={300}
-                            labelField="label"
-                            valueField="value"
-                            placeholder="근무 지역을 선택하세요"
-                            searchPlaceholder="검색..."
-                            value={selectedLocation}
-                            onChange={item => {
-                                setSelectedLocation(item.value);
-                            }}
-                        />
-                    </View>
-
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">근무시간</Text>
-                        <View className="flex-row items-center gap-2">
-                            <TextInput
-                                className="flex-1 border border-gray-300 rounded-lg p-3"
-                                placeholder="예: 09:00-18:00"
-                                value={workingHours}
-                                onChangeText={setWorkingHours}
-                            />
-                            <TouchableOpacity
-                                onPress={() => setWorkingHoursNegotiable(!workingHoursNegotiable)}
-                                className="flex-row items-center gap-2"
-                            >
-                                <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                                    workingHoursNegotiable
-                                        ? 'bg-blue-500 border-blue-500'
-                                        : 'bg-white border-gray-300'
-                                }`}>
-                                    {workingHoursNegotiable && (
-                                        <Text className="text-white text-xs">✓</Text>
-                                    )}
-                                </View>
-                                <Text className="text-gray-700">협의가능</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">근무일 *</Text>
-                        <View className="flex-row flex-wrap gap-3 items-center">
-                            {weekDays.map(day => (
-                                <TouchableOpacity
-                                    key={day.value}
-                                    onPress={() => toggleWorkingDay(day.value)}
-                                    className={`px-2 py-2 rounded-lg border-2 ${
-                                        workingDays.includes(day.value)
-                                            ? 'bg-blue-500 border-blue-500'
-                                            : 'bg-white border-gray-300'
-                                    }`}
-                                >
-                                    <Text className={`font-medium ${
-                                        workingDays.includes(day.value)
-                                            ? 'text-white'
-                                            : 'text-gray-700'
-                                    }`}>
-                                        {day.label}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                            <TouchableOpacity
-                                onPress={() => setWorkingDaysNegotiable(!workingDaysNegotiable)}
-                                className="flex-row items-center gap-2 mt-3"
-                            >
-                                <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                                    workingDaysNegotiable
-                                        ? 'bg-blue-500 border-blue-500'
-                                        : 'bg-white border-gray-300'
-                                }`}>
-                                    {workingDaysNegotiable && (
-                                        <Text className="text-white text-xs">✓</Text>
-                                    )}
-                                </View>
-                                <Text className="text-gray-700">협의가능</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-
-
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">급여</Text>
-                        <View className="flex-row items-center gap-2">
-
-                            <TextInput
-                                className="flex-1 border border-gray-300 rounded-lg p-3"
-                                placeholder="예: 월 200-250만원"
-                                value={salaryRange}
-                                onChangeText={setSalaryRange}
-                            />
-                            <TouchableOpacity
-                                onPress={() => setSalaryRangeNegotiable(!salaryRangeNegotiable)}
-                                className="flex-row items-center gap-2"
-                            >
-                                <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                                    salaryRangeNegotiable
-                                        ? 'bg-blue-500 border-blue-500'
-                                        : 'bg-white border-gray-300'
-                                }`}>
-                                    {salaryRangeNegotiable && (
-                                        <Text className="text-white text-xs">✓</Text>
-                                    )}
-                                </View>
-                                <Text className="text-gray-700">협의가능</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">급여일</Text>
-                        <View className="flex-row items-center gap-2">
-                            <TextInput
-                                className="flex-1 border border-gray-300 rounded-lg p-3"
-                                placeholder="예: 매월 10일"
-                                value={payDay}
-                                onChangeText={setPayDay}
-                            />
-                            <TouchableOpacity
-                                onPress={() => setPayDayNegotiable(!payDayNegotiable)}
-                                className="flex-row items-center gap-2"
-                            >
-                                <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                                    payDayNegotiable
-                                        ? 'bg-blue-500 border-blue-500'
-                                        : 'bg-white border-gray-300'
-                                }`}>
-                                    {payDayNegotiable && (
-                                        <Text className="text-white text-xs">✓</Text>
-                                    )}
-                                </View>
-                                <Text className="text-gray-700">협의가능</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View className="mb-4">
-                        <Text className="text-gray-700 mb-2">모집인원</Text>
-                        <TextInput
-                            className="border border-gray-300 rounded-lg p-3"
-                            placeholder="예: 2"
-                            value={hiringCount}
-                            onChangeText={setHiringCount}
-                            keyboardType="numeric"
-                        />
-                    </View>
+                    <SalaryInfoForm
+                        salaryRange={salaryRange}
+                        setSalaryRange={setSalaryRange}
+                        salaryRangeNegotiable={salaryRangeNegotiable}
+                        setSalaryRangeNegotiable={setSalaryRangeNegotiable}
+                        payDay={payDay}
+                        setPayDay={setPayDay}
+                        payDayNegotiable={payDayNegotiable}
+                        setPayDayNegotiable={setPayDayNegotiable}
+                    />
                 </View>
+
+                <View className="border-b border-gray-100" />
 
                 {/* 채용 분야 선택 */}
                 <View className=" border-b border-gray-100">
