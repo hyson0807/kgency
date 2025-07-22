@@ -101,7 +101,7 @@ export const useMatchedJobPostings = () => {
         if (!user) return;
 
         try {
-            const response = await api('GET', `/api/user-keyword/user/${user.userId}`);
+            const response = await api('GET', '/api/user-keyword');
 
             if (response && response.data) {
                 setUserKeywordIds(response.data.map((uk: any) => uk.keyword_id));

@@ -1,7 +1,7 @@
 // hooks/useUserKeywords.ts
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { api } from '@/lib/api';
 
 // 타입 정의
 interface Keyword {
@@ -24,14 +24,14 @@ export const useUserKeywords = () => {
     const fetchKeywords = async () => {
         // user 체크 제거 - 키워드는 모든 사용자가 볼 수 있어야 함
         try {
-            const { data, error } = await supabase
-                .from('keyword')
-                .select('*')
-                .order('keyword', { ascending: true });
+            const response = await api('GET', '/api/user-keyword/keywords');
 
-            if (error) throw error;
-            if(data) {
-                setKeywords(data);
+            if (!response.success) {
+                throw new Error(response.error);
+            }
+
+            if (response.data) {
+                setKeywords(response.data);
             }
 
         } catch (error) {
@@ -43,22 +43,15 @@ export const useUserKeywords = () => {
         if (!user) return;
 
         try {
-            const { data, error } = await supabase
-                .from('user_keyword')
-                .select(`
-                      keyword_id,
-                      keyword:keyword_id (
-                        id,
-                        keyword,
-                        category
-                      )
-                `)
-                .eq('user_id', user.userId);
+            const response = await api('GET', '/api/user-keyword');
 
-            if (error) throw error;
-            if (data) {
+            if (!response.success) {
+                throw new Error(response.error);
+            }
+
+            if (response.data) {
                 // 타입 캐스팅을 통해 명확하게 처리
-                const typedData = data as unknown as UserKeyword[];
+                const typedData = response.data as unknown as UserKeyword[];
                 setUser_keywords(typedData);
             }
         } catch (error) {
@@ -72,22 +65,12 @@ export const useUserKeywords = () => {
         if (!user) return false;
 
         try {
-            // 기존 삭제
-            await supabase
-                .from('user_keyword')
-                .delete()
-                .eq('user_id', user.userId);
+            const response = await api('PUT', '/api/user-keyword', {
+                keywordIds: newKeywordIds
+            });
 
-            // 새로 추가
-            if (newKeywordIds.length > 0) {
-                const inserts = newKeywordIds.map(kid => ({
-                    user_id: user.userId,
-                    keyword_id: kid
-                }));
-
-                await supabase
-                    .from('user_keyword')
-                    .insert(inserts);
+            if (!response.success) {
+                throw new Error(response.error);
             }
 
             await fetchUserKeywords(); // 새로고침
