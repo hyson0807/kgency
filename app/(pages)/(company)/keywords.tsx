@@ -9,7 +9,7 @@ import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import {useModal} from "@/hooks/useModal";
 import {LocationSelector} from "@/components/company_keyword(keywords)/Location";
 import {MoveableSelector} from "@/components/company_keyword(keywords)/MoveableSelector";
-import {MultiSelectKeywordSelector} from "@/components/company_keyword(keywords)/MultiSelectKeywordSelector";
+import {MultiSelectKeywordSelector} from "@/components/common/MultiSelectKeywordSelector";
 import {KoreanLevelSelector} from "@/components/company_keyword(keywords)/KoreanLevelSelector";
 import {WorkDaySelector} from "@/components/company_keyword(keywords)/WorkDaySelector";
 
