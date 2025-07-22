@@ -50,6 +50,15 @@ const user_Layout = () => {
                 }}
             />
 
+            <Tabs.Screen
+                name="user-calendar"
+                options={{
+                    tabBarLabel: '일정',
+
+                    tabBarIcon: ({size, color}) => <Ionicons name="calendar" size={size} color={color} />
+                }}
+            />
+
 
             <Tabs.Screen
                 name="settings"
