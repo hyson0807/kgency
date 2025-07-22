@@ -6,6 +6,8 @@ import { router } from "expo-router";
 import { useMatchedJobPostings } from "@/hooks/useMatchedJobPostings";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { api } from "@/lib/api";
+import { SuitabilityCalculator } from "@/lib/suitability/calculator";
+import { SuitabilityResult } from "@/lib/suitability/types";
 
 interface Application {
     id: string
@@ -54,6 +56,7 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings();
     const [matchedKeywords, setMatchedKeywords] = useState<{ id: number; keyword: string; category: string }[]>([]);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [suitabilityResult, setSuitabilityResult] = useState<SuitabilityResult | null>(null);
 
     useEffect(() => {
         const loadPostingAndMatchKeywords = async () => {
@@ -79,6 +82,24 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                 ).map(uk => uk.keywords) || [];
 
                 setMatchedKeywords(matched);
+
+                // 적합도 계산
+                if (item.user.user_keyword && posting.job_posting_keywords) {
+                    const calculator = new SuitabilityCalculator();
+                    const userKeywordIds = item.user.user_keyword.map(uk => uk.keyword_id);
+                    
+                    // 공고 키워드를 SuitabilityCalculator가 요구하는 형식으로 변환
+                    const jobKeywords = posting.job_posting_keywords.map((jpk: any) => ({
+                        keyword: {
+                            id: jpk.keyword.id,
+                            keyword: jpk.keyword.keyword,
+                            category: jpk.keyword.category
+                        }
+                    }));
+
+                    const result = calculator.calculate(userKeywordIds, jobKeywords);
+                    setSuitabilityResult(result);
+                }
             }
         };
 
@@ -161,6 +182,30 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
         }
     };
 
+    // 적합도 배지 색상 설정
+    const getSuitabilityBadgeColor = (level: string) => {
+        switch (level) {
+            case 'perfect': return 'bg-emerald-500 text-white';
+            case 'excellent': return 'bg-blue-500 text-white';
+            case 'good': return 'bg-green-500 text-white';
+            case 'fair': return 'bg-yellow-500 text-white';
+            case 'low': return 'bg-gray-400 text-white';
+            default: return 'bg-gray-300 text-gray-600';
+        }
+    };
+
+    // 적합도 레벨 한글 텍스트
+    const getSuitabilityLevelText = (level: string) => {
+        switch (level) {
+            case 'perfect': return '완벽';
+            case 'excellent': return '우수';
+            case 'good': return '양호';
+            case 'fair': return '보통';
+            case 'low': return '낮음';
+            default: return '계산중';
+        }
+    };
+
     const renderInterviewButton = () => {
         switch (proposalStatus) {
             case 'pending':
@@ -216,19 +261,26 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
 
     return (
         <>
-            <View className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm gap-3">
+            <View className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm gap-3 relative">
+                {/* 적합도 배지 - 우상단 */}
+                {suitabilityResult && (
+                    <View className="absolute top-3 right-3 z-10">
+                        <View className={`px-3 py-1.5 rounded-full ${getSuitabilityBadgeColor(suitabilityResult.level)}`}>
+                            <Text className="text-xs font-bold">
+                                {getSuitabilityLevelText(suitabilityResult.level)} {suitabilityResult.score}점
+                            </Text>
+                        </View>
+                    </View>
+                )}
+
                 <View className="flex-row items-center gap-5">
                     <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
                         <Text className="text-2xl font-bold">{item.user.name.charAt(0)}</Text>
                     </View>
-                    <View>
+                    <View className="flex-1">
                         <View className="flex-row items-center gap-2">
                             <Text className="text-lg font-bold">{item.user.name}</Text>
-                            {item.message && !item.message.is_read && (
-                                <View className="bg-blue-500 px-2 py-0.5 rounded-full">
-                                    <Text className="text-xs text-white">새 이력서</Text>
-                                </View>
-                            )}
+
                             <Text className="text-sm text-gray-600">{formatDate(item.applied_at)}</Text>
                         </View>
                         <View className="flex-row items-center gap-5">
