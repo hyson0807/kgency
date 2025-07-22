@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'rea
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
-import { supabase } from '@/lib/supabase'
+import { api } from '@/lib/api'
 import { router } from 'expo-router'
 import Back from '@/components/back'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
@@ -81,14 +81,14 @@ const Keywords = () => {
     // 모든 키워드 가져오기
     const fetchKeywords = async () => {
         try {
-            const { data, error } = await supabase
-                .from('keyword')
-                .select('*')
-                .order('keyword', { ascending: true })
+            const response = await api('GET', '/api/user-keyword/keywords')
 
-            if (error) throw error
-            if (data) {
-                setKeywords(data)
+            if (!response.success) {
+                throw new Error(response.error)
+            }
+
+            if (response.data) {
+                setKeywords(response.data)
             }
         } catch (error) {
             console.error('키워드 조회 실패:', error)
@@ -100,15 +100,14 @@ const Keywords = () => {
         if (!user) return
 
         try {
-            const { data, error } = await supabase
-                .from('company_keyword')
-                .select('keyword_id')
-                .eq('company_id', user.userId)
+            const response = await api('GET', '/api/company-keyword')
 
-            if (error) throw error
+            if (!response.success) {
+                throw new Error(response.error)
+            }
 
-            if (data) {
-                const keywordIds = data.map(ck => ck.keyword_id)
+            if (response.data) {
+                const keywordIds = response.data.map((ck: any) => ck.keyword_id)
                 setCompanyKeywords(keywordIds)
             }
         } catch (error) {
@@ -231,12 +230,6 @@ const Keywords = () => {
 
         setSaving(true)
         try {
-            // 기존 키워드 모두 삭제
-            await supabase
-                .from('company_keyword')
-                .delete()
-                .eq('company_id', user.userId)
-
             // 선택된 키워드들 모으기
             const allSelectedKeywords = [
                 selectedKeywords.location,
@@ -251,18 +244,13 @@ const Keywords = () => {
                 selectedKeywords.koreanLevel
             ].filter(Boolean) // null 제거
 
-            // 새로운 키워드 추가
-            if (allSelectedKeywords.length > 0) {
-                const inserts = allSelectedKeywords.map(keywordId => ({
-                    company_id: user.userId,
-                    keyword_id: keywordId
-                }))
+            // API를 통해 키워드 업데이트
+            const response = await api('PUT', '/api/company-keyword', {
+                keywordIds: allSelectedKeywords
+            })
 
-                const { error } = await supabase
-                    .from('company_keyword')
-                    .insert(inserts)
-
-                if (error) throw error
+            if (!response.success) {
+                throw new Error(response.error)
             }
 
             router.push('/')
