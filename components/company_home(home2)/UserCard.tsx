@@ -147,8 +147,10 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                     <Text className="text-2xl font-bold">{item.user.name.charAt(0)}</Text>
                 </View>
 
-                <View>
-                    <Text className="text-lg font-bold text-gray-800 pr-20">
+                <View className="flex-1">
+                    <Text className={`text-lg font-bold text-gray-800 ${
+                        suitability && suitabilityInfo ? 'pr-40' : 'pr-4'
+                    }`} numberOfLines={1} ellipsizeMode="tail">
                         {jobSeeker.name || '이름 미등록'}
                     </Text>
 
