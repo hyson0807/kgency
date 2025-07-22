@@ -2,7 +2,7 @@ import { View, Text, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
-import { supabase } from '@/lib/supabase'
+import { api } from '@/lib/api'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import {SecondHeader} from "@/components/company_home(home2)/SecondHeader";
@@ -76,23 +76,15 @@ const Home2 = () => {
         if (!user) return
 
         try {
-            const { data, error } = await supabase
-                .from('company_keyword')
-                .select(`
-                    keyword_id,
-                    keyword:keyword_id (
-                        id,
-                        keyword,
-                        category
-                    )
-                `)
-                .eq('company_id', user.userId)
+            const response = await api('GET', '/api/company-keyword');
 
-            if (error) throw error
+            if (!response.success) {
+                throw new Error(response.error);
+            }
 
-            if (data) {
-                setCompanyKeywordIds(data.map(ck => ck.keyword_id))
-                setCompanyKeywords(data.map(ck => ({
+            if (response.data) {
+                setCompanyKeywordIds(response.data.map((ck: any) => ck.keyword_id))
+                setCompanyKeywords(response.data.map((ck: any) => ({
                     keyword: ck.keyword as any
                 })))
             }
@@ -104,33 +96,17 @@ const Home2 = () => {
     // 활성화된 구직자 목록 가져오기
     const fetchJobSeekers = async () => {
         try {
-            const { data: jobSeekers, error } = await supabase
-                .from('profiles')
-                .select(`
-                    *,
-                    user_info!user_info_user_id_fkey (
-                        age,
-                        gender,
-                        visa,
-                        korean_level
-                    ),
-                    user_keywords:user_keyword (
-                        keyword:keyword_id (
-                            id,
-                            keyword,
-                            category
-                        )
-                    )
-                `)
-                .eq('user_type', 'user')
-                .eq('job_seeking_active', true)
-                .order('created_at', { ascending: false })
+            const response = await api('GET', '/api/company-keyword/matched-job-seekers');
 
-            if (error) throw error
+            if (!response.success) {
+                throw new Error(response.error);
+            }
+
+            const jobSeekers = response.data;
 
             if (jobSeekers) {
                 // 매칭 점수 계산
-                const matched = jobSeekers.map(jobSeeker => {
+                const matched = jobSeekers.map((jobSeeker: any) => {
                     const userKeywordIds = jobSeeker.user_keywords?.map(
                         (uk: any) => uk.keyword.id
                     ) || []
@@ -165,7 +141,7 @@ const Home2 = () => {
                 })
 
                 // 적합도 점수 높은 순으로 정렬 (적합도가 없는 경우 매칭 카운트로 정렬)
-                matched.sort((a, b) => {
+                matched.sort((a: any, b: any) => {
                     const scoreA = a.suitability?.score || a.matchedCount
                     const scoreB = b.suitability?.score || b.matchedCount
                     return scoreB - scoreA
