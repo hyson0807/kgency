@@ -9,8 +9,16 @@ import {SecondHeader} from "@/components/company_home(home2)/SecondHeader";
 import {Header} from "@/components/common/Header";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import {UserCard} from "@/components/company_home(home2)/UserCard";
-import { SuitabilityCalculator } from '@/lib/suitability/calculator'
-import { SuitabilityResult } from '@/lib/suitability/types'
+// Server response suitability format (simplified)
+interface ServerSuitabilityResult {
+    score: number;
+    level: 'perfect' | 'excellent' | 'good' | 'fair' | 'low';
+    details: {
+        matchedKeywordIds: number[];
+        totalCompanyKeywords: number;
+        totalUserKeywords: number;
+    };
+}
 
 interface UserKeyword {
     keyword: {
@@ -35,19 +43,12 @@ interface JobSeeker {
     user_keywords?: UserKeyword[]
 }
 
-interface CompanyKeyword {
-    keyword: {
-        id: number
-        keyword: string
-        category: string
-    }
-}
 
 interface MatchedJobSeeker {
     user: JobSeeker
     matchedCount: number
     matchedKeywords: string[]
-    suitability?: SuitabilityResult
+    suitability?: ServerSuitabilityResult
 }
 
 const Home2 = () => {
@@ -55,101 +56,28 @@ const Home2 = () => {
     const [matchedJobSeekers, setMatchedJobSeekers] = useState<MatchedJobSeeker[]>([])
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
-    const [companyKeywordIds, setCompanyKeywordIds] = useState<number[]>([])
-    const [companyKeywords, setCompanyKeywords] = useState<CompanyKeyword[]>([])
-    const calculator = new SuitabilityCalculator()
-
     useEffect(() => {
         if (user) {
-            fetchCompanyKeywords()
+            fetchJobSeekers()
         }
     }, [user])
 
-    useEffect(() => {
-        if (companyKeywordIds.length >= 0) {
-            fetchJobSeekers()
-        }
-    }, [companyKeywordIds])
-
-    // 회사의 키워드 가져오기
-    const fetchCompanyKeywords = async () => {
-        if (!user) return
-
-        try {
-            const response = await api('GET', '/api/company-keyword');
-
-            if (!response.success) {
-                throw new Error(response.error);
-            }
-
-            if (response.data) {
-                setCompanyKeywordIds(response.data.map((ck: any) => ck.keyword_id))
-                setCompanyKeywords(response.data.map((ck: any) => ({
-                    keyword: ck.keyword as any
-                })))
-            }
-        } catch (error) {
-            console.error('회사 키워드 조회 실패:', error)
-        }
-    }
-
-    // 활성화된 구직자 목록 가져오기
+    // 매칭된 구직자 목록 가져오기 (서버에서 이미 계산된 결과)
     const fetchJobSeekers = async () => {
         try {
             const response = await api('GET', '/api/company-keyword/matched-job-seekers');
 
+
             if (!response.success) {
                 throw new Error(response.error);
             }
 
-            const jobSeekers = response.data;
+            // 서버에서 이미 매칭 및 적합도 계산이 완료된 데이터
+            const matchedJobSeekers = response.data || [];
+            setMatchedJobSeekers(matchedJobSeekers);
 
-            if (jobSeekers) {
-                // 매칭 점수 계산
-                const matched = jobSeekers.map((jobSeeker: any) => {
-                    const userKeywordIds = jobSeeker.user_keywords?.map(
-                        (uk: any) => uk.keyword.id
-                    ) || []
-
-                    // 매칭된 키워드 찾기
-                    const matchedKeywordIds = companyKeywordIds.filter(ckId =>
-                        userKeywordIds.includes(ckId)
-                    )
-
-                    // 매칭된 키워드 텍스트 가져오기
-                    const matchedKeywords = jobSeeker.user_keywords
-                        ?.filter((uk: any) => matchedKeywordIds.includes(uk.keyword.id))
-                        .map((uk: any) => uk.keyword.keyword) || []
-
-                    // 적합도 계산
-                    let suitability: SuitabilityResult | undefined = undefined
-                    if (companyKeywords.length > 0) {
-                        // 회사 키워드를 적합도 계산기가 사용하는 형식으로 변환
-                        const companyKeywordsForCalculator = companyKeywords.map(ck => ({
-                            keyword: ck.keyword
-                        }))
-                        
-                        suitability = calculator.calculate(userKeywordIds, companyKeywordsForCalculator)
-                    }
-
-                    return {
-                        user: jobSeeker as JobSeeker,
-                        matchedCount: matchedKeywordIds.length,
-                        matchedKeywords,
-                        suitability
-                    }
-                })
-
-                // 적합도 점수 높은 순으로 정렬 (적합도가 없는 경우 매칭 카운트로 정렬)
-                matched.sort((a: any, b: any) => {
-                    const scoreA = a.suitability?.score || a.matchedCount
-                    const scoreB = b.suitability?.score || b.matchedCount
-                    return scoreB - scoreA
-                })
-                setMatchedJobSeekers(matched)
-            }
         } catch (error) {
-            console.error('구직자 조회 실패:', error)
+            console.error('매칭된 구직자 조회 실패:', error)
         } finally {
             setLoading(false)
         }
@@ -157,10 +85,7 @@ const Home2 = () => {
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true)
-        await Promise.all([
-            fetchCompanyKeywords(),
-            fetchJobSeekers()
-        ])
+        await fetchJobSeekers()
         setRefreshing(false)
     }, [user])
 
@@ -187,7 +112,7 @@ const Home2 = () => {
 
             <FlatList
                 data={matchedJobSeekers}
-                keyExtractor={(item) => item.user.id}
+                keyExtractor={(item, index) => item?.user?.id || index.toString()}
                 renderItem={({item}) => <UserCard item={item} onPress={handleJobSeekerPress}/>}
                 ListHeaderComponent={() => <SecondHeader/> }
                 contentContainerStyle={{ paddingBottom: 20 }}

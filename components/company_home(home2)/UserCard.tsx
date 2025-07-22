@@ -1,7 +1,16 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { SuitabilityResult } from '@/lib/suitability/types';
+// Server response suitability format (simplified)
+interface ServerSuitabilityResult {
+    score: number;
+    level: 'perfect' | 'excellent' | 'good' | 'fair' | 'low';
+    details: {
+        matchedKeywordIds: number[];
+        totalCompanyKeywords: number;
+        totalUserKeywords: number;
+    };
+}
 
 interface UserKeyword {
     keyword: {
@@ -36,7 +45,7 @@ interface MatchedJobSeeker {
     matchedCount: number;
     matchedKeywords: string[];
     matchedKeywordsWithCategory?: MatchedKeywordWithCategory[]; // 카테고리 정보를 포함한 키워드
-    suitability?: SuitabilityResult;
+    suitability?: ServerSuitabilityResult;
 }
 
 interface UserCardProps {
@@ -45,6 +54,11 @@ interface UserCardProps {
 }
 
 export const UserCard = ({ item, onPress }: UserCardProps) => {
+    if (!item) {
+        console.error('UserCard received undefined item');
+        return null;
+    }
+    
     const { user: jobSeeker, matchedCount, matchedKeywords, matchedKeywordsWithCategory, suitability } = item;
     const hasMatches = matchedCount > 0;
     
@@ -224,21 +238,18 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                         {suitability && suitability.details && (
                             <View className="mt-3 p-3 bg-gray-50 rounded-lg">
                                 <View className="flex-row flex-wrap gap-2">
-                                    {Object.entries(suitability.details.categoryScores)
-                                        .filter(([_, score]) => score.score > 0)
-                                        .slice(0, 6)
-                                        .map(([category, score]) => (
-                                            <View key={category} className="flex-row items-center">
-                                                <Text className="text-xs text-gray-600">{category}</Text>
-                                                <Text className="text-xs font-bold text-gray-800 ml-1">
-                                                    {Math.round(score.score)}%
-                                                </Text>
-                                            </View>
-                                        ))
-                                    }
-                                    {Object.entries(suitability.details.categoryScores).filter(([_, score]) => score.score > 0).length > 3 && (
-                                        <Text className="text-xs text-gray-500">...</Text>
-                                    )}
+                                    <View className="flex-row items-center">
+                                        <Text className="text-xs text-gray-600">매칭</Text>
+                                        <Text className="text-xs font-bold text-gray-800 ml-1">
+                                            {suitability.details.matchedKeywordIds?.length || 0}개
+                                        </Text>
+                                    </View>
+                                    <View className="flex-row items-center">
+                                        <Text className="text-xs text-gray-600">총 키워드</Text>
+                                        <Text className="text-xs font-bold text-gray-800 ml-1">
+                                            {suitability.details.totalCompanyKeywords || 0}개
+                                        </Text>
+                                    </View>
                                 </View>
                             </View>
                         )}
