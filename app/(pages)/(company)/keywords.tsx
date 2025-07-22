@@ -8,7 +8,6 @@ import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
 import { Dropdown } from 'react-native-element-dropdown'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
-import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 import {useModal} from "@/hooks/useModal";
 
 interface Keyword {
@@ -371,8 +370,8 @@ const Keywords = () => {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
-            <View className="flex-row items-center p-4 border-b border-gray-200">
+        <SafeAreaView className="flex-1 bg-gray-50">
+            <View className="flex-row items-center p-4 border-b border-gray-200 bg-white">
                 <Back />
                 <Text className="text-lg font-bold ml-4">대표 키워드 설정</Text>
             </View>
@@ -380,20 +379,19 @@ const Keywords = () => {
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 100 }}
+                contentContainerStyle={{ paddingTop: 16, paddingBottom: 120 }}
             >
                 {/* 지역 선택 */}
-                <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">사장님 회사 위치!</Text>
-                    <View className="p-4 bg-gray-50 rounded-xl">
+                <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+                    <Text className="text-lg font-semibold mb-4 text-gray-900">사장님 회사 위치!</Text>
                         <Dropdown
                             style={{
-                                height: 50,
-                                borderColor: '#d1d5db',
-                                borderWidth: 2,
+                                height: 48,
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1,
                                 borderRadius: 12,
                                 paddingHorizontal: 16,
-                                backgroundColor: 'white',
+                                backgroundColor: '#f9fafb',
                             }}
                             placeholderStyle={{
                                 fontSize: 16,
@@ -422,20 +420,16 @@ const Keywords = () => {
                                 setSelectedLocation(item.value)
                             }}
                         />
-
-
-                    </View>
                 </View>
 
-                <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">지역이동 가능자 선호</Text>
-                    <View className="p-4 bg-gray-50 rounded-xl">
+                <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+                    <Text className="text-lg font-semibold mb-4 text-gray-900">지역이동 가능자 선호</Text>
 
                     {/* 지역이동 가능 토글 */}
                     {moveableKeyword && (
                         <TouchableOpacity
                             onPress={toggleMoveable}
-                            className=" flex-row items-center justify-between p-4 bg-white rounded-xl border-2 border-gray-200"
+                            className="flex-row items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200"
                         >
                             <Text className="text-base text-gray-700">
                                 {moveableKeyword.keyword}
@@ -451,21 +445,19 @@ const Keywords = () => {
                             </View>
                         </TouchableOpacity>
                     )}
-                    </View>
-                    </View>
+                </View>
 
                 {/* 국가 선택 - 드롭다운으로 변경 */}
-                <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">선호하는 국가</Text>
-                    <View className="p-4 bg-gray-50 rounded-xl">
+                <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+                    <Text className="text-lg font-semibold mb-4 text-gray-900">선호하는 국가</Text>
                         <Dropdown
                             style={{
-                                height: 50,
-                                borderColor: '#d1d5db',
-                                borderWidth: 2,
+                                height: 48,
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1,
                                 borderRadius: 12,
                                 paddingHorizontal: 16,
-                                backgroundColor: 'white',
+                                backgroundColor: '#f9fafb',
                             }}
                             placeholderStyle={{
                                 fontSize: 16,
@@ -501,13 +493,13 @@ const Keywords = () => {
                                     return country ? (
                                         <View
                                             key={countryId}
-                                            className="flex-row items-center justify-center bg-blue-500 px-3 py-2 rounded-full"
+                                            className="flex-row items-center bg-blue-50 border border-blue-200 px-3 py-2 rounded-full"
                                         >
-                                            <Text className="text-white text-sm font-medium mr-2">
+                                            <Text className="text-blue-700 text-sm font-medium mr-2">
                                                 {country.keyword}
                                             </Text>
                                             <TouchableOpacity onPress={() => removeCountry(countryId)}>
-                                                <Ionicons name="close-circle" size={18} color="white" />
+                                                <Ionicons name="close-circle" size={18} color="#1d4ed8" />
                                             </TouchableOpacity>
                                         </View>
                                     ) : null
@@ -520,21 +512,19 @@ const Keywords = () => {
                                 선택된 국가가 없습니다
                             </Text>
                         )}
-                    </View>
                 </View>
 
                 {/* 성별 선택 */}
-                <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">선호하는 성별</Text>
-                    <View className="p-4 bg-gray-50 rounded-xl">
+                <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+                    <Text className="text-lg font-semibold mb-4 text-gray-900">선호하는 성별</Text>
                         <Dropdown
                             style={{
-                                height: 50,
-                                borderColor: '#d1d5db',
-                                borderWidth: 2,
+                                height: 48,
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1,
                                 borderRadius: 12,
                                 paddingHorizontal: 16,
-                                backgroundColor: 'white',
+                                backgroundColor: '#f9fafb',
                             }}
                             placeholderStyle={{
                                 fontSize: 16,
@@ -568,13 +558,13 @@ const Keywords = () => {
                                     return gender ? (
                                         <View
                                             key={genderId}
-                                            className="flex-row items-center bg-purple-500 px-3 py-2 rounded-full"
+                                            className="flex-row items-center bg-blue-50 border border-blue-200 px-3 py-2 rounded-full"
                                         >
-                                            <Text className="text-white text-sm font-medium mr-2">
+                                            <Text className="text-blue-700 text-sm font-medium mr-2">
                                                 {gender.keyword}
                                             </Text>
                                             <TouchableOpacity onPress={() => removeGender(genderId)}>
-                                                <Ionicons name="close-circle" size={18} color="white" />
+                                                <Ionicons name="close-circle" size={18} color="#1d4ed8" />
                                             </TouchableOpacity>
                                         </View>
                                     ) : null
@@ -587,21 +577,19 @@ const Keywords = () => {
                                 선택된 성별이 없습니다
                             </Text>
                         )}
-                    </View>
                 </View>
 
                 {/* 나이대 선택 */}
-                <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">선호하는 나이대</Text>
-                    <View className="p-4 bg-gray-50 rounded-xl">
+                <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+                    <Text className="text-lg font-semibold mb-4 text-gray-900">선호하는 나이대</Text>
                         <Dropdown
                             style={{
-                                height: 50,
-                                borderColor: '#d1d5db',
-                                borderWidth: 2,
+                                height: 48,
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1,
                                 borderRadius: 12,
                                 paddingHorizontal: 16,
-                                backgroundColor: 'white',
+                                backgroundColor: '#f9fafb',
                             }}
                             placeholderStyle={{
                                 fontSize: 16,
@@ -635,13 +623,13 @@ const Keywords = () => {
                                     return age ? (
                                         <View
                                             key={ageId}
-                                            className="flex-row items-center bg-green-500 px-3 py-2 rounded-full"
+                                            className="flex-row items-center bg-blue-50 border border-blue-200 px-3 py-2 rounded-full"
                                         >
-                                            <Text className="text-white text-sm font-medium mr-2">
+                                            <Text className="text-blue-700 text-sm font-medium mr-2">
                                                 {age.keyword}
                                             </Text>
                                             <TouchableOpacity onPress={() => removeAge(ageId)}>
-                                                <Ionicons name="close-circle" size={18} color="white" />
+                                                <Ionicons name="close-circle" size={18} color="#1d4ed8" />
                                             </TouchableOpacity>
                                         </View>
                                     ) : null
@@ -654,21 +642,19 @@ const Keywords = () => {
                                 선택된 나이대가 없습니다
                             </Text>
                         )}
-                    </View>
                 </View>
 
                 {/* 비자 선택 */}
-                <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">선호 비자</Text>
-                    <View className="p-4 bg-gray-50 rounded-xl">
+                <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+                    <Text className="text-lg font-semibold mb-4 text-gray-900">선호 비자</Text>
                         <Dropdown
                             style={{
-                                height: 50,
-                                borderColor: '#d1d5db',
-                                borderWidth: 2,
+                                height: 48,
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1,
                                 borderRadius: 12,
                                 paddingHorizontal: 16,
-                                backgroundColor: 'white',
+                                backgroundColor: '#f9fafb',
                             }}
                             placeholderStyle={{
                                 fontSize: 16,
@@ -704,13 +690,13 @@ const Keywords = () => {
                                     return visa ? (
                                         <View
                                             key={visaId}
-                                            className="flex-row items-center bg-orange-500 px-3 py-2 rounded-full"
+                                            className="flex-row items-center bg-blue-50 border border-blue-200 px-3 py-2 rounded-full"
                                         >
-                                            <Text className="text-white text-sm font-medium mr-2">
+                                            <Text className="text-blue-700 text-sm font-medium mr-2">
                                                 {visa.keyword}
                                             </Text>
                                             <TouchableOpacity onPress={() => removeVisa(visaId)}>
-                                                <Ionicons name="close-circle" size={18} color="white" />
+                                                <Ionicons name="close-circle" size={18} color="#1d4ed8" />
                                             </TouchableOpacity>
                                         </View>
                                     ) : null
@@ -723,7 +709,6 @@ const Keywords = () => {
                                 선택된 비자가 없습니다
                             </Text>
                         )}
-                    </View>
                 </View>
 
                 {/* 직종 선택 */}
@@ -735,9 +720,8 @@ const Keywords = () => {
                 />
 
                 {/* 근무요일 선택 */}
-                <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">선호하는 근무요일</Text>
-                    <View className="p-4 bg-gray-50 rounded-xl">
+                <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+                    <Text className="text-lg font-semibold mb-4 text-gray-900">선호하는 근무요일</Text>
                         <View className="flex-row justify-between gap-1">
                             {workDayKeywords
                                 .sort((a, b) => {
@@ -748,16 +732,16 @@ const Keywords = () => {
                                 <TouchableOpacity
                                     key={day.id}
                                     onPress={() => toggleWorkDay(day.id)}
-                                    className={`px-2 py-2 rounded-lg border-2 flex-1 ${
+                                    className={`px-2 py-2.5 rounded-xl border flex-1 ${
                                         selectedWorkDays.includes(day.id)
-                                            ? 'bg-indigo-500 border-indigo-500'
-                                            : 'bg-white border-gray-300'
+                                            ? 'bg-blue-50 border-blue-200'
+                                            : 'bg-gray-50 border-gray-200'
                                     }`}
                                 >
                                     <Text className={`text-sm font-medium text-center ${
                                         selectedWorkDays.includes(day.id)
-                                            ? 'text-white'
-                                            : 'text-gray-700'
+                                            ? 'text-blue-700'
+                                            : 'text-gray-600'
                                     }`}>
                                         {day.keyword}
                                     </Text>
@@ -770,28 +754,26 @@ const Keywords = () => {
                                 선택된 근무요일이 없습니다
                             </Text>
                         )}
-                    </View>
                 </View>
 
                 {/* 한국어 수준 선택 */}
-                <View className="p-6">
-                    <Text className="text-xl font-bold mb-4">한국어 수준 요구사항</Text>
-                    <View className="p-4 bg-gray-50 rounded-xl">
+                <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+                    <Text className="text-lg font-semibold mb-4 text-gray-900">한국어 수준 요구사항</Text>
                         <View className="flex-row flex-wrap gap-3">
                             {koreanLevelKeywords.map(level => (
                                 <TouchableOpacity
                                     key={level.id}
                                     onPress={() => handleKoreanLevelSelect(level.id)}
-                                    className={`px-4 py-3 rounded-xl border-2 ${
+                                    className={`px-4 py-2.5 rounded-xl border ${
                                         selectedKoreanLevel === level.id
-                                            ? 'bg-red-500 border-red-500'
-                                            : 'bg-white border-gray-300'
+                                            ? 'bg-blue-50 border-blue-200'
+                                            : 'bg-gray-50 border-gray-200'
                                     }`}
                                 >
-                                    <Text className={`text-base font-medium ${
+                                    <Text className={`text-sm font-medium ${
                                         selectedKoreanLevel === level.id
-                                            ? 'text-white'
-                                            : 'text-gray-700'
+                                            ? 'text-blue-700'
+                                            : 'text-gray-600'
                                     }`}>
                                         {level.keyword}
                                     </Text>
@@ -804,13 +786,10 @@ const Keywords = () => {
                                 선택된 한국어 수준이 없습니다
                             </Text>
                         )}
-                    </View>
                 </View>
 
-
-
                 {/* 선택된 키워드 요약 */}
-                <View className="mx-6 p-4 bg-blue-50 rounded-xl">
+                <View className="mx-4 mb-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
                     <Text className="text-sm font-medium text-blue-900 mb-2">선택된 키워드</Text>
                     <Text className="text-xs text-blue-700">
                         총 {[
@@ -830,15 +809,15 @@ const Keywords = () => {
             </ScrollView>
 
             {/* 저장 버튼 */}
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 pb-8">
                 <TouchableOpacity
                     onPress={handleSave}
                     disabled={saving}
-                    className={`py-4 mb-4 rounded-xl ${
+                    className={`py-4 rounded-2xl shadow-sm ${
                         saving ? 'bg-gray-400' : 'bg-blue-500'
                     }`}
                 >
-                    <Text className="text-center text-white font-bold text-lg">
+                    <Text className="text-center text-white font-semibold text-base">
                         {saving ? '저장 중...' : '키워드 저장'}
                     </Text>
                 </TouchableOpacity>
