@@ -57,18 +57,20 @@ export default function InterviewProposalTime() {
             })
 
             if (response?.success) {
-                showModal('성공', '면접이 제안되었습니다. 지원자가 시간을 선택할 수 있습니다.', 'info')
-
-                // 새로고침 신호와 함께 돌아가기
-                setTimeout(() => {
-                    router.replace({
-                        pathname: '/(company)/home2',
-                        params: {
-                            postingId: postingId as string,
-                            refresh: 'true'
-                        }
-                    })
-                }, 1500)
+                showModal(
+                    '성공', 
+                    '면접이 제안되었습니다. 지원자가 시간을 선택할 수 있습니다.', 
+                    'confirm',
+                    () => {
+                        router.replace({
+                            pathname: '/(company)/home2',
+                            params: {
+                                postingId: postingId as string,
+                                refresh: 'true'
+                            }
+                        })
+                    }
+                )
             }
         } catch (error) {
             console.error('Failed to submit proposal:', error)
