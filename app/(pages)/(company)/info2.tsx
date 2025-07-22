@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { router, useLocalSearchParams } from "expo-router"
-import { supabase } from '@/lib/supabase'
+import { api } from '@/lib/api'
 import Back from '@/components/back'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
@@ -196,15 +196,10 @@ const Info2 = () => {
 
         try {
             // 공고 정보 로드
-            const { data: posting, error: postingError } = await supabase
-                .from('job_postings')
-                .select('*')
-                .eq('id', jobPostingId)
-                .single()
-
-            if (postingError) throw postingError
-
-            if (posting) {
+            const response = await api('GET', `/api/job-postings/${jobPostingId}`)
+            
+            if (response.success && response.data) {
+                const posting = response.data
                 setJobTitle(posting.title)
                 setJobDescription(posting.description || '')
                 setHiringCount(posting.hiring_count?.toString() || '1')
@@ -218,32 +213,23 @@ const Info2 = () => {
                 setPayDay(posting.pay_day || '')
                 setPayDayNegotiable(posting.pay_day_negotiable || false)
                 setJobAddress(posting.job_address || '')
-            }
 
-            // 공고 키워드 로드
-            const { data: postingKeywords, error: keywordError } = await supabase
-                .from('job_posting_keyword')
-                .select('keyword_id')
-                .eq('job_posting_id', jobPostingId)
+                // 키워드 정보는 job posting response에 포함되어 있음
+                if (posting.job_posting_keywords && posting.job_posting_keywords.length > 0) {
+                    const keywordIds = posting.job_posting_keywords.map((jk: any) => jk.keyword.id)
 
-            if (keywordError) throw keywordError
+                    // 카테고리별로 분류
+                    const tempCountries: number[] = []
+                    const tempJobs: number[] = []
+                    const tempConditions: number[] = []
+                    const tempAgeRanges: number[] = []
+                    const tempVisas: number[] = []
+                    const tempGenders: number[] = []
+                    const tempKoreanLevels: number[] = []
+                    const tempWorkDays: string[] = []  // 요일 문자열 배열
 
-            if (postingKeywords) {
-                const keywordIds = postingKeywords.map(k => k.keyword_id)
-
-                // 카테고리별로 분류
-                const tempCountries: number[] = []
-                const tempJobs: number[] = []
-                const tempConditions: number[] = []
-                const tempAgeRanges: number[] = []
-                const tempVisas: number[] = []
-                const tempGenders: number[] = []
-                const tempKoreanLevels: number[] = []
-                const tempWorkDays: string[] = []  // 요일 문자열 배열
-
-
-                keywords.forEach(keyword => {
-                    if (keywordIds.includes(keyword.id)) {
+                    posting.job_posting_keywords.forEach((jk: any) => {
+                        const keyword = jk.keyword
                         if (keyword.category === '국가') {
                             tempCountries.push(keyword.id)
                         } else if (keyword.category === '직종') {
@@ -263,16 +249,18 @@ const Info2 = () => {
                         } else if (keyword.category === '근무요일') {  // 추가
                             tempWorkDays.push(keyword.keyword)  // keyword 값(월,화,수...)을 배열에 추가
                         }
-                    }
-                })
+                    })
 
-                setSelectedCountries(tempCountries)
-                setSelectedJobs(tempJobs)
-                setSelectedConditions(tempConditions)
-                setSelectedAgeRanges(tempAgeRanges)
-                setSelectedVisas(tempVisas)
-                setSelectedGenders(tempGenders)
-                setSelectedKoreanLevels(tempKoreanLevels)
+                    setSelectedCountries(tempCountries)
+                    setSelectedJobs(tempJobs)
+                    setSelectedConditions(tempConditions)
+                    setSelectedAgeRanges(tempAgeRanges)
+                    setSelectedVisas(tempVisas)
+                    setSelectedGenders(tempGenders)
+                    setSelectedKoreanLevels(tempKoreanLevels)
+                }
+            } else {
+                throw new Error('공고 정보를 찾을 수 없습니다.')
             }
         } catch (error) {
             console.error('공고 로드 실패:', error)
@@ -297,7 +285,6 @@ const Info2 = () => {
         try {
             // 공고 저장/업데이트
             const jobPostingData = {
-                company_id: user?.userId,
                 title: jobTitle,
                 description: jobDescription,
                 hiring_count: parseInt(hiringCount) || 1,
@@ -310,40 +297,29 @@ const Info2 = () => {
                 pay_day: payDay,
                 pay_day_negotiable: payDayNegotiable,
                 job_address: jobAddress,
-                is_active: isPostingActive,
-                updated_at: new Date().toISOString()
+                is_active: isPostingActive
             }
 
             let savedPostingId = jobPostingId
+            let postingResponse: any
 
             if (isEditMode && jobPostingId) {
                 // 기존 공고 업데이트
-                const { error: updateError } = await supabase
-                    .from('job_postings')
-                    .update(jobPostingData)
-                    .eq('id', jobPostingId)
-
-                if (updateError) throw updateError
+                postingResponse = await api('PUT', `/api/job-postings/${jobPostingId}`, jobPostingData)
             } else {
                 // 새 공고 생성
-                const { data: newPosting, error: insertError } = await supabase
-                    .from('job_postings')
-                    .insert(jobPostingData)
-                    .select()
-                    .single()
+                postingResponse = await api('POST', '/api/job-postings', jobPostingData)
+                if (postingResponse.success && postingResponse.data) {
+                    savedPostingId = postingResponse.data.id
+                }
+            }
 
-                if (insertError) throw insertError
-                savedPostingId = newPosting.id
+            if (!postingResponse.success) {
+                throw new Error(postingResponse.message || '공고 저장에 실패했습니다.')
             }
 
             // 키워드 업데이트
             if (savedPostingId) {
-                // 기존 키워드 삭제
-                await supabase
-                    .from('job_posting_keyword')
-                    .delete()
-                    .eq('job_posting_id', savedPostingId)
-
                 const selectedWorkDayKeywordIds = workingDays
                     .map(day => {
                         const keyword = workDayKeywords.find(k => k.keyword === day)
@@ -364,17 +340,14 @@ const Info2 = () => {
                     ...selectedWorkDayKeywordIds  // 근무요일 키워드 ID 추가
                 ].filter(Boolean)
 
-                if (allSelectedKeywords.length > 0) {
-                    const keywordInserts = allSelectedKeywords.map(keywordId => ({
-                        job_posting_id: savedPostingId,
-                        keyword_id: keywordId
-                    }))
+                // 키워드 업데이트 API 호출
 
-                    const { error: keywordError } = await supabase
-                        .from('job_posting_keyword')
-                        .insert(keywordInserts)
+                const keywordResponse = await api('POST', `/api/job-posting-keyword/${savedPostingId}`, {
+                    keywordIds: allSelectedKeywords
+                })
 
-                    if (keywordError) throw keywordError
+                if (!keywordResponse.success) {
+                    throw new Error(keywordResponse.message || '키워드 저장에 실패했습니다.')
                 }
             }
 
