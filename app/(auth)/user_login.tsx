@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator} from 'react-native'
+import {View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator, Modal} from 'react-native'
 import React, {useState, useEffect, useRef} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import Back from "@/components/back";
@@ -7,20 +7,44 @@ import {router} from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
 import {useTranslation} from "@/contexts/TranslationContext";
 import { api } from '@/lib/api';
-import { useModal } from '@/hooks/useModal';
 
 const UserLogin = () => {
     const { login } = useAuth();
     const { t } = useTranslation();
-    const { showModal, ModalComponent } = useModal();
 
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
     const [inputOtp, setInputOtp] = useState(false);
     const [resendTimer, setResendTimer] = useState(0);
+    
+    // 모달 상태
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalMessage, setModalMessage] = useState('');
+    const [modalType, setModalType] = useState<'info' | 'warning'>('info');
 
     const otpInputRef = useRef<TextInput>(null);
+    const hasAttemptedRef = useRef(false);
+    
+    // 모달 표시 함수
+    const showModal = (title: string, message: string, type: 'info' | 'warning' = 'info') => {
+        // 이미 모달이 열려있거나 로딩 중이면 반환
+        if (modalVisible || loading) return;
+        
+        // 약간의 지연을 두어 안전하게 모달 표시
+        setTimeout(() => {
+            setModalTitle(title);
+            setModalMessage(message);
+            setModalType(type);
+            setModalVisible(true);
+        }, 100);
+    };
+    
+    // 모달 닫기
+    const hideModal = () => {
+        setModalVisible(false);
+    };
 
     // OTP 재전송 타이머
     useEffect(() => {
@@ -79,28 +103,51 @@ const UserLogin = () => {
             const cleanPhone = phone.replace(/-/g, '');
             const formattedPhone = `+82${cleanPhone.slice(1)}`;
 
-            const response = await api ('POST','/api/auth/verify-otp', {
-                phone: formattedPhone,
-                otp: otp,
-                userType: 'user'
-            });
+            try {
+                const response = await api ('POST','/api/auth/verify-otp', {
+                    phone: formattedPhone,
+                    otp: otp,
+                    userType: 'user'
+                });
 
-            const result = await login(
-                response.token,
-                response.user,
-                response.onboardingStatus
-            );
+                // 성공한 경우
+                const result = await login(
+                    response.token,
+                    response.user,
+                    response.onboardingStatus
+                );
 
-            if (response.onboardingStatus.completed) {
-                router.replace('/(user)/home');
-            } else {
-                router.replace('/(pages)/(user)/info');
+                if (result.success) {
+                    if (response.onboardingStatus.completed) {
+                        router.replace('/(user)/home');
+                    } else {
+                        router.replace('/(pages)/(user)/info');
+                    }
+                } else {
+                    // 인증 시도 플래그 즉시 리셋
+                    hasAttemptedRef.current = false;
+                    setOtp('');
+                    showModal(t('alert.error', '오류'), t('alert.auth_error', '로그인 처리 중 오류가 발생했습니다'), 'warning');
+                }
+                
+            } catch (apiError: any) {
+
+                // 인증 시도 플래그 즉시 리셋
+                hasAttemptedRef.current = false;
+                setOtp('');
+                
+                // 서버 에러 응답에서 메시지 추출
+                const errorMessage = apiError?.response?.data?.error;
+                const isWrongAccountType = errorMessage?.includes('구인자 계정입니다');
+                
+                showModal(
+                    isWrongAccountType ? t('alert.wrong_account_type', '잘못된 계정 유형') : t('alert.error', '인증 실패'),
+                    isWrongAccountType
+                        ? t('alert.use_company_login', '이 전화번호는 구인자 계정입니다. 구인자 로그인을 이용해주세요.')
+                        : errorMessage || t('alert.auth_error', '인증번호가 일치하지 않거나 오류가 발생했습니다'),
+                    'warning'
+                );
             }
-
-
-        } catch (error) {
-            console.error(error);
-            showModal(t('alert.error', '오류'), t('alert.auth_error', '인증 처리 중 오류가 발생했습니다'), 'warning');
         } finally {
             setLoading(false);
         }
@@ -108,10 +155,13 @@ const UserLogin = () => {
 
     // OTP 입력 처리 (6자리 입력 시 자동 인증)
     useEffect(() => {
-        if (otp.length === 6 && inputOtp) {
+        if (otp.length === 6 && inputOtp && !loading && !hasAttemptedRef.current) {
+            hasAttemptedRef.current = true;
             verifyOtp();
+        } else if (otp.length < 6) {
+            hasAttemptedRef.current = false;
         }
-    }, [otp]);
+    }, [otp, loading, inputOtp]);
 
     return (
         <SafeAreaView className="flex-1">
@@ -250,7 +300,49 @@ const UserLogin = () => {
                     )}
                 </View>
             </KeyboardAvoidingView>
-            <ModalComponent />
+            
+            {/* 커스텀 모달 */}
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={hideModal}
+            >
+                <View className="flex-1 bg-black/50 justify-center px-4">
+                    <View className="bg-white rounded-2xl p-6">
+                        {/* 아이콘 */}
+                        <View className="items-center mb-4">
+                            <View className={`w-16 h-16 ${modalType === 'warning' ? 'bg-red-100' : 'bg-blue-100'} rounded-full items-center justify-center mb-3`}>
+                                <Ionicons
+                                    name={modalType === 'warning' ? 'warning' : 'information-circle'}
+                                    size={32}
+                                    color={modalType === 'warning' ? '#ef4444' : '#3b82f6'}
+                                />
+                            </View>
+                            <Text className="text-xl font-bold text-gray-900 text-center">
+                                {modalTitle}
+                            </Text>
+                        </View>
+
+                        {/* 메시지 */}
+                        <Text className="text-gray-600 text-center mb-6">
+                            {modalMessage}
+                        </Text>
+
+                        {/* 확인 버튼 */}
+                        <TouchableOpacity
+                            onPress={hideModal}
+                            className={`w-full py-3 rounded-xl ${
+                                modalType === 'warning' ? 'bg-red-500' : 'bg-blue-500'
+                            }`}
+                        >
+                            <Text className="text-center text-white font-medium">
+                                {t('button.confirm', '확인')}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     )
 }

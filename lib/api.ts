@@ -48,7 +48,8 @@ export const api = async <T = any>(
 
         return response.data;
     } catch (error: any) {
-        throw error.response?.data || error;
+        // axios 에러 구조를 유지하면서 throw
+        throw error;
     }
 };
 
