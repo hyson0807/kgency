@@ -245,7 +245,7 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     </View>
                 </View>
 
-                {item.type !== 'company_invited' && (
+                {item.type == 'user_initiated' && (
                     <View className="flex bg-gray-100 rounded-xl p-2">
                         <Text className="text-start flex-shrink" numberOfLines={2}>{item.message?.content}</Text>
                     </View>
@@ -273,6 +273,10 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     {item.type === 'company_invited' ? (
                         <View className="flex-1 bg-blue-100 py-3 px-1 rounded-lg flex-row items-center justify-center">
                             <Text className="font-medium ml-2 text-blue-600 text-center flex-shrink">사장님이 면접 제안한 구직자입니다</Text>
+                        </View>
+                    ) : item.type === 'user_instant_interview' ? (
+                        <View className="flex-1 bg-purple-100 py-3 px-1 rounded-lg flex-row items-center justify-center">
+                            <Text className="font-medium ml-2 text-purple-600 text-center flex-shrink">즉시 면접 유저입니다</Text>
                         </View>
                     ) : (
                         <TouchableOpacity
