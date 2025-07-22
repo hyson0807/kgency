@@ -63,7 +63,7 @@ export default function InterviewProposalTime() {
                     'confirm',
                     () => {
                         router.replace({
-                            pathname: '/(company)/home2',
+                            pathname: '/(company)/myJobPostings',
                             params: {
                                 postingId: postingId as string,
                                 refresh: 'true'

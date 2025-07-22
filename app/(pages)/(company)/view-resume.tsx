@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
 import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
-import axios from 'axios'
 import { ActivityIndicator } from 'react-native'
 import {api} from "@/lib/api";
 
@@ -169,12 +168,7 @@ export default function ViewResume() {
                             </Text>
                         )}
                     </View>
-                    <TouchableOpacity
-                        onPress={handleContact}
-                        className="bg-blue-500 px-4 py-2 rounded-lg"
-                    >
-                        <Text className="text-white font-medium">연락하기</Text>
-                    </TouchableOpacity>
+
                 </View>
             </View>
 
@@ -208,18 +202,6 @@ export default function ViewResume() {
                         <Text className="text-center text-gray-700 font-medium">
                             목록으로
                         </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={handleContact}
-                        className="flex-1 py-3 rounded-xl bg-blue-500"
-                    >
-                        <View className="flex-row items-center justify-center">
-                            <Ionicons name="call" size={20} color="white" />
-                            <Text className="text-white font-medium ml-2">
-                                지원자 연락
-                            </Text>
-                        </View>
                     </TouchableOpacity>
                 </View>
             </View>

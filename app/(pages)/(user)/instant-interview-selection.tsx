@@ -16,6 +16,7 @@ interface TimeSlot {
     location: string
     interview_type: string
     is_available: boolean
+    is_booked?: boolean
 }
 
 export default function InstantInterviewSelection() {
@@ -48,7 +49,9 @@ export default function InstantInterviewSelection() {
             console.log(response)
 
             if (response?.success && response.data) {
-                setAvailableSlots(response.data)
+                // 확정된 면접 시간(is_booked: true) 제외하고 설정
+                const availableOnly = response.data.filter((slot: TimeSlot) => !slot.is_booked)
+                setAvailableSlots(availableOnly)
             }
         } catch (error) {
             console.error('Failed to fetch available slots:', error)
