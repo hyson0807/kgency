@@ -245,9 +245,11 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     </View>
                 </View>
 
-                <View className="flex bg-gray-100 rounded-xl p-2">
-                    <Text className="text-start flex-shrink" numberOfLines={2}>{item.message?.content}</Text>
-                </View>
+                {item.type !== 'company_invited' && (
+                    <View className="flex bg-gray-100 rounded-xl p-2">
+                        <Text className="text-start flex-shrink" numberOfLines={2}>{item.message?.content}</Text>
+                    </View>
+                )}
 
                 {/* 매칭된 키워드 표시 */}
                 {matchedKeywords.length > 0 && (
@@ -268,13 +270,19 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
 
                 {/* 버튼들 */}
                 <View className="flex-row gap-2 pt-3 border-t border-gray-100">
-                    <TouchableOpacity
-                        onPress={() => handleViewResume(item)}
-                        className="flex-1 bg-gray-100 py-3 rounded-lg flex-row items-center justify-center"
-                    >
-                        <Ionicons name="document-text-outline" size={18} color="black" />
-                        <Text className="font-medium ml-2">이력서 보기</Text>
-                    </TouchableOpacity>
+                    {item.type === 'company_invited' ? (
+                        <View className="flex-1 bg-blue-100 py-3 px-1 rounded-lg flex-row items-center justify-center">
+                            <Text className="font-medium ml-2 text-blue-600 text-center flex-shrink">사장님이 면접 제안한 구직자입니다</Text>
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            onPress={() => handleViewResume(item)}
+                            className="flex-1 bg-gray-100 py-3 rounded-lg flex-row items-center justify-center"
+                        >
+                            <Ionicons name="document-text-outline" size={18} color="black" />
+                            <Text className="font-medium ml-2">이력서 보기</Text>
+                        </TouchableOpacity>
+                    )}
 
                     {renderInterviewButton()}
                 </View>

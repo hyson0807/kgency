@@ -353,11 +353,11 @@ const Info2 = () => {
 
             showModal(
                 '성공',
-                isEditMode ? '공고가 수정되었습니다!' : '공고가 등록되었습니다!',
+                isEditMode ? '면접 가능 시간대를 추가해주세요' : '면접 가능 시간대를 추가해주세요',
                 'confirm',
                 () => {
                     hideModal()
-                    router.replace('/(company)/myJobPostings')
+                    router.replace('/(company)/interview-calendar')
                 }
             )
 
