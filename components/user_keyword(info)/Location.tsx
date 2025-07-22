@@ -61,21 +61,21 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
     };
 
     return (
-        <View className="p-4">
-            <Text className="text-base font-semibold mb-3">
+        <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+            <Text className="text-lg font-semibold mb-4 text-gray-900">
                 {t('info.desired_location', '희망 근무 지역')}
             </Text>
 
-            <View className="p-3 bg-gray-50 rounded-xl">
+            <View>
                 {/* 지역 선택 드롭다운 */}
                 <Dropdown
                     style={{
-                        height: 45,
-                        borderColor: '#d1d5db',
+                        height: 48,
+                        borderColor: '#e5e7eb',
                         borderWidth: 1,
-                        borderRadius: 8,
-                        paddingHorizontal: 12,
-                        backgroundColor: 'white',
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
+                        backgroundColor: '#f9fafb',
                     }}
                     placeholderStyle={{
                         fontSize: 14,
@@ -152,13 +152,13 @@ const SelectedLocationTags: React.FC<SelectedLocationTagsProps> = ({
                 return (
                     <View
                         key={locationId}
-                        className="flex-row items-center bg-blue-500 px-3 py-2 rounded-full"
+                        className="flex-row items-center bg-blue-50 border border-blue-200 px-3 py-2 rounded-full"
                     >
-                        <Text className="text-white text-sm font-medium mr-2">
+                        <Text className="text-blue-700 text-sm font-medium mr-2">
                             {translateDB('keyword', 'keyword', location.id.toString(), location.keyword)}
                         </Text>
                         <TouchableOpacity onPress={() => onRemove(locationId)}>
-                            <Ionicons name="close-circle" size={18} color="white" />
+                            <Ionicons name="close-circle" size={18} color="#1d4ed8" />
                         </TouchableOpacity>
                     </View>
                 );
@@ -184,7 +184,7 @@ const MoveableToggle: React.FC<MoveableToggleProps> = ({
     return (
         <TouchableOpacity
             onPress={onToggle}
-            className="mt-3 flex-row items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
+            className="mt-4 flex-row items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200"
         >
             <Text className="text-sm text-gray-700">
                 {translateDB('keyword', 'keyword', moveableKeyword.id.toString(), moveableKeyword.keyword)}

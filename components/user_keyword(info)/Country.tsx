@@ -32,46 +32,46 @@ export const Country = ({
         }));
 
     return (
-        <View className="p-4">
-            <Text className="text-base font-semibold mb-3">{t('info.country', '국가')}</Text>
-            <View className="p-3 bg-gray-50 rounded-xl">
-                <Dropdown
-                    style={{
-                        height: 45,
-                        borderColor: '#d1d5db',
-                        borderWidth: 1,
-                        borderRadius: 8,
-                        paddingHorizontal: 12,
-                        backgroundColor: 'white',
-                    }}
-                    placeholderStyle={{
-                        fontSize: 14,
-                        color: '#9ca3af'
-                    }}
-                    selectedTextStyle={{
-                        fontSize: 14,
-                    }}
-                    inputSearchStyle={{
-                        height: 40,
-                        fontSize: 14,
-                    }}
-                    iconStyle={{
-                        width: 20,
-                        height: 20,
-                    }}
-                    data={countryOptions}
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={t('info.select_country', '국가를 선택하세요')}
-                    searchPlaceholder={t('info.search', '검색...')}
-                    value={selectedCountry}
-                    onChange={item => {
-                        setSelectedCountry(item.value);
-                    }}
-                />
-            </View>
+        <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+            <Text className="text-lg font-semibold mb-4 text-gray-900">{t('info.country', '국가')}</Text>
+            <Dropdown
+                style={{
+                    height: 48,
+                    borderColor: '#e5e7eb',
+                    borderWidth: 1,
+                    borderRadius: 12,
+                    paddingHorizontal: 16,
+                    backgroundColor: '#f9fafb',
+                }}
+                placeholderStyle={{
+                    fontSize: 14,
+                    color: '#9ca3af'
+                }}
+                selectedTextStyle={{
+                    fontSize: 14,
+                    color: '#111827'
+                }}
+                inputSearchStyle={{
+                    height: 40,
+                    fontSize: 14,
+                    borderRadius: 8,
+                }}
+                iconStyle={{
+                    width: 20,
+                    height: 20,
+                }}
+                data={countryOptions}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={t('info.select_country', '국가를 선택하세요')}
+                searchPlaceholder={t('info.search', '검색...')}
+                value={selectedCountry}
+                onChange={item => {
+                    setSelectedCountry(item.value);
+                }}
+            />
         </View>
     )
 }

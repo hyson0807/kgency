@@ -295,9 +295,9 @@ const Info = () => {
                 </View>
 
                 <ScrollView
-                    className="flex-1"
+                    className="flex-1 bg-gray-50"
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 20 }}
+                    contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
                 >
                     {/* 프로필 정보 섹션 */}
                     <Profile
@@ -345,16 +345,17 @@ const Info = () => {
                         onToggle={toggleCondition}
                     />
 
-                    {/* 저장 버튼 */}
-                    <View className="p-4">
-                        <TouchableOpacity
-                            className="w-full bg-blue-500 items-center justify-center py-3 rounded-xl"
-                            onPress={handleSaveAndNext}
-                        >
-                            <Text className="font-semibold text-base text-white">{t('info.save', '저장하기')}</Text>
-                        </TouchableOpacity>
-                    </View>
                 </ScrollView>
+                
+                {/* 저장 버튼 - 고정 위치 */}
+                <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 pb-8">
+                    <TouchableOpacity
+                        className="w-full bg-blue-500 items-center justify-center py-4 rounded-2xl shadow-sm"
+                        onPress={handleSaveAndNext}
+                    >
+                        <Text className="font-semibold text-base text-white">{t('info.save', '저장하기')}</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
             <ModalComponent/>
         </SafeAreaView>

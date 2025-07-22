@@ -49,15 +49,16 @@ export const Profile = ({ formData, handler }:ProfileProps) => {
     ];
 
     return (
-        <View className="p-4 border-b border-gray-100">
-            <Text className="text-lg font-bold mb-4">{t('info.profile_info', '프로필 정보')}</Text>
+        <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+            <Text className="text-lg font-semibold mb-4 text-gray-900">{t('info.profile_info', '프로필 정보')}</Text>
 
             {/* 이름 */}
             <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.name', '이름')} *</Text>
                 <TextInput
-                    className="border border-gray-300 rounded-lg p-3"
+                    className="border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     placeholder={t('info.enter_name', '이름을 입력하세요')}
+                    placeholderTextColor="#9ca3af"
                     value={name}
                     onChangeText={setName}
                 />
@@ -67,8 +68,9 @@ export const Profile = ({ formData, handler }:ProfileProps) => {
             <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.age', '나이')} *</Text>
                 <TextInput
-                    className="border border-gray-300 rounded-lg p-3"
+                    className="border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     placeholder={t('info.enter_age', '나이를 입력하세요')}
+                    placeholderTextColor="#9ca3af"
                     value={age}
                     onChangeText={setAge}
                     keyboardType="numeric"
@@ -81,12 +83,12 @@ export const Profile = ({ formData, handler }:ProfileProps) => {
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.gender', '성별')} *</Text>
                 <Dropdown
                     style={{
-                        height: 45,
-                        borderColor: '#d1d5db',
+                        height: 48,
+                        borderColor: '#e5e7eb',
                         borderWidth: 1,
-                        borderRadius: 8,
-                        paddingHorizontal: 12,
-                        backgroundColor: 'white',
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
+                        backgroundColor: '#f9fafb',
                     }}
                     placeholderStyle={{
                         fontSize: 14,
@@ -111,12 +113,12 @@ export const Profile = ({ formData, handler }:ProfileProps) => {
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.visa_type', '비자 종류')} *</Text>
                 <Dropdown
                     style={{
-                        height: 45,
-                        borderColor: '#d1d5db',
+                        height: 48,
+                        borderColor: '#e5e7eb',
                         borderWidth: 1,
-                        borderRadius: 8,
-                        paddingHorizontal: 12,
-                        backgroundColor: 'white',
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
+                        backgroundColor: '#f9fafb',
                     }}
                     placeholderStyle={{
                         fontSize: 14,
@@ -141,12 +143,12 @@ export const Profile = ({ formData, handler }:ProfileProps) => {
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.korean_level', '한국어 실력')} *</Text>
                 <Dropdown
                     style={{
-                        height: 45,
-                        borderColor: '#d1d5db',
+                        height: 48,
+                        borderColor: '#e5e7eb',
                         borderWidth: 1,
-                        borderRadius: 8,
-                        paddingHorizontal: 12,
-                        backgroundColor: 'white',
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
+                        backgroundColor: '#f9fafb',
                     }}
                     placeholderStyle={{
                         fontSize: 14,

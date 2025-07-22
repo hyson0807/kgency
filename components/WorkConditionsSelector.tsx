@@ -23,8 +23,8 @@ const WorkConditionsSelector: React.FC<WorkConditionsSelectorProps> = ({
 }) => {
         const { t, translateDB } = useTranslation();
     return (
-        <View className="p-6">
-            <Text className="font-bold mb-4">
+        <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+            <Text className="text-lg font-semibold mb-4 text-gray-900">
                 {title || t('work_conditions_selector.title', '원하는 혜택')}
             </Text>
             <View className="flex-row flex-wrap gap-3">

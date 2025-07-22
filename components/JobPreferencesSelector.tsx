@@ -23,8 +23,8 @@ const JobPreferencesSelector: React.FC<JobPreferencesSelectorProps> = ({
                        }) => {
         const { t, translateDB } = useTranslation();
     return (
-        <View className="p-6">
-            <Text className=" font-bold mb-4">
+        <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+            <Text className="text-lg font-semibold mb-4 text-gray-900">
                 {title || t('job_selector.title', '희망직종')}
             </Text>
             <View className="flex-row flex-wrap gap-3">

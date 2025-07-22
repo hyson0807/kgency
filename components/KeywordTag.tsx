@@ -12,16 +12,16 @@ const KeywordTag: React.FC<KeywordTagProps> = ({ id, text, isSelected, onPress }
     return (
         <TouchableOpacity
             onPress={() => onPress(id)}
-            className={`px-4 py-3 rounded-full border-2 ${
+            className={`px-4 py-2.5 rounded-xl border ${
                 isSelected
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'bg-white border-gray-300'
+                    ? 'bg-blue-50 border-blue-200'
+                    : 'bg-gray-50 border-gray-200'
             }`}
         >
-            <Text className={`text-base ${
+            <Text className={`text-sm font-medium ${
                 isSelected
-                    ? 'text-white font-bold'
-                    : 'text-gray-700'
+                    ? 'text-blue-700'
+                    : 'text-gray-600'
             }`}>
                 {text}
             </Text>

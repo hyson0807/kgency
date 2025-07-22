@@ -19,8 +19,8 @@ export const WorkdaySelector = ({
 
 
     return (
-        <View className="p-4 border-t border-gray-100">
-            <Text className="text-base font-semibold mb-3">
+        <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
+            <Text className="text-lg font-semibold mb-4 text-gray-900">
                 {t('info.preferred_work_days', '희망근무 요일')}
             </Text>
             <View className="flex-row flex-wrap gap-2">
@@ -28,16 +28,16 @@ export const WorkdaySelector = ({
                     <TouchableOpacity
                         key={workDay.id}
                         onPress={() => toggleWorkDay(workDay.id)}
-                        className={`px-4 py-2 rounded-full border ${
+                        className={`px-4 py-2.5 rounded-xl border ${
                             selectedWorkDays.includes(workDay.id)
-                                ? 'bg-blue-500 border-blue-500'
-                                : 'bg-white border-gray-300'
+                                ? 'bg-blue-50 border-blue-200'
+                                : 'bg-gray-50 border-gray-200'
                         }`}
                     >
-                        <Text className={`text-sm ${
+                        <Text className={`text-sm font-medium ${
                             selectedWorkDays.includes(workDay.id)
-                                ? 'text-white font-medium'
-                                : 'text-gray-700'
+                                ? 'text-blue-700'
+                                : 'text-gray-600'
                         }`}>
                             {workDay.keyword}
                         </Text>
