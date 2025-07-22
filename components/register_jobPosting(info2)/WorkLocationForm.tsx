@@ -23,22 +23,22 @@ export const WorkLocationForm: React.FC<WorkLocationFormProps> = ({
             <Text className="text-gray-700 mb-2">근무 지역</Text>
             <Dropdown
                 style={{
-                    height: 50,
+                    height: 44,
                     borderColor: '#d1d5db',
                     borderWidth: 1,
                     borderRadius: 8,
                     paddingHorizontal: 12,
                 }}
                 placeholderStyle={{
-                    fontSize: 14,
+                    fontSize: 16,
                     color: '#9ca3af'
                 }}
                 selectedTextStyle={{
-                    fontSize: 14,
+                    fontSize: 16,
                 }}
                 inputSearchStyle={{
                     height: 40,
-                    fontSize: 14,
+                    fontSize: 16,
                 }}
                 iconStyle={{
                     width: 20,

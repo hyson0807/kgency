@@ -384,7 +384,7 @@ const Info2 = () => {
                 'confirm',
                 () => {
                     hideModal()
-                    router.replace('/(company)/home2')
+                    router.replace('/(company)/myJobPostings')
                 }
             )
 
@@ -420,49 +420,50 @@ const Info2 = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 100 }}
             >
-                {/* 채용 정보 */}
-                <JobBasicInfoForm
-                    jobTitle={jobTitle}
-                    setJobTitle={setJobTitle}
-                    jobDescription={jobDescription}
-                    setJobDescription={setJobDescription}
-                    jobAddress={jobAddress}
-                    setJobAddress={setJobAddress}
-                    hiringCount={hiringCount}
-                    setHiringCount={setHiringCount}
-                />
-
-                <View className="px-6">
-                    <WorkLocationForm
-                        locationOptions={locationOptions}
-                        selectedLocation={selectedLocation}
-                        setSelectedLocation={setSelectedLocation}
+                <View className="bg-white">
+                    <JobBasicInfoForm
+                        jobTitle={jobTitle}
+                        setJobTitle={setJobTitle}
+                        jobDescription={jobDescription}
+                        setJobDescription={setJobDescription}
+                        jobAddress={jobAddress}
+                        setJobAddress={setJobAddress}
+                        hiringCount={hiringCount}
+                        setHiringCount={setHiringCount}
                     />
 
-                    <WorkScheduleForm
-                        workingHours={workingHours}
-                        setWorkingHours={setWorkingHours}
-                        workingHoursNegotiable={workingHoursNegotiable}
-                        setWorkingHoursNegotiable={setWorkingHoursNegotiable}
-                        workingDays={workingDays}
-                        toggleWorkingDay={toggleWorkingDay}
-                        workingDaysNegotiable={workingDaysNegotiable}
-                        setWorkingDaysNegotiable={setWorkingDaysNegotiable}
-                    />
+                    <View className="px-6 space-y-6">
+                        <WorkLocationForm
+                            locationOptions={locationOptions}
+                            selectedLocation={selectedLocation}
+                            setSelectedLocation={setSelectedLocation}
+                        />
 
-                    <SalaryInfoForm
-                        salaryRange={salaryRange}
-                        setSalaryRange={setSalaryRange}
-                        salaryRangeNegotiable={salaryRangeNegotiable}
-                        setSalaryRangeNegotiable={setSalaryRangeNegotiable}
-                        payDay={payDay}
-                        setPayDay={setPayDay}
-                        payDayNegotiable={payDayNegotiable}
-                        setPayDayNegotiable={setPayDayNegotiable}
-                    />
+                        <WorkScheduleForm
+                            workingHours={workingHours}
+                            setWorkingHours={setWorkingHours}
+                            workingHoursNegotiable={workingHoursNegotiable}
+                            setWorkingHoursNegotiable={setWorkingHoursNegotiable}
+                            workingDays={workingDays}
+                            toggleWorkingDay={toggleWorkingDay}
+                            workingDaysNegotiable={workingDaysNegotiable}
+                            setWorkingDaysNegotiable={setWorkingDaysNegotiable}
+                        />
+
+                        <SalaryInfoForm
+                            salaryRange={salaryRange}
+                            setSalaryRange={setSalaryRange}
+                            salaryRangeNegotiable={salaryRangeNegotiable}
+                            setSalaryRangeNegotiable={setSalaryRangeNegotiable}
+                            payDay={payDay}
+                            setPayDay={setPayDay}
+                            payDayNegotiable={payDayNegotiable}
+                            setPayDayNegotiable={setPayDayNegotiable}
+                        />
+                    </View>
                 </View>
 
-                <View className="border-b border-gray-100" />
+                <View className="h-2 bg-gray-50" />
 
                 {/* 채용 분야 선택 */}
                 <View className=" border-b border-gray-100">
