@@ -133,7 +133,9 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
         <>
             <TouchableOpacity
                 onPress={() => handleViewPosting(item)}
-                className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
+                className={`bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm ${
+                    item.type === 'user_instant_interview' ? 'border-2 border-purple-500' : ''
+                }`}
                 activeOpacity={0.7}
             >
                 {/* 상태 뱃지 */}
