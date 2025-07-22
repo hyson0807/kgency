@@ -6,6 +6,7 @@ import { Calendar, LocaleConfig } from 'react-native-calendars'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
+import { useLocalSearchParams } from 'expo-router'
 
 // Components
 import { InterviewScheduleTab } from '@/components/interview-calendar/InterviewScheduleTab'
@@ -67,6 +68,7 @@ interface TimeSlot {
 export default function InterviewCalendar() {
     const { user } = useAuth()
     const { showModal, ModalComponent } = useModal()
+    const { tab } = useLocalSearchParams<{ tab?: string }>()
 
     // ==================== State ====================
     const [activeTab, setActiveTab] = useState<'schedule' | 'slots'>('schedule')
@@ -85,6 +87,13 @@ export default function InterviewCalendar() {
     const [bookedSlots, setBookedSlots] = useState<Record<string, string[]>>({})
 
     // ==================== Effects ====================
+    useEffect(() => {
+        // URL 파라미터에 따라 탭 설정
+        if (tab === 'slots') {
+            setActiveTab('slots')
+        }
+    }, [tab])
+
     useEffect(() => {
         if (user?.userId) {
             if (activeTab === 'schedule') {

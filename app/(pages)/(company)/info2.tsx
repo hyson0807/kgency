@@ -357,7 +357,7 @@ const Info2 = () => {
                 'confirm',
                 () => {
                     hideModal()
-                    router.replace('/(company)/interview-calendar')
+                    router.replace('/(company)/interview-calendar?tab=slots')
                 }
             )
 
