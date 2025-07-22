@@ -1,194 +1,27 @@
-import {View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator} from 'react-native'
+import {View, Text, TextInput, TouchableOpacity, ScrollView} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useProfile} from "@/hooks/useProfile";
 import {router} from "expo-router";
 import { useModal } from '@/hooks/useModal'
-import { supabase } from '@/lib/supabase'
-import { Dropdown } from 'react-native-element-dropdown'
-import { Ionicons } from '@expo/vector-icons'
-import JobPreferencesSelector from '@/components/JobPreferencesSelector'
-import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 
-interface Keyword {
-    id: number;
-    keyword: string;
-    category: string;
-}
 
 const Register = () => {
     const { showModal, ModalComponent } = useModal()
     const { profile, updateProfile } = useProfile()
     const [companyName, setCompanyName] = useState('')
     const [address, setAddress] = useState('')
-    const [description, setDescription] = useState('')
 
-    // 키워드 관련 상태
-    const [keywords, setKeywords] = useState<Keyword[]>([])
-    const [loading, setLoading] = useState(true)
-    const [selectedLocation, setSelectedLocation] = useState<number | null>(null)
-    const [selectedMoveable, setSelectedMoveable] = useState<number | null>(null)
-    const [selectedCountries, setSelectedCountries] = useState<number[]>([])
-    const [selectedJobs, setSelectedJobs] = useState<number[]>([])
-    const [selectedConditions, setSelectedConditions] = useState<number[]>([])
-
-    // 카테고리별 키워드 필터링
-    const locationOptions = keywords
-        .filter(k => k.category === '지역')
-        .map(location => ({
-            label: location.keyword,
-            value: location.id
-        }))
-
-    const countryKeywords = keywords.filter(k => k.category === '국가')
-    const jobKeywords = keywords.filter(k => k.category === '직종')
-    const conditionKeywords = keywords.filter(k => k.category === '근무조건')
-    const moveableKeyword = keywords.find(k => k.category === '지역이동')
-
-    // 국가 드롭다운 옵션 (상관없음 포함)
-    const countryOptions = [
-        { label: '상관없음', value: 'all' },
-        ...countryKeywords.map(country => ({
-            label: country.keyword,
-            value: country.id
-        }))
-    ]
 
     // 프로필 정보 로드
     useEffect(() => {
         if (profile) {
             setCompanyName(profile.name || '')
             setAddress(profile.address || '')
-            setDescription(profile.description || '')
         }
     }, [profile])
 
-    // 키워드 데이터 로드
-    useEffect(() => {
-        fetchKeywords()
-    }, [])
 
-    // 기존 useEffect들 아래에 추가
-    useEffect(() => {
-        if (profile?.id && keywords.length > 0) {
-            fetchCompanyKeywords()
-        }
-    }, [profile?.id, keywords.length])
-
-    const fetchKeywords = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('keyword')
-                .select('*')
-                .order('keyword', { ascending: true })
-
-            if (error) throw error
-            if (data) {
-                setKeywords(data)
-            }
-        } catch (error) {
-            console.error('키워드 조회 실패:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    // fetchKeywords 함수 아래에 추가
-    const fetchCompanyKeywords = async () => {
-        if (!profile?.id) return
-
-        try {
-            const { data, error } = await supabase
-                .from('company_keyword')
-                .select('keyword_id')
-                .eq('company_id', profile.id)
-
-            if (error) throw error
-
-            if (data && keywords.length > 0) {
-                const keywordIds = data.map(ck => ck.keyword_id)
-
-                // 지역
-                const location = keywords.find(k =>
-                    k.category === '지역' && keywordIds.includes(k.id)
-                )
-                if (location) setSelectedLocation(location.id)
-
-                // 지역이동
-                if (moveableKeyword && keywordIds.includes(moveableKeyword.id)) {
-                    setSelectedMoveable(moveableKeyword.id)
-                }
-
-                // 국가
-                const countries = keywords
-                    .filter(k => k.category === '국가' && keywordIds.includes(k.id))
-                    .map(k => k.id)
-                setSelectedCountries(countries)
-
-                // 직종
-                const jobs = keywords
-                    .filter(k => k.category === '직종' && keywordIds.includes(k.id))
-                    .map(k => k.id)
-                setSelectedJobs(jobs)
-
-                // 근무조건
-                const conditions = keywords
-                    .filter(k => k.category === '근무조건' && keywordIds.includes(k.id))
-                    .map(k => k.id)
-                setSelectedConditions(conditions)
-            }
-        } catch (error) {
-            console.error('회사 키워드 조회 실패:', error)
-        }
-    }
-
-    // 국가 선택 처리
-    const handleCountrySelect = (item: any) => {
-        if (item.value === 'all') {
-            // "상관없음" 선택 시 모든 국가 선택
-            const allCountryIds = countryKeywords.map(k => k.id)
-            setSelectedCountries(allCountryIds)
-        } else {
-            // 개별 국가 선택
-            if (!selectedCountries.includes(item.value)) {
-                setSelectedCountries([...selectedCountries, item.value])
-            }
-        }
-    }
-
-    // 국가 제거
-    const removeCountry = (countryId: number) => {
-        setSelectedCountries(prev => prev.filter(id => id !== countryId))
-    }
-
-    // 직종 선택/해제
-    const toggleJob = (jobId: number) => {
-        setSelectedJobs(prev =>
-            prev.includes(jobId)
-                ? prev.filter(id => id !== jobId)
-                : [...prev, jobId]
-        )
-    }
-
-    // 근무조건 선택/해제
-    const toggleCondition = (conditionId: number) => {
-        setSelectedConditions(prev =>
-            prev.includes(conditionId)
-                ? prev.filter(id => id !== conditionId)
-                : [...prev, conditionId]
-        )
-    }
-
-    // 지역이동 가능 토글
-    const toggleMoveable = () => {
-        if (moveableKeyword) {
-            if (selectedMoveable === moveableKeyword.id) {
-                setSelectedMoveable(null)
-            } else {
-                setSelectedMoveable(moveableKeyword.id)
-            }
-        }
-    }
 
     const handleSave = async () => {
         if(!companyName || !address) {
@@ -220,13 +53,6 @@ const Register = () => {
         }
     }
 
-    if (loading) {
-        return (
-            <SafeAreaView className="flex-1 bg-white justify-center items-center">
-                <ActivityIndicator size="large" color="#3b82f6" />
-            </SafeAreaView>
-        )
-    }
 
     return (
         <SafeAreaView className="flex-1">
