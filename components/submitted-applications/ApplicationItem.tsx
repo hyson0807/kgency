@@ -22,7 +22,7 @@ interface Application {
     id: string
     applied_at: string
     status: string
-    type: 'user_initiated' | 'company_invited'
+    type: 'user_initiated' | 'company_invited' | 'user_instant_interview'
     job_posting: {
         id: string
         title: string

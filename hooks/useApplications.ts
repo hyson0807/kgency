@@ -9,7 +9,7 @@ interface userType {
 
 interface useApplicationsProps {
     user: userType | null;
-    activeFilter: 'all' | 'user_initiated' | 'company_invited';
+    activeFilter: 'all' | 'user_initiated' | 'company_invited' | 'user_instant_interview';
 }
 
 interface InterviewProposal {
@@ -29,7 +29,7 @@ interface Application {
     id: string
     applied_at: string
     status: string
-    type: 'user_initiated' | 'company_invited'
+    type: 'user_initiated' | 'company_invited' | 'user_instant_interview'
     job_posting: {
         id: string
         title: string
@@ -117,6 +117,8 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
                 filteredData = filteredData.filter((app: Application) => app.type === 'user_initiated')
             } else if (activeFilter === 'company_invited') {
                 filteredData = filteredData.filter((app: Application) => app.type === 'company_invited')
+            } else if (activeFilter === 'user_instant_interview') {
+                filteredData = filteredData.filter((app: Application) => app.type === 'user_instant_interview')
             }
 
             // 면접 상태 확인

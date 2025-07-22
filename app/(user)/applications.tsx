@@ -12,7 +12,7 @@ import {useApplications} from "@/hooks/useApplications";
 
 const Applications = () => {
     const { user } = useAuth()
-    const [activeFilter, setActiveFilter] = useState<'all' | 'user_initiated' | 'company_invited'>('all')
+    const [activeFilter, setActiveFilter] = useState<'all' | 'user_initiated' | 'company_invited' | 'user_instant_interview'>('all')
     const { t } = useTranslation()
 
     //fetching applications
