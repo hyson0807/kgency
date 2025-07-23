@@ -25,11 +25,13 @@ export const Country = ({
                         }: CountryProps) => {
     const {t, translateDB} = useTranslation();
     const countryOptions = keywords
-        .filter(k => k.category === '국가')
+        .filter(k => k.category.trim() === '국가')
         .map(country => ({
             label: translateDB('keyword', 'keyword', country.id.toString(), country.keyword),
             value: country.id
         }));
+    console.log(keywords);
+    console.log(countryOptions);
 
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">

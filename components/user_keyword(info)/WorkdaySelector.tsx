@@ -15,7 +15,7 @@ export const WorkdaySelector = ({
                                 }: WorkdaySelectorProps) => {
 
 
-    const {t} = useTranslation();
+    const {t, translateDB} = useTranslation();
 
 
     return (
@@ -39,7 +39,7 @@ export const WorkdaySelector = ({
                                 ? 'text-blue-700'
                                 : 'text-gray-600'
                         }`}>
-                            {workDay.keyword}
+                            {translateDB('keyword', 'keyword', workDay.id.toString(), workDay.keyword)}
                         </Text>
                     </TouchableOpacity>
                 ))}

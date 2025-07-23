@@ -409,5 +409,19 @@ export const infoTranslations: TranslationData = {
         ky: 'Туура жашты киргизиңиз',
         ha: 'Da fatan za a shigar da ingantaccen shekaru',
         mn: 'Зөв насаа оруулна уу'
+    },
+    'info.preferred_work_days': {
+        en: 'Preferred Work Days',
+        ja: '希望勤務日',
+        zh: '希望工作日',
+        vi: 'Ngày làm việc ưa thích',
+        hi: 'पसंदीदा कार्य दिवस',
+        si: 'වැඩ කිරීමට කැමති දින',
+        ar: 'أيام العمل المفضلة',
+        tr: 'Tercih Edilen Çalışma Günleri',
+        my: 'နှစ်သက်သောအလုပ်နေ့များ',
+        ky: 'Каалаган жумуш күндөрү',
+        ha: 'Ranakun Aiki da ake So',
+        mn: 'Хүссэн ажлын өдрүүд'
     }
 }

@@ -90,6 +90,7 @@ const Keywords = () => {
             if (response.data) {
                 setKeywords(response.data)
             }
+            console.log(response.data)
         } catch (error) {
             console.error('키워드 조회 실패:', error)
         }

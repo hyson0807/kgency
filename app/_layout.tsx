@@ -1,4 +1,4 @@
-import {Slot, Stack, Tabs} from "expo-router";
+import {Stack} from "expo-router";
 import "./global.css"
 import {AuthProvider} from "@/contexts/AuthContext";
 import {SafeAreaProvider} from "react-native-safe-area-context";
