@@ -14,6 +14,7 @@ interface Keywords {
     gender: Keyword[];
     age: Keyword[];
     visa: Keyword[];
+    koreanLevel: Keyword[];
 }
 
 interface HiringFieldsProps {
@@ -85,6 +86,21 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                     <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_gender', '모집 성별')}</Text>
                     <View className="flex-row flex-wrap gap-2">
                         {keywords.gender.map((keyword) => (
+                            <View key={keyword.id} className="bg-blue-100 px-3 py-1 rounded-full">
+                                <Text className="text-blue-700 text-sm">
+                                    {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            )}
+
+            {keywords.koreanLevel.length > 0 && (
+                <View className="mb-4">
+                    <Text className="text-gray-600 font-medium mb-2">한국어 수준</Text>
+                    <View className="flex-row flex-wrap gap-2">
+                        {keywords.koreanLevel.map((keyword) => (
                             <View key={keyword.id} className="bg-blue-100 px-3 py-1 rounded-full">
                                 <Text className="text-blue-700 text-sm">
                                     {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}

@@ -22,7 +22,7 @@ export interface SuitabilityResult {
             age: string[];
             visa: string[];
             workDays?: string[];
-            koreanLevel?: string[];
+            koreanLevel: string[];
         };
         missingRequired: string[];
         appliedBonuses: string[]; // 적용된 보너스 설명

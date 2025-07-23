@@ -51,6 +51,7 @@ interface MatchedPosting {
         gender: string[];
         age: string[];
         visa: string[];
+        koreanLevel: string[];
     };
     suitability: SuitabilityResult; // 새로 추가
 }
@@ -145,6 +146,7 @@ export const useMatchedJobPostings = () => {
                         gender: [] as string[],
                         age: [] as string[],
                         visa: [] as string[],
+                        koreanLevel: [] as string[]
                     };
 
                     // 매칭된 키워드만 번역
@@ -182,6 +184,8 @@ export const useMatchedJobPostings = () => {
                                 case '비자':
                                     translatedMatchedKeywords.visa.push(translatedKeyword);
                                     break;
+                                case '한국어 수준':
+                                    translatedMatchedKeywords.koreanLevel.push(translatedKeyword);
                             }
                         }
                     });
@@ -195,7 +199,8 @@ export const useMatchedJobPostings = () => {
                             suitability.details.matchedKeywords.moveable.length +
                             suitability.details.matchedKeywords.gender.length +
                             suitability.details.matchedKeywords.age.length +
-                            suitability.details.matchedKeywords.visa.length,
+                            suitability.details.matchedKeywords.visa.length +
+                            suitability.details.matchedKeywords.koreanLevel.length,
                         matchedKeywords: translatedMatchedKeywords,
                         suitability
                     };
@@ -232,7 +237,7 @@ export const useMatchedJobPostings = () => {
 
     // 공고의 키워드 가져오기
     const getPostingKeywords = (posting: JobPosting) => {
-        if (!posting.job_posting_keywords) return { countries: [], jobs: [], conditions: [],location: [], moveable: [], gender: [], age: [], visa: [] };
+        if (!posting.job_posting_keywords) return { countries: [], jobs: [], conditions: [],location: [], moveable: [], gender: [], age: [], visa: [], koreanLevel: [] };
 
         const keywords = posting.job_posting_keywords;
 
@@ -245,6 +250,8 @@ export const useMatchedJobPostings = () => {
             gender: keywords.filter(k => k.keyword.category === '성별').map(k => k.keyword),
             age: keywords.filter(k => k.keyword.category === '나이대').map(k => k.keyword),
             visa: keywords.filter(k => k.keyword.category === '비자').map(k => k.keyword),
+            koreanLevel: keywords.filter(k => k.keyword.category === '한국어수준').map(k => k.keyword),
+
 
         };
     };
