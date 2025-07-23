@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch, Modal, Linking } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Switch, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
