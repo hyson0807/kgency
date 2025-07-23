@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/hooks/useModal'
 import {api, authAPI} from "@/lib/api";
+import AccountManagementModal from '@/components/common/AccountManagementModal';
 
 const Settings2 = () => {
     const { logout, user } = useAuth()
@@ -25,6 +26,7 @@ const Settings2 = () => {
     // 모달 상태
     const [languageModalVisible, setLanguageModalVisible] = useState(false)
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
+    const [accountModalVisible, setAccountModalVisible] = useState(false)
 
     // 언어 설정
     const [selectedLanguage, setSelectedLanguage] = useState('ko')
@@ -332,22 +334,15 @@ const Settings2 = () => {
 
                 {/* 계정 관리 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
-                    <Text className="text-lg font-bold mb-4">계정 관리</Text>
-
                     <TouchableOpacity
-                        onPress={handleLogout}
-                        className="flex-row items-center py-3"
+                        onPress={() => setAccountModalVisible(true)}
+                        className="flex-row items-center justify-between py-3"
                     >
-                        <Ionicons name="log-out-outline" size={20} color="#ef4444" />
-                        <Text className="ml-3 text-red-500">로그아웃</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => setDeleteAccountModalVisible(true)}
-                        className="flex-row items-center py-3"
-                    >
-                        <Ionicons name="trash-outline" size={20} color="#ef4444" />
-                        <Text className="ml-3 text-red-500">회원 탈퇴</Text>
+                        <View className="flex-row items-center">
+                            <Ionicons name="settings-outline" size={20} color="#6b7280" />
+                            <Text className="ml-3">계정 관리</Text>
+                        </View>
+                        <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -398,6 +393,20 @@ const Settings2 = () => {
                     </View>
                 </View>
             </Modal>
+
+            {/* 계정 관리 모달 */}
+            <AccountManagementModal
+                visible={accountModalVisible}
+                onClose={() => setAccountModalVisible(false)}
+                onLogout={() => {
+                    setAccountModalVisible(false);
+                    handleLogout();
+                }}
+                onDeleteAccount={() => {
+                    setAccountModalVisible(false);
+                    setDeleteAccountModalVisible(true);
+                }}
+            />
 
             {/* 회원 탈퇴 확인 모달 */}
             <Modal

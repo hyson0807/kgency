@@ -43,6 +43,20 @@ export const tabTranslations: TranslationData = {
         ha: 'Aikace-aikace',
         mn: 'Өргөдөл'
     },
+    'tab.schedule': {
+        en: 'Schedule',
+        ja: 'スケジュール',
+        zh: '日程',
+        vi: 'Lịch trình',
+        hi: 'अनुसूची',
+        si: 'කාලසටහන',
+        ar: 'الجدول',
+        tr: 'Program',
+        my: 'အချိန်ဇယား',
+        ky: 'График',
+        ha: 'Jadawali',
+        mn: 'Хуваарь'
+    },
     'tab.settings': {
         en: 'Settings',
         ja: '設定',
@@ -57,6 +71,7 @@ export const tabTranslations: TranslationData = {
         ha: 'Saiti',
         mn: 'Тохиргоо'
     },
+
     'tab.inbox': {
         en: 'Messages',
         ja: 'メッセージ',

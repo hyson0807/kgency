@@ -4,11 +4,10 @@ import { Ionicons } from "@expo/vector-icons"
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useTranslation } from "@/contexts/TranslationContext";
-import Feather from "@expo/vector-icons/Feather";
 import {useAuth} from "@/contexts/AuthContext";
 
-const user_Layout = () => {
-    const { t, translateDB, language } = useTranslation();
+const User_Layout = () => {
+    const { t } = useTranslation();
     const {user} = useAuth();
     console.log("유저정보123123", user)
 
@@ -53,7 +52,7 @@ const user_Layout = () => {
             <Tabs.Screen
                 name="user-calendar"
                 options={{
-                    tabBarLabel: '일정',
+                    tabBarLabel: t('tab.schedule', '일정'),
 
                     tabBarIcon: ({size, color}) => <Ionicons name="calendar" size={size} color={color} />
                 }}
@@ -70,4 +69,4 @@ const user_Layout = () => {
         </Tabs>
     )
 }
-export default user_Layout
+export default User_Layout
