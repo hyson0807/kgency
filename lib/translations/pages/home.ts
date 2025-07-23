@@ -156,4 +156,18 @@ export const homeTranslations : TranslationData = {
         ha: 'Wannan kamfani ya fi son masu aikace daga {{country}}!',
         mn: 'Энэ компани {{country}} өргөдөл гаргагчдыг илүүд үздэг!'
     },
+    'home.no_matching_postings': {
+        en: 'No matching job postings',
+        ja: 'マッチする求人がありません',
+        zh: '没有匹配的职位',
+        vi: 'Không có tin tuyển dụng phù hợp',
+        hi: 'कोई मैच करने वाली नौकरी पोस्टिंग नहीं',
+        si: 'ගැලපෙන රැකියා දැන්වීම් නැත',
+        ar: 'لا توجد إعلانات وظائف مطابقة',
+        tr: 'Eşleşen iş ilanı yok',
+        my: 'ကိုက်ညီသောအလုပ်ကြေငြာများမရှိပါ',
+        ky: 'Дал келген жумуш жарыялоосу жок',
+        ha: 'Babu sanarwar aiki da ta dace',
+        mn: 'Таарсан ажлын зар байхгүй'
+    },
 }

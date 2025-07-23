@@ -184,7 +184,7 @@ export const JobPostingCard = ({
             {hasMatches ? (
                 <View className="border-t border-gray-100 pt-3">
                     <Text className="text-sm text-gray-700 font-semibold mb-2">
-                        해당 회사는 고객님이랑 동일한 키워드를 선택했습니다
+                        {t('suitability.company_keyword_match', '해당 회사는 고객님이랑 동일한 키워드를 선택했습니다')}
                     </Text>
 
                     <View className="flex-row flex-wrap gap-2">

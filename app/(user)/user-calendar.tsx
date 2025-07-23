@@ -14,6 +14,7 @@ import { UserInterviewCard } from '@/components/interview-calendar-user/UserInte
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
+import { useTranslation } from '@/contexts/TranslationContext'
 
 // 한국어 캘린더 설정
 LocaleConfig.locales['ko'] = {
@@ -59,6 +60,7 @@ interface InterviewSchedule {
 export default function UserInterviewCalendar() {
     const { user } = useAuth()
     const { showModal, ModalComponent } = useModal()
+    const { t } = useTranslation()
 
     // State
     const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
@@ -93,7 +95,7 @@ export default function UserInterviewCalendar() {
             }
         } catch (error) {
             console.error('Failed to fetch schedules:', error)
-            showModal('오류', '면접 일정을 불러오는데 실패했습니다.')
+            showModal(t('common.error', '오류'), t('calendar.load_error', '면접 일정을 불러오는데 실패했습니다.'))
         } finally {
             setLoading(false)
         }
@@ -118,7 +120,7 @@ export default function UserInterviewCalendar() {
         // 캘린더 URL 스킴 사용 (iOS/Android 모두 지원)
         const eventUrl = `calshow:${startTime.getTime() / 1000}`
         Linking.openURL(eventUrl).catch(() => {
-            showModal('알림', '캘린더 앱을 열 수 없습니다.')
+            showModal(t('common.notification', '알림'), t('calendar.open_error', '캘린더 앱을 열 수 없습니다.'))
         })
     }
 
@@ -169,7 +171,7 @@ export default function UserInterviewCalendar() {
             <View className="bg-white border-b border-gray-200">
                 <View className="flex-row items-center p-4">
                     <Back />
-                    <Text className="text-lg font-bold ml-4">내 면접 일정</Text>
+                    <Text className="text-lg font-bold ml-4">{t('calendar.my_interview_schedule', '내 면접 일정')}</Text>
                 </View>
             </View>
 
@@ -216,7 +218,7 @@ export default function UserInterviewCalendar() {
                         <View className="bg-white rounded-xl p-8 items-center">
                             <Ionicons name="calendar-outline" size={60} color="#cbd5e0" />
                             <Text className="text-gray-500 mt-4">
-                                예정된 면접이 없습니다
+                                {t('calendar.no_scheduled_interviews', '예정된 면접이 없습니다')}
                             </Text>
                         </View>
                     ) : (

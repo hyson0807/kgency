@@ -85,4 +85,18 @@ export const tabTranslations: TranslationData = {
         ha: 'Sanarwarina',
         mn: 'Миний зар'
     },
+    'tab.calendar': {
+        en: 'Schedule',
+        ja: '日程',
+        zh: '日程',
+        vi: 'Lịch trình',
+        hi: 'कार्यक्रम',
+        si: 'කාලසටහන',
+        ar: 'الجدولة',
+        tr: 'Program',
+        my: 'အချိန်ဇယား',
+        ky: 'Тартип',
+        ha: 'Jadawali',
+        mn: 'Хуваарь'
+    },
 };

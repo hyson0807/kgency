@@ -8,6 +8,9 @@ import { postingDetailTranslations } from './pages/posting-detail';
 import { applyTranslations } from './pages/apply';
 import { resumeTranslations } from './pages/resume';
 import { infoTranslations } from './pages/info';
+import { calendarTranslations } from './pages/calendar';
+import { interviewTranslations } from './pages/interview';
+import { suitabilityTranslations } from './pages/suitability';
 import { commonTranslations } from './common';
 import { tabTranslations } from './components/tabs';
 import { TranslationData } from './types';
@@ -25,4 +28,7 @@ export const translations: TranslationData = {
     ...applyTranslations,
     ...resumeTranslations,
     ...infoTranslations,
+    ...calendarTranslations,
+    ...interviewTranslations,
+    ...suitabilityTranslations,
 };
