@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch, Modal, Linking, Platform } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Switch, Modal, Linking } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
@@ -10,6 +10,8 @@ import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext";
 import {authAPI} from "@/lib/api";
 import AccountManagementModal from '@/components/common/AccountManagementModal';
+import TermsOfService from '@/components/common/TermsOfService';
+import PrivacyPolicy from '@/components/common/PrivacyPolicy';
 
 const Settings = () => {
     const { logout, user,checkAuthState } = useAuth()
@@ -18,7 +20,7 @@ const Settings = () => {
     const [isJobSeekingActive, setIsJobSeekingActive] = useState(false)
     const { t, language, changeLanguage } = useTranslation()
 
-    const [selectedLanguage, setSelectedLanguage] = useState(language)
+    const [selectedLanguage] = useState(language)
 
 
     const languages = [
@@ -47,6 +49,8 @@ const Settings = () => {
     const [languageModalVisible, setLanguageModalVisible] = useState(false)
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
     const [accountModalVisible, setAccountModalVisible] = useState(false)
+    const [termsModalVisible, setTermsModalVisible] = useState(false)
+    const [privacyModalVisible, setPrivacyModalVisible] = useState(false)
 
 
 
@@ -161,13 +165,6 @@ const Settings = () => {
                 'warning'
             )
         }
-    }
-
-    // 외부 링크 열기
-    const openLink = (url: string) => {
-        Linking.openURL(url).catch(err =>
-            console.error('링크 열기 실패:', err)
-        )
     }
 
     // 고객센터 처리
@@ -319,7 +316,7 @@ const Settings = () => {
                     <Text className="text-lg font-bold mb-4">{t('settings.information', '정보')}</Text>
 
                     <TouchableOpacity
-                        onPress={() => openLink('https://example.com/terms')}
+                        onPress={() => setTermsModalVisible(true)}
                         className="flex-row items-center justify-between py-3"
                     >
                         <View className="flex-row items-center">
@@ -330,7 +327,7 @@ const Settings = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => openLink('https://example.com/privacy')}
+                        onPress={() => setPrivacyModalVisible(true)}
                         className="flex-row items-center justify-between py-3"
                     >
                         <View className="flex-row items-center">
@@ -472,6 +469,26 @@ const Settings = () => {
                         </View>
                     </View>
                 </View>
+            </Modal>
+
+            {/* 이용약관 모달 */}
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={termsModalVisible}
+                onRequestClose={() => setTermsModalVisible(false)}
+            >
+                <TermsOfService onClose={() => setTermsModalVisible(false)} />
+            </Modal>
+
+            {/* 개인정보처리방침 모달 */}
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={privacyModalVisible}
+                onRequestClose={() => setPrivacyModalVisible(false)}
+            >
+                <PrivacyPolicy onClose={() => setPrivacyModalVisible(false)} />
             </Modal>
 
             {/* useModal로 생성되는 모달 */}

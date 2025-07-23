@@ -54,16 +54,6 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
         }
     }
 
-    const getInterviewTypeIcon = (type: string) => {
-        switch (type) {
-            case '화상':
-                return 'videocam-outline'
-            case '전화':
-                return 'call-outline'
-            default:
-                return 'people-outline'
-        }
-    }
 
     return (
         <View className="bg-white rounded-xl p-4 shadow-sm">

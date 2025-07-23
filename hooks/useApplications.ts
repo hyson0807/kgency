@@ -108,7 +108,9 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
 
             // response 자체가 이미 { success: true, data: [...] } 형태
             if (!response.success) {
-                throw new Error('데이터 조회 실패')
+                console.error('데이터 조회 실패:', response)
+                setApplications([])
+                return
             }
 
             let filteredData = response.data || []

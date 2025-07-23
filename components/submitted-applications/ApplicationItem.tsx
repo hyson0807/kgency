@@ -191,7 +191,6 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                 ) : (
                     <>
                         {/* 삭제된 공고 체크 */}
-                        {console.log(item.job_posting.deleted_at)}
                         {item.job_posting.deleted_at !== null ? (
                             <View className="mt-2 flex-row items-center justify-center bg-gray-100 py-2 rounded-lg">
                                 <Ionicons name="trash-outline" size={16} color="#6b7280" />

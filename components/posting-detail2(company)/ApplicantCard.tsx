@@ -297,7 +297,7 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     </View>
                 </View>
 
-                {item.type == 'user_initiated' && (
+                {item.type === 'user_initiated' && (
                     <View className="flex bg-gray-100 rounded-xl p-2">
                         <Text className="text-start flex-shrink" numberOfLines={2}>{item.message?.content}</Text>
                     </View>

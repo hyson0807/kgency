@@ -103,7 +103,23 @@ export default function Resume() {
                 setResume(response.resume);
                 setEditedResume(response.resume);
             } else {
-                throw new Error(response.error || t('resume.ai_generation_failed', 'AI 이력서 생성에 실패했습니다.'));
+                const errorMessage = response.error || t('resume.ai_generation_failed', 'AI 이력서 생성에 실패했습니다.');
+                console.error('AI 이력서 생성 실패:', errorMessage);
+                setError(errorMessage);
+                
+                // 오류 발생 시 기본 이력서 템플릿 제공
+                const fallbackResume = `안녕하세요, ${companyName} 채용 담당자님
+
+${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
+
+저는 성실하고 책임감 있는 지원자로서, 귀사에서 열심히 일할 준비가 되어 있습니다.
+
+주어진 업무를 성실히 수행하며, 동료들과 협력하여 회사의 발전에 기여하고 싶습니다.
+
+감사합니다.`;
+
+                setResume(fallbackResume);
+                setEditedResume(fallbackResume);
             }
         } catch (error: any) {
             console.error('AI 이력서 생성 오류:', error);
@@ -153,7 +169,8 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                     });
 
                     if (!messageResponse.success) {
-                        throw new Error(messageResponse.error || '메시지 전송 실패');
+                        console.error('메시지 전송 실패:', messageResponse.error);
+                        return;
                     }
 
                     // 지원 내역 저장
@@ -164,7 +181,8 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                     });
 
                     if (!applicationResponse.success) {
-                        throw new Error(applicationResponse.error || '지원서 제출 실패');
+                        console.error('지원서 제출 실패:', applicationResponse.error);
+                        return;
                     }
 
                     // 성공 시 홈으로 이동

@@ -7,11 +7,13 @@ import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/hooks/useModal'
-import {api, authAPI} from "@/lib/api";
+import {authAPI} from "@/lib/api";
 import AccountManagementModal from '@/components/common/AccountManagementModal';
+import TermsOfService from '@/components/common/TermsOfService';
+import PrivacyPolicy from '@/components/common/PrivacyPolicy';
 
 const Settings2 = () => {
-    const { logout, user } = useAuth()
+    const { logout } = useAuth()
     const { profile } = useProfile()
     const { showModal, ModalComponent } = useModal()
 
@@ -27,6 +29,8 @@ const Settings2 = () => {
     const [languageModalVisible, setLanguageModalVisible] = useState(false)
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
     const [accountModalVisible, setAccountModalVisible] = useState(false)
+    const [termsModalVisible, setTermsModalVisible] = useState(false)
+    const [privacyModalVisible, setPrivacyModalVisible] = useState(false)
 
     // 언어 설정
     const [selectedLanguage, setSelectedLanguage] = useState('ko')
@@ -280,18 +284,18 @@ const Settings2 = () => {
                     <Text className="text-lg font-bold mb-4">정보</Text>
 
                     <TouchableOpacity
-                        onPress={() => openLink('https://example.com/business-terms')}
+                        onPress={() => setTermsModalVisible(true)}
                         className="flex-row items-center justify-between py-3"
                     >
                         <View className="flex-row items-center">
                             <Ionicons name="document-text-outline" size={20} color="#6b7280" />
-                            <Text className="ml-3">기업 이용약관</Text>
+                            <Text className="ml-3">이용약관</Text>
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => openLink('https://example.com/business-privacy')}
+                        onPress={() => setPrivacyModalVisible(true)}
                         className="flex-row items-center justify-between py-3"
                     >
                         <View className="flex-row items-center">
@@ -452,6 +456,26 @@ const Settings2 = () => {
                         </View>
                     </View>
                 </View>
+            </Modal>
+
+            {/* 이용약관 모달 */}
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={termsModalVisible}
+                onRequestClose={() => setTermsModalVisible(false)}
+            >
+                <TermsOfService onClose={() => setTermsModalVisible(false)} />
+            </Modal>
+
+            {/* 개인정보처리방침 모달 */}
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={privacyModalVisible}
+                onRequestClose={() => setPrivacyModalVisible(false)}
+            >
+                <PrivacyPolicy onClose={() => setPrivacyModalVisible(false)} />
             </Modal>
 
             {/* useModal로 생성되는 모달 */}
