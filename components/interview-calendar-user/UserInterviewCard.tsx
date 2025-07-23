@@ -3,6 +3,7 @@ import React from 'react'
 import { View, Text, TouchableOpacity, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
+import { useTranslation } from '@/contexts/TranslationContext'
 
 interface UserInterviewCardProps {
     schedule: {
@@ -32,6 +33,8 @@ interface UserInterviewCardProps {
 }
 
 export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCardProps) => {
+    const { t } = useTranslation()
+    
     const formatTime = (dateString: string) => {
         return format(new Date(dateString), 'HH:mm')
     }
@@ -83,16 +86,16 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
 
             {/* 면접 정보 */}
             <View className="space-y-2 mb-3">
-                <View className="flex-row items-center">
-                    <Ionicons
-                        name={getInterviewTypeIcon(schedule.interview_slot.interview_type)}
-                        size={16}
-                        color="#6b7280"
-                    />
-                    <Text className="text-sm text-gray-600 ml-2">
-                        {schedule.interview_slot.interview_type} 면접
-                    </Text>
-                </View>
+                {/*<View className="flex-row items-center">*/}
+                {/*    <Ionicons*/}
+                {/*        name={getInterviewTypeIcon(schedule.interview_slot.interview_type)}*/}
+                {/*        size={16}*/}
+                {/*        color="#6b7280"*/}
+                {/*    />*/}
+                {/*    <Text className="text-sm text-gray-600 ml-2">*/}
+                {/*        {schedule.interview_slot.interview_type} 면접*/}
+                {/*    </Text>*/}
+                {/*</View>*/}
 
                 {(schedule.proposal.location || schedule.interview_slot.company.address) && (
                     <View className="flex-row items-start">
@@ -121,7 +124,7 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                         className="flex-1 flex-row items-center justify-center bg-green-50 py-2 rounded-lg"
                     >
                         <Ionicons name="call-outline" size={18} color="#16a34a" />
-                        <Text className="text-green-600 text-sm font-medium ml-1">전화</Text>
+                        <Text className="text-green-600 text-sm font-medium ml-1">{t('calendar.call', '전화')}</Text>
                     </TouchableOpacity>
                 )}
 
@@ -130,7 +133,7 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                     className="flex-1 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
                 >
                     <Ionicons name="map-outline" size={18} color="#3b82f6" />
-                    <Text className="text-blue-600 text-sm font-medium ml-1">지도</Text>
+                    <Text className="text-blue-600 text-sm font-medium ml-1">{t('calendar.map', '지도')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -138,7 +141,7 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                     className="flex-1 flex-row items-center justify-center bg-purple-50 py-2 rounded-lg"
                 >
                     <Ionicons name="calendar-outline" size={18} color="#8b5cf6" />
-                    <Text className="text-purple-600 text-sm font-medium ml-1">일정 추가</Text>
+                    <Text className="text-purple-600 text-sm font-medium ml-1">{t('calendar.add_to_calendar', '일정 추가')}</Text>
                 </TouchableOpacity>
             </View>
         </View>

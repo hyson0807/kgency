@@ -493,4 +493,32 @@ export const settingsTranslations: TranslationData = {
         ha: 'Idan an kunna, kamfanoni za su iya kallon bayananku',
         mn: 'Идэвхжүүлсэн үед компаниуд таны профайлыг харж болно'
     },
+    'settings.deactivate_job_posting': {
+        en: 'Deactivate Job Search',
+        ja: '求職活動を無効化',
+        zh: '停用求职搜索',
+        vi: 'Tắt tìm kiếm việc làm',
+        hi: 'नौकरी की खोज निष्क्रिय करें',
+        si: 'රැකියා සෙවීම අක්‍රිය කරන්න',
+        ar: 'إلغاء تفعيل البحث عن وظيفة',
+        tr: 'İş Aramayı Devre Dışı Bırak',
+        my: 'အလုပ်ရှာခြင်းကို ပိတ်ပါ',
+        ky: 'Жумуש издөөнү өчүрүү',
+        ha: 'Kashe Neman Aiki',
+        mn: 'Ажил хайлтыг идэвхгүй болгох'
+    },
+    'settings.deactivate_description': {
+        en: 'When deactivated, companies cannot see your profile',
+        ja: '無効にすると企業があなたのプロフィールを見ることができません',
+        zh: '停用后公司无法查看您的个人资料',
+        vi: 'Khi tắt, các công ty không thể xem hồ sơ của bạn',
+        hi: 'निष्क्रिय करने पर कंपनियां आपकी प्रोफ़ाइल नहीं देख सकतीं',
+        si: 'අක්‍රිය කළ විට, සමාගම්වලට ඔබේ පැතිකඩ දැකිය නොහැක',
+        ar: 'عند إلغاء التفعيل، لا يمكن للشركات رؤية ملفك الشخصي',
+        tr: 'Devre dışı bırakıldığında şirketler profilinizi göremez',
+        my: 'ပိတ်ထားသောအခါ ကုမ္ပဏီများက သင့်ပရိုဖိုင်ကို မကြည့်နိုင်ပါ',
+        ky: 'Өчүрүлгөндө компаниялар сиздин профилиңизди көрө албайт',
+        ha: 'Idan an kashe, kamfanoni ba za su iya kallon bayananku ba',
+        mn: 'Идэвхгүй болгосон үед компаниуд таны профайлыг харж чадахгүй'
+    },
 }

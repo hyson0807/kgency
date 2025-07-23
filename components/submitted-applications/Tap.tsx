@@ -1,5 +1,5 @@
 import React from 'react'
-import {Text, TouchableOpacity, View} from "react-native";
+import {ScrollView, Text, TouchableOpacity, View} from "react-native";
 
 
 
@@ -16,6 +16,7 @@ export const Tap = ({setActiveFilter, activeFilter, t}: TapProps) => {
 
     return (
         <View className="flex-row px-4">
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
                 onPress={() => setActiveFilter('all')}
                 className={`mr-4 pb-3 ${
@@ -67,6 +68,7 @@ export const Tap = ({setActiveFilter, activeFilter, t}: TapProps) => {
                     {t('applications.filter_user_instant_interview', '즉시 면접')}
                 </Text>
             </TouchableOpacity>
+            </ScrollView>
         </View>
     )
 }

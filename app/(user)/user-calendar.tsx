@@ -4,7 +4,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Calendar, LocaleConfig } from 'react-native-calendars'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
-import { ko } from 'date-fns/locale'
+import { ko } from 'date-fns/locale/ko'
+import { enUS } from 'date-fns/locale/en-US'
+import { ja } from 'date-fns/locale/ja'
+import { zhCN } from 'date-fns/locale/zh-CN'
+import { vi } from 'date-fns/locale/vi'
+import { hi } from 'date-fns/locale/hi'
+import { ar } from 'date-fns/locale/ar'
+import { tr } from 'date-fns/locale/tr'
 
 // Components
 import Back from '@/components/back'
@@ -15,16 +22,24 @@ import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from '@/contexts/TranslationContext'
+import { getCalendarConfig } from '@/lib/translations/locales'
 
-// 한국어 캘린더 설정
-LocaleConfig.locales['ko'] = {
-    monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-    monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-    dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
-    dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-    today: '오늘'
+// Date-fns locale mapping
+const dateFnsLocaleMap: Record<string, any> = {
+    ko: ko,
+    en: enUS,
+    ja: ja,
+    zh: zhCN,
+    vi: vi,
+    hi: hi,
+    ar: ar,
+    tr: tr,
+    si: enUS, // fallback to English
+    my: enUS, // fallback to English
+    ky: enUS, // fallback to English
+    ha: enUS, // fallback to English
+    mn: enUS  // fallback to English
 }
-LocaleConfig.defaultLocale = 'ko'
 
 // Types
 interface InterviewSchedule {
@@ -60,16 +75,21 @@ interface InterviewSchedule {
 export default function UserInterviewCalendar() {
     const { user } = useAuth()
     const { showModal, ModalComponent } = useModal()
-    const { t } = useTranslation()
+    const { t, language } = useTranslation()
 
     // State
     const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
     const [currentMonth, setCurrentMonth] = useState(format(new Date(), 'yyyy-MM'))
-    const [schedules, setSchedules] = useState<InterviewSchedule[]>([])
     const [groupedSchedules, setGroupedSchedules] = useState<Record<string, InterviewSchedule[]>>({})
     const [selectedDateSchedules, setSelectedDateSchedules] = useState<InterviewSchedule[]>([])
     const [loading, setLoading] = useState(true)
-    const [refreshing, setRefreshing] = useState(false)
+
+    // 사용자 언어 설정에 따른 동적 캘린더 언어 변경
+    useEffect(() => {
+        const config = getCalendarConfig(language)
+        LocaleConfig.locales[language] = config
+        LocaleConfig.defaultLocale = language
+    }, [language])
 
     // Effects
     useEffect(() => {
@@ -90,7 +110,6 @@ export default function UserInterviewCalendar() {
             const response = await api('GET', `/api/interview-schedules/user/calendar?userId=${user?.userId}&month=${month}`)
 
             if (response?.success) {
-                setSchedules(response.data.schedules || [])
                 setGroupedSchedules(response.data.groupedSchedules || {})
             }
         } catch (error) {
@@ -152,7 +171,27 @@ export default function UserInterviewCalendar() {
 
     const formatDateHeader = (dateString: string) => {
         const date = new Date(dateString)
-        return format(date, 'M월 d일 (E)', { locale: ko })
+        const currentLocale = dateFnsLocaleMap[language] || ko
+        
+        // 언어별 날짜 형식 패턴
+        const formatPatterns: Record<string, string> = {
+            ko: 'M월 d일 (E)',
+            en: 'MMM d (E)',
+            ja: 'M月d日 (E)',
+            zh: 'M月d日 (E)',
+            vi: 'd MMM (E)',
+            hi: 'd MMM (E)',
+            ar: 'd MMM (E)',
+            tr: 'd MMM (E)',
+            si: 'MMM d (E)',
+            my: 'MMM d (E)',
+            ky: 'MMM d (E)',
+            ha: 'MMM d (E)',
+            mn: 'MMM d (E)'
+        }
+        
+        const pattern = formatPatterns[language] || formatPatterns.ko
+        return format(date, pattern, { locale: currentLocale })
     }
 
     if (loading) {
@@ -209,7 +248,7 @@ export default function UserInterviewCalendar() {
                         </Text>
                         <View className="bg-blue-100 px-3 py-1 rounded-full">
                             <Text className="text-blue-600 text-sm font-medium">
-                                {selectedDateSchedules.length}건
+                                {selectedDateSchedules.length}{t('calendar.count_unit', '건')}
                             </Text>
                         </View>
                     </View>

@@ -224,9 +224,11 @@ const Settings = () => {
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                 <View className="flex-row items-center justify-between mb-4">
                     <View className="flex-1">
-                        <Text className="text-lg font-bold text-gray-800">구직 공고 비활성화</Text>
+                        <Text className="text-lg font-bold text-gray-800">
+                            {t('settings.deactivate_job_posting', '구직 공고 비활성화')}
+                        </Text>
                         <Text className="text-sm text-gray-600 mt-1">
-                            비활성화하면 회사에서 내 프로필을 볼 수 없습니다
+                            {t('settings.deactivate_description', '비활성화하면 회사에서 내 프로필을 볼 수 없습니다')}
                         </Text>
                     </View>
                     <TouchableOpacity
