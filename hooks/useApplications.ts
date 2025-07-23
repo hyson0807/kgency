@@ -34,6 +34,7 @@ interface Application {
         id: string
         title: string
         is_active: boolean
+        deleted_at: string
         salary_range?: string
         working_hours?: string
         company: {

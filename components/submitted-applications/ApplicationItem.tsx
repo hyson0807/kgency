@@ -27,6 +27,7 @@ interface Application {
         id: string
         title: string
         is_active: boolean
+        deleted_at: string
         salary_range?: string
         working_hours?: string
         company: {
@@ -173,24 +174,8 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                     </TouchableOpacity>
                 )}
 
-                {/* 면접 시간 선택 버튼 - proposal이 존재하고 pending 상태일 때만 표시 */}
-                {item.interviewProposal && item.interviewProposal.status === 'pending' && (
-                    <TouchableOpacity
-                        onPress={(e) => {
-                            e.stopPropagation()
-                            handleInterviewSelection()
-                        }}
-                        className="mt-2 flex-row items-center justify-center bg-green-50 py-2 rounded-lg"
-                    >
-                        <Ionicons name="calendar-outline" size={16} color="#10b981" />
-                        <Text className="text-green-600 text-sm font-medium ml-1">
-                            {t('applications.select_interview_time', '면접 시간 선택하기')}
-                        </Text>
-                    </TouchableOpacity>
-                )}
-
-                {/* 면접 확정 표시 - proposal이 존재하고 scheduled 상태일 때 표시 */}
-                {item.interviewProposal && item.interviewProposal.status === 'scheduled' && (
+                {/* 면접 확정 표시 - 면접이 확정된 경우 최우선 표시 */}
+                {item.interviewProposal && item.interviewProposal.status === 'scheduled' ? (
                     <TouchableOpacity
                         onPress={(e) => {
                             e.stopPropagation()
@@ -203,6 +188,48 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                             {t('applications.interview_confirmed', '면접 확정')}
                         </Text>
                     </TouchableOpacity>
+                ) : (
+                    <>
+                        {/* 삭제된 공고 체크 */}
+                        {console.log(item.job_posting.deleted_at)}
+                        {item.job_posting.deleted_at !== null ? (
+                            <View className="mt-2 flex-row items-center justify-center bg-gray-100 py-2 rounded-lg">
+                                <Ionicons name="trash-outline" size={16} color="#6b7280" />
+                                <Text className="text-gray-600 text-sm font-medium ml-1">
+                                    {t('applications.deleted_posting', '삭제된 공고입니다')}
+                                </Text>
+                            </View>
+                        ) : (
+                            <>
+                                {/* 활성 상태 체크 */}
+                                {item.job_posting.is_active ? (
+                                    /* 면접 시간 선택 버튼 - proposal이 존재하고 pending 상태일 때 표시 */
+                                    item.interviewProposal && item.interviewProposal.status === 'pending' && (
+                                        <TouchableOpacity
+                                            onPress={(e) => {
+                                                e.stopPropagation()
+                                                handleInterviewSelection()
+                                            }}
+                                            className="mt-2 flex-row items-center justify-center bg-green-50 py-2 rounded-lg"
+                                        >
+                                            <Ionicons name="calendar-outline" size={16} color="#10b981" />
+                                            <Text className="text-green-600 text-sm font-medium ml-1">
+                                                {t('applications.select_interview_time', '면접 시간 선택하기')}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )
+                                ) : (
+                                    /* 마감된 공고 */
+                                    <View className="mt-2 flex-row items-center justify-center bg-gray-100 py-2 rounded-lg">
+                                        <Ionicons name="close-circle-outline" size={16} color="#6b7280" />
+                                        <Text className="text-gray-600 text-sm font-medium ml-1">
+                                            {t('applications.closed_posting', '마감된 공고입니다')}
+                                        </Text>
+                                    </View>
+                                )}
+                            </>
+                        )}
+                    </>
                 )}
             </TouchableOpacity>
 
