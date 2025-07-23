@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons'
 import { router, useLocalSearchParams } from 'expo-router'
 import Back from '@/components/back'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import {api} from "@/lib/api";
@@ -138,45 +137,35 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                 setSending(true);
                 try {
                     // 먼저 중복 지원 확인
-                    const { data: existingApp } = await supabase
-                        .from('applications')
-                        .select('id')
-                        .eq('user_id', user?.userId)
-                        .eq('job_posting_id', jobPostingId)
-                        .maybeSingle();
-
-                    if (existingApp) {
+                    const checkDuplicateResponse = await api('GET', `/api/applications/check-duplicate?jobPostingId=${jobPostingId}`);
+                    
+                    if (checkDuplicateResponse.isDuplicate) {
                         // 이미 지원한 경우 알림 없이 홈으로 이동
                         router.replace('/(user)/home');
                         return;
                     }
 
                     // 메시지 전송
-                    const { data: messageData, error: messageError } = await supabase
-                        .from('messages')
-                        .insert({
-                            sender_id: user?.userId,
-                            receiver_id: companyId,
-                            subject: `${jobTitle} 입사 지원서`,
-                            content: isEditing ? editedResume : resume
-                        })
-                        .select()
-                        .single();
+                    const messageResponse = await api('POST', '/api/messages', {
+                        receiverId: companyId,
+                        subject: `${jobTitle} 입사 지원서`,
+                        content: isEditing ? editedResume : resume
+                    });
 
-                    if (messageError) throw messageError;
+                    if (!messageResponse.success) {
+                        throw new Error(messageResponse.error || '메시지 전송 실패');
+                    }
 
                     // 지원 내역 저장
-                    const { error: applicationError } = await supabase
-                        .from('applications')
-                        .insert({
-                            user_id: user?.userId,
-                            company_id: companyId,
-                            job_posting_id: jobPostingId,
-                            message_id: messageData.id,
-                            status: 'pending'
-                        });
+                    const applicationResponse = await api('POST', '/api/applications', {
+                        companyId: companyId,
+                        jobPostingId: jobPostingId,
+                        messageId: messageResponse.data.id
+                    });
 
-                    if (applicationError) throw applicationError;
+                    if (!applicationResponse.success) {
+                        throw new Error(applicationResponse.error || '지원서 제출 실패');
+                    }
 
                     // 성공 시 홈으로 이동
                     router.replace('/(user)/home');
