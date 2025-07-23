@@ -402,6 +402,7 @@ export default function InterviewCalendar() {
                         onDayPress={handleDayPress}
                         onMonthChange={handleMonthChange}
                         markedDates={getMarkedDates()}
+                        minDate={activeTab === 'slots' ? format(new Date(), 'yyyy-MM-dd') : undefined}
                         theme={{
                             backgroundColor: '#ffffff',
                             calendarBackground: '#ffffff',

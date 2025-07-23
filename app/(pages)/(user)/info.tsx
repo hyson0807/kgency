@@ -214,7 +214,6 @@ const Info = () => {
                 profile: {
                     name: name,
                     onboarding_completed: true,
-                    job_seeking_active: true,
                 },
                 userInfo: {
                     age: ageNum,
