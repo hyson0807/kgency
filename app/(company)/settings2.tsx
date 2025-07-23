@@ -134,7 +134,7 @@ const Settings2 = () => {
     const showCustomerService = () => {
         showModal(
             '기업 고객센터',
-            '기업 고객센터: 1588-0000\n운영시간: 평일 09:00 - 18:00',
+            '기업 고객센터: jiwonn0207@gmail.com\n운영시간: 평일 09:00 - 18:00',
             'info'
         )
     }
@@ -461,7 +461,7 @@ const Settings2 = () => {
             {/* 이용약관 모달 */}
             <Modal
                 animationType="slide"
-                transparent={false}
+                transparent={true}
                 visible={termsModalVisible}
                 onRequestClose={() => setTermsModalVisible(false)}
             >
@@ -471,7 +471,7 @@ const Settings2 = () => {
             {/* 개인정보처리방침 모달 */}
             <Modal
                 animationType="slide"
-                transparent={false}
+                transparent={true}
                 visible={privacyModalVisible}
                 onRequestClose={() => setPrivacyModalVisible(false)}
             >

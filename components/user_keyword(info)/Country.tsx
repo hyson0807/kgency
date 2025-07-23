@@ -30,8 +30,6 @@ export const Country = ({
             label: translateDB('keyword', 'keyword', country.id.toString(), country.keyword),
             value: country.id
         }));
-    console.log(keywords);
-    console.log(countryOptions);
 
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">

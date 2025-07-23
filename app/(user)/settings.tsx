@@ -171,7 +171,7 @@ const Settings = () => {
     const handleCustomerService = () => {
         showModal(
             t('settings.customer_service', '고객센터'),
-            t('settings.customer_service_info', '문의사항이 있으신가요?\n고객센터: 1588-0000\n운영시간: 평일 09:00 - 18:00'),
+            t('settings.customer_service_info', '문의사항이 있으신가요?\n고객센터: jiwonn0207@gmail.com\n운영시간: 평일 09:00 - 18:00'),
             'info'
         )
     }
@@ -474,7 +474,7 @@ const Settings = () => {
             {/* 이용약관 모달 */}
             <Modal
                 animationType="slide"
-                transparent={false}
+                transparent={true}
                 visible={termsModalVisible}
                 onRequestClose={() => setTermsModalVisible(false)}
             >
@@ -484,7 +484,7 @@ const Settings = () => {
             {/* 개인정보처리방침 모달 */}
             <Modal
                 animationType="slide"
-                transparent={false}
+                transparent={true}
                 visible={privacyModalVisible}
                 onRequestClose={() => setPrivacyModalVisible(false)}
             >
