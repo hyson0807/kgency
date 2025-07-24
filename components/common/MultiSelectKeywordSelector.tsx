@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Dropdown } from 'react-native-element-dropdown'
-import { X } from 'lucide-react-native'
+import { Ionicons } from '@expo/vector-icons'
 
 interface Keyword {
     id: number
@@ -97,7 +97,7 @@ export const MultiSelectKeywordSelector: React.FC<MultiSelectKeywordSelectorProp
                                 selectedIds.forEach(id => onRemove(id))
                             }
                         }}>
-                            <X size={14} color="#2563eb" />
+                            <Ionicons name="close" size={14} color="#2563eb" />
                         </TouchableOpacity>
                     </View>
                 ) : (
@@ -105,7 +105,7 @@ export const MultiSelectKeywordSelector: React.FC<MultiSelectKeywordSelectorProp
                         <View key={keyword.id} className="flex-row items-center bg-blue-100 rounded-full px-3 py-1.5 m-1">
                             <Text className="text-blue-600 text-sm mr-1">{keyword.keyword}</Text>
                             <TouchableOpacity onPress={() => onRemove(keyword.id)}>
-                                <X size={14} color="#2563eb" />
+                                <Ionicons name="close" size={14} color="#2563eb" />
                             </TouchableOpacity>
                         </View>
                     ))
