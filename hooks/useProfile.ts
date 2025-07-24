@@ -137,12 +137,12 @@ export const useProfile = () => {
 
     // 컴포넌트 마운트 시 프로필 가져오기
     useEffect(() => {
-        if (user) {
+        if (user?.userId) {
             fetchProfile();
         } else {
             setLoading(false);
         }
-    }, [user]);
+    }, [user?.userId]);
 
     return {
         profile,

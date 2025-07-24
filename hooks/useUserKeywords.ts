@@ -88,12 +88,12 @@ export const useUserKeywords = () => {
 
     // user가 있을 때 user의 키워드 가져오기
     useEffect(() => {
-        if (user) {
+        if (user?.userId) {
             fetchUserKeywords();
         } else {
             setLoading(false);
         }
-    }, [user]);
+    }, [user?.userId]);
 
     return { keywords, user_keywords, loading, fetchKeywords, fetchUserKeywords, updateKeywords };
 };

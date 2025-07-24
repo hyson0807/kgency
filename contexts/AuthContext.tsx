@@ -1,5 +1,5 @@
 // contexts/AuthContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosError } from 'axios';
 import {jwtDecode} from "jwt-decode";
@@ -81,8 +81,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (token) {
                 const decoded = jwtDecode(token);
                 const isExpired = decoded.exp! * 1000 < Date.now();
-
-                console.log(decoded)
 
                 if (!isExpired && userData) {
                     setUser(JSON.parse(userData));
@@ -219,10 +217,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
+    // Memoize user object to prevent unnecessary re-renders
+    const memoizedUser = useMemo(() => user, [user?.userId, user?.phone, user?.userType]);
+
     // Context value
-    const value: AuthContextType = {
+    const value: AuthContextType = useMemo(() => ({
         // 상태
-        user,
+        user: memoizedUser,
         isLoading,
         isAuthenticated,
         onboardingCompleted,
@@ -234,10 +235,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         authenticatedRequest,
 
         // 유틸리티
-        userType: user?.userType || null,
-        isJobSeeker: user?.userType === 'user',
-        isEmployer: user?.userType === 'company',
-    };
+        userType: memoizedUser?.userType || null,
+        isJobSeeker: memoizedUser?.userType === 'user',
+        isEmployer: memoizedUser?.userType === 'company',
+    }), [memoizedUser, isLoading, isAuthenticated, onboardingCompleted]);
 
     return (
         <AuthContext.Provider value={value}>

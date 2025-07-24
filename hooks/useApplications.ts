@@ -134,7 +134,7 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
         } finally {
             setLoading(false)
         }
-    }, [user, activeFilter])
+    }, [user?.userId, activeFilter])
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true)

@@ -1,11 +1,17 @@
-import React, { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useRef, ReactNode, useState } from 'react';
 import { router } from 'expo-router';
 import { useAuth } from './AuthContext';
 import { addNotificationResponseReceivedListener, addNotificationReceivedListener } from '@/lib/notifications';
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+interface NotificationSettings {
+  interviewProposal: boolean;
+}
 
 interface NotificationContextType {
-  // 나중에 필요한 메서드들을 추가할 수 있습니다
+  notificationSettings: NotificationSettings;
+  updateNotificationSettings: (settings: NotificationSettings) => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -26,6 +32,62 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const { user } = useAuth();
   const notificationListener = useRef<any>(null);
   const responseListener = useRef<any>(null);
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
+    interviewProposal: true
+  });
+
+  // Configure notification handler
+  useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async (notification) => {
+        const data = notification.request.content.data;
+        
+        // Check if interview proposal notifications are enabled
+        if (data?.type === 'interview_proposal' && !notificationSettings.interviewProposal) {
+          return {
+            shouldShowAlert: false,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+        
+        return {
+          shouldShowAlert: true,
+          shouldPlaySound: true,
+          shouldSetBadge: true,
+          shouldShowBanner: true,
+          shouldShowList: true,
+        };
+      },
+    });
+  }, [notificationSettings]);
+
+  // Load notification settings
+  useEffect(() => {
+    loadNotificationSettings();
+  }, []);
+
+  const loadNotificationSettings = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('notificationSettings');
+      if (saved) {
+        setNotificationSettings(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Failed to load notification settings:', error);
+    }
+  };
+
+  const updateNotificationSettings = async (settings: NotificationSettings) => {
+    try {
+      await AsyncStorage.setItem('notificationSettings', JSON.stringify(settings));
+      setNotificationSettings(settings);
+    } catch (error) {
+      console.error('Failed to save notification settings:', error);
+    }
+  };
 
   useEffect(() => {
     // Handle notification when app receives it
@@ -59,7 +121,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   }, [user]);
 
   const value: NotificationContextType = {
-    // 나중에 필요한 메서드들을 추가할 수 있습니다
+    notificationSettings,
+    updateNotificationSettings,
   };
 
   return (

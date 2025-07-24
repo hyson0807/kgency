@@ -25,11 +25,13 @@ const Applications = () => {
     } = useApplications({ user, activeFilter })
 
     // 화면에 포커스될 때마다 데이터 새로고침
-    useFocusEffect(
-        useCallback(() => {
-            fetchApplications()
-        }, [fetchApplications])
-    )
+    // 중복 호출 방지를 위해 주석 처리
+    // useApplications 훅 내부에서 이미 useEffect로 호출하고 있음
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         fetchApplications()
+    //     }, [fetchApplications])
+    // )
 
     if (loading) return <LoadingScreen />
 

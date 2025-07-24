@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext";
+import { useNotification } from "@/contexts/NotificationContext";
 import {authAPI} from "@/lib/api";
 import AccountManagementModal from '@/components/common/AccountManagementModal';
 import TermsOfService from '@/components/common/TermsOfService';
@@ -19,6 +20,7 @@ const Settings = () => {
     const { showModal, ModalComponent } = useModal()
     const [isJobSeekingActive, setIsJobSeekingActive] = useState(false)
     const { t, language, changeLanguage } = useTranslation()
+    const { notificationSettings, updateNotificationSettings } = useNotification()
 
     const [selectedLanguage] = useState(language)
 
@@ -38,13 +40,6 @@ const Settings = () => {
         { code: 'mn', name: 'Монгол', flag: '🇲🇳' }
     ];
 
-    // 알림 설정 상태
-    const [notificationSettings, setNotificationSettings] = useState({
-        newJob: true,
-        applicationStatus: true,
-        marketing: false
-    })
-
     // 모달 상태
     const [languageModalVisible, setLanguageModalVisible] = useState(false)
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
@@ -57,33 +52,11 @@ const Settings = () => {
     // 앱 정보
     const APP_VERSION = '1.0.0'
 
-    // 알림 설정 로드
+    // 초기 설정 로드
     useEffect(() => {
         checkAuthState()
-        loadNotificationSettings()
         setIsJobSeekingActive(profile?.job_seeking_active || true)
-    }, [])
-
-    const loadNotificationSettings = async () => {
-        try {
-            const saved = await AsyncStorage.getItem('notificationSettings')
-            if (saved) {
-                setNotificationSettings(JSON.parse(saved))
-            }
-        } catch (error) {
-            console.error('알림 설정 로드 실패:', error)
-        }
-    }
-
-    // 알림 설정 저장
-    const saveNotificationSettings = async (newSettings: typeof notificationSettings) => {
-        try {
-            await AsyncStorage.setItem('notificationSettings', JSON.stringify(newSettings))
-            setNotificationSettings(newSettings)
-        } catch (error) {
-            console.error('알림 설정 저장 실패:', error)
-        }
-    }
+    }, [profile])
 
     // 알림 토글
     const toggleNotification = (key: keyof typeof notificationSettings) => {
@@ -91,7 +64,7 @@ const Settings = () => {
             ...notificationSettings,
             [key]: !notificationSettings[key]
         }
-        saveNotificationSettings(newSettings)
+        updateNotificationSettings(newSettings)
     }
 
     // 로그아웃 처리
@@ -250,40 +223,14 @@ const Settings = () => {
                     <View className="space-y-4">
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">{t('settings.new_job_notification', '새 일자리 알림')}</Text>
-                                <Text className="text-sm text-gray-600">{t('settings.new_job_description', '매칭되는 새 공고 알림')}</Text>
+                                <Text className="font-medium">{t('settings.interview_proposal_notification', '면접 제안 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.interview_proposal_description', '회사에서 면접 제안이 올 때 알림')}</Text>
                             </View>
                             <Switch
-                                value={notificationSettings.newJob}
-                                onValueChange={() => toggleNotification('newJob')}
+                                value={notificationSettings.interviewProposal}
+                                onValueChange={() => toggleNotification('interviewProposal')}
                                 trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={notificationSettings.newJob ? '#ffffff' : '#f3f4f6'}
-                            />
-                        </View>
-
-                        <View className="flex-row items-center justify-between">
-                            <View className="flex-1">
-                                <Text className="font-medium">{t('settings.application_status_notification', '지원 현황 알림')}</Text>
-                                <Text className="text-sm text-gray-600">{t('settings.application_status_description', '지원 상태 변경 알림')}</Text>
-                            </View>
-                            <Switch
-                                value={notificationSettings.applicationStatus}
-                                onValueChange={() => toggleNotification('applicationStatus')}
-                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={notificationSettings.applicationStatus ? '#ffffff' : '#f3f4f6'}
-                            />
-                        </View>
-
-                        <View className="flex-row items-center justify-between">
-                            <View className="flex-1">
-                                <Text className="font-medium">{t('settings.marketing_notification', '마케팅 알림')}</Text>
-                                <Text className="text-sm text-gray-600">{t('settings.marketing_description', '이벤트 및 혜택 정보')}</Text>
-                            </View>
-                            <Switch
-                                value={notificationSettings.marketing}
-                                onValueChange={() => toggleNotification('marketing')}
-                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={notificationSettings.marketing ? '#ffffff' : '#f3f4f6'}
+                                thumbColor={notificationSettings.interviewProposal ? '#ffffff' : '#f3f4f6'}
                             />
                         </View>
                     </View>
