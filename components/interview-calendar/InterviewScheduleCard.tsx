@@ -1,8 +1,9 @@
 // components/interview-calendar/InterviewScheduleCard.tsx
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
+import { UserDetailModal } from './UserDetailModal'
 
 interface InterviewScheduleCardProps {
     schedule: {
@@ -17,6 +18,7 @@ interface InterviewScheduleCardProps {
             location: string,
             application: {
                 user: {
+                    id: string
                     name: string
                     phone_number: string
                 }
@@ -30,6 +32,8 @@ interface InterviewScheduleCardProps {
 }
 
 export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleCardProps) => {
+    const [showUserModal, setShowUserModal] = useState(false)
+    
     const formatTime = (dateString: string) => {
         return format(new Date(dateString), 'HH:mm')
     }
@@ -73,7 +77,10 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
             </View>
 
             {/* 지원자 정보 */}
-            <View className="flex-row items-center mb-2">
+            <TouchableOpacity
+                onPress={() => setShowUserModal(true)}
+                className="flex-row items-center mb-2"
+            >
                 <View className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center">
                     <Text className="text-base font-bold">
                         {schedule.proposal.application.user.name.charAt(0)}
@@ -87,7 +94,8 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                         {schedule.proposal.application.user.phone_number}
                     </Text>
                 </View>
-            </View>
+                <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+            </TouchableOpacity>
 
             {/* 면접 정보 */}
             <View className="space-y-1 mb-3">
@@ -138,6 +146,13 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                     <Text className="text-red-600 text-sm font-medium ml-1">취소</Text>
                 </TouchableOpacity>
             </View>
+            
+            {/* User Detail Modal */}
+            <UserDetailModal
+                visible={showUserModal}
+                onClose={() => setShowUserModal(false)}
+                userId={schedule.proposal.application.user.id}
+            />
         </View>
     )
 }
