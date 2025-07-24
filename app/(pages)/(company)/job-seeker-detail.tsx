@@ -202,16 +202,6 @@ export default function JobSeekerDetail() {
         }
     }
 
-    const handleCopyPhone = () => {
-        if (jobSeeker?.phone_number) {
-            Clipboard.setString(jobSeeker.phone_number)
-            showModal(
-                '복사 완료',
-                `${jobSeeker.name}님의 전화번호가 복사되었습니다.\n${jobSeeker.phone_number}`,
-                'info'
-            )
-        }
-    }
 
     // handleInterviewProposal 함수의 try-catch 부분 수정
 

@@ -173,7 +173,8 @@ export default function PostingDetail() {
                         companyId: posting?.company.id || companyId,
                         companyName: posting?.company.name || companyName,
                         jobTitle: posting?.title,
-                        jobAddress: posting?.job_address || ''
+                        jobAddress: posting?.job_address || '',
+                        interviewLocation: posting?.interview_location || ''
                     }
                 })
             },

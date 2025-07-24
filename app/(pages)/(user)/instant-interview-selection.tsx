@@ -26,7 +26,8 @@ export default function InstantInterviewSelection() {
         companyId,
         companyName,
         jobTitle,
-        jobAddress
+        jobAddress,
+        interviewLocation
     } = params
 
     const { user } = useAuth()
@@ -126,7 +127,7 @@ export default function InstantInterviewSelection() {
             const proposalResponse = await api('POST', '/api/interview-proposals/company', {
                 applicationId: application.id,
                 companyId: companyId,
-                location: jobAddress || '회사 주소' // 회사 주소를 기본 면접 장소로
+                location: interviewLocation || jobAddress || '회사 주소' // interview_location이 있으면 우선 사용
             })
 
             if (!proposalResponse?.success || !proposalResponse.data) {
@@ -205,13 +206,13 @@ export default function InstantInterviewSelection() {
                 </View>
 
                 {/* 면접 장소 */}
-                {jobAddress && (
+                {(interviewLocation || jobAddress) && (
                     <View className="bg-white p-4 mb-2">
                         <View className="flex-row items-center">
                             <Ionicons name="location-outline" size={20} color="#6b7280" />
                             <Text className="text-sm text-gray-600 ml-2">면접 장소</Text>
                         </View>
-                        <Text className="text-base mt-1">{jobAddress}</Text>
+                        <Text className="text-base mt-1">{interviewLocation || jobAddress}</Text>
                     </View>
                 )}
 

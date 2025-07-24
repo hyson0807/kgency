@@ -10,6 +10,8 @@ interface JobBasicInfoFormProps {
     setJobAddress: (value: string) => void
     hiringCount: string
     setHiringCount: (value: string) => void
+    interviewLocation?: string
+    setInterviewLocation?: (value: string) => void
 }
 
 export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
@@ -20,7 +22,9 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
     jobAddress,
     setJobAddress,
     hiringCount,
-    setHiringCount
+    setHiringCount,
+    interviewLocation,
+    setInterviewLocation
 }) => {
     return (
         <View className="p-6 border-b border-gray-100">
@@ -56,6 +60,16 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
                     placeholder="가게 주소"
                     value={jobAddress}
                     onChangeText={setJobAddress}
+                />
+            </View>
+
+            <View className="mb-4">
+                <Text className="text-gray-700 mb-2">면접 장소</Text>
+                <TextInput
+                    className="border border-gray-300 rounded-lg p-3"
+                    placeholder="면접 장소를 입력하세요 (미입력 시 가게 주소)"
+                    value={interviewLocation || ''}
+                    onChangeText={setInterviewLocation}
                 />
             </View>
 
