@@ -13,6 +13,7 @@ import {authAPI} from "@/lib/api";
 import AccountManagementModal from '@/components/common/AccountManagementModal';
 import TermsOfService from '@/components/common/TermsOfService';
 import PrivacyPolicy from '@/components/common/PrivacyPolicy';
+import { languages } from '@/lib/constants/languages';
 
 const Settings = () => {
     const { logout, user,checkAuthState } = useAuth()
@@ -23,22 +24,6 @@ const Settings = () => {
     const { notificationSettings, updateNotificationSettings } = useNotification()
 
     const [selectedLanguage] = useState(language)
-
-
-    const languages = [
-        { code: 'ko', name: '한국어', flag: '🇰🇷' },
-        { code: 'en', name: 'English', flag: '🇺🇸' },
-        { code: 'ja', name: '日本語', flag: '🇯🇵' },
-        { code: 'zh', name: '中文', flag: '🇨🇳' },
-        { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-        { code: 'si', name: 'සිංහල', flag: '🇱🇰' },
-        { code: 'ar', name: 'العربية', flag: '🇩🇿' },
-        { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-        { code: 'my', name: 'မြန်မာ', flag: '🇲🇲' },
-        { code: 'ky', name: 'Кыргызча', flag: '🇰🇬' },
-        { code: 'ha', name: 'Hausa', flag: '🇳🇬' },
-        { code: 'mn', name: 'Монгол', flag: '🇲🇳' }
-    ];
 
     // 모달 상태
     const [languageModalVisible, setLanguageModalVisible] = useState(false)

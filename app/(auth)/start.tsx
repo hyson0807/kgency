@@ -4,25 +4,11 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {router} from "expo-router";
 import {useTranslation} from "@/contexts/TranslationContext";
 import {Ionicons} from "@expo/vector-icons";
+import { languages } from '@/lib/constants/languages';
 
 const Start = () => {
     const { language, changeLanguage, t } = useTranslation();
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
-
-    const languages = [
-        { code: 'ko', name: '한국어', flag: '🇰🇷' },
-        { code: 'en', name: 'English', flag: '🇺🇸' },
-        { code: 'ja', name: '日本語', flag: '🇯🇵' },
-        { code: 'zh', name: '中文', flag: '🇨🇳' },
-        { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-        { code: 'si', name: 'සිංහල', flag: '🇱🇰' },
-        { code: 'ar', name: 'العربية', flag: '🇩🇿' },
-        { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-        { code: 'my', name: 'မြန်မာ', flag: '🇲🇲' },
-        { code: 'ky', name: 'Кыргызча', flag: '🇰🇬' },
-        { code: 'ha', name: 'Hausa', flag: '🇳🇬' },
-        { code: 'mn', name: 'Монгол', flag: '🇲🇳' }
-    ];
 
     const handleLanguageChange = async (langCode: string) => {
         await changeLanguage(langCode);
