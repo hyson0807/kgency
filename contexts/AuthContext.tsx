@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosError } from 'axios';
 import {jwtDecode} from "jwt-decode";
 import {router} from "expo-router";
+import { registerForPushNotificationsAsync, savePushToken, removePushToken } from '@/lib/notifications';
 
 // 타입 정의
 interface User {
@@ -122,6 +123,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
+            // Register for push notifications
+            const pushToken = await registerForPushNotificationsAsync();
+            if (pushToken && userData.userId) {
+                await savePushToken(userData.userId, pushToken);
+            }
+
             return { success: true };
         } catch (error) {
             return {
@@ -133,6 +140,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // 로그아웃 함수
     const logout = async (): Promise<void> => {
+        // Remove push token before logout
+        if (user?.userId) {
+            await removePushToken(user.userId);
+        }
+        
         // 로컬 스토리지만 삭제
         await AsyncStorage.removeItem('authToken');
         await AsyncStorage.removeItem('userData');

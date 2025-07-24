@@ -1,8 +1,50 @@
-import {Stack} from "expo-router";
+import {Stack, router} from "expo-router";
 import "./global.css"
-import {AuthProvider} from "@/contexts/AuthContext";
+import {AuthProvider, useAuth} from "@/contexts/AuthContext";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {TranslationProvider} from "@/contexts/TranslationContext";
+import { useEffect, useRef } from "react";
+import { addNotificationResponseReceivedListener, addNotificationReceivedListener } from "@/lib/notifications";
+import * as Notifications from 'expo-notifications';
+
+function NotificationHandler() {
+  const { user } = useAuth();
+  const notificationListener = useRef<any>();
+  const responseListener = useRef<any>();
+
+  useEffect(() => {
+    // Handle notification when app receives it
+    notificationListener.current = addNotificationReceivedListener(notification => {
+      console.log('Notification received:', notification);
+    });
+
+    // Handle notification when user taps on it
+    responseListener.current = addNotificationResponseReceivedListener(response => {
+      console.log('Notification response:', response);
+      
+      const data = response.notification.request.content.data;
+      
+      // Navigate based on notification type
+      if (data?.type === 'interview_proposal' && data?.applicationId) {
+        // Navigate to the application detail or interview proposal page
+        if (user?.userType === 'user') {
+          router.push(`/(pages)/(user)/applications`);
+        }
+      }
+    });
+
+    return () => {
+      if (notificationListener.current) {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      }
+      if (responseListener.current) {
+        Notifications.removeNotificationSubscription(responseListener.current);
+      }
+    };
+  }, [user]);
+
+  return null;
+}
 
 export default function RootLayout() {
 
@@ -10,6 +52,7 @@ export default function RootLayout() {
       <TranslationProvider>
             <AuthProvider>
                 <SafeAreaProvider>
+                    <NotificationHandler />
                     <Stack
                         screenOptions={{
                             headerShown: false, // ✅ 헤더 숨김
