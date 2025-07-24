@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Switch, Modal, Linking } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { useProfile } from "@/hooks/useProfile"
@@ -11,58 +11,24 @@ import {authAPI} from "@/lib/api";
 import AccountManagementModal from '@/components/common/AccountManagementModal';
 import TermsOfService from '@/components/common/TermsOfService';
 import PrivacyPolicy from '@/components/common/PrivacyPolicy';
+import { useNotification } from "@/contexts/NotificationContext";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 const Settings2 = () => {
     const { logout } = useAuth()
     const { profile } = useProfile()
     const { showModal, ModalComponent } = useModal()
-
-    // 알림 설정 상태
-    const [notificationSettings, setNotificationSettings] = useState({
-        newApplicant: true,          // 새 지원자 알림
-        messageReceived: true,       // 메시지 수신 알림
-        postingExpiry: true,         // 공고 만료 알림
-        marketing: false
-    })
+    const { t } = useTranslation()
+    const { notificationSettings, updateNotificationSettings } = useNotification()
 
     // 모달 상태
-    const [languageModalVisible, setLanguageModalVisible] = useState(false)
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
     const [accountModalVisible, setAccountModalVisible] = useState(false)
     const [termsModalVisible, setTermsModalVisible] = useState(false)
     const [privacyModalVisible, setPrivacyModalVisible] = useState(false)
 
-    // 언어 설정
-    const [selectedLanguage, setSelectedLanguage] = useState('ko')
-
     // 앱 정보
     const APP_VERSION = '1.0.0'
-
-    // 알림 설정 로드
-    useEffect(() => {
-        loadNotificationSettings()
-    }, [])
-
-    const loadNotificationSettings = async () => {
-        try {
-            const saved = await AsyncStorage.getItem('companyNotificationSettings')
-            if (saved) {
-                setNotificationSettings(JSON.parse(saved))
-            }
-        } catch (error) {
-            console.error('알림 설정 로드 실패:', error)
-        }
-    }
-
-    // 알림 설정 저장
-    const saveNotificationSettings = async (newSettings: typeof notificationSettings) => {
-        try {
-            await AsyncStorage.setItem('companyNotificationSettings', JSON.stringify(newSettings))
-            setNotificationSettings(newSettings)
-        } catch (error) {
-            console.error('알림 설정 저장 실패:', error)
-        }
-    }
 
     // 알림 토글
     const toggleNotification = (key: keyof typeof notificationSettings) => {
@@ -70,7 +36,7 @@ const Settings2 = () => {
             ...notificationSettings,
             [key]: !notificationSettings[key]
         }
-        saveNotificationSettings(newSettings)
+        updateNotificationSettings(newSettings)
     }
 
     // 로그아웃 처리
@@ -106,22 +72,6 @@ const Settings2 = () => {
         }
     };
 
-
-    // 언어 변경
-    const handleLanguageChange = async (language: string) => {
-        try {
-            await AsyncStorage.setItem('appLanguage', language)
-            setSelectedLanguage(language)
-            setLanguageModalVisible(false)
-            showModal(
-                '언어 변경',
-                '앱을 재시작하면 적용됩니다.',
-                'info'
-            )
-        } catch (error) {
-            console.error('언어 설정 저장 실패:', error)
-        }
-    }
 
     // 외부 링크 열기
     const openLink = (url: string) => {
@@ -201,83 +151,24 @@ const Settings2 = () => {
 
                 {/* 알림 설정 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
-                    <Text className="text-lg font-bold mb-4">알림 설정</Text>
+                    <Text className="text-lg font-bold mb-4">{t('settings.notification_settings', '알림 설정')}</Text>
 
                     <View className="space-y-4">
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">새 지원자 알림</Text>
-                                <Text className="text-sm text-gray-600">공고에 새로운 지원자 알림</Text>
+                                <Text className="font-medium">{t('settings.interview_schedule_confirmed', '면접 일정 확정 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.interview_schedule_confirmed_description', '지원자가 면접 일정을 확정했을 때 알림')}</Text>
                             </View>
                             <Switch
-                                value={notificationSettings.newApplicant}
-                                onValueChange={() => toggleNotification('newApplicant')}
+                                value={notificationSettings.interviewScheduleConfirmed || false}
+                                onValueChange={() => toggleNotification('interviewScheduleConfirmed')}
                                 trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={notificationSettings.newApplicant ? '#ffffff' : '#f3f4f6'}
-                            />
-                        </View>
-
-                        <View className="flex-row items-center justify-between">
-                            <View className="flex-1">
-                                <Text className="font-medium">메시지 수신 알림</Text>
-                                <Text className="text-sm text-gray-600">지원자 이력서 수신 알림</Text>
-                            </View>
-                            <Switch
-                                value={notificationSettings.messageReceived}
-                                onValueChange={() => toggleNotification('messageReceived')}
-                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={notificationSettings.messageReceived ? '#ffffff' : '#f3f4f6'}
-                            />
-                        </View>
-
-                        <View className="flex-row items-center justify-between">
-                            <View className="flex-1">
-                                <Text className="font-medium">공고 만료 알림</Text>
-                                <Text className="text-sm text-gray-600">채용공고 만료 예정 알림</Text>
-                            </View>
-                            <Switch
-                                value={notificationSettings.postingExpiry}
-                                onValueChange={() => toggleNotification('postingExpiry')}
-                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={notificationSettings.postingExpiry ? '#ffffff' : '#f3f4f6'}
-                            />
-                        </View>
-
-                        <View className="flex-row items-center justify-between">
-                            <View className="flex-1">
-                                <Text className="font-medium">마케팅 알림</Text>
-                                <Text className="text-sm text-gray-600">서비스 업데이트 및 혜택 정보</Text>
-                            </View>
-                            <Switch
-                                value={notificationSettings.marketing}
-                                onValueChange={() => toggleNotification('marketing')}
-                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={notificationSettings.marketing ? '#ffffff' : '#f3f4f6'}
+                                thumbColor={notificationSettings.interviewScheduleConfirmed ? '#ffffff' : '#f3f4f6'}
                             />
                         </View>
                     </View>
                 </View>
 
-                {/* 앱 설정 섹션 */}
-                <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
-                    <Text className="text-lg font-bold mb-4">앱 설정</Text>
-
-                    <TouchableOpacity
-                        onPress={() => setLanguageModalVisible(true)}
-                        className="flex-row items-center justify-between py-3"
-                    >
-                        <View className="flex-row items-center">
-                            <Ionicons name="language" size={20} color="#6b7280" />
-                            <Text className="ml-3">언어 설정</Text>
-                        </View>
-                        <View className="flex-row items-center">
-                            <Text className="text-gray-600 mr-2">
-                                {selectedLanguage === 'ko' ? '한국어' : 'English'}
-                            </Text>
-                            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-                        </View>
-                    </TouchableOpacity>
-                </View>
 
                 {/* 정보 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
@@ -350,53 +241,6 @@ const Settings2 = () => {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-
-            {/* 언어 선택 모달 */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={languageModalVisible}
-                onRequestClose={() => setLanguageModalVisible(false)}
-            >
-                <View className="flex-1 bg-black/50 justify-end">
-                    <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10">
-                        <View className="flex-row items-center justify-between mb-6">
-                            <Text className="text-xl font-bold">언어 선택</Text>
-                            <TouchableOpacity onPress={() => setLanguageModalVisible(false)}>
-                                <Ionicons name="close" size={24} color="#6b7280" />
-                            </TouchableOpacity>
-                        </View>
-
-                        <TouchableOpacity
-                            onPress={() => handleLanguageChange('ko')}
-                            className={`flex-row items-center justify-between p-4 rounded-lg mb-2 ${
-                                selectedLanguage === 'ko' ? 'bg-blue-50' : 'bg-gray-50'
-                            }`}
-                        >
-                            <Text className={`text-lg ${
-                                selectedLanguage === 'ko' ? 'text-blue-600 font-bold' : 'text-gray-700'
-                            }`}>한국어</Text>
-                            {selectedLanguage === 'ko' && (
-                                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
-                            )}
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            onPress={() => handleLanguageChange('en')}
-                            className={`flex-row items-center justify-between p-4 rounded-lg ${
-                                selectedLanguage === 'en' ? 'bg-blue-50' : 'bg-gray-50'
-                            }`}
-                        >
-                            <Text className={`text-lg ${
-                                selectedLanguage === 'en' ? 'text-blue-600 font-bold' : 'text-gray-700'
-                            }`}>English</Text>
-                            {selectedLanguage === 'en' && (
-                                <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
-                            )}
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
 
             {/* 계정 관리 모달 */}
             <AccountManagementModal

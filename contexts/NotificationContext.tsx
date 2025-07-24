@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface NotificationSettings {
   interviewProposal: boolean;
+  interviewScheduleConfirmed?: boolean;
 }
 
 interface NotificationContextType {
@@ -33,7 +34,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const notificationListener = useRef<any>(null);
   const responseListener = useRef<any>(null);
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
-    interviewProposal: true
+    interviewProposal: true,
+    interviewScheduleConfirmed: true
   });
 
   // Configure notification handler
@@ -42,8 +44,18 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       handleNotification: async (notification) => {
         const data = notification.request.content.data;
         
-        // Check if interview proposal notifications are enabled
+        // Check notification settings based on type
         if (data?.type === 'interview_proposal' && !notificationSettings.interviewProposal) {
+          return {
+            shouldShowAlert: false,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+        
+        if (data?.type === 'interview_schedule_confirmed' && !notificationSettings.interviewScheduleConfirmed) {
           return {
             shouldShowAlert: false,
             shouldPlaySound: false,
@@ -106,6 +118,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         // Navigate to the application detail or interview proposal page
         if (user?.userType === 'user') {
           router.push(`/(user)/applications`);
+        }
+      }
+      
+      if (data?.type === 'interview_schedule_confirmed' && data?.applicationId) {
+        // Navigate to the interview slots page for company
+        if (user?.userType === 'company') {
+          router.push(`/(company)/interview-calendar`);
         }
       }
     });
