@@ -9,8 +9,8 @@ import * as Notifications from 'expo-notifications';
 
 function NotificationHandler() {
   const { user } = useAuth();
-  const notificationListener = useRef<any>();
-  const responseListener = useRef<any>();
+  const notificationListener = useRef<any>(null);
+  const responseListener = useRef<any>(null);
 
   useEffect(() => {
     // Handle notification when app receives it
@@ -28,17 +28,17 @@ function NotificationHandler() {
       if (data?.type === 'interview_proposal' && data?.applicationId) {
         // Navigate to the application detail or interview proposal page
         if (user?.userType === 'user') {
-          router.push(`/(pages)/(user)/applications`);
+          router.push(`/(user)/applications`);
         }
       }
     });
 
     return () => {
       if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
+        notificationListener.current.remove();
       }
       if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
+        responseListener.current.remove();
       }
     };
   }, [user]);
