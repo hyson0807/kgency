@@ -121,12 +121,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            // Register for push notifications
-            const pushToken = await registerForPushNotificationsAsync();
-            if (pushToken && userData.userId) {
-                await savePushToken(userData.userId, pushToken);
-            }
-
             return { success: true };
         } catch (error) {
             return {
