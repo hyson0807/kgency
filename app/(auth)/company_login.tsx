@@ -255,6 +255,8 @@ const CompanyLogin = () => {
                                         keyboardType="number-pad"
                                         editable={!loading}
                                         autoFocus
+                                        autoComplete="sms-otp"
+                                        textContentType="oneTimeCode"
                                         style={{ lineHeight: 19, textAlignVertical: 'center' }}
                                     />
                                     <TouchableOpacity

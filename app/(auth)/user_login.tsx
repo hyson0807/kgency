@@ -241,6 +241,8 @@ const UserLogin = () => {
                                         onChangeText={setOtp}
                                         keyboardType="number-pad"
                                         autoFocus
+                                        autoComplete="sms-otp"
+                                        textContentType="oneTimeCode"
                                         style={{ lineHeight: 19, textAlignVertical: 'center' }}
                                     />
                                     <TouchableOpacity
