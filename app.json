@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "kgency",
-    "slug": "welkit",
+    "slug": "welkit-kgency",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/kgency_logo.png",
@@ -54,7 +54,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "1d815e5e-cec3-4c35-830a-ca52c8ecd075"
+        "projectId": "799fcd12-a237-433c-8a11-aefd308553d3"
       }
     },
     "owner": "welkit"
