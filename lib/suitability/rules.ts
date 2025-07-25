@@ -14,7 +14,7 @@ export const defaultSuitabilityRules: SuitabilityRules = {
         '비자지원': 2,     // 비자지원 여부 (5 → 2로 감소)
         '식사제공': 2,     // 식사 제공 여부 (5 → 2로 감소)
         '국가': 2,         // 국적 (5 → 2로 감소)
-        '기타조건': 1      // 나머지 근무조건들 (10 → 0으로 감소)
+        '기타조건': 2      // 나머지 근무조건들 (10 → 0으로 감소)
     },
 
     // 특정 키워드 보너스 (새 방식에서는 카테고리 가중치로 대체)
@@ -25,11 +25,11 @@ export const defaultSuitabilityRules: SuitabilityRules = {
 
     // 필수 키워드 (지역은 필수)
     requiredKeywords: {
-        '비자': null,     // 비자는 더 이상 필수 아님
-        '성별': 'required',     // 성별 무관인 경우도 있으므로 필수 아님
+        '비자': null,
+        '성별': 'required',
         '직종': null,
         '국가': null,
-        '지역': 'required', // 지역은 필수 (특정 ID가 아닌 카테고리 자체가 필수)
+        '지역': 'required',
         '근무조건': null,
         '나이대': null,
         '한국어수준': null,

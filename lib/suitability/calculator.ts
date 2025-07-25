@@ -36,26 +36,26 @@ export class SuitabilityCalculator {
         const locationMatch = this.checkLocationMatch(userKeywordIds, jobKeywords, matchedKeywords);
         const hasLocationMatch = locationMatch.matched > 0;
 
-        // 지역 점수 계산 추가 (35%)
+        // 지역 점수 계산 추가 (38%)
         if (hasLocationMatch) {
-            totalScore += 35; // 지역 매칭 시 35점 추가
+            totalScore += 38; // 지역 매칭 시 38점 추가
         }
-        categoryScores['지역'] = { ...locationMatch, score: hasLocationMatch ? 35 : 0, weight: 35 };
+        categoryScores['지역'] = { ...locationMatch, score: hasLocationMatch ? 38 : 0, weight: 38 };
 
         // 성별 매칭 확인 (필수)
         const genderMatch = this.checkGenderMatchRequired(userKeywordIds, jobKeywords, matchedKeywords);
         const hasGenderMatch = genderMatch.matched > 0;
         categoryScores['성별필수체크'] = { ...genderMatch, weight: 0 };
 
-        // 1. 희망직종 (30%)
+        // 1. 희망직종 (33%)
         const jobScore = this.calculateJobMatch(userKeywordIds, jobKeywords, matchedKeywords);
         totalScore += jobScore.score;
-        categoryScores['직종'] = { ...jobScore, weight: 30 };
+        categoryScores['직종'] = { ...jobScore, weight: 33 };
 
-        // 2. 근무 가능 요일 (10%)
+        // 2. 근무 가능 요일 (11%)
         const workDayScore = this.calculateWorkDayMatch(userKeywordIds, jobKeywords, matchedKeywords);
         totalScore += workDayScore.score;
-        categoryScores['근무요일'] = { ...workDayScore, weight: 10 };
+        categoryScores['근무요일'] = { ...workDayScore, weight: 11 };
 
         // 3. 한국어 실력 (5% 보너스)
         const koreanScore = this.calculateKoreanLevelMatch(userKeywordIds, jobKeywords, matchedKeywords);
@@ -92,10 +92,10 @@ export class SuitabilityCalculator {
         totalScore += countryScore.score;
         categoryScores['국가'] = { ...countryScore, weight: 2 };
 
-        // 10. 기타 근무조건 (1%)
+        // 10. 기타 근무조건 (2%)
         const otherConditionsScore = this.calculateOtherConditionsMatch(userKeywordIds, jobKeywords, matchedKeywords);
         totalScore += otherConditionsScore.score;
-        categoryScores['기타조건'] = { ...otherConditionsScore, weight: 1 };
+        categoryScores['기타조건'] = { ...otherConditionsScore, weight: 2 };
 
         // 필수 항목 미매칭 시 패널티
         const missingRequired = [];
@@ -105,7 +105,7 @@ export class SuitabilityCalculator {
         }
 
         if (!hasGenderMatch) {
-            totalScore = totalScore * 0.5; // 50%만 남김
+            totalScore = Math.max(0, totalScore - 20); // 20점 고정 감점
             missingRequired.push('성별');
         }
 
@@ -139,15 +139,15 @@ export class SuitabilityCalculator {
         matchedJobs.forEach(k => matchedKeywords.jobs.push(k.keyword.keyword));
 
         if (jobKeywordsInPosting.length === 0) {
-            return { matched: 1, total: 1, score: 30 }; // 직종 무관인 경우 만점
+            return { matched: 1, total: 1, score: 33 }; // 직종 무관인 경우 만점
         }
 
-        // 매칭된 직종이 있으면 30점, 없으면 0점
+        // 매칭된 직종이 있으면 33점, 없으면 0점
         if (matchedJobs.length > 0) {
             return {
                 matched: matchedJobs.length,
                 total: jobKeywordsInPosting.length,
-                score: 30
+                score: 33
             };
         }
 
@@ -196,7 +196,7 @@ export class SuitabilityCalculator {
         return {
             matched: matchedWorkDays.length,
             total: workDayKeywordsInPosting.length,
-            score: matchRate * 10  // 15 → 10으로 변경
+            score: matchRate * 11  // 11점으로 변경
         };
     }
 
@@ -229,21 +229,32 @@ export class SuitabilityCalculator {
             return { matched: 0, total: 1, score: 0 }; // 한국어 수준 미선택 시 보너스 없음 (감점도 없음)
         }
 
-        const requiredLevel = koreanKeywordsInPosting[0];
         const userLevel = levelMap[userKoreanLevel.keyword.keyword] || 0;
-        const requiredLevelNum = levelMap[requiredLevel.keyword.keyword] || 0;
 
-        if (userLevel >= requiredLevelNum) {
-            matchedKeywords.koreanLevel?.push(userKoreanLevel.keyword.keyword);
-            // 요구 수준 충족 시 보너스
-            if (userLevel === requiredLevelNum) {
-                return { matched: 1, total: 1, score: 3 }; // 정확히 일치: 3점 보너스
-            } else if (userLevel > requiredLevelNum) {
-                return { matched: 1, total: 1, score: 5 }; // 초과 달성: 5점 보너스
+        // 공고에서 한국어 수준이 "상관없음"인 경우 (3개 키워드 모두 선택)
+        if (koreanKeywordsInPosting.length === 3) {
+            // 초급, 중급, 고급이 모두 있으면 상관없음으로 간주하고 만점
+            const hasAllLevels = ['초급', '중급', '고급'].every(level => 
+                koreanKeywordsInPosting.some(k => k.keyword.keyword === level)
+            );
+            
+            if (hasAllLevels) {
+                matchedKeywords.koreanLevel?.push(userKoreanLevel.keyword.keyword);
+                return { matched: 1, total: 1, score: 5 }; // 상관없음인 경우 만점
             }
         }
 
-        // 요구 수준 미달이어도 감점 없음
+        // 특정 수준이 요구되는 경우
+        // 가장 낮은 요구 수준 찾기
+        const minRequiredLevel = Math.min(...koreanKeywordsInPosting.map(k => levelMap[k.keyword.keyword] || 0));
+        
+        // 유저가 요구 수준 이상이면 5점, 미달이면 0점
+        if (userLevel >= minRequiredLevel) {
+            matchedKeywords.koreanLevel?.push(userKoreanLevel.keyword.keyword);
+            return { matched: 1, total: 1, score: 5 }; // 요구 수준 충족: 5점
+        }
+
+        // 요구 수준 미달시 0점
         return { matched: 0, total: 1, score: 0 };
     }
 
@@ -463,7 +474,7 @@ export class SuitabilityCalculator {
         );
 
         if (otherConditions.length === 0) {
-            return { matched: 0, total: 0, score: 1 }; // 기타 조건이 없으면 기본 1점
+            return { matched: 0, total: 0, score: 2 }; // 기타 조건이 없으면 기본 2점 (가중치와 동일)
         }
 
         const matchedOthers = otherConditions.filter(k =>
@@ -476,7 +487,7 @@ export class SuitabilityCalculator {
         return {
             matched: matchedOthers.length,
             total: otherConditions.length,
-            score: matchRate * 1 // 가중치 1%
+            score: matchRate * 2 // 가중치 2%
         };
     }
 

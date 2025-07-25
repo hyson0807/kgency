@@ -124,9 +124,9 @@ const Info = () => {
         const ageKeyword = keywords.find(k => {
             if (k.category !== '나이대') return false;
 
-            if (ageNum >= 20 && ageNum < 25 && k.keyword === '20-25세') return true;
-            if (ageNum >= 25 && ageNum < 30 && k.keyword === '25-30세') return true;
-            if (ageNum >= 30 && ageNum < 35 && k.keyword === '30-35세') return true;
+            if (ageNum >= 20 && ageNum < 25 && k.keyword === '20-24세') return true;
+            if (ageNum >= 25 && ageNum < 30 && k.keyword === '25-29세') return true;
+            if (ageNum >= 30 && ageNum < 35 && k.keyword === '30-34세') return true;
             if (ageNum >= 35 && k.keyword === '35세 이상') return true;
 
             return false;
