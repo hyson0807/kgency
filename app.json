@@ -52,7 +52,10 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "799fcd12-a237-433c-8a11-aefd308553d3"
+      }
     },
     "owner": "welkit"
   }
