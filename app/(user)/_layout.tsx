@@ -24,7 +24,8 @@ const User_Layout = () => {
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: 70,
+                    height: 80,
+                    paddingBottom: 10
 
                 },
             }}

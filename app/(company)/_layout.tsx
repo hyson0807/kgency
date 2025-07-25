@@ -15,8 +15,8 @@ const company_Layout = () => {
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: 70,
-                    marginBottom: 10
+                    height: 80,
+                    paddingBottom: 20
                 },
             }}
         >
