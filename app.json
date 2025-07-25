@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hyson.kgency",
+      "bundleIdentifier": "com.welkit.kgency",
       "infoPlist": {
         "NSUserNotificationUsageDescription": "이 앱은 면접 제안 및 지원 상태 알림을 보내기 위해 푸시 알림을 사용합니다."
       }
@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.hyson.kgency"
+      "package": "com.welkit.kgency"
     },
     "web": {
       "bundler": "metro",
@@ -52,10 +52,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "799fcd12-a237-433c-8a11-aefd308553d3"
-      }
+      "router": {}
     },
     "owner": "welkit"
   }
