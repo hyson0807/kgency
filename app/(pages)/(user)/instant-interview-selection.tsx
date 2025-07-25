@@ -27,7 +27,8 @@ export default function InstantInterviewSelection() {
         companyName,
         jobTitle,
         jobAddress,
-        interviewLocation
+        interviewLocation,
+        specialNotes
     } = params
 
     const { user } = useAuth()
@@ -213,6 +214,17 @@ export default function InstantInterviewSelection() {
                             <Text className="text-sm text-gray-600 ml-2">면접 장소</Text>
                         </View>
                         <Text className="text-base mt-1">{interviewLocation || jobAddress}</Text>
+                    </View>
+                )}
+
+                {/* 특이사항 */}
+                {specialNotes && (
+                    <View className="bg-yellow-50 p-4 mb-2 border border-yellow-200">
+                        <View className="flex-row items-center">
+                            <Ionicons name="information-circle" size={20} color="#d97706" />
+                            <Text className="text-sm text-yellow-800 font-semibold ml-2">특이사항</Text>
+                        </View>
+                        <Text className="text-base text-yellow-800 mt-2">{specialNotes}</Text>
                     </View>
                 )}
 

@@ -33,6 +33,7 @@ const Info2 = () => {
     const [hiringCount, setHiringCount] = useState('1')
     const [jobAddress, setJobAddress] = useState('')
     const [interviewLocation, setInterviewLocation] = useState('')
+    const [specialNotes, setSpecialNotes] = useState('')
 
     // 키워드 선택 상태 - 국가도 배열로 변경
     const [selectedCountries, setSelectedCountries] = useState<number[]>([])
@@ -215,6 +216,7 @@ const Info2 = () => {
                 setPayDayNegotiable(posting.pay_day_negotiable || false)
                 setJobAddress(posting.job_address || '')
                 setInterviewLocation(posting.interview_location || '')
+                setSpecialNotes(posting.special_notes || '')
 
                 // 키워드 정보는 job posting response에 포함되어 있음
                 if (posting.job_posting_keywords && posting.job_posting_keywords.length > 0) {
@@ -300,6 +302,7 @@ const Info2 = () => {
                 pay_day_negotiable: payDayNegotiable,
                 job_address: jobAddress,
                 interview_location: interviewLocation,
+                special_notes: specialNotes,
                 is_active: isPostingActive
             }
 
@@ -408,6 +411,8 @@ const Info2 = () => {
                         setHiringCount={setHiringCount}
                         interviewLocation={interviewLocation}
                         setInterviewLocation={setInterviewLocation}
+                        specialNotes={specialNotes}
+                        setSpecialNotes={setSpecialNotes}
                     />
 
                     <View className="px-6 space-y-6">

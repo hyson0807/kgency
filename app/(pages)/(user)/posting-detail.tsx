@@ -174,7 +174,8 @@ export default function PostingDetail() {
                         companyName: posting?.company.name || companyName,
                         jobTitle: posting?.title,
                         jobAddress: posting?.job_address || '',
-                        interviewLocation: posting?.interview_location || ''
+                        interviewLocation: posting?.interview_location || '',
+                        specialNotes: posting?.special_notes || ''
                     }
                 })
             },

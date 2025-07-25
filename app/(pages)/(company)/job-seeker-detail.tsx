@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
 import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
-import Clipboard from '@react-native-clipboard/clipboard'
 import LoadingScreen from "@/components/common/LoadingScreen";
 import {Info} from "@/components/job-seeker-detail/Info";
 import {UserKeywords} from "@/components/job-seeker-detail/UserKeywords";
@@ -79,6 +78,7 @@ export default function JobSeekerDetail() {
     const [selectedJobPostingId, setSelectedJobPostingId] = useState<string>('')
     const [companyJobPostings, setCompanyJobPostings] = useState<any[]>([])
     const [submitting, setSubmitting] = useState(false)
+    const [hasInterviewSlots, setHasInterviewSlots] = useState(false)
 
     useEffect(() => {
         if (userId) {
@@ -249,16 +249,15 @@ export default function JobSeekerDetail() {
             })
 
             if (response?.success) {
-                showModal('성공', '면접 제안이 전송되었습니다.', 'info')
+                showModal('성공', '면접 시간대를 설정 및 확인해 주세요', 'info')
                 setShowLocationModal(false)
                 setInterviewLocation('')
 
-                // 공고 상세 페이지로 이동
+                // 면접 캘린더 페이지로 이동
                 router.push({
-                    pathname: '/(pages)/(company)/posting-detail2',
+                    pathname: '/(company)/interview-calendar',
                     params: {
-                        postingId: selectedJobPostingId,
-                        refresh: 'true'
+                        tab: 'slots'
                     }
                 })
             }
@@ -314,7 +313,7 @@ export default function JobSeekerDetail() {
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
                     onPress={() => setShowLocationModal(true)}
-                    className="bg-blue-500 py-4 rounded-xl"
+                    className="bg-blue-500 py-4 rounded-xl mx-4 my-2"
                 >
                     <View className="flex-row items-center justify-center">
                         <Ionicons name="calendar" size={20} color="white" />
@@ -388,7 +387,7 @@ export default function JobSeekerDetail() {
                             <TouchableOpacity
                                 onPress={handleInterviewProposal}
                                 disabled={submitting || !selectedJobPostingId || !interviewLocation.trim()}
-                                className={`flex-1 py-3 rounded-lg ${
+                                className={`flex-1 py-4 rounded-lg mx-4 my-2 ${
                                     submitting || !selectedJobPostingId || !interviewLocation.trim()
                                         ? 'bg-gray-300'
                                         : 'bg-blue-500'

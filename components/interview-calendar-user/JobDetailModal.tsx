@@ -20,6 +20,7 @@ interface JobPosting {
     pay_day_negotiable: boolean
     job_address?: string
     interview_location?: string
+    special_notes?: string
     company?: {
         name: string
         address?: string
@@ -50,6 +51,7 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
         company_name?: string
         company_address?: string
         company_description?: string
+        special_notes?: string
     } | null>(null)
     const [isTranslated, setIsTranslated] = useState(false)
     const [isTranslating, setIsTranslating] = useState(false)
@@ -158,7 +160,8 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                 { key: 'pay_day', text: jobPosting.pay_day || '' },
                 { key: 'company_name', text: jobPosting.company?.name || '' },
                 { key: 'company_address', text: jobPosting.company?.address || '' },
-                { key: 'company_description', text: jobPosting.company?.description || '' }
+                { key: 'company_description', text: jobPosting.company?.description || '' },
+                { key: 'special_notes', text: jobPosting.special_notes || '' }
             ].filter(item => item.text)
 
             const response = await api('POST', '/api/translate/translate-batch', {
@@ -327,6 +330,21 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                                                 <Text className="text-sm text-gray-800 leading-5">
                                                     {isTranslated && translatedData?.company_description ? translatedData.company_description : jobPosting.company.description}
                                                 </Text>
+                                            </View>
+                                        </View>
+                                    )}
+
+                                    {/* Special Notes */}
+                                    {jobPosting.special_notes && (
+                                        <View className="mb-6">
+                                            <Text className="text-lg font-bold mb-3">{t('job_detail.special_notes', '특이사항')}</Text>
+                                            <View className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+                                                <View className="flex-row items-start">
+                                                    <Ionicons name="information-circle" size={20} color="#d97706" />
+                                                    <Text className="text-sm text-yellow-800 leading-5 ml-2 flex-1">
+                                                        {isTranslated && translatedData?.special_notes ? translatedData.special_notes : jobPosting.special_notes}
+                                                    </Text>
+                                                </View>
                                             </View>
                                         </View>
                                     )}

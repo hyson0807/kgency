@@ -12,6 +12,8 @@ interface JobBasicInfoFormProps {
     setHiringCount: (value: string) => void
     interviewLocation?: string
     setInterviewLocation?: (value: string) => void
+    specialNotes?: string
+    setSpecialNotes?: (value: string) => void
 }
 
 export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
@@ -24,7 +26,9 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
     hiringCount,
     setHiringCount,
     interviewLocation,
-    setInterviewLocation
+    setInterviewLocation,
+    specialNotes,
+    setSpecialNotes
 }) => {
     return (
         <View className="p-6 border-b border-gray-100">
@@ -81,6 +85,19 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
                     value={hiringCount}
                     onChangeText={setHiringCount}
                     keyboardType="numeric"
+                />
+            </View>
+
+            <View className="mb-4">
+                <Text className="text-gray-700 mb-2">특이사항</Text>
+                <TextInput
+                    className="border border-gray-300 rounded-lg p-3 min-h-[80px]"
+                    placeholder="면접시 필요한 준비물과 복장이 있다면 적어주세요"
+                    value={specialNotes || ''}
+                    onChangeText={setSpecialNotes}
+                    multiline
+                    numberOfLines={3}
+                    textAlignVertical="top"
                 />
             </View>
         </View>

@@ -33,6 +33,7 @@ export default function InterviewSelection() {
     const [selectedSlotId, setSelectedSlotId] = useState<string>('')
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
+    const [specialNotes, setSpecialNotes] = useState<string>('')
 
     useEffect(() => {
         fetchAvailableSlots()
@@ -45,6 +46,11 @@ export default function InterviewSelection() {
 
             if (response?.success && response.data?.availableSlots) {
                 setAvailableSlots(response.data.availableSlots)
+                
+                // 특이사항 정보 가져오기
+                if (response.data?.jobPosting?.special_notes) {
+                    setSpecialNotes(response.data.jobPosting.special_notes)
+                }
             }
         } catch (error) {
             console.error('Failed to fetch available slots:', error)
@@ -149,6 +155,17 @@ export default function InterviewSelection() {
                             <Text className="text-sm text-gray-600 ml-2">면접 장소</Text>
                         </View>
                         <Text className="text-base mt-1">{proposalLocation}</Text>
+                    </View>
+                )}
+
+                {/* 특이사항 */}
+                {specialNotes && (
+                    <View className="bg-yellow-50 p-4 mb-2 border border-yellow-200">
+                        <View className="flex-row items-center">
+                            <Ionicons name="information-circle" size={20} color="#d97706" />
+                            <Text className="text-sm text-yellow-800 font-semibold ml-2">특이사항</Text>
+                        </View>
+                        <Text className="text-base text-yellow-800 mt-2">{specialNotes}</Text>
                     </View>
                 )}
 

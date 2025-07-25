@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // 서버 주소 설정
 const SERVER_URL = __DEV__
     ? 'http://192.168.0.15:5004'
-    : 'https://kgencyserver-production.up.railway.app';
+    : 'https://kgencyserver-production-45af.up.railway.app';
 
 // http://192.168.0.15:5004
 //커밋
