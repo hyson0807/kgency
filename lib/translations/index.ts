@@ -13,6 +13,7 @@ import { interviewTranslations } from './pages/interview';
 import { suitabilityTranslations } from './pages/suitability';
 import { commonTranslations } from './common';
 import { tabTranslations } from './components/tabs';
+import { jobDetailModalTranslations } from './components/jobDetailModal';
 import { TranslationData } from './types';
 
 // 모든 번역 데이터 합치기
@@ -31,4 +32,5 @@ export const translations: TranslationData = {
     ...calendarTranslations,
     ...interviewTranslations,
     ...suitabilityTranslations,
+    ...jobDetailModalTranslations,
 };

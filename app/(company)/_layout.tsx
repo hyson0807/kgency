@@ -16,7 +16,7 @@ const company_Layout = () => {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
                     height: 70,
-
+                    marginBottom: 10
                 },
             }}
         >
