@@ -67,6 +67,7 @@ interface InterviewSchedule {
                 salary_range?: string
                 working_hours?: string
                 description?: string
+                interview_location?: string
             }
         }
     }

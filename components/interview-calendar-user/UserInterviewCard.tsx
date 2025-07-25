@@ -1,9 +1,10 @@
 // components/interview-calendar/UserInterviewCard.tsx
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { useTranslation } from '@/contexts/TranslationContext'
+import { JobDetailModal } from './JobDetailModal'
 
 interface UserInterviewCardProps {
     schedule: {
@@ -22,9 +23,11 @@ interface UserInterviewCardProps {
             location: string
             application: {
                 job_posting: {
+                    id: string
                     title: string
                     salary_range?: string
                     working_hours?: string
+                    interview_location?: string
                 }
             }
         }
@@ -34,6 +37,7 @@ interface UserInterviewCardProps {
 
 export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCardProps) => {
     const { t } = useTranslation()
+    const [jobModalVisible, setJobModalVisible] = useState(false)
     
     const formatTime = (dateString: string) => {
         return format(new Date(dateString), 'HH:mm')
@@ -58,11 +62,18 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
     return (
         <View className="bg-white rounded-xl p-4 shadow-sm">
             {/* 회사 정보 */}
-            <View className="flex-row items-center justify-between mb-3">
+            <TouchableOpacity 
+                onPress={() => setJobModalVisible(true)}
+                className="flex-row items-center justify-between mb-3"
+                activeOpacity={0.7}
+            >
                 <View className="flex-1">
-                    <Text className="text-lg font-bold text-gray-800">
-                        {schedule.interview_slot.company.name}
-                    </Text>
+                    <View className="flex-row items-center">
+                        <Text className="text-lg font-bold text-gray-800">
+                            {schedule.interview_slot.company.name}
+                        </Text>
+                        <Ionicons name="chevron-forward" size={18} color="#6b7280" className="ml-1" />
+                    </View>
                     <Text className="text-sm text-gray-600">
                         {schedule.proposal.application.job_posting.title}
                     </Text>
@@ -72,7 +83,7 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                         {formatTime(schedule.interview_slot.start_time)} - {formatTime(schedule.interview_slot.end_time)}
                     </Text>
                 </View>
-            </View>
+            </TouchableOpacity>
 
             {/* 면접 정보 */}
             <View className="space-y-2 mb-3">
@@ -88,12 +99,16 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                 {/*</View>*/}
 
                 {(schedule.proposal.location || schedule.interview_slot.company.address) && (
-                    <View className="flex-row items-start">
+                    <TouchableOpacity 
+                        onPress={handleMap}
+                        className="flex-row items-start"
+                        activeOpacity={0.7}
+                    >
                         <Ionicons name="location-outline" size={16} color="#6b7280" />
-                        <Text className="text-sm text-gray-600 ml-2 flex-1">
-                            {schedule.proposal.location || schedule.interview_slot.company.address}
+                        <Text className="text-sm text-gray-600 ml-2 flex-1 underline">
+                            {schedule.proposal.application.job_posting.interview_location || schedule.proposal.location || schedule.interview_slot.company.address}
                         </Text>
-                    </View>
+                    </TouchableOpacity>
                 )}
 
                 {schedule.proposal.application.job_posting.salary_range && (
@@ -134,6 +149,12 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                     <Text className="text-purple-600 text-sm font-medium ml-1">{t('calendar.add_to_calendar', '일정 추가')}</Text>
                 </TouchableOpacity>
             </View>
+            
+            <JobDetailModal
+                visible={jobModalVisible}
+                onClose={() => setJobModalVisible(false)}
+                jobPostingId={schedule.proposal.application.job_posting.id}
+            />
         </View>
     )
 }
