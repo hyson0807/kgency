@@ -43,11 +43,13 @@ const Settings = () => {
         setIsJobSeekingActive(profile?.job_seeking_active || true)
     }, [profile])
 
-    // 알림 토글
-    const toggleNotification = (key: keyof typeof notificationSettings) => {
+    // 알림 토글 - 면접 관련 알림을 통합 제어
+    const toggleInterviewNotifications = () => {
+        const newValue = !notificationSettings.interviewProposal
         const newSettings = {
             ...notificationSettings,
-            [key]: !notificationSettings[key]
+            interviewProposal: newValue,
+            interviewCancelled: newValue
         }
         updateNotificationSettings(newSettings)
     }
@@ -208,12 +210,12 @@ const Settings = () => {
                     <View className="space-y-4">
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">{t('settings.interview_proposal_notification', '면접 제안 알림')}</Text>
-                                <Text className="text-sm text-gray-600">{t('settings.interview_proposal_description', '회사에서 면접 제안이 올 때 알림')}</Text>
+                                <Text className="font-medium">{t('settings.interview_notification', '면접 관련 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.interview_notification_description', '면접 제안 및 취소 알림')}</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.interviewProposal}
-                                onValueChange={() => toggleNotification('interviewProposal')}
+                                onValueChange={toggleInterviewNotifications}
                                 trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
                                 thumbColor={notificationSettings.interviewProposal ? '#ffffff' : '#f3f4f6'}
                             />

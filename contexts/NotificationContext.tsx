@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface NotificationSettings {
   interviewProposal: boolean;
   interviewScheduleConfirmed?: boolean;
+  interviewCancelled?: boolean;
 }
 
 interface NotificationContextType {
@@ -35,7 +36,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const responseListener = useRef<any>(null);
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
     interviewProposal: true,
-    interviewScheduleConfirmed: true
+    interviewScheduleConfirmed: true,
+    interviewCancelled: true
   });
 
   // Configure notification handler
@@ -56,6 +58,16 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         }
         
         if (data?.type === 'interview_schedule_confirmed' && !notificationSettings.interviewScheduleConfirmed) {
+          return {
+            shouldShowAlert: false,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+        
+        if (data?.type === 'interview_cancelled' && !notificationSettings.interviewCancelled) {
           return {
             shouldShowAlert: false,
             shouldPlaySound: false,
@@ -125,6 +137,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         // Navigate to the interview slots page for company
         if (user?.userType === 'company') {
           router.push(`/(company)/interview-calendar`);
+        }
+      }
+      
+      if (data?.type === 'interview_cancelled' && data?.applicationId) {
+        // Navigate to the applications page for user to see cancelled interview
+        if (user?.userType === 'user') {
+          router.push(`/(user)/applications`);
         }
       }
     });
