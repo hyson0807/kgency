@@ -38,6 +38,13 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
         return format(new Date(dateString), 'HH:mm')
     }
 
+    // 인터뷰가 이미 지났는지 확인
+    const isExpired = () => {
+        const now = new Date()
+        const interviewEndTime = new Date(schedule.interview_slot.end_time)
+        return now > interviewEndTime
+    }
+
     const handleCall = () => {
         const phoneNumber = schedule.proposal.application.user.phone_number
         Linking.openURL(`tel:${phoneNumber}`)
@@ -138,13 +145,20 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                     <Text className="text-blue-600 text-sm font-medium ml-1">문자</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={onCancel}
-                    className="flex-1 flex-row items-center justify-center bg-red-50 py-2 rounded-lg"
-                >
-                    <Ionicons name="close-circle-outline" size={18} color="#dc2626" />
-                    <Text className="text-red-600 text-sm font-medium ml-1">취소</Text>
-                </TouchableOpacity>
+                {isExpired() ? (
+                    <View className="flex-1 flex-row items-center justify-center bg-gray-100 py-2 rounded-lg">
+                        <Ionicons name="time-outline" size={18} color="#6b7280" />
+                        <Text className="text-gray-500 text-sm font-medium ml-1">기간만료</Text>
+                    </View>
+                ) : (
+                    <TouchableOpacity
+                        onPress={onCancel}
+                        className="flex-1 flex-row items-center justify-center bg-red-50 py-2 rounded-lg"
+                    >
+                        <Ionicons name="close-circle-outline" size={18} color="#dc2626" />
+                        <Text className="text-red-600 text-sm font-medium ml-1">취소</Text>
+                    </TouchableOpacity>
+                )}
             </View>
             
             {/* User Detail Modal */}
