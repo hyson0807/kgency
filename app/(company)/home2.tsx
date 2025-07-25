@@ -11,6 +11,7 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import {UserCard} from "@/components/company_home(home2)/UserCard";
 import { SuitabilityCalculator } from '@/lib/suitability/calculator'
 import { SuitabilityResult } from '@/lib/suitability/types'
+import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
 
 interface UserKeyword {
     keyword: {
@@ -85,6 +86,24 @@ const Home2 = () => {
             fetchJobSeekers()
         }
     }, [companyKeywordIds])
+
+    // 홈화면 진입 시 알림 권한 요청
+    useEffect(() => {
+        const requestNotificationPermission = async () => {
+            if (user?.userId) {
+                try {
+                    const pushToken = await registerForPushNotificationsAsync();
+                    if (pushToken) {
+                        await savePushToken(user.userId, pushToken);
+                    }
+                } catch (error) {
+                    console.log('알림 권한 설정 중 오류:', error);
+                }
+            }
+        };
+
+        requestNotificationPermission();
+    }, [user?.userId]);
 
     // 회사의 키워드 가져오기
     const fetchCompanyKeywords = async () => {

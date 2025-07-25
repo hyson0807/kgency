@@ -1,5 +1,5 @@
 import { View, Text, FlatList, RefreshControl, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
@@ -10,6 +10,8 @@ import {Header} from "@/components/common/Header";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import { SuitabilityResult } from '@/lib/suitability';
 import {Header_Home} from "@/components/user_home/Header";
+import { useAuth } from "@/contexts/AuthContext";
+import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
 
 // 타입은 hooks/useMatchedJobPostings에서 import
 interface JobPosting {
@@ -56,6 +58,7 @@ interface MatchedPosting {
 
 const Home = () => {
     const { t } = useTranslation()
+    const { user } = useAuth()
 
     // 커스텀 훅에서 모든 데이터와 함수 가져오기
     const {
@@ -65,6 +68,24 @@ const Home = () => {
         appliedPostings,
         onRefresh
     } = useMatchedJobPostings()
+
+    // 홈화면 진입 시 알림 권한 요청
+    useEffect(() => {
+        const requestNotificationPermission = async () => {
+            if (user?.userId) {
+                try {
+                    const pushToken = await registerForPushNotificationsAsync();
+                    if (pushToken) {
+                        await savePushToken(user.userId, pushToken);
+                    }
+                } catch (error) {
+                    console.log('알림 권한 설정 중 오류:', error);
+                }
+            }
+        };
+
+        requestNotificationPermission();
+    }, [user?.userId]);
 
 
 
