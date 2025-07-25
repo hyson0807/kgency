@@ -207,16 +207,6 @@ const Settings2 = () => {
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        onPress={() => openLink('https://example.com/business-guide')}
-                        className="flex-row items-center justify-between py-3"
-                    >
-                        <View className="flex-row items-center">
-                            <Ionicons name="help-circle-outline" size={20} color="#6b7280" />
-                            <Text className="ml-3">채용 가이드</Text>
-                        </View>
-                        <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-                    </TouchableOpacity>
 
                     <View className="flex-row items-center justify-between py-3">
                         <View className="flex-row items-center">
