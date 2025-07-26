@@ -67,10 +67,13 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                         {/* 저장 버튼 */}
                         <TouchableOpacity
                             onPress={onSaveForDate}
-                            className="mt-4 py-3 bg-blue-500 rounded-lg"
+                            className="mt-4 py-3 gap-2 bg-blue-500 rounded-lg"
                         >
                             <Text className="text-center text-white font-semibold">
-                                {selectedDate} 시간대 저장
+                                회사 면접 시간대 저장
+                            </Text>
+                            <Text className="text-center text-white font-normal">
+                                저장된 시간은 모든 구직자에게 제공됩니다
                             </Text>
                         </TouchableOpacity>
                     </View>

@@ -1,4 +1,4 @@
-import {Text, View} from "react-native";
+import {Image, Text, View} from "react-native";
 import React from "react";
 
 

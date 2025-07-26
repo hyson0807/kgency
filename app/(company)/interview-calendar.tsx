@@ -298,7 +298,7 @@ export default function InterviewCalendar() {
 
         if (response?.success) {
             await fetchSlots()
-            showModal('성공', `${selectedDate}의 면접 시간대가 저장되었습니다.`, 'info')
+            showModal('성공', '선택된 시간대가 구직자에게 제공됩니다', 'info')
         }
     }
 
