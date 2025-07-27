@@ -1,50 +1,107 @@
-# Welcome to your Expo app 👋
+# kgency
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+스마트한 구인구직 매칭 플랫폼
 
-## Get started
+## 📱 프로젝트 개요
 
-1. Install dependencies
+kgency는 React Native Expo 기반의 모바일 애플리케이션으로, AI 기반 매칭 알고리즘을 통해 구직자와 기업을 연결하는 플랫폼입니다.
 
-   ```bash
-   npm install
-   ```
+### 🎯 주요 기능
 
-2. Start the app
+- **AI 매칭 시스템**: 키워드 기반 적합도 계산 (0-100점)
+- **이중 역할 시스템**: 구직자/기업 분리된 인터페이스
+- **면접 일정 관리**: 캘린더 기반 면접 스케줄링
+- **실시간 메시징**: 구직자-기업 간 소통
+- **다국어 지원**: 12개 언어 지원
 
-   ```bash
-   npx expo start
-   ```
+### 🛠 기술 스택
 
-In the output, you'll find options to open the app in a
+**Frontend (Mobile)**
+- React Native with Expo SDK 53
+- TypeScript
+- NativeWind (Tailwind CSS)
+- Expo Router
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+**Backend**
+- Node.js + Express
+- PostgreSQL (Supabase)
+- JWT Authentication
+- Google Translate API
+- OpenAI API
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🚀 빠른 시작
 
-## Get a fresh project
-
-When you're ready, run:
-
+### 모바일 앱
 ```bash
-npm run reset-project
+npm install
+npm start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 서버
+```bash
+cd ../kgency_server
+npm install
+npm run dev
+```
 
-## Learn more
+## 📚 문서 구조
 
-To learn more about developing your project with Expo, look at the following resources:
+- [`docs/development/`](./docs/development/) - 개발 환경 설정 및 가이드
+- [`docs/api/`](./docs/api/) - API 문서 및 엔드포인트
+- [`docs/features/`](./docs/features/) - 주요 기능 명세
+- [`docs/support/`](./docs/support/) - 사용자 지원 문서
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 🏗 아키텍처
 
-## Join the community
+```
+kgency/
+├── app/                 # React Native 앱
+│   ├── (auth)/         # 인증 화면
+│   ├── (user)/         # 구직자 인터페이스
+│   ├── (company)/      # 기업 인터페이스
+│   └── (pages)/        # 공통 페이지
+├── lib/                # 핵심 라이브러리
+├── hooks/              # 커스텀 훅
+└── contexts/           # Context API
 
-Join our community of developers creating universal apps.
+kgency_server/
+├── src/
+│   ├── controllers/    # 요청 처리
+│   ├── services/       # 비즈니스 로직
+│   ├── routes/         # API 라우트
+│   └── middlewares/    # 미들웨어
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 🔑 환경 변수
+
+### 모바일 앱
+```bash
+EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 서버
+```bash
+KEY_1=supabase_key_1
+KEY_2=supabase_key_2
+JWT_SECRET=your_jwt_secret
+SOLAPI_API_KEY=your_solapi_key
+GOOGLE_TRANSLATE_API_KEY=your_translate_key
+```
+
+## 🤝 기여하기
+
+1. 프로젝트 포크
+2. 기능 브랜치 생성 (`git checkout -b feature/amazing-feature`)
+3. 변경사항 커밋 (`git commit -m 'Add amazing feature'`)
+4. 브랜치에 푸시 (`git push origin feature/amazing-feature`)
+5. Pull Request 생성
+
+## 📞 문의
+
+- **이메일**: simsgood0807@gmail.com
+- **업무시간**: 평일 오전 9시 - 오후 6시
+
+## 📄 라이센스
+
+Welkit
