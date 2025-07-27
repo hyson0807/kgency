@@ -65,12 +65,7 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                         {t('home.recommended_jobs', '추천 일자리')}
                     </Text>
                 </View>
-                <TouchableOpacity
-                    onPress={() => router.push('/(pages)/(user)/info')}
-                    className="bg-blue-100 px-4 py-2 rounded-lg"
-                >
-                    <Text className="text-blue-600 font-medium">{t('home.set_keywords', '대표 키워드 설정')}</Text>
-                </TouchableOpacity>
+
             </View>
 
             {/* 옵션 1: 부드러운 보라색 그라데이션 */}
