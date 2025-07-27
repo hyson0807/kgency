@@ -10,7 +10,6 @@ import { Ionicons } from '@expo/vector-icons'
 
 import Back from '@/components/back'
 import { api } from '@/lib/api'
-import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 
@@ -94,48 +93,31 @@ export default function InterviewRequest() {
         try {
             setLoading(true)
             
-            // 회사 공고 목록 가져오기
-            const { data: jobPostings, error: jobError } = await supabase
-                .from('job_postings')
-                .select('id, title')
-                .eq('company_id', user?.userId)
-                .eq('is_active', true)
-                .is('deleted_at', null)
-
-            if (jobError) throw jobError
-
-            // 구직자의 기존 지원서 확인
-            const { data: existingApplications, error: appError } = await supabase
-                .from('applications')
-                .select('job_posting_id')
-                .eq('user_id', jobSeekerId)
-                .eq('company_id', user?.userId)
-                .is('deleted_at', null)
-
-            if (appError) throw appError
-
-            const appliedJobPostingIds = new Set(existingApplications?.map(app => app.job_posting_id) || [])
-
-            // 공고에 지원 여부 정보 추가
-            const jobPostingsWithStatus = (jobPostings || []).map(posting => ({
-                ...posting,
-                hasExistingApplication: appliedJobPostingIds.has(posting.id)
-            }))
-
-            setCompanyJobPostings(jobPostingsWithStatus)
+            // 회사 공고 목록 가져오기 (지원 상태 포함)
+            const jobPostingsResponse = await api('GET', `/api/job-postings/company/with-status?jobSeekerId=${jobSeekerId}`)
+            
+            if (jobPostingsResponse?.success) {
+                setCompanyJobPostings(jobPostingsResponse.data || [])
+            } else {
+                throw new Error('공고 목록을 불러오는데 실패했습니다.')
+            }
 
             // 구직자 이름 가져오기
-            const { data: jobSeeker, error: seekerError } = await supabase
-                .from('profiles')
-                .select('name')
-                .eq('id', jobSeekerId)
-                .single()
-
-            if (seekerError) throw seekerError
-            setJobSeekerName(jobSeeker?.name || '')
+            const userProfileResponse = await api('GET', `/api/profiles/user/${jobSeekerId}`)
+            
+            if (userProfileResponse?.success) {
+                setJobSeekerName(userProfileResponse.data?.name || '')
+            } else {
+                throw new Error('구직자 정보를 불러오는데 실패했습니다.')
+            }
 
         } catch (error) {
             console.error('데이터 로딩 실패:', error)
+            console.error('Error details:', {
+                message: (error as any)?.message,
+                response: (error as any)?.response?.data,
+                status: (error as any)?.response?.status
+            })
             showModal('오류', '데이터를 불러오는데 실패했습니다.')
         } finally {
             setLoading(false)
@@ -236,30 +218,22 @@ export default function InterviewRequest() {
             }
 
             // 2. 먼저 초대형 지원서 생성
-            const { data: application, error: appError } = await supabase
-                .from('applications')
-                .insert({
-                    user_id: jobSeekerId,
-                    company_id: user?.userId,
-                    job_posting_id: selectedJobPostingId,
-                    type: 'company_invited',
-                    status: 'invited'
-                })
-                .select()
-                .single()
+            const applicationResponse = await api('POST', '/api/applications/invitation', {
+                userId: jobSeekerId,
+                jobPostingId: selectedJobPostingId
+            })
 
-            if (appError) {
-                // 중복 키 에러 체크
-                if (appError.code === '23505' && appError.message.includes('unique_user_job_posting_application')) {
+            if (!applicationResponse?.success) {
+                if (applicationResponse?.error?.includes('이미 지원한 공고')) {
                     showModal('알림', '해당 구직자는 이미 이 공고에 지원했습니다.')
                     return
                 }
-                throw appError
+                throw new Error('지원서 생성에 실패했습니다.')
             }
 
             // 3. 면접 제안 생성
             const response = await api('POST', '/api/interview-proposals/company', {
-                applicationId: application.id,
+                applicationId: applicationResponse.data.id,
                 companyId: user?.userId,
                 location: interviewLocation.trim()
             })
@@ -450,28 +424,28 @@ export default function InterviewRequest() {
                 </View>
 
                 {/* 면접 유형 선택 */}
-                <View className="px-4 mb-6">
-                    <Text className="text-base font-semibold mb-3">면접 유형</Text>
-                    <View className="flex-row gap-3">
-                        {['대면', '화상', '전화'].map((type) => (
-                            <TouchableOpacity
-                                key={type}
-                                onPress={() => setInterviewType(type as '대면' | '화상' | '전화')}
-                                className={`px-4 py-2 rounded-lg border ${
-                                    interviewType === type
-                                        ? 'bg-blue-500 border-blue-500'
-                                        : 'bg-white border-gray-300'
-                                }`}
-                            >
-                                <Text className={`text-center ${
-                                    interviewType === type ? 'text-white' : 'text-gray-700'
-                                }`}>
-                                    {type}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </View>
+                {/*<View className="px-4 mb-6">*/}
+                {/*    <Text className="text-base font-semibold mb-3">면접 유형</Text>*/}
+                {/*    <View className="flex-row gap-3">*/}
+                {/*        {['대면', '화상', '전화'].map((type) => (*/}
+                {/*            <TouchableOpacity*/}
+                {/*                key={type}*/}
+                {/*                onPress={() => setInterviewType(type as '대면' | '화상' | '전화')}*/}
+                {/*                className={`px-4 py-2 rounded-lg border ${*/}
+                {/*                    interviewType === type*/}
+                {/*                        ? 'bg-blue-500 border-blue-500'*/}
+                {/*                        : 'bg-white border-gray-300'*/}
+                {/*                }`}*/}
+                {/*            >*/}
+                {/*                <Text className={`text-center ${*/}
+                {/*                    interviewType === type ? 'text-white' : 'text-gray-700'*/}
+                {/*                }`}>*/}
+                {/*                    {type}*/}
+                {/*                </Text>*/}
+                {/*            </TouchableOpacity>*/}
+                {/*        ))}*/}
+                {/*    </View>*/}
+                {/*</View>*/}
 
                 {/* 선택된 날짜의 시간대 선택 */}
                 <View className="p-4">
@@ -516,17 +490,7 @@ export default function InterviewRequest() {
                         })}
                     </View>
                     
-                    {/* 현재 날짜 선택된 시간대 */}
-                    {selectedTimes.length > 0 && (
-                        <View className="mt-4 p-3 bg-blue-50 rounded-lg">
-                            <Text className="text-sm text-blue-600 font-medium mb-1">
-                                {formatDateHeader(selectedDate)} 선택된 시간대 ({selectedTimes.length}개)
-                            </Text>
-                            <Text className="text-sm text-blue-600 mb-2">
-                                {selectedTimes.sort().join(', ')}
-                            </Text>
-                        </View>
-                    )}
+
                     
                     {/* 전체 날짜의 선택된 시간대 요약 */}
                     {(() => {
