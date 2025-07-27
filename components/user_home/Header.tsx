@@ -64,11 +64,6 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                     <Text className="text-lg font-bold text-gray-800">
                         {t('home.recommended_jobs', '추천 일자리')}
                     </Text>
-                    <Text className="text-sm text-gray-600 mt-1">
-                        {t('home.total_postings', `총 ${matchedPostings.length}개의 공고`, {
-                            count: matchedPostings.length
-                        })}
-                    </Text>
                 </View>
                 <TouchableOpacity
                     onPress={() => router.push('/(pages)/(user)/info')}
