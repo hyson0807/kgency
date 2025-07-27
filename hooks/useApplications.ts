@@ -63,36 +63,63 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
 
-    // 각 지원에 대한 면접 상태를 확인하는 함수
+    // 각 지원에 대한 면접 상태를 확인하는 함수 - 최적화된 버전
     const checkInterviewStatuses = async (applications: Application[]): Promise<Application[]> => {
-        // 모든 지원에 대해 병렬로 면접 상태 확인
-        const applicationsWithInterview = await Promise.all(
-            applications.map(async (app) => {
-                try {
-                    const response = await api('GET', `/api/interview-proposals/user/${app.id}`)
+        if (applications.length === 0) {
+            return applications;
+        }
 
-                    // pending 또는 scheduled 상태의 면접 제안이 있는 경우
-                    if (response?.success && response.data?.proposal &&
-                        (response.data.proposal.status === 'pending' || response.data.proposal.status === 'scheduled')) {
-                        return {
-                            ...app,
-                            interviewProposal: response.data.proposal
-                        }
-                    }
-                } catch (error) {
-                    // 404 에러는 정상적인 케이스 (제안이 없는 경우)
-                    console.log('No interview proposal found for application:', app.id)
-                }
+        try {
+            // 단일 API 호출로 모든 면접 정보 조회
+            const applicationIds = applications.map(app => app.id);
+            const response = await api('POST', '/api/interview-proposals/bulk-check', {
+                applicationIds
+            });
 
-                // 면접 제안이 없는 경우
-                return {
+            if (response?.success && response.data) {
+                // 결과 매핑 - 서버에서 { [applicationId]: proposal } 형태로 반환
+                return applications.map(app => ({
                     ...app,
-                    interviewProposal: null
-                }
-            })
-        )
+                    interviewProposal: response.data[app.id] || null
+                }));
+            }
+        } catch (error) {
+            console.error('Bulk interview status check failed, falling back to individual checks:', error);
+            
+            // 백업 방식: 개별 API 호출 (기존 로직)
+            const applicationsWithInterview = await Promise.all(
+                applications.map(async (app) => {
+                    try {
+                        const response = await api('GET', `/api/interview-proposals/user/${app.id}`)
 
-        return applicationsWithInterview
+                        // pending 또는 scheduled 상태의 면접 제안이 있는 경우
+                        if (response?.success && response.data?.proposal &&
+                            (response.data.proposal.status === 'pending' || response.data.proposal.status === 'scheduled')) {
+                            return {
+                                ...app,
+                                interviewProposal: response.data.proposal
+                            }
+                        }
+                    } catch (error) {
+                        // 404 에러는 정상적인 케이스 (제안이 없는 경우)
+                        console.log('No interview proposal found for application:', app.id)
+                    }
+
+                    // 면접 제안이 없는 경우
+                    return {
+                        ...app,
+                        interviewProposal: null
+                    }
+                })
+            )
+            return applicationsWithInterview;
+        }
+
+        // 기본값: 면접 정보 없이 반환
+        return applications.map(app => ({
+            ...app,
+            interviewProposal: null
+        }));
     }
 
     const fetchApplications = useCallback(async () => {
