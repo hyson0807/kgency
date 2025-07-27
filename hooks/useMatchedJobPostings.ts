@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import {useTranslation} from "@/contexts/TranslationContext";
 import {api} from "@/lib/api";
-import { SuitabilityCalculator, SuitabilityResult } from '@/lib/suitability';
+import { SuitabilityResult } from '@/lib/suitability';
 
 interface JobPosting {
     id: string;
@@ -66,9 +66,6 @@ export const useMatchedJobPostings = () => {
     const { translateDB } = useTranslation();
     const [refreshing, setRefreshing] = useState(false);
 
-    // 적합도 계산기 인스턴스
-    const suitabilityCalculator = new SuitabilityCalculator();
-
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -113,7 +110,7 @@ export const useMatchedJobPostings = () => {
         }
     };
 
-    // 매칭된 공고 가져오기
+    // 매칭된 공고 가져오기 - 서버에서 적합도 계산 처리
     const fetchMatchedPostings = async () => {
         if (userKeywordIds.length === 0) {
             setLoading(false);
@@ -123,97 +120,16 @@ export const useMatchedJobPostings = () => {
         try {
             setError(null);
 
-            const response = await api('GET', '/api/job-postings');
+            // 서버에서 적합도 계산된 결과 요청
+            const response = await api('GET', '/api/job-postings/matched');
 
             if (response && response.data) {
-                const postings = response.data;
-
-                // 적합도 계산 및 매칭 처리
-                const matched: MatchedPosting[] = postings.map((posting: JobPosting): MatchedPosting => {
-                    // 적합도 계산
-                    const suitability = suitabilityCalculator.calculate(
-                        userKeywordIds,
-                        posting.job_posting_keywords || []
-                    );
-
-                    // 번역된 키워드로 변환 (UI 표시용)
-                    const translatedMatchedKeywords = {
-                        countries: [] as string[],
-                        jobs: [] as string[],
-                        conditions: [] as string[],
-                        location: [] as string[],
-                        moveable: [] as string[],
-                        gender: [] as string[],
-                        age: [] as string[],
-                        visa: [] as string[],
-                        koreanLevel: [] as string[]
-                    };
-
-                    // 매칭된 키워드만 번역
-                    posting.job_posting_keywords?.forEach((jpk: any) => {
-                        if (userKeywordIds.includes(jpk.keyword.id)) {
-                            const translatedKeyword = translateDB(
-                                'keyword',
-                                'keyword',
-                                jpk.keyword.id?.toString() || '',
-                                jpk.keyword.keyword || ''
-                            );
-
-                            switch (jpk.keyword.category) {
-                                case '국가':
-                                    translatedMatchedKeywords.countries.push(translatedKeyword);
-                                    break;
-                                case '직종':
-                                    translatedMatchedKeywords.jobs.push(translatedKeyword);
-                                    break;
-                                case '근무조건':
-                                    translatedMatchedKeywords.conditions.push(translatedKeyword);
-                                    break;
-                                case '지역':
-                                    translatedMatchedKeywords.location.push(translatedKeyword);
-                                    break;
-                                case '지역이동':
-                                    translatedMatchedKeywords.moveable.push(translatedKeyword);
-                                    break;
-                                case '성별':
-                                    translatedMatchedKeywords.gender.push(translatedKeyword);
-                                    break;
-                                case '나이대':
-                                    translatedMatchedKeywords.age.push(translatedKeyword);
-                                    break;
-                                case '비자':
-                                    translatedMatchedKeywords.visa.push(translatedKeyword);
-                                    break;
-                                case '한국어 수준':
-                                    translatedMatchedKeywords.koreanLevel.push(translatedKeyword);
-                            }
-                        }
-                    });
-
-                    return {
-                        posting: posting as JobPosting,
-                        matchedCount: suitability.details.matchedKeywords.countries.length +
-                            suitability.details.matchedKeywords.jobs.length +
-                            suitability.details.matchedKeywords.conditions.length +
-                            suitability.details.matchedKeywords.location.length +
-                            suitability.details.matchedKeywords.moveable.length +
-                            suitability.details.matchedKeywords.gender.length +
-                            suitability.details.matchedKeywords.age.length +
-                            suitability.details.matchedKeywords.visa.length +
-                            suitability.details.matchedKeywords.koreanLevel.length,
-                        matchedKeywords: translatedMatchedKeywords,
-                        suitability
-                    };
-                });
-
-                // 적합도 점수 높은 순으로 정렬
-                matched.sort((a, b) => b.suitability.score - a.suitability.score);
-
-                setMatchedPostings(matched);
+                // 서버에서 이미 적합도 계산과 정렬이 완료된 데이터
+                setMatchedPostings(response.data);
             }
         } catch (error) {
-            console.error('공고 조회 실패:', error);
-            setError('공고를 불러오는데 실패했습니다.');
+            console.error('매칭된 공고 조회 실패:', error);
+            setError('매칭된 공고를 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
         }
