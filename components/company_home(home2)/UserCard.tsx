@@ -144,7 +144,7 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
             {/* 기본 정보 */}
             <View className="flex-row mb-3 gap-3">
                 <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
-                    <Text className="text-2xl font-bold">{item.user.name.charAt(0)}</Text>
+                    <Text className="text-2xl font-bold">{item.user.name?.charAt(0) || '?'}</Text>
                 </View>
 
                 <View className="flex-1">
