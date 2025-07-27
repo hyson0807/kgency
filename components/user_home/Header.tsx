@@ -78,15 +78,15 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                 </TouchableOpacity>
             </View>
 
-            {/* 첫 번째 카드 - 즉시 면접 확정 */}
+            {/* 옵션 1: 부드러운 보라색 그라데이션 */}
             <LinearGradient
-                colors={['#FF6B6B', '#FF8E8E', '#FF5757']}
+                colors={['#6366F1', '#8B5CF6', '#A855F7']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{ borderRadius: 16, padding: 24, marginBottom: 16 }}
             >
                 <View className="items-center">
-                    <Ionicons name="flash" size={32} color="#FFD700" />
+                    <Ionicons name="flash" size={32} color="#FDE047" />
                     <Text className="text-white text-xl font-bold text-center mt-2">
                         적합도 90% 이상 → 즉시 면접 확정!
                     </Text>
@@ -96,9 +96,9 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                 </View>
             </LinearGradient>
 
-            {/* 두 번째 카드 - 적합도 90% 돌파하기 */}
+            {/* 옵션 1: 민트/그린 그라데이션 */}
             <LinearGradient
-                colors={['#667EEA', '#764BA2', '#A855F7']}
+                colors={['#10B981', '#34D399', '#6EE7B7']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{ borderRadius: 16, padding: 24 }}
@@ -117,7 +117,7 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                         onPress={() => router.push('/(pages)/(user)/info')}
                         className="bg-white rounded-full px-6 py-3 mt-4"
                     >
-                        <Text className="text-blue-600 font-bold text-center">
+                        <Text className="text-emerald-600 font-bold text-center">
                             프로필 업그레이드
                         </Text>
                     </TouchableOpacity>
