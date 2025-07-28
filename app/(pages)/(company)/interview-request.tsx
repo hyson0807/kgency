@@ -12,6 +12,7 @@ import Back from '@/components/back'
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
+import { TimeSlotGrid } from '@/components/interview-calendar/TimeSlotGrid'
 
 // 한국어 캘린더 설정
 LocaleConfig.locales['ko'] = {
@@ -56,7 +57,8 @@ export default function InterviewRequest() {
     const [interviewType, setInterviewType] = useState<'대면' | '화상' | '전화'>('대면')
     const [dateTimeMap, setDateTimeMap] = useState<Record<string, TimeSlot[]>>({})
     const [bookedSlots, setBookedSlots] = useState<Record<string, string[]>>({})
-    const [userSelectedTimesByDate, setUserSelectedTimesByDate] = useState<Record<string, string[]>>({})
+    const [userSelectedTimesByDate, setUserSelectedTimesByDate] = useState<Record<string, { added: string[], removed: string[] }>>({})
+    const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
 
     useEffect(() => {
         if (user?.userId && jobSeekerId) {
@@ -70,15 +72,21 @@ export default function InterviewRequest() {
         }
     }, [user?.userId])
 
+    const [previousSelectedDate, setPreviousSelectedDate] = useState<string>('')
+    
     useEffect(() => {
-        // 날짜 변경 시 해당 날짜에 이미 사용자가 선택한 시간대가 있으면 로드
-        if (selectedDate) {
-            const userSelectedForDate = userSelectedTimesByDate[selectedDate] || []
+        // 날짜가 변경되었을 때만 해당 날짜의 데이터를 로드
+        if (selectedDate && selectedDate !== previousSelectedDate && Object.keys(dateTimeMap).length > 0) {
+            const userSelectedForDate = userSelectedTimesByDate[selectedDate] || { added: [], removed: [] }
             const existingServerTimes = dateTimeMap[selectedDate]?.map(slot => slot.startTime) || []
             
-            // 사용자 선택 + 서버에 저장된 시간대 합치기
-            const combinedTimes = [...new Set([...userSelectedForDate, ...existingServerTimes])]
-            setSelectedTimes(combinedTimes)
+            // 서버 시간에서 제거된 시간들을 빼고, 사용자가 추가한 시간들을 더함
+            const finalTimes = [
+                ...existingServerTimes.filter(time => !userSelectedForDate.removed.includes(time)),
+                ...userSelectedForDate.added
+            ]
+            
+            setSelectedTimes([...new Set(finalTimes)])
             
             // 면접 유형 설정 (기존 데이터 우선)
             if (dateTimeMap[selectedDate]?.length > 0) {
@@ -86,8 +94,10 @@ export default function InterviewRequest() {
             } else {
                 setInterviewType('대면')
             }
+            
+            setPreviousSelectedDate(selectedDate)
         }
-    }, [selectedDate, dateTimeMap, userSelectedTimesByDate])
+    }, [selectedDate, dateTimeMap, userSelectedTimesByDate, previousSelectedDate])
 
     const fetchInitialData = async () => {
         try {
@@ -162,6 +172,18 @@ export default function InterviewRequest() {
 
                 setDateTimeMap(groupedSlots)
                 setBookedSlots(bookedSlotsMap)
+                
+                // 초기 로드 시 현재 선택된 날짜의 시간대를 selectedTimes에 설정
+                if (selectedDate && groupedSlots[selectedDate] && !previousSelectedDate) {
+                    const existingServerTimes = groupedSlots[selectedDate].map(slot => slot.startTime)
+                    setSelectedTimes(existingServerTimes)
+                    setPreviousSelectedDate(selectedDate)
+                    
+                    // 면접 유형도 설정
+                    if (groupedSlots[selectedDate]?.length > 0) {
+                        setInterviewType(groupedSlots[selectedDate][0].interviewType || '대면')
+                    }
+                }
             }
         } catch (error) {
             console.error('면접 시간대 조회 실패:', error)
@@ -253,7 +275,7 @@ export default function InterviewRequest() {
 
     // 시간대 선택 관련 함수들
     const timeSlots = []
-    for (let hour = 10; hour < 18; hour++) {
+    for (let hour = 0; hour < 24; hour++) {
         timeSlots.push(`${hour.toString().padStart(2, '0')}:00`)
         timeSlots.push(`${hour.toString().padStart(2, '0')}:30`)
     }
@@ -275,9 +297,26 @@ export default function InterviewRequest() {
         setSelectedTimes(newSelectedTimes)
         
         // 사용자 선택 상태를 날짜별로 저장
+        // DB에 있는 시간과 사용자가 추가로 선택한 시간을 구분하여 저장
+        const existingServerTimes = dateTimeMap[selectedDate]?.map(slot => slot.startTime) || []
+        const removedServerTimes: string[] = []
+        
+        // DB에서 제거된 시간들을 추적
+        existingServerTimes.forEach(serverTime => {
+            if (!newSelectedTimes.includes(serverTime)) {
+                removedServerTimes.push(serverTime)
+            }
+        })
+        
+        // 사용자가 새로 추가한 시간들 (DB에 없는 시간들)
+        const addedTimes = newSelectedTimes.filter(t => !existingServerTimes.includes(t))
+        
         setUserSelectedTimesByDate(prev => ({
             ...prev,
-            [selectedDate]: newSelectedTimes.filter(t => !dateTimeMap[selectedDate]?.some(slot => slot.startTime === t))
+            [selectedDate]: {
+                added: addedTimes,
+                removed: removedServerTimes
+            }
         }))
     }
 
@@ -453,101 +492,172 @@ export default function InterviewRequest() {
                         {formatDateHeader(selectedDate)} 면접 시간대 선택
                     </Text>
                     
-                    <View className="flex-row flex-wrap gap-2">
-                        {timeSlots.map((time) => {
-                            const isSelected = selectedTimes.includes(time)
-                            const isBooked = bookedSlots[selectedDate]?.includes(time)
-                            
-                            return (
-                                <TouchableOpacity
-                                    key={time}
-                                    onPress={() => handleTimeToggle(time)}
-                                    disabled={isBooked}
-                                    className={`p-3 rounded-lg border min-w-[70px] ${
-                                        isBooked
-                                            ? 'bg-gray-100 border-gray-200'
-                                            : isSelected
-                                            ? 'bg-blue-500 border-blue-500'
-                                            : 'bg-white border-gray-300'
-                                    }`}
-                                >
-                                    <Text className={`text-sm font-medium text-center ${
-                                        isBooked
-                                            ? 'text-gray-400'
-                                            : isSelected
-                                            ? 'text-white'
-                                            : 'text-gray-700'
-                                    }`}>
-                                        {time}
-                                    </Text>
-                                    {isBooked && (
-                                        <Text className="text-xs text-gray-400 text-center mt-1">
-                                            예약됨
-                                        </Text>
-                                    )}
-                                </TouchableOpacity>
-                            )
-                        })}
-                    </View>
-                    
-
-                    
+                    <TimeSlotGrid
+                        timeSlots={timeSlots}
+                        selectedTimes={selectedTimes}
+                        bookedSlots={bookedSlots[selectedDate] || []}
+                        onTimeToggle={handleTimeToggle}
+                    />
                     {/* 전체 날짜의 선택된 시간대 요약 */}
                     {(() => {
-                        // 모든 날짜의 시간대 수집: 서버 데이터 + 사용자 선택
-                        const allDatesWithTimes: Record<string, string[]> = {}
+                        const now = new Date()
+                        const allValidSlots: Array<{ date: string, time: string, isBooked: boolean }> = []
                         
-                        // 서버에 저장된 시간대 추가
+                        // 모든 날짜의 시간대를 수집하고 현재 시간 이후만 필터링
                         Object.entries(dateTimeMap).forEach(([date, slots]) => {
-                            allDatesWithTimes[date] = slots.map(slot => slot.startTime)
+                            const dateObj = new Date(date)
+                            const isToday = dateObj.toDateString() === now.toDateString()
+                            
+                            slots.forEach(slot => {
+                                const [hour, minute] = slot.startTime.split(':')
+                                const slotDateTime = new Date(date)
+                                slotDateTime.setHours(parseInt(hour), parseInt(minute), 0, 0)
+                                
+                                // 오늘인 경우 현재 시간 이후만, 미래 날짜는 모두 포함
+                                const isValidTime = isToday ? slotDateTime >= now : dateObj > now
+                                
+                                if (isValidTime) {
+                                    const isBooked = bookedSlots[date]?.includes(slot.startTime) || false
+                                    allValidSlots.push({
+                                        date: date,
+                                        time: slot.startTime,
+                                        isBooked: isBooked
+                                    })
+                                }
+                            })
                         })
                         
                         // 사용자가 선택한 시간대 추가
-                        Object.entries(userSelectedTimesByDate).forEach(([date, times]) => {
-                            if (times.length > 0) {
-                                const existingTimes = allDatesWithTimes[date] || []
-                                allDatesWithTimes[date] = [...new Set([...existingTimes, ...times])]
-                            }
+                        Object.entries(userSelectedTimesByDate).forEach(([date, userSelection]) => {
+                            const dateObj = new Date(date)
+                            const isToday = dateObj.toDateString() === now.toDateString()
+                            
+                            // 사용자가 추가한 시간들
+                            userSelection.added.forEach(time => {
+                                const [hour, minute] = time.split(':')
+                                const slotDateTime = new Date(date)
+                                slotDateTime.setHours(parseInt(hour), parseInt(minute), 0, 0)
+                                
+                                const isValidTime = isToday ? slotDateTime >= now : dateObj > now
+                                
+                                if (isValidTime && !allValidSlots.find(slot => slot.date === date && slot.time === time)) {
+                                    allValidSlots.push({
+                                        date: date,
+                                        time: time,
+                                        isBooked: false
+                                    })
+                                }
+                            })
+                            
+                            // 사용자가 제거한 시간들을 allValidSlots에서 제거
+                            userSelection.removed.forEach(removedTime => {
+                                const index = allValidSlots.findIndex(slot => slot.date === date && slot.time === removedTime)
+                                if (index !== -1) {
+                                    allValidSlots.splice(index, 1)
+                                }
+                            })
                         })
                         
                         // 현재 날짜의 선택된 시간대 추가
                         if (selectedTimes.length > 0) {
-                            const existingTimes = allDatesWithTimes[selectedDate] || []
-                            allDatesWithTimes[selectedDate] = [...new Set([...existingTimes, ...selectedTimes])]
+                            const dateObj = new Date(selectedDate)
+                            const isToday = dateObj.toDateString() === now.toDateString()
+                            
+                            selectedTimes.forEach(time => {
+                                const [hour, minute] = time.split(':')
+                                const slotDateTime = new Date(selectedDate)
+                                slotDateTime.setHours(parseInt(hour), parseInt(minute), 0, 0)
+                                
+                                const isValidTime = isToday ? slotDateTime >= now : dateObj > now
+                                
+                                if (isValidTime && !allValidSlots.find(slot => slot.date === selectedDate && slot.time === time)) {
+                                    const isBooked = bookedSlots[selectedDate]?.includes(time) || false
+                                    allValidSlots.push({
+                                        date: selectedDate,
+                                        time: time,
+                                        isBooked: isBooked
+                                    })
+                                }
+                            })
                         }
                         
-                        const hasAnyTimes = Object.values(allDatesWithTimes).some(times => times.length > 0)
+                        // 날짜별, 시간별로 정렬
+                        allValidSlots.sort((a, b) => {
+                            if (a.date !== b.date) {
+                                return a.date.localeCompare(b.date)
+                            }
+                            const [aHour, aMin] = a.time.split(':').map(Number)
+                            const [bHour, bMin] = b.time.split(':').map(Number)
+                            return (aHour * 60 + aMin) - (bHour * 60 + bMin)
+                        })
                         
-                        return hasAnyTimes ? (
-                            <View className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                                <Text className="text-sm text-green-700 font-medium mb-2">
-                                    📅 전체 면접 가능 시간대 요약
-                                </Text>
-                                {Object.entries(allDatesWithTimes)
-                                    .filter(([_, times]) => times.length > 0)
-                                    .sort(([a], [b]) => a.localeCompare(b))
-                                    .map(([date, times]) => (
-                                        <View key={date} className="mb-2">
-                                            <Text className={`text-xs font-medium ${
-                                                date === selectedDate ? 'text-blue-600' : 'text-green-600'
-                                            }`}>
-                                                {formatDateHeader(date)} {date === selectedDate ? '(현재 편집중)' : ''}
-                                            </Text>
-                                            <Text className={`text-xs ml-2 ${
-                                                date === selectedDate ? 'text-blue-600' : 'text-green-600'
-                                            }`}>
-                                                {times.sort().join(', ')} ({times.length}개)
+                        if (allValidSlots.length === 0) return null
+                        
+                        return (
+                            <View className="mt-6 bg-green-50 rounded-lg border border-green-200">
+                                {/* 접기/펼치기 헤더 */}
+                                <TouchableOpacity
+                                    onPress={() => setIsSummaryExpanded(!isSummaryExpanded)}
+                                    className="flex-row items-center justify-between p-4"
+                                >
+                                    <View className="flex-row items-center gap-2">
+                                        <Ionicons name="calendar" size={20} color="#16a34a" />
+                                        <Text className="text-lg font-semibold text-green-900">
+                                            전체 면접 가능 시간대 ({allValidSlots.length}개)
+                                        </Text>
+                                    </View>
+                                    <Ionicons 
+                                        name={isSummaryExpanded ? "chevron-up" : "chevron-down"} 
+                                        size={20} 
+                                        color="#16a34a" 
+                                    />
+                                </TouchableOpacity>
+                                
+                                {/* 접을 수 있는 내용 */}
+                                {isSummaryExpanded && (
+                                    <View className="px-4 pb-4">
+                                        {/* 날짜별로 그룹화하여 표시 */}
+                                        {Object.entries(
+                                            allValidSlots.reduce((acc, slot) => {
+                                                if (!acc[slot.date]) acc[slot.date] = []
+                                                acc[slot.date].push(slot)
+                                                return acc
+                                            }, {} as Record<string, typeof allValidSlots>)
+                                        ).map(([date, slots]) => (
+                                            <View key={date} className="mb-3">
+                                                <Text className="text-sm font-medium text-green-800 mb-2">
+                                                    {formatDateHeader(date)}
+                                                </Text>
+                                                <View className="flex-row flex-wrap gap-2 pl-2">
+                                                    {slots.map((slot) => (
+                                                        <View
+                                                            key={`${slot.date}-${slot.time}`}
+                                                            className={`px-3 py-1.5 rounded-full border ${
+                                                                slot.isBooked
+                                                                    ? 'bg-gray-100 border-gray-300'
+                                                                    : 'bg-green-100 border-green-300'
+                                                            }`}
+                                                        >
+                                                            <Text className={`text-sm font-medium ${
+                                                                slot.isBooked ? 'text-gray-600' : 'text-green-800'
+                                                            }`}>
+                                                                {slot.time}{slot.isBooked ? ' (예약됨)' : ''}
+                                                            </Text>
+                                                        </View>
+                                                    ))}
+                                                </View>
+                                            </View>
+                                        ))}
+                                        
+                                        <View className="mt-2 pt-2 border-t border-green-200">
+                                            <Text className="text-xs text-green-600 text-center">
+                                                💡 현재 시간 이후의 모든 면접 가능 시간대입니다
                                             </Text>
                                         </View>
-                                    ))}
-                                <View className="flex-row items-start mt-2 pt-2 border-t border-green-200">
-                                    <Ionicons name="information-circle-outline" size={16} color="#059669" />
-                                    <Text className="text-xs text-green-600 ml-1 flex-1">
-                                        면접 요청 시 위의 모든 시간대가 구직자에게 전송됩니다.
-                                    </Text>
-                                </View>
+                                    </View>
+                                )}
                             </View>
-                        ) : null
+                        )
                     })()}
                 </View>
             </ScrollView>
