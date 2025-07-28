@@ -541,7 +541,7 @@ const Info2 = () => {
                         />
                     </View>
                     <Text className="text-sm text-gray-600 mt-2 px-1">
-                        비활성화하면 구직자들에게 공고가 표시되지 않습니다.
+                        적합도가 90% 이상이면 자동면접 확정에 동의합니다
                     </Text>
                 </View>
             </ScrollView>
