@@ -78,10 +78,10 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                 <View className="items-center">
                     <Ionicons name="flash" size={32} color="#FDE047" />
                     <Text className="text-white text-xl font-bold text-center mt-2">
-                        적합도 90% 이상 → 즉시 면접 확정!
+                        {t('home.instant_interview_title', '적합도 90% 이상 → 즉시 면접 확정!')}
                     </Text>
                     <Text className="text-white text-sm text-center mt-2 opacity-90">
-                        AI 매칭으로 완벽한 일자리를 찾아드립니다
+                        {t('home.ai_matching_subtitle', 'AI 매칭으로 완벽한 일자리를 찾아드립니다')}
                     </Text>
                 </View>
             </LinearGradient>
@@ -95,20 +95,20 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
             >
                 <View className="items-center">
                     <Text className="text-white text-xl font-bold text-center mt-2">
-                        🚀 적합도 90% 돌파하기
+                        {t('home.break_90_title', '🚀 적합도 90% 돌파하기')}
                     </Text>
                     <Text className="text-white text-sm text-center mt-2 opacity-90">
-                        프로필 완성도를 높이고
+                        {t('home.improve_profile_line1', '프로필 완성도를 높이고')}
                     </Text>
                     <Text className="text-white text-sm text-center opacity-90">
-                        즉시 면접의 기회를 잡으세요!
+                        {t('home.improve_profile_line2', '즉시 면접의 기회를 잡으세요!')}
                     </Text>
                     <TouchableOpacity
                         onPress={() => router.push('/(pages)/(user)/info')}
                         className="bg-white rounded-full px-6 py-3 mt-4"
                     >
                         <Text className="text-emerald-600 font-bold text-center">
-                            프로필 업그레이드
+                            {t('home.upgrade_profile_button', '프로필 업그레이드')}
                         </Text>
                     </TouchableOpacity>
                 </View>

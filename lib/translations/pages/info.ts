@@ -423,5 +423,33 @@ export const infoTranslations: TranslationData = {
         ky: 'Каалаган жумуш күндөрү',
         ha: 'Ranakun Aiki da ake So',
         mn: 'Хүссэн ажлын өдрүүд'
+    },
+    'info.complete_profile_3min': {
+        en: '⏰ Complete your profile in 3 minutes!',
+        ja: '⏰ 3分でプロフィール完成！',
+        zh: '⏰ 3分钟完成个人资料！',
+        vi: '⏰ Hoàn thành hồ sơ trong 3 phút!',
+        hi: '⏰ 3 मिनट में अपनी प्रोफ़ाइल पूरी करें!',
+        si: '⏰ මිනිත්තු 3 කින් ඔබේ පැතිකඩ සම්පූර්ණ කරන්න!',
+        ar: '⏰ أكمل ملفك الشخصي في 3 دقائق!',
+        tr: '⏰ Profilinizi 3 dakikada tamamlayın!',
+        my: '⏰ မိနစ် ၃ အတွင်း သင့်ပရိုဖိုင်ကို အပြီးသတ်ပါ!',
+        ky: '⏰ Профилиңизди 3 мүнөттө толтуруңуз!',
+        ha: '⏰ Kammala bayanan ku cikin mintuna 3!',
+        mn: '⏰ 3 минутанд профайлаа бөглө!'
+    },
+    'info.suitability_90_auto_interview': {
+        en: 'If suitability exceeds 90%, interview will be automatically confirmed!',
+        ja: '適合度90%を超えると、面接が自動的に確定されます！',
+        zh: '适合度超过90%，面试将自动确定！',
+        vi: 'Nếu độ phù hợp vượt quá 90%, phỏng vấn sẽ được xác nhận tự động!',
+        hi: '90% से अधिक उपयुक्तता पर, साक्षात्कार स्वचालित रूप से निर्धारित हो जाएगा!',
+        si: '90% ට වඩා ගැලපීම ඇත්නම්, සම්මුඛ පරීක්ෂණය ස්වයංක්රීයව තහවුරු වේ!',
+        ar: 'إذا تجاوزت الملاءمة 90٪، سيتم تأكيد المقابلة تلقائيًا!',
+        tr: 'Uygunluk %90ı aşarsa, görüşme otomatik olarak onaylanır!',
+        my: 'သင့်လျော်မှု 90% ကျော်ပါက အင်တာဗျူးကို အလိုအလျောက် အတည်ပြုပါမည်!',
+        ky: 'Ылайыктуулук 90% дан ашса, маектешүү автоматтык түрдө тастыкталат!',
+        ha: 'Idan dacewa ta wuce 90%, za a tabbatar da hira kai tsaye!',
+        mn: 'Тохирох байдал 90%-аас давбал ярилцлага автоматаар баталгаажна!'
     }
 }
