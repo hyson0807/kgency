@@ -493,6 +493,8 @@ export default function InterviewCalendar() {
                         selectedTimes={selectedTimes}
                         onTimeToggle={handleTimeToggle}
                         onSaveForDate={handleSaveForDate}
+                        dateTimeMap={dateTimeMap}
+                        allBookedSlots={bookedSlots}
                     />
                 )}
             </ScrollView>

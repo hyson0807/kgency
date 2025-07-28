@@ -179,6 +179,7 @@ export const TimeSlotGrid: React.FC<TimeSlotGridProps> = ({
                     })()}
                 </View>
             )}
+
         </View>
     )
 }
