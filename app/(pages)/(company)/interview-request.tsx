@@ -190,13 +190,64 @@ export default function InterviewRequest() {
         }
     }
 
+    // 전체 선택된 시간대 개수 계산 함수
+    const getTotalSelectedSlots = () => {
+        const now = new Date()
+        let totalCount = 0
+        
+        // 기존 서버 데이터의 시간대 (예약되지 않은 것만)
+        Object.entries(dateTimeMap).forEach(([date, slots]) => {
+            const dateObj = new Date(date)
+            const isToday = dateObj.toDateString() === now.toDateString()
+            
+            slots.forEach(slot => {
+                const [hour, minute] = slot.startTime.split(':')
+                const slotDateTime = new Date(date)
+                slotDateTime.setHours(parseInt(hour), parseInt(minute), 0, 0)
+                
+                // 현재 시간 이후이고 예약되지 않은 시간대만
+                const isValidTime = isToday ? slotDateTime >= now : dateObj > now
+                const isBooked = bookedSlots[date]?.includes(slot.startTime) || false
+                
+                if (isValidTime && !isBooked) {
+                    // 사용자가 제거하지 않은 시간대만 카운트
+                    const userSelection = userSelectedTimesByDate[date]
+                    if (!userSelection?.removed.includes(slot.startTime)) {
+                        totalCount++
+                    }
+                }
+            })
+        })
+        
+        // 사용자가 추가로 선택한 시간대
+        Object.entries(userSelectedTimesByDate).forEach(([date, userSelection]) => {
+            const dateObj = new Date(date)
+            const isToday = dateObj.toDateString() === now.toDateString()
+            
+            userSelection.added.forEach(time => {
+                const [hour, minute] = time.split(':')
+                const slotDateTime = new Date(date)
+                slotDateTime.setHours(parseInt(hour), parseInt(minute), 0, 0)
+                
+                const isValidTime = isToday ? slotDateTime >= now : dateObj > now
+                
+                if (isValidTime) {
+                    totalCount++
+                }
+            })
+        })
+        
+        return totalCount
+    }
+
     const handleSendInterviewRequest = async () => {
         if (!selectedJobPostingId) {
             showModal('알림', '면접 제안할 공고를 선택해주세요.')
             return
         }
 
-        if (selectedTimes.length === 0) {
+        const totalSelectedSlots = getTotalSelectedSlots()
+        if (totalSelectedSlots === 0) {
             showModal('알림', '최소 1개의 면접 시간대를 선택해주세요.')
             return
         }
@@ -666,9 +717,9 @@ export default function InterviewRequest() {
             <View className="border-t border-gray-200 p-4">
                 <TouchableOpacity
                     onPress={handleSendInterviewRequest}
-                    disabled={submitting || !selectedJobPostingId || selectedTimes.length === 0 || !interviewLocation.trim()}
+                    disabled={submitting || !selectedJobPostingId || getTotalSelectedSlots() === 0 || !interviewLocation.trim()}
                     className={`py-4 rounded-xl ${
-                        submitting || !selectedJobPostingId || selectedTimes.length === 0 || !interviewLocation.trim()
+                        submitting || !selectedJobPostingId || getTotalSelectedSlots() === 0 || !interviewLocation.trim()
                             ? 'bg-gray-300'
                             : 'bg-blue-500'
                     }`}

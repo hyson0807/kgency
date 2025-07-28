@@ -24,14 +24,15 @@ const Applications = () => {
         fetchApplications
     } = useApplications({ user, activeFilter })
 
-    // 화면에 포커스될 때마다 데이터 새로고침
-    // 중복 호출 방지를 위해 주석 처리
-    // useApplications 훅 내부에서 이미 useEffect로 호출하고 있음
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         fetchApplications()
-    //     }, [fetchApplications])
-    // )
+    // 페이지 포커스 시 데이터 새로고침 (면접 선택 후 돌아올 때 상태 업데이트)
+    useFocusEffect(
+        useCallback(() => {
+            if (user) {
+                fetchApplications()
+            }
+        }, [user, fetchApplications])
+    )
+
 
     if (loading) return <LoadingScreen />
 

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, ScrollView, ActivityIndicator, Linking } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native'
 import { Calendar, LocaleConfig } from 'react-native-calendars'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
@@ -98,6 +99,15 @@ export default function UserInterviewCalendar() {
             fetchMonthSchedules(currentMonth)
         }
     }, [user?.userId, currentMonth])
+
+    // 페이지 포커스 시 데이터 새로고침 (면접 시간 선택 후 돌아올 때 상태 업데이트)
+    useFocusEffect(
+        useCallback(() => {
+            if (user?.userId) {
+                fetchMonthSchedules(currentMonth)
+            }
+        }, [user?.userId, currentMonth])
+    )
 
     useEffect(() => {
         const daySchedules = groupedSchedules[selectedDate] || []

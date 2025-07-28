@@ -1,11 +1,12 @@
 // app/(company)/interview-calendar.tsx
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Calendar, LocaleConfig } from 'react-native-calendars'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useLocalSearchParams } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
 
 // Components
 import { InterviewScheduleTab } from '@/components/interview-calendar/InterviewScheduleTab'
@@ -102,6 +103,19 @@ export default function InterviewCalendar() {
             }
         }
     }, [user?.userId, currentMonth, activeTab])
+
+    // 페이지 포커스 시 데이터 새로고침 (면접 일정 확정 후 돌아올 때 상태 업데이트)
+    useFocusEffect(
+        useCallback(() => {
+            if (user?.userId) {
+                if (activeTab === 'schedule') {
+                    fetchMonthSchedules(currentMonth)
+                } else {
+                    fetchSlots()
+                }
+            }
+        }, [user?.userId, currentMonth, activeTab])
+    )
 
     useEffect(() => {
         // 선택된 날짜의 일정 필터링
