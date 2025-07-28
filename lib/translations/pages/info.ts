@@ -451,5 +451,19 @@ export const infoTranslations: TranslationData = {
         ky: 'Ылайыктуулук 90% дан ашса, маектешүү автоматтык түрдө тастыкталат!',
         ha: 'Idan dacewa ta wuce 90%, za a tabbatar da hira kai tsaye!',
         mn: 'Тохирох байдал 90%-аас давбал ярилцлага автоматаар баталгаажна!'
+    },
+    'info.career_boost_title': {
+        en: 'Writing your career boosts hiring chances by 15%!',
+        ja: 'あなたの経歴を書くと、採用確率が15%上がります！',
+        zh: '填写您的职业经历可将录用率提高15%！',
+        vi: 'Viết kinh nghiệm nghề nghiệp của bạn sẽ tăng cơ hội được tuyển dụng 15%!',
+        hi: 'अपना करियर लिखने से नौकरी मिलने की संभावना 15% बढ़ जाती है!',
+        si: 'ඔබේ වෘත්තීය ජීවිතය ලිවීමෙන් කම්කරු ගැනීමේ අවස්ථාව 15% ක් වැඩි වේ!',
+        ar: 'كتابة مسيرتك المهنية تزيد فرص التوظيف بنسبة 15%!',
+        tr: 'Kariyerinizi yazmanız işe alınma şansınızı %15 artırır!',
+        my: 'သင့်အသက်မွေးဝမ်းကြောင်းကို ရေးခြင်းဖြင့် အလုပ်ရရှိနိုင်ခြေ 15% တိုးလာပါသည်!',
+        ky: 'Карьераңызды жазуу жумушка орношуу мүмкүнчүлүгүн 15% өстүрөт!',
+        ha: 'Rubuta aikin ku yana kara damar samun aiki da kashi 15%!',
+        mn: 'Ажлын туршлагаа бичих нь ажилд орох боломжийг 15% нэмэгдүүлдэг!'
     }
 }

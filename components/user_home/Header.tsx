@@ -98,10 +98,7 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                         {t('home.break_90_title', '🚀 적합도 90% 돌파하기')}
                     </Text>
                     <Text className="text-white text-sm text-center mt-2 opacity-90">
-                        {t('home.improve_profile_line1', '프로필 완성도를 높이고')}
-                    </Text>
-                    <Text className="text-white text-sm text-center opacity-90">
-                        {t('home.improve_profile_line2', '즉시 면접의 기회를 잡으세요!')}
+                        {t('info.career_boost_title', '당신의 경력을 작성하면, 채용확률이 15% 올라가요!')}
                     </Text>
                     <TouchableOpacity
                         onPress={() => router.push('/(pages)/(user)/info')}

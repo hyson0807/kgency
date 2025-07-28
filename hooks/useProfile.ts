@@ -27,10 +27,10 @@ interface UserInfo {
     gender?: string;
     visa?: string;
     korean_level?: string;
-    how_long?: string;
-    experience?: string;
+    how_long?: string | null;
+    experience?: string | null;
     topic?: string;
-    experience_content?: string;
+    experience_content?: string | null;
     preferred_days?: string[];
     preferred_times?: string[];
 }

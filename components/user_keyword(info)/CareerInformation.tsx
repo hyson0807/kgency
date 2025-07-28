@@ -80,7 +80,7 @@ export const CareerInformation = ({
 
 
 
-            <Text className="text-lg font-bold mb-2 text-gray-800">{t('apply.career_info', '경력 및 정보')}</Text>
+            <Text className="text-lg font-bold mb-2 text-gray-800">{t('info.career_boost_title', '당신의 경력을 작성하면, 채용확률이 15% 올라가요!')}</Text>
 
             {/* 선택사항 안내 */}
             <View className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
