@@ -238,8 +238,8 @@ const Info = () => {
                     gender: gender,
                     visa: visa,
                     korean_level: koreanLevel,
-                    how_long: howLong || undefined,
-                    experience: experience || undefined,
+                    how_long: howLong,
+                    experience: experience,
                     experience_content: experienceContent,
                     preferred_days: selectedDays,
                     preferred_times: selectedTimes
@@ -322,20 +322,12 @@ const Info = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
                 >
-                    {/* 프로필 완성 안내 섹션 */}
-                    <View className="mx-4 mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-100">
-                        <View className="items-center">
-                            <Text className="text-blue-600 text-xl font-bold text-center mb-2">
-                                {t('info.complete_profile_3min', '⏰ 3분만에 프로필 완성!')}
-                            </Text>
-                            <Text className="text-blue-700 text-base font-medium text-center leading-relaxed">
-                                {t('info.suitability_90_auto_interview', '적합도 90% 넘으면, 면접이 자동으로 확정되요!')}
-                            </Text>
-                        </View>
-                    </View>
+
 
                     {/* 경력 정보 섹션 - onboarding 완료된 사용자에게만 표시 */}
                     {profile?.onboarding_completed && (
+
+
                         <CareerInformation
                             t={t}
                             formData={{

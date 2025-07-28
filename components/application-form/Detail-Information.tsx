@@ -20,8 +20,10 @@ interface DetailInformationProps {
         setHowLong: (value: string | null) => void;
         toggleDay: (day: string) => void;
         setDaysNegotiable: (value: boolean) => void;
+        setSelectedDays: (days: string[]) => void;
         toggleTime: (time: string) => void;
         setTimesNegotiable: (value: boolean) => void;
+        setSelectedTimes: (times: string[]) => void;
         setExperience: (value: string | null) => void;
         setExperienceContent: (value: string) => void;
         setKoreanLevel: (value: string | null) => void;
@@ -54,8 +56,10 @@ export const DetailInfromation = ({
         setHowLong,
         toggleDay,
         setDaysNegotiable,
+        setSelectedDays,
         toggleTime,
         setTimesNegotiable,
+        setSelectedTimes,
         setExperience,
         setExperienceContent,
         setKoreanLevel,
@@ -113,7 +117,7 @@ export const DetailInfromation = ({
                     {workPeriodOptions.map((period) => (
                         <TouchableOpacity
                             key={period.value}
-                            onPress={() => setHowLong(period.value)}
+                            onPress={() => setHowLong(howLong === period.value ? null : period.value)}
                             className={`px-4 py-2 rounded-lg border ${
                                 howLong === period.value
                                     ? 'bg-blue-500 border-blue-500'
@@ -137,18 +141,10 @@ export const DetailInfromation = ({
                             const allDays = dayOptions.map(d => d.value);
                             if (selectedDays.length === allDays.length) {
                                 // 모두 선택된 상태면 모두 해제
-                                allDays.forEach(day => {
-                                    if (selectedDays.includes(day)) {
-                                        toggleDay(day);
-                                    }
-                                });
+                                setSelectedDays([]);
                             } else {
                                 // 하나라도 선택 안된 상태면 모두 선택
-                                allDays.forEach(day => {
-                                    if (!selectedDays.includes(day)) {
-                                        toggleDay(day);
-                                    }
-                                });
+                                setSelectedDays(allDays);
                             }
                         }}
                         className={`px-3 py-1 rounded-lg border ${
@@ -190,18 +186,10 @@ export const DetailInfromation = ({
                             const allTimes = timeOptions.map(t => t.value);
                             if (selectedTimes.length === allTimes.length) {
                                 // 모두 선택된 상태면 모두 해제
-                                allTimes.forEach(time => {
-                                    if (selectedTimes.includes(time)) {
-                                        toggleTime(time);
-                                    }
-                                });
+                                setSelectedTimes([]);
                             } else {
                                 // 하나라도 선택 안된 상태면 모두 선택
-                                allTimes.forEach(time => {
-                                    if (!selectedTimes.includes(time)) {
-                                        toggleTime(time);
-                                    }
-                                });
+                                setSelectedTimes(allTimes);
                             }
                         }}
                         className={`px-3 py-1 rounded-lg border ${
@@ -241,7 +229,7 @@ export const DetailInfromation = ({
                     {experienceOptions.map((exp) => (
                         <TouchableOpacity
                             key={exp.value}
-                            onPress={() => setExperience(exp.value)}
+                            onPress={() => setExperience(experience === exp.value ? null : exp.value)}
                             className={`px-4 py-2 rounded-lg border ${
                                 experience === exp.value
                                     ? 'bg-blue-500 border-blue-500'

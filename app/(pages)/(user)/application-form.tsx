@@ -153,8 +153,11 @@ export default function ApplicationForm() {
             if (visa) userInfoData.visa = visa;
             if (koreanLevel) userInfoData.korean_level = koreanLevel;
             if (topic) userInfoData.topic = topic;
-            if (howLong) userInfoData.how_long = howLong;
-            if (experience) userInfoData.experience = experience;
+            
+            // how_long과 experience는 null 값도 저장
+            userInfoData.how_long = howLong;
+            userInfoData.experience = experience;
+            
             if (experienceContent) userInfoData.experience_content = experienceContent;
 
             // 프로필 업데이트
@@ -257,8 +260,10 @@ export default function ApplicationForm() {
                             setHowLong,
                             toggleDay,
                             setDaysNegotiable,
+                            setSelectedDays,
                             toggleTime,
                             setTimesNegotiable,
+                            setSelectedTimes,
                             setExperience,
                             setExperienceContent,
                             setKoreanLevel,
