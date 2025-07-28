@@ -54,6 +54,10 @@ export default function ApplicationForm() {
                 setHowLong(profile.user_info.how_long || null)
                 setExperience(profile.user_info.experience || null)
                 setExperienceContent(profile.user_info.experience_content || '')
+                
+                // 희망 근무일/시간 정보 로드
+                setSelectedDays(profile.user_info.preferred_days || [])
+                setSelectedTimes(profile.user_info.preferred_times || [])
             }
         }
     }, [profile])

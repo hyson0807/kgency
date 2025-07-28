@@ -31,6 +31,8 @@ interface UserInfo {
     experience?: string;
     topic?: string;
     experience_content?: string;
+    preferred_days?: string[];
+    preferred_times?: string[];
 }
 
 

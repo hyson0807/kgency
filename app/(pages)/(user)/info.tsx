@@ -13,7 +13,7 @@ import { useTranslation } from "@/contexts/TranslationContext"
 import {Profile} from "@/components/user_keyword(info)/Profile";
 import {LocationSelector} from "@/components/user_keyword(info)/Location";
 import {Country} from "@/components/user_keyword(info)/Country";
-import {WorkdaySelector} from "@/components/user_keyword(info)/WorkdaySelector";
+import {CareerInformation} from "@/components/user_keyword(info)/CareerInformation";
 
 const Info = () => {
     const {profile, updateProfile} = useProfile();
@@ -22,7 +22,6 @@ const Info = () => {
     const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
     const [selectedJobs, setSelectedJobs] = useState<number[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<number[]>([]);
-    const [selectedWorkDays, setSelectedWorkDays] = useState<number[]>([]);
     const { keywords, user_keywords, loading, fetchKeywords, updateKeywords } = useUserKeywords();
     const { showModal, ModalComponent } = useModal();
     const { t } = useTranslation()
@@ -34,23 +33,19 @@ const Info = () => {
     const [visa, setVisa] = useState<string | null>(null);
     const [koreanLevel, setKoreanLevel] = useState<string | null>(null);
 
+    // 경력 정보 상태
+    const [howLong, setHowLong] = useState<string | null>(null);
+    const [selectedDays, setSelectedDays] = useState<string[]>([]);
+    const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+    const [experience, setExperience] = useState<string | null>(null);
+    const [experienceContent, setExperienceContent] = useState('');
+
 
 
     const moveableKeyword = keywords.find(k => k.category === '지역이동');
     const jobKeywords = keywords.filter(k => k.category === '직종');
     const conditionKeywords = keywords.filter(k => k.category === '근무조건');
 
-    // 근무요일 정렬 함수
-    const sortWorkDays = (a: any, b: any) => {
-        const dayOrder = ['월', '화', '수', '목', '금', '토', '일'];
-        const aIndex = dayOrder.indexOf(a.keyword);
-        const bIndex = dayOrder.indexOf(b.keyword);
-        return aIndex - bIndex;
-    };
-
-    const workDayKeywords = keywords
-        .filter(k => k.category === '근무요일')
-        .sort(sortWorkDays);
 
     // 프로필 정보 로드
     useEffect(() => {
@@ -62,6 +57,15 @@ const Info = () => {
                 setGender(profile.user_info.gender || null);
                 setVisa(profile.user_info.visa || null);
                 setKoreanLevel(profile.user_info.korean_level || null);
+                
+                // 경력 정보 로드
+                setHowLong(profile.user_info.how_long || null);
+                setExperience(profile.user_info.experience || null);
+                setExperienceContent(profile.user_info.experience_content || '');
+                
+                // 희망 근무일/시간 정보 로드
+                setSelectedDays(profile.user_info.preferred_days || []);
+                setSelectedTimes(profile.user_info.preferred_times || []);
             }
         }
     }, [profile]);
@@ -108,11 +112,6 @@ const Info = () => {
                 .map(uk => uk.keyword_id);
             setSelectedConditions(existingConditions);
 
-            // 근무요일
-            const existingWorkDays = user_keywords
-                .filter(uk => uk.keyword && uk.keyword.category === '근무요일')
-                .map(uk => uk.keyword_id);
-            setSelectedWorkDays(existingWorkDays);
         }
     }, [user_keywords, moveableKeyword]);
 
@@ -159,6 +158,16 @@ const Info = () => {
         return koreanLevelKeyword?.id || null;
     };
 
+    // 희망근무요일을 키워드 ID로 변환
+    const getPreferredDayKeywordIds = (preferredDays: string[]): number[] => {
+        return preferredDays.map(day => {
+            const dayKeyword = keywords.find(k =>
+                k.category === '근무요일' && k.keyword === day
+            );
+            return dayKeyword?.id;
+        }).filter((id): id is number => id !== undefined);
+    };
+
     // 직종 선택/해제 토글
     const toggleJob = (jobId: number) => {
         setSelectedJobs(prev =>
@@ -177,12 +186,21 @@ const Info = () => {
         );
     };
 
-    // 근무요일 선택/해제 토글
-    const toggleWorkDay = (workDayId: number) => {
-        setSelectedWorkDays(prev =>
-            prev.includes(workDayId)
-                ? prev.filter(id => id !== workDayId)
-                : [...prev, workDayId]
+
+    // 경력 정보 핸들러들
+    const toggleDay = (day: string) => {
+        setSelectedDays(prev =>
+            prev.includes(day)
+                ? prev.filter(d => d !== day)
+                : [...prev, day]
+        );
+    };
+
+    const toggleTime = (time: string) => {
+        setSelectedTimes(prev =>
+            prev.includes(time)
+                ? prev.filter(t => t !== time)
+                : [...prev, time]
         );
     };
 
@@ -219,7 +237,12 @@ const Info = () => {
                     age: ageNum,
                     gender: gender,
                     visa: visa,
-                    korean_level: koreanLevel
+                    korean_level: koreanLevel,
+                    how_long: howLong || undefined,
+                    experience: experience || undefined,
+                    experience_content: experienceContent,
+                    preferred_days: selectedDays,
+                    preferred_times: selectedTimes
                 }
             });
 
@@ -233,6 +256,7 @@ const Info = () => {
             const genderKeywordId = getGenderKeywordId(gender);
             const visaKeywordId = getVisaKeywordId(visa);
             const koreanLevelKeywordId = getKoreanLevelKeywordId(koreanLevel);
+            const preferredDayKeywordIds = getPreferredDayKeywordIds(selectedDays);
 
             // 키워드 ID가 없는 경우 경고
             if (!ageKeywordId) {
@@ -254,7 +278,7 @@ const Info = () => {
                 selectedCountry,
                 ...selectedJobs,
                 ...selectedConditions,
-                ...selectedWorkDays,  // 근무요일 추가
+                ...preferredDayKeywordIds,  // 경력정보에서 입력받은 희망근무요일
                 ageKeywordId,
                 genderKeywordId,
                 visaKeywordId,
@@ -310,6 +334,29 @@ const Info = () => {
                         </View>
                     </View>
 
+                    {/* 경력 정보 섹션 - onboarding 완료된 사용자에게만 표시 */}
+                    {profile?.onboarding_completed && (
+                        <CareerInformation
+                            t={t}
+                            formData={{
+                                howLong,
+                                selectedDays,
+                                selectedTimes,
+                                experience,
+                                experienceContent
+                            }}
+                            handlers={{
+                                setHowLong,
+                                toggleDay,
+                                setSelectedDays,
+                                toggleTime,
+                                setSelectedTimes,
+                                setExperience,
+                                setExperienceContent
+                            }}
+                        />
+                    )}
+
                     {/* 프로필 정보 섹션 */}
                     <Profile
                         formData={{
@@ -336,8 +383,6 @@ const Info = () => {
                         onMoveableToggle={setSelectedMoveable}
                     />
 
-                    {/* 희망근무 요일 섹션 */}
-                    <WorkdaySelector workDayKeywords={workDayKeywords} selectedWorkDays={selectedWorkDays} toggleWorkDay={toggleWorkDay} />
 
                     {/* 국가 선택 섹션 */}
                     <Country keywords={keywords} selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} />

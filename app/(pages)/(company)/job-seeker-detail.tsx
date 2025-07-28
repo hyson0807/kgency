@@ -16,6 +16,11 @@ interface UserInfo {
     gender?: string
     visa?: string
     korean_level?: string
+    how_long?: string
+    experience?: string
+    experience_content?: string
+    preferred_days?: string[]
+    preferred_times?: string[]
 }
 
 interface UserKeyword {
@@ -88,7 +93,12 @@ export default function JobSeekerDetail() {
                         age,
                         gender,
                         visa,
-                        korean_level
+                        korean_level,
+                        how_long,
+                        experience,
+                        experience_content,
+                        preferred_days,
+                        preferred_times
                     ),
                     user_keywords:user_keyword (
                         keyword_id,
@@ -139,15 +149,6 @@ export default function JobSeekerDetail() {
                                     grouped.jobs.push(uk.keyword.keyword)
                                     break
                                 case '근무조건':
-                                    grouped.conditions.push(uk.keyword.keyword)
-                                    break
-                                case '성별':
-                                    grouped.conditions.push(uk.keyword.keyword)
-                                    break
-                                case '나이대':
-                                    grouped.conditions.push(uk.keyword.keyword)
-                                    break
-                                case '비자':
                                     grouped.conditions.push(uk.keyword.keyword)
                                     break
                                 case '근무요일':

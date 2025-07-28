@@ -79,19 +79,6 @@ export const UserKeywords = ({
                 </View>
             )}
 
-            {/* 희망근무요일 */}
-            {groupedKeywords.workDays && groupedKeywords.workDays.length > 0 && (
-                <View className="p-6 border-b border-gray-100">
-                    <Text className="text-lg font-semibold mb-4">희망근무요일</Text>
-                    <View className="flex-row flex-wrap gap-2">
-                        {groupedKeywords.workDays.map((workDay, index) => (
-                            <View key={index} className="bg-indigo-100 px-3 py-2 rounded-full">
-                                <Text className="text-indigo-700 font-medium">{workDay}</Text>
-                            </View>
-                        ))}
-                    </View>
-                </View>
-            )}
 
             {/* 한국어 수준 */}
             {groupedKeywords.koreanLevel && groupedKeywords.koreanLevel.length > 0 && (

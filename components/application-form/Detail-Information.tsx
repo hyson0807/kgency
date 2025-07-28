@@ -133,15 +133,32 @@ export const DetailInfromation = ({
                 <View className="flex-row items-center justify-start gap-4 mb-2">
                     <Text className="text-gray-700">{t('apply.preferred_days', '희망 근무 요일')}</Text>
                     <TouchableOpacity
-                        onPress={() => setDaysNegotiable(!daysNegotiable)}
+                        onPress={() => {
+                            const allDays = dayOptions.map(d => d.value);
+                            if (selectedDays.length === allDays.length) {
+                                // 모두 선택된 상태면 모두 해제
+                                allDays.forEach(day => {
+                                    if (selectedDays.includes(day)) {
+                                        toggleDay(day);
+                                    }
+                                });
+                            } else {
+                                // 하나라도 선택 안된 상태면 모두 선택
+                                allDays.forEach(day => {
+                                    if (!selectedDays.includes(day)) {
+                                        toggleDay(day);
+                                    }
+                                });
+                            }
+                        }}
                         className={`px-3 py-1 rounded-lg border ${
-                            daysNegotiable
+                            selectedDays.length === dayOptions.length
                                 ? 'bg-blue-500 border-blue-500'
                                 : 'bg-white border-gray-300'
                         }`}
                     >
                         <Text className={`text-sm ${
-                            daysNegotiable ? 'text-white' : 'text-gray-700'
+                            selectedDays.length === dayOptions.length ? 'text-white' : 'text-gray-700'
                         }`}>{t('apply.negotiable', '협의가능')}</Text>
                     </TouchableOpacity>
                 </View>
@@ -169,15 +186,32 @@ export const DetailInfromation = ({
                 <View className="flex-row items-center justify-start gap-4 mb-2">
                     <Text className="text-gray-700">{t('apply.preferred_time', '희망 시간대')}</Text>
                     <TouchableOpacity
-                        onPress={() => setTimesNegotiable(!timesNegotiable)}
+                        onPress={() => {
+                            const allTimes = timeOptions.map(t => t.value);
+                            if (selectedTimes.length === allTimes.length) {
+                                // 모두 선택된 상태면 모두 해제
+                                allTimes.forEach(time => {
+                                    if (selectedTimes.includes(time)) {
+                                        toggleTime(time);
+                                    }
+                                });
+                            } else {
+                                // 하나라도 선택 안된 상태면 모두 선택
+                                allTimes.forEach(time => {
+                                    if (!selectedTimes.includes(time)) {
+                                        toggleTime(time);
+                                    }
+                                });
+                            }
+                        }}
                         className={`px-3 py-1 rounded-lg border ${
-                            timesNegotiable
+                            selectedTimes.length === timeOptions.length
                                 ? 'bg-blue-500 border-blue-500'
                                 : 'bg-white border-gray-300'
                         }`}
                     >
                         <Text className={`text-sm ${
-                            timesNegotiable ? 'text-white' : 'text-gray-700'
+                            selectedTimes.length === timeOptions.length ? 'text-white' : 'text-gray-700'
                         }`}>{t('apply.negotiable', '협의가능')}</Text>
                     </TouchableOpacity>
                 </View>
