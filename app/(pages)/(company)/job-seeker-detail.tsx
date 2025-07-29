@@ -5,11 +5,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import {router, useLocalSearchParams} from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
-import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
 import LoadingScreen from "@/components/common/LoadingScreen";
 import {Info} from "@/components/job-seeker-detail/Info";
 import {UserKeywords} from "@/components/job-seeker-detail/UserKeywords";
+import { api } from '@/lib/api';
 
 interface UserInfo {
     age?: number
@@ -85,85 +85,69 @@ export default function JobSeekerDetail() {
 
     const fetchJobSeekerDetail = async () => {
         try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select(`
-                    *,
-                    user_info!user_info_user_id_fkey (
-                        age,
-                        gender,
-                        visa,
-                        korean_level,
-                        how_long,
-                        experience,
-                        experience_content,
-                        preferred_days,
-                        preferred_times
-                    ),
-                    user_keywords:user_keyword (
-                        keyword_id,
-                        keyword:keyword_id (
-                            id,
-                            keyword,
-                            category
-                        )
-                    )
-                `)
-                .eq('id', userId)
-                .single()
+            const response = await api('GET', `/api/users/${userId}/details`);
+            
+            if (!response.success) {
+                throw new Error(response.error);
+            }
 
-            if (error) throw error
+            const { profile, userInfo, keywords } = response.data;
+            
+            // 데이터 구조 재구성
+            const jobSeekerData: JobSeekerDetail = {
+                ...profile,
+                user_info: userInfo,
+                user_keywords: keywords.map((k: any) => ({
+                    keyword_id: k.id,
+                    keyword: k
+                }))
+            };
+            
+            setJobSeeker(jobSeekerData);
 
-            if (data) {
-                setJobSeeker(data as JobSeekerDetail)
+            // 키워드 분류
+            if (keywords && keywords.length > 0) {
+                const grouped: GroupedKeywords = {
+                    location: [],
+                    moveable: false,
+                    country: [],
+                    jobs: [],
+                    conditions: [],
+                    gender: [],
+                    age: [],
+                    visa: [],
+                    workDays: [],
+                    koreanLevel: []
+                }
 
-                // 키워드 분류
-                if (data.user_keywords) {
-                    const keywords = data.user_keywords as UserKeyword[]
-                    const grouped: GroupedKeywords = {
-                        location: [],
-                        moveable: false,
-                        country: [],
-                        jobs: [],
-                        conditions: [],
-                        gender: [],
-                        age: [],
-                        visa: [],
-                        workDays: [],
-                        koreanLevel: []
+                keywords.forEach((keyword: any) => {
+                    switch (keyword.category) {
+                        case '지역':
+                            grouped.location.push(keyword.keyword)
+                            break
+                        case '지역이동':
+                            grouped.moveable = true
+                            break
+                        case '국가':
+                            grouped.country.push(keyword.keyword)
+                            break
+                        case '직종':
+                            grouped.jobs.push(keyword.keyword)
+                            break
+                        case '근무조건':
+                            grouped.conditions.push(keyword.keyword)
+                            break
+                        case '근무요일':
+                            grouped.workDays!.push(keyword.keyword)
+                            break
+                        case '한국어수준':
+                            grouped.koreanLevel!.push(keyword.keyword)
+                            break
                     }
-
-                    keywords.forEach(uk => {
-                        if (uk.keyword) {
-                            switch (uk.keyword.category) {
-                                case '지역':
-                                    grouped.location.push(uk.keyword.keyword)
-                                    break
-                                case '지역이동':
-                                    grouped.moveable = true
-                                    break
-                                case '국가':
-                                    grouped.country.push(uk.keyword.keyword)
-                                    break
-                                case '직종':
-                                    grouped.jobs.push(uk.keyword.keyword)
-                                    break
-                                case '근무조건':
-                                    grouped.conditions.push(uk.keyword.keyword)
-                                    break
-                                case '근무요일':
-                                    grouped.workDays!.push(uk.keyword.keyword)
-                                    break
-                                case '한국어수준':
-                                    grouped.koreanLevel!.push(uk.keyword.keyword)
-                                    break
-                            }
-                        }
-                    })
+                })
 
                     setGroupedKeywords(grouped)
                 }
-            }
         } catch (error) {
             console.error('구직자 정보 조회 실패:', error)
             showModal('오류', '구직자 정보를 불러오는데 실패했습니다.', 'warning')

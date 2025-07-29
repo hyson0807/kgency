@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
-import { supabase } from '@/lib/supabase'
 import { useTranslation } from '@/contexts/TranslationContext'
 import Back from '@/components/back'
 import { Ionicons } from '@expo/vector-icons'
+import { api } from '@/lib/api'
 
 interface InterviewDetails {
     id: string
@@ -27,29 +27,13 @@ export default function InterviewDetails() {
 
     const loadInterviewDetails = async () => {
         try {
-            const { data, error } = await supabase
-                .from('confirmed_interviews')
-                .select(`
-                    id,
-                    interview_location,
-                    interview_time_slots (
-                        interview_date,
-                        start_time,
-                        end_time
-                    ),
-                    job_postings (
-                        title,
-                        company:profiles!company_id (
-                            name,
-                            phone_number
-                        )
-                    )
-                `)
-                .eq('application_id', applicationId)
-                .single()
-
-            if (error) throw error
-            setInterview(data)
+            const response = await api('GET', `/api/interview-proposals/confirmed/${applicationId}`);
+            
+            if (!response.success) {
+                throw new Error(response.error);
+            }
+            
+            setInterview(response.data)
         } catch (error) {
             console.error('Error loading interview details:', error)
         } finally {

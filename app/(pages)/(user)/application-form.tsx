@@ -4,11 +4,11 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from 'expo-router'
 import Back from '@/components/back'
 import { useProfile } from '@/hooks/useProfile'
-import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext";
 import {PersonalInformation} from "@/components/application-form/Personal-Information";
 import {DetailInfromation} from "@/components/application-form/Detail-Information";
+import { api } from '@/lib/api';
 
 
 export default function ApplicationForm() {
@@ -67,18 +67,11 @@ export default function ApplicationForm() {
         const checkExistingApplication = async () => {
             if (profile?.id && jobPostingId) {
                 try {
-                    const { data, error } = await supabase
-                        .from('applications')
-                        .select('id')
-                        .eq('user_id', profile.id)
-                        .eq('job_posting_id', jobPostingId)
-                        .maybeSingle();
+                    const response = await api('GET', `/api/applications/check-duplicate?jobPostingId=${jobPostingId}`);
 
-                    if (error && error.code !== 'PGRST116') {
-                        console.error('지원 내역 확인 오류:', error);
+                    if (response.success) {
+                        setHasApplied(response.isDuplicate);
                     }
-
-                    setHasApplied(!!data);
                 } catch (error) {
                     console.error('지원 내역 확인 실패:', error);
                 }

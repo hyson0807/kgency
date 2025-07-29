@@ -5,7 +5,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
-import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
 import { ActivityIndicator } from 'react-native'
 import {api} from "@/lib/api";
@@ -38,10 +37,7 @@ export default function ViewResume() {
         if (!messageId) return
 
         try {
-            await supabase
-                .from('messages')
-                .update({ is_read: true })
-                .eq('id', messageId)
+            await api('PUT', `/api/messages/${messageId}/read`);
         } catch (error) {
             console.error('읽음 표시 실패:', error)
         }

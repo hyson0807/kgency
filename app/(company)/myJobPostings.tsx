@@ -3,13 +3,13 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { router } from 'expo-router'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
-import { supabase } from '@/lib/supabase'
 import { useModal } from '@/hooks/useModal'
 import LoadingScreen from "@/components/common/LoadingScreen";
 import {PostingCard} from "@/components/myJobPostings(company)/PostingCard";
 import {FloatingButton} from "@/components/myJobPostings(company)/FloatingButton";
 import {Empty} from "@/components/myJobPostings(company)/Empty";
 import {Ionicons} from "@expo/vector-icons";
+import { api } from '@/lib/api';
 
 interface MyJobPostings {
     id: string
@@ -57,27 +57,13 @@ const JobPosting = () => {
         if (!user) return
 
         try {
-            const { data, error } = await supabase
-                .from('job_postings')
-                .select(`
-                *,
-                applications (
-                    id
-                ),
-                job_posting_keywords:job_posting_keyword (
-                    keyword:keyword_id (
-                        keyword,
-                        category
-                    )
-                )
-            `)
-                .eq('company_id', user.userId)
-                .is('deleted_at', null)
-                .order('created_at', { ascending: false })
-
-            if (error) throw error
-
-            setPostings(data || [])
+            const response = await api('GET', '/api/job-postings/company');
+            
+            if (response.success) {
+                setPostings(response.data || [])
+            } else {
+                console.error('공고 조회 실패:', response.error)
+            }
         } catch (error) {
             console.error('공고 조회 실패:', error)
         } finally {
@@ -93,21 +79,20 @@ const JobPosting = () => {
 
     const handleToggleActive = async (postingId: string, currentStatus: boolean) => {
         try {
-            const { error } = await supabase
-                .from('job_postings')
-                .update({ is_active: !currentStatus })
-                .eq('id', postingId)
-
-            if (error) throw error
-
-            // 로컬 상태 업데이트
-            setPostings(prev =>
-                prev.map(posting =>
-                    posting.id === postingId
-                        ? { ...posting, is_active: !currentStatus }
-                        : posting
+            const response = await api('PATCH', `/api/job-postings/${postingId}/toggle-active`);
+            
+            if (response.success) {
+                // 로컬 상태 업데이트
+                setPostings(prev =>
+                    prev.map(posting =>
+                        posting.id === postingId
+                            ? { ...posting, is_active: !currentStatus }
+                            : posting
+                    )
                 )
-            )
+            } else {
+                console.error('상태 변경 실패:', response.error)
+            }
         } catch (error) {
             console.error('상태 변경 실패:', error)
         }
@@ -128,91 +113,20 @@ const JobPosting = () => {
 
     const confirmDelete = async (postingId: string) => {
         try {
-            // 1. 권한 확인
-            const { data: posting, error: checkError } = await supabase
-                .from('job_postings')
-                .select('company_id')
-                .eq('id', postingId)
-                .single()
-
-            if (checkError || !posting || posting.company_id !== user?.userId) {
-                console.error('삭제 권한이 없습니다')
-                return
+            const response = await api('DELETE', `/api/job-postings/${postingId}`);
+            
+            if (response.success) {
+                // 로컬 상태 업데이트
+                setPostings(prev => prev.filter(p => p.id !== postingId))
+            } else {
+                console.error('삭제 처리 실패:', response.error)
+                showModal(
+                    '오류',
+                    '공고 삭제 중 문제가 발생했습니다.',
+                    'warning',
+                    hideModal
+                )
             }
-
-            // 2. 관련 applications의 status를 'reviewed'로 변경
-            const { error: appUpdateError } = await supabase
-                .from('applications')
-                .update({
-                    status: 'reviewed',
-                    reviewed_at: new Date().toISOString()
-                })
-                .eq('job_posting_id', postingId)
-
-            if (appUpdateError) {
-                console.error('지원 내역 상태 변경 실패:', appUpdateError)
-            }
-
-            // 3. 관련 applications도 soft delete 처리
-            const { error: appDeleteError } = await supabase
-                .from('applications')
-                .update({ deleted_at: new Date().toISOString() })
-                .eq('job_posting_id', postingId)
-
-            if (appDeleteError) {
-                console.error('지원 내역 삭제 처리 실패:', appDeleteError)
-            }
-
-            // 4. 메시지 soft delete 처리
-            const { data: applications } = await supabase
-                .from('applications')
-                .select('message_id')
-                .eq('job_posting_id', postingId)
-                .not('message_id', 'is', null)
-
-            if (applications && applications.length > 0) {
-                const messageIds = applications.map(app => app.message_id).filter(Boolean)
-
-                await supabase
-                    .from('messages')
-                    .update({ is_deleted: true })
-                    .in('id', messageIds)
-            }
-
-            // 5. interview_proposals 삭제 처리
-            const { data: relatedApplications } = await supabase
-                .from('applications')
-                .select('id')
-                .eq('job_posting_id', postingId)
-
-            if (relatedApplications && relatedApplications.length > 0) {
-                const applicationIds = relatedApplications.map(app => app.id)
-                
-                // interview_proposals 테이블에서 해당 application들의 레코드 삭제
-                const { error: proposalDeleteError } = await supabase
-                    .from('interview_proposals')
-                    .delete()
-                    .in('application_id', applicationIds)
-
-                if (proposalDeleteError) {
-                    console.error('면접 제안 삭제 실패:', proposalDeleteError)
-                }
-            }
-
-            // 6. 공고 soft delete 처리
-            const { error: deleteError } = await supabase
-                .from('job_postings')
-                .update({
-                    is_active: false,
-                    deleted_at: new Date().toISOString()
-                })
-                .eq('id', postingId)
-
-            if (deleteError) throw deleteError
-
-            // 7. 로컬 상태 업데이트
-            setPostings(prev => prev.filter(p => p.id !== postingId))
-
         } catch (error) {
             console.error('삭제 처리 실패:', error)
             showModal(

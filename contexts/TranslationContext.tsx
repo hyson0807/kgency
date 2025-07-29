@@ -1,9 +1,9 @@
 // contexts/TranslationContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase } from '@/lib/supabase';
 import { translations } from '@/lib/translations';
 import { Language } from '@/lib/translations/types';
+import { api } from '@/lib/api';
 
 interface TranslationCache {
     [key: string]: string;
@@ -82,22 +82,13 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
 
     const preloadDBTranslations = async (lang: string) => {
         try {
-            const { data } = await supabase
-                .from('translations')
-                .select('*')
-                .eq('language', lang);
-
-            if (data) {
-                const cache: TranslationCache = {};
-                data.forEach(item => {
-                    const key = `${item.table_name}.${item.column_name}.${item.row_id}`;
-                    cache[key] = item.translation;
-                });
-
-                setDbCache(cache);
+            const response = await api('GET', `/api/translate/db-translations/${lang}`);
+            
+            if (response.success && response.data) {
+                setDbCache(response.data);
                 await AsyncStorage.setItem(
                     `translations_${lang}`,
-                    JSON.stringify(cache)
+                    JSON.stringify(response.data)
                 );
             }
         } catch (error) {
