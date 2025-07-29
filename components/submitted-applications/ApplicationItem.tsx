@@ -174,21 +174,30 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                     </TouchableOpacity>
                 )}
 
-                {/* 면접 확정 표시 - 면접이 확정된 경우 최우선 표시 */}
-                {item.interviewProposal && item.interviewProposal.status === 'scheduled' ? (
-                    <TouchableOpacity
-                        onPress={(e) => {
-                            e.stopPropagation()
-                            handleShowInterviewDetails()
-                        }}
-                        className="mt-2 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
-                    >
-                        <Ionicons name="checkmark-circle" size={16} color="#3b82f6" />
-                        <Text className="text-blue-600 text-sm font-medium ml-1">
-                            {t('applications.interview_confirmed', '면접 확정')}
+                {/* 면접 취소 상태 체크 - 최우선으로 표시 */}
+                {item.status === 'cancelled' ? (
+                    <View className="mt-2 flex-row items-center justify-center bg-red-50 py-2 rounded-lg">
+                        <Ionicons name="close-circle" size={16} color="#ef4444" />
+                        <Text className="text-red-600 text-sm font-medium ml-1">
+                            {t('applications.interview_cancelled', '면접 취소된 공고입니다')}
                         </Text>
-                    </TouchableOpacity>
+                    </View>
                 ) : (
+                    /* 면접 확정 표시 - 면접이 확정된 경우 최우선 표시 */
+                    item.interviewProposal && item.interviewProposal.status === 'scheduled' ? (
+                        <TouchableOpacity
+                            onPress={(e) => {
+                                e.stopPropagation()
+                                handleShowInterviewDetails()
+                            }}
+                            className="mt-2 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
+                        >
+                            <Ionicons name="checkmark-circle" size={16} color="#3b82f6" />
+                            <Text className="text-blue-600 text-sm font-medium ml-1">
+                                {t('applications.interview_confirmed', '면접 확정')}
+                            </Text>
+                        </TouchableOpacity>
+                    ) : (
                     <>
                         {/* 삭제된 공고 체크 */}
                         {item.job_posting.deleted_at !== null ? (
@@ -229,6 +238,7 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                             </>
                         )}
                     </>
+                    )
                 )}
             </TouchableOpacity>
 
