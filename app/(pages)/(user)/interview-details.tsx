@@ -7,6 +7,7 @@ import { useTranslation } from '@/contexts/TranslationContext'
 import Back from '@/components/back'
 import { Ionicons } from '@expo/vector-icons'
 import { api } from '@/lib/api'
+import { formatKoreanDate, formatTime24 } from '@/lib/dateUtils'
 
 interface InterviewDetails {
     id: string
@@ -33,6 +34,7 @@ export default function InterviewDetails() {
                 throw new Error(response.error);
             }
             
+            console.log('User interview details raw data:', response.data)
             setInterview(response.data)
         } catch (error) {
             console.error('Error loading interview details:', error)
@@ -41,15 +43,6 @@ export default function InterviewDetails() {
         }
     }
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString)
-        return date.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            weekday: 'long'
-        })
-    }
 
     const addToCalendar = () => {
         // 캘린더 추가 기능은 나중에 구현
@@ -117,10 +110,10 @@ export default function InterviewDetails() {
                         <Text className="text-sm text-gray-600 ml-2">면접 일시</Text>
                     </View>
                     <Text className="text-lg font-semibold text-blue-600">
-                        {formatDate(interview.interview_time_slots?.interview_date || interview.interview_time_slots?.[0]?.interview_date)}
+                        {formatKoreanDate(interview.interview_time_slots?.interview_date || interview.interview_time_slots?.[0]?.interview_date)}
                     </Text>
                     <Text className="text-lg text-blue-600 mt-1">
-                        {interview.interview_time_slots.start_time} - {interview.interview_time_slots.end_time}
+                        {formatTime24(interview.interview_time_slots.start_time)} - {formatTime24(interview.interview_time_slots.end_time)}
                     </Text>
                 </View>
 

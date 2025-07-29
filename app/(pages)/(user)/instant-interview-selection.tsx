@@ -8,6 +8,7 @@ import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import Back from '@/components/back'
 import { useModal } from '@/hooks/useModal'
+import { groupByDate, formatTime24 } from '@/lib/dateUtils'
 
 interface TimeSlot {
     id: string
@@ -78,17 +79,7 @@ export default function InstantInterviewSelection() {
     }
 
     const groupSlotsByDate = (slots: TimeSlot[]) => {
-        const grouped: Record<string, TimeSlot[]> = {}
-
-        slots.forEach(slot => {
-            const dateKey = new Date(slot.start_time).toDateString()
-            if (!grouped[dateKey]) {
-                grouped[dateKey] = []
-            }
-            grouped[dateKey].push(slot)
-        })
-
-        return grouped
+        return groupByDate(slots, (slot) => slot.start_time)
     }
 
     const handleSelectSlot = (slotId: string) => {
@@ -247,8 +238,8 @@ export default function InstantInterviewSelection() {
                                     </Text>
 
                                     {slots.map((slot) => {
-                                        const startTime = formatDateTime(slot.start_time).time
-                                        const endTime = formatDateTime(slot.end_time).time
+                                        const startTime = formatTime24(slot.start_time)
+                                        const endTime = formatTime24(slot.end_time)
                                         const isSelected = selectedSlotId === slot.id
 
                                         return (

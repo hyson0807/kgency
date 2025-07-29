@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useLocalSearchParams } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
+import { getLocalDateString, getLocalTimeString, groupByDate } from '@/lib/dateUtils'
 
 // Components
 import { InterviewScheduleTab } from '@/components/interview-calendar/InterviewScheduleTab'
@@ -155,8 +156,17 @@ export default function InterviewCalendar() {
             const response = await api('GET', `/api/interview-schedules/company?companyId=${user?.userId}&month=${month}`)
 
             if (response?.success) {
-                setSchedules(response.data.schedules || [])
-                setGroupedSchedules(response.data.groupedSchedules || {})
+                console.log('Raw schedules from server:', response.data.schedules)
+                console.log('Raw groupedSchedules from server:', response.data.groupedSchedules)
+                
+                // 클라이언트 측에서 직접 그룹화하여 시간대 문제 해결
+                const schedules = response.data.schedules || []
+                const clientGroupedSchedules = groupByDate(schedules, (schedule: InterviewSchedule) => schedule.interview_slot.start_time)
+                
+                console.log('Company page - grouped schedules:', clientGroupedSchedules)
+                
+                setSchedules(schedules)
+                setGroupedSchedules(clientGroupedSchedules as Record<string, InterviewSchedule[]>)
             }
         } catch (error) {
             console.error('Failed to fetch schedules:', error)
@@ -176,19 +186,12 @@ export default function InterviewCalendar() {
             const bookedSlotsMap: Record<string, string[]> = {}
 
             result.data.forEach((slot: any) => {
-                // 시간대 변환 없이 직접 문자열에서 파싱
-                const startTimeString = slot.start_time // "2025-07-31T01:00:00" 형태
-                const endTimeString = slot.end_time
-                
                 console.log('Processing slot from server:', slot.start_time, '→', slot.end_time)
                 
-                // ISO 문자열에서 직접 날짜와 시간 추출
-                const [datePart, timePart] = startTimeString.split('T')
-                const date = datePart // 날짜는 그대로 사용
-                const startTime = timePart.slice(0, 5) // 시간만 추출 (HH:MM)
-                
-                const [endDatePart, endTimePart] = endTimeString.split('T')
-                const endTime = endTimePart.slice(0, 5)
+                // 유틸리티 함수 사용하여 일관된 날짜/시간 처리
+                const date = getLocalDateString(slot.start_time)
+                const startTime = getLocalTimeString(slot.start_time)
+                const endTime = getLocalTimeString(slot.end_time)
                 
                 console.log('Parsed:', { date, startTime, endTime })
 

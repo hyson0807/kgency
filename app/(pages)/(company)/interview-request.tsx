@@ -13,6 +13,7 @@ import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 import { TimeSlotGrid } from '@/components/interview-calendar/TimeSlotGrid'
+import { getLocalDateString, getLocalTimeString } from '@/lib/dateUtils'
 
 // 한국어 캘린더 설정
 LocaleConfig.locales['ko'] = {
@@ -143,12 +144,10 @@ export default function InterviewRequest() {
                 const bookedSlotsMap: Record<string, string[]> = {}
 
                 result.data.forEach((slot: any) => {
-                    const startDateTime = new Date(slot.start_time)
-                    const date = startDateTime.toISOString().split('T')[0]
-                    const startTime = startDateTime.toTimeString().slice(0, 5)
-
-                    const endDateTime = new Date(slot.end_time)
-                    const endTime = endDateTime.toTimeString().slice(0, 5)
+                    // 유틸리티 함수 사용하여 일관된 날짜/시간 처리
+                    const date = getLocalDateString(slot.start_time)
+                    const startTime = getLocalTimeString(slot.start_time)
+                    const endTime = getLocalTimeString(slot.end_time)
 
                     const timeSlot: TimeSlot = {
                         date: date,

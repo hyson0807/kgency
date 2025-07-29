@@ -24,6 +24,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from '@/contexts/TranslationContext'
 import { getCalendarConfig } from '@/lib/translations/locales'
+import { groupByDate } from '@/lib/dateUtils'
 
 // Date-fns locale mapping
 const dateFnsLocaleMap: Record<string, any> = {
@@ -121,7 +122,20 @@ export default function UserInterviewCalendar() {
             const response = await api('GET', `/api/interview-schedules/user/calendar?userId=${user?.userId}&month=${month}`)
 
             if (response?.success) {
-                setGroupedSchedules(response.data.groupedSchedules || {})
+                console.log('Raw user schedules from server:', response.data)
+                
+                // 서버에서 받은 스케줄 배열이 있다면 클라이언트에서 직접 그룹화
+                if (response.data.schedules && Array.isArray(response.data.schedules)) {
+                    const clientGroupedSchedules = groupByDate(
+                        response.data.schedules as InterviewSchedule[], 
+                        (schedule: InterviewSchedule) => schedule.interview_slot.start_time
+                    )
+                    console.log('User page - client grouped schedules:', clientGroupedSchedules)
+                    setGroupedSchedules(clientGroupedSchedules as Record<string, InterviewSchedule[]>)
+                } else {
+                    // fallback: 서버에서 이미 그룹화된 데이터 사용
+                    setGroupedSchedules(response.data.groupedSchedules || {})
+                }
             }
         } catch (error) {
             console.error('Failed to fetch schedules:', error)

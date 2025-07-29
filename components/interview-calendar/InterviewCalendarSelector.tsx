@@ -459,7 +459,7 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
                     }`}
                 >
                     <Text className="text-center text-white font-semibold">
-                        면접 제안 확정123
+                        면접 제안
                     </Text>
                 </TouchableOpacity>
 

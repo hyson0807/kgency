@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { api } from '@/lib/api'
 import Back from '@/components/back'
 import { useModal } from '@/hooks/useModal'
+import { groupByDate, formatTime24 } from '@/lib/dateUtils'
 
 interface TimeSlot {
     id: string
@@ -45,6 +46,7 @@ export default function InterviewSelection() {
             const response = await api('GET', `/api/interview-proposals/user/${applicationId}`)
 
             if (response?.success && response.data?.availableSlots) {
+                console.log('Raw availableSlots from server:', response.data.availableSlots)
                 setAvailableSlots(response.data.availableSlots)
                 
                 // 특이사항 정보 가져오기
@@ -75,17 +77,7 @@ export default function InterviewSelection() {
     }
 
     const groupSlotsByDate = (slots: TimeSlot[]) => {
-        const grouped: Record<string, TimeSlot[]> = {}
-
-        slots.forEach(slot => {
-            const dateKey = new Date(slot.start_time).toDateString()
-            if (!grouped[dateKey]) {
-                grouped[dateKey] = []
-            }
-            grouped[dateKey].push(slot)
-        })
-
-        return grouped
+        return groupByDate(slots, (slot) => slot.start_time)
     }
 
     const handleSelectSlot = (slotId: string) => {
@@ -188,8 +180,8 @@ export default function InterviewSelection() {
                                     </Text>
 
                                     {slots.map((slot) => {
-                                        const startTime = formatDateTime(slot.start_time).time
-                                        const endTime = formatDateTime(slot.end_time).time
+                                        const startTime = formatTime24(slot.start_time)
+                                        const endTime = formatTime24(slot.end_time)
                                         const isSelected = selectedSlotId === slot.id
 
                                         return (
