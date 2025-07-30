@@ -5,6 +5,7 @@ import axios, { AxiosError } from 'axios';
 import {jwtDecode} from "jwt-decode";
 import {router} from "expo-router";
 import { registerForPushNotificationsAsync, savePushToken, removePushToken } from '@/lib/notifications';
+import { updateTokenCache } from '@/lib/api';
 
 // 타입 정의
 interface User {
@@ -24,6 +25,7 @@ interface AuthContextType {
     isLoading: boolean;
     isAuthenticated: boolean;
     onboardingCompleted: boolean;
+    authToken: string | null;
 
     // 함수
     login: (token: string, userData: User, onboardingStatus: any) => Promise<LoginResult>;
@@ -64,6 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [onboardingCompleted, setOnboardingCompleted] = useState<boolean>(false);
+    const [authToken, setAuthToken] = useState<string | null>(null);
 
     // 앱 시작 시 자동으로 세션 확인
     useEffect(() => {
@@ -85,6 +88,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 if (!isExpired && userData) {
                     setUser(JSON.parse(userData));
                     setIsAuthenticated(true);
+                    setAuthToken(token); // 메모리에 토큰 캐시
+                    updateTokenCache(token); // api.ts 토큰 캐시도 업데이트
 
                     // 온보딩 상태도 복원
                     if (onboardingStatus) {
@@ -118,6 +123,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUser(userData);
             setIsAuthenticated(true);
             setOnboardingCompleted(onboardingStatus.completed);
+            setAuthToken(token); // 메모리에 토큰 캐시
+            updateTokenCache(token); // api.ts 토큰 캐시도 업데이트
 
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
@@ -150,6 +157,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         setUser(null);
         setIsAuthenticated(false);
+        setAuthToken(null); // 메모리 캐시도 클리어
+        updateTokenCache(null); // api.ts 토큰 캐시도 클리어
 
         router.replace('/start');
         console.log('로그아웃 완료');
@@ -163,6 +172,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         delete axios.defaults.headers.common['Authorization'];
         setUser(null);
         setIsAuthenticated(false);
+        setAuthToken(null); // 메모리 캐시도 클리어
+        updateTokenCache(null); // api.ts 토큰 캐시도 클리어
     };
 
     // API 요청 헬퍼 (자동으로 토큰 포함)
@@ -172,15 +183,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         data: any = null
     ): Promise<T> => {
         try {
-            const token = await AsyncStorage.getItem('authToken');
-
-            if (!token) {
+            // 메모리 캐시에서 토큰 가져오기 (AsyncStorage 접근 제거)
+            if (!authToken) {
                 throw new Error('인증이 필요합니다');
             }
 
             const config = {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${authToken}`,
                     'Content-Type': 'application/json'
                 }
             };
@@ -226,6 +236,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isLoading,
         isAuthenticated,
         onboardingCompleted,
+        authToken,
 
         // 함수
         login,
@@ -237,7 +248,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         userType: memoizedUser?.userType || null,
         isJobSeeker: memoizedUser?.userType === 'user',
         isEmployer: memoizedUser?.userType === 'company',
-    }), [memoizedUser, isLoading, isAuthenticated, onboardingCompleted]);
+    }), [memoizedUser, isLoading, isAuthenticated, onboardingCompleted, authToken]);
 
     return (
         <AuthContext.Provider value={value}>

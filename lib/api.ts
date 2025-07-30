@@ -6,6 +6,10 @@ const SERVER_URL = __DEV__
     ? 'http://192.168.0.15:5004'
     : 'https://kgencyserver-production-45af.up.railway.app';
 
+// 토큰 메모리 캐시
+let cachedToken: string | null = null;
+let tokenCacheInitialized = false;
+
 
 // 192.168.219.126 시골
 // http://192.168.0.15:5004 집
@@ -19,6 +23,20 @@ interface ApiResponse<T = any> {
     message?: string;
 }
 
+// 토큰 캐시 초기화 함수
+const initializeTokenCache = async (): Promise<void> => {
+    if (!tokenCacheInitialized) {
+        cachedToken = await AsyncStorage.getItem('authToken');
+        tokenCacheInitialized = true;
+    }
+};
+
+// 토큰 캐시 업데이트 함수 (외부에서 호출 가능)
+export const updateTokenCache = (token: string | null): void => {
+    cachedToken = token;
+    tokenCacheInitialized = true;
+};
+
 // API 요청 함수
 export const api = async <T = any>(
     method: Method,
@@ -26,7 +44,8 @@ export const api = async <T = any>(
     data: any = null
 ): Promise<T> => {
     try {
-        const token = await AsyncStorage.getItem('authToken');
+        // 캐시 초기화 (최초 1회만)
+        await initializeTokenCache();
 
         console.log('API 요청:', `${SERVER_URL}${endpoint}`);
 
@@ -34,7 +53,7 @@ export const api = async <T = any>(
             method,
             url: `${SERVER_URL}${endpoint}`,
             headers: {
-                'Authorization': token ? `Bearer ${token}` : '',
+                'Authorization': cachedToken ? `Bearer ${cachedToken}` : '',
                 'Content-Type': 'application/json'
             }
         };
