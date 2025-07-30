@@ -44,9 +44,19 @@ interface UserCardProps {
     onPress: (jobSeeker: JobSeeker) => void;
 }
 
+/* 클래스명을 위한 주석 - Tailwind 빌드시 포함되도록
+ * bg-purple-500 bg-blue-500 bg-green-500 bg-yellow-500 bg-gray-400
+ * bg-purple-100 text-purple-700 bg-orange-100 text-orange-700
+ * bg-blue-100 text-blue-700 bg-green-100 text-green-700
+ * bg-teal-100 text-teal-700 bg-pink-100 text-pink-700
+ * bg-yellow-100 text-yellow-700 bg-indigo-100 text-indigo-700
+ * bg-gray-100 text-gray-700
+ */
+
 export const UserCard = ({ item, onPress }: UserCardProps) => {
     const { user: jobSeeker, matchedCount, matchedKeywords, matchedKeywordsWithCategory, suitability } = item;
     const hasMatches = matchedCount > 0;
+    
     
     // 적합도 레벨에 따른 색상과 텍스트
     const getSuitabilityInfo = (level?: string) => {
@@ -118,6 +128,7 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
     };
 
     const keywordsWithCategory = getKeywordsWithCategory();
+    
 
     return (
         <TouchableOpacity

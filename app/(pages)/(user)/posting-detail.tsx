@@ -6,7 +6,6 @@ import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
-import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useModal } from '@/hooks/useModal'
@@ -132,15 +131,10 @@ export default function PostingDetail() {
         if (!user || !postingId) return
 
         try {
-            const { data, error } = await supabase
-                .from('applications')
-                .select('id')
-                .eq('user_id', user.userId)
-                .eq('job_posting_id', postingId)
-                .maybeSingle()
+            const response = await api('GET', `/api/applications/check-duplicate?jobPostingId=${postingId}`)
 
-            if (!error && data) {
-                setHasApplied(true)
+            if (response?.success) {
+                setHasApplied(response.isDuplicate)
             }
         } catch (error) {
             console.error('지원 상태 확인 실패:', error)

@@ -83,43 +83,21 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
                     interviewProposal: response.data[app.id] || null
                 }));
             }
-        } catch (error) {
-            console.error('Bulk interview status check failed, falling back to individual checks:', error);
             
-            // 백업 방식: 개별 API 호출 (기존 로직)
-            const applicationsWithInterview = await Promise.all(
-                applications.map(async (app) => {
-                    try {
-                        const response = await api('GET', `/api/interview-proposals/user/${app.id}`)
-
-                        // pending 또는 scheduled 상태의 면접 제안이 있는 경우
-                        if (response?.success && response.data?.proposal &&
-                            (response.data.proposal.status === 'pending' || response.data.proposal.status === 'scheduled')) {
-                            return {
-                                ...app,
-                                interviewProposal: response.data.proposal
-                            }
-                        }
-                    } catch (error) {
-                        // 404 에러는 정상적인 케이스 (제안이 없는 경우)
-                        console.log('No interview proposal found for application:', app.id)
-                    }
-
-                    // 면접 제안이 없는 경우
-                    return {
-                        ...app,
-                        interviewProposal: null
-                    }
-                })
-            )
-            return applicationsWithInterview;
+            // 서버 에러인 경우 면접 정보 없이 반환
+            console.error('Bulk interview status check failed');
+            return applications.map(app => ({
+                ...app,
+                interviewProposal: null
+            }));
+        } catch (error) {
+            console.error('Interview status check error:', error);
+            // 에러 발생 시에도 앱이 작동하도록 면접 정보 없이 반환
+            return applications.map(app => ({
+                ...app,
+                interviewProposal: null
+            }));
         }
-
-        // 기본값: 면접 정보 없이 반환
-        return applications.map(app => ({
-            ...app,
-            interviewProposal: null
-        }));
     }
 
     const fetchApplications = useCallback(async () => {
