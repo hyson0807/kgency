@@ -13,9 +13,10 @@ import TermsOfService from '@/components/common/TermsOfService';
 import PrivacyPolicy from '@/components/common/PrivacyPolicy';
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/TranslationContext";
+import { removePushToken } from '@/lib/notifications';
 
 const Settings2 = () => {
-    const { logout } = useAuth()
+    const { logout, user } = useAuth()
     const { profile } = useProfile()
     const { showModal, ModalComponent } = useModal()
     const { t } = useTranslation()
@@ -53,6 +54,16 @@ const Settings2 = () => {
     // 회원 탈퇴 처리
     const handleDeleteAccount = async () => {
         try {
+            // Push token 먼저 제거 (회원 탈퇴 전에)
+            if (user?.userId) {
+                try {
+                    await removePushToken(user.userId);
+                } catch (error) {
+                    console.log('Push token removal failed:', error);
+                    // Continue with account deletion even if push token removal fails
+                }
+            }
+            
             // 토큰은 api 함수에서 자동으로 처리됨!
             const result = await authAPI.deleteAccount();
 
@@ -63,7 +74,7 @@ const Settings2 = () => {
             await AsyncStorage.clear();
 
             // 로그인 화면으로 이동
-            router.replace('/start');
+            logout(true); // Skip push token removal in logout
 
         } catch (error: any) {
             console.error('회원 탈퇴 실패:', error);

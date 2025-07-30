@@ -27,7 +27,7 @@ interface AuthContextType {
 
     // 함수
     login: (token: string, userData: User, onboardingStatus: any) => Promise<LoginResult>;
-    logout: () => Promise<void>;
+    logout: (skipPushTokenRemoval?: boolean) => Promise<void>;
     checkAuthState: () => Promise<void>;
     authenticatedRequest: <T = any>(
         method: 'get' | 'post' | 'put' | 'delete',
@@ -131,10 +131,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     // 로그아웃 함수
-    const logout = async (): Promise<void> => {
-        // Remove push token before logout
-        if (user?.userId) {
-            await removePushToken(user.userId);
+    const logout = async (skipPushTokenRemoval = false): Promise<void> => {
+        // Remove push token before logout (unless explicitly skipped)
+        if (!skipPushTokenRemoval && user?.userId) {
+            try {
+                await removePushToken(user.userId);
+            } catch (error) {
+                // Ignore push token removal errors during logout
+                console.log('Push token removal skipped:', error);
+            }
         }
         
         // 로컬 스토리지만 삭제
