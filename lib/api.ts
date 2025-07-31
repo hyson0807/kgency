@@ -3,8 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 서버 주소 설정
 const SERVER_URL = __DEV__
-    ? process.env.EXPO_PUBLIC_DEV_SERVER_URL
-    : process.env.EXPO_PUBLIC_PROD_SERVER_URL;
+    ? process.env.EXPO_PUBLIC_DEV_SERVER_URL || 'http://192.168.0.15:5004'
+    : process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgencyserver-production-45af.up.railway.app';
 
 // 토큰 메모리 캐시
 let cachedToken: string | null = null;
@@ -44,6 +44,7 @@ export const api = async <T = any>(
         // 캐시 초기화 (최초 1회만)
         await initializeTokenCache();
 
+        console.log('SERVER_URL:', SERVER_URL);
         console.log('API 요청:', `${SERVER_URL}${endpoint}`);
 
         const config: any = {
