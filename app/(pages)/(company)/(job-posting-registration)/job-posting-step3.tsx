@@ -8,7 +8,8 @@ import { useModal } from "@/hooks/useModal";
 import { useUserKeywords } from '@/hooks/useUserKeywords'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
-import { MultiSelectKeywordSelector } from '@/components/common/MultiSelectKeywordSelector';
+import { BaseKeywordSelector } from '@/components/common/BaseKeywordSelector';
+import { useKeywordSelection } from '@/hooks/useKeywordSelection';
 import { useJobPostingStore } from '@/stores/jobPostingStore'
 
 // Step 3: 인재 선호 정보 입력 및 최종 저장 페이지
@@ -44,119 +45,20 @@ const JobPostingStep3 = () => {
     const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준')
     const workDayKeywords = keywords.filter(k => k.category === '근무요일')
 
-    // 키워드 선택 핸들러들
-    const handleCountrySelect = (item: any) => {
-        if (item.value === 'all') {
-            const allCountryIds = countryKeywords.map(k => k.id)
-            setSelectedCountries(allCountryIds)
-        } else {
-            if (!step3Data.selectedCountries.includes(item.value)) {
-                setSelectedCountries([...step3Data.selectedCountries, item.value])
-            }
-        }
-    }
+    // 커스텀 훅을 사용한 키워드 선택 로직 (기존 핸들러들을 대체)
+    const { handleToggle: toggleJob } = useKeywordSelection({
+        keywords: jobKeywords,
+        selectedIds: step3Data.selectedJobs,
+        onSelectionChange: setSelectedJobs
+    })
 
-    const removeCountry = (countryId: number) => {
-        setSelectedCountries(step3Data.selectedCountries.filter(id => id !== countryId))
-    }
+    const { handleToggle: toggleCondition } = useKeywordSelection({
+        keywords: conditionKeywords,
+        selectedIds: step3Data.selectedConditions,
+        onSelectionChange: setSelectedConditions
+    })
 
-    const removeAllCountries = () => {
-        setSelectedCountries([])
-    }
-
-    const handleAgeRangeSelect = (item: any) => {
-        if (item.value === 'all') {
-            const allAgeRangeIds = ageRangeKeywords.map(k => k.id)
-            setSelectedAgeRanges(allAgeRangeIds)
-        } else {
-            if (!step3Data.selectedAgeRanges.includes(item.value)) {
-                setSelectedAgeRanges([...step3Data.selectedAgeRanges, item.value])
-            }
-        }
-    }
-
-    const removeAgeRange = (ageRangeId: number) => {
-        setSelectedAgeRanges(step3Data.selectedAgeRanges.filter(id => id !== ageRangeId))
-    }
-
-    const removeAllAgeRanges = () => {
-        setSelectedAgeRanges([])
-    }
-
-    const handleGenderSelect = (item: any) => {
-        if(item.value === 'all') {
-            const allGenderIds = genderKeywords.map(k => k.id)
-            setSelectedGenders(allGenderIds)
-        } else {
-            if(!step3Data.selectedGenders.includes(item.value)) {
-                setSelectedGenders([...step3Data.selectedGenders, item.value])
-            }
-        }
-    }
-
-    const removeGender = (genderId: number) => {
-        setSelectedGenders(step3Data.selectedGenders.filter(id => id !== genderId))
-    }
-
-    const removeAllGenders = () => {
-        setSelectedGenders([])
-    }
-
-    const handleVisaSelect = (item: any) => {
-        if (item.value === 'all') {
-            const allVisaIds = visaKeywords.map(k => k.id)
-            setSelectedVisas(allVisaIds)
-        } else {
-            if (!step3Data.selectedVisas.includes(item.value)) {
-                setSelectedVisas([...step3Data.selectedVisas, item.value])
-            }
-        }
-    }
-
-    const removeVisa = (visaId: number) => {
-        setSelectedVisas(step3Data.selectedVisas.filter(id => id !== visaId))
-    }
-
-    const removeAllVisas = () => {
-        setSelectedVisas([])
-    }
-
-    const handleKoreanLevelSelect = (item: any) => {
-        if (item.value === 'all') {
-            const allKoreanLevelIds = koreanLevelKeywords.map(k => k.id)
-            setSelectedKoreanLevels(allKoreanLevelIds)
-        } else {
-            if (!step3Data.selectedKoreanLevels.includes(item.value)) {
-                setSelectedKoreanLevels([...step3Data.selectedKoreanLevels, item.value])
-            }
-        }
-    }
-
-    const removeKoreanLevel = (koreanLevelId: number) => {
-        setSelectedKoreanLevels(step3Data.selectedKoreanLevels.filter(id => id !== koreanLevelId))
-    }
-
-    const removeAllKoreanLevels = () => {
-        setSelectedKoreanLevels([])
-    }
-
-    // 직종 선택/해제 토글
-    const toggleJob = (jobId: number) => {
-        const currentJobs = step3Data.selectedJobs
-        const newJobs = currentJobs.includes(jobId)
-            ? currentJobs.filter(id => id !== jobId)
-            : [...currentJobs, jobId]
-        setSelectedJobs(newJobs)
-    }
-
-    // 근무조건 선택/해제 토글
-    const toggleCondition = (conditionId: number) => {
-        const currentConditions = step3Data.selectedConditions
-        const newConditions = currentConditions.includes(conditionId)
-            ? currentConditions.filter(id => id !== conditionId)
-            : [...currentConditions, conditionId]
-        setSelectedConditions(newConditions)
-    }
+    // 직종 및 근무조건 토글은 위의 useKeywordSelection 훅에서 처리됨
 
     // 편집 모드일 때 기존 데이터 로드
     useEffect(() => {
@@ -379,29 +281,26 @@ const JobPostingStep3 = () => {
                     </View>
 
                     {/* 1. 선호 국가 선택 (필수) */}
-                    <MultiSelectKeywordSelector
-                        title="선호 국가 *"
+                    <BaseKeywordSelector
+                        title="선호 국가"
                         placeholder="국가를 선택하세요"
                         keywords={countryKeywords}
                         selectedIds={step3Data.selectedCountries}
-                        onSelect={handleCountrySelect}
-                        onRemove={removeCountry}
-                        onRemoveAll={removeAllCountries}
+                        onSelectionChange={setSelectedCountries}
                         emptyText="선택된 국가가 없습니다"
                         showNoPreferenceOption={true}
                         enableSearch={true}
+                        required={true}
                     />
 
                     {/* 2. 선호 나이대 (국가 선택 후 표시) */}
                     {step3Data.selectedCountries.length > 0 && (
-                        <MultiSelectKeywordSelector
+                        <BaseKeywordSelector
                             title="선호 나이대"
                             placeholder="나이대를 선택하세요"
                             keywords={ageRangeKeywords}
                             selectedIds={step3Data.selectedAgeRanges}
-                            onSelect={handleAgeRangeSelect}
-                            onRemove={removeAgeRange}
-                            onRemoveAll={removeAllAgeRanges}
+                            onSelectionChange={setSelectedAgeRanges}
                             emptyText="선택된 나이대가 없습니다"
                             showNoPreferenceOption={true}
                             enableSearch={true}
@@ -410,14 +309,12 @@ const JobPostingStep3 = () => {
 
                     {/* 3. 선호 성별 (나이대 섹션이 표시되면 계속 표시) */}
                     {step3Data.selectedCountries.length > 0 && (
-                        <MultiSelectKeywordSelector
+                        <BaseKeywordSelector
                             title="선호 성별"
                             placeholder="선호 성별을 선택하세요"
                             keywords={genderKeywords}
                             selectedIds={step3Data.selectedGenders}
-                            onSelect={handleGenderSelect}
-                            onRemove={removeGender}
-                            onRemoveAll={removeAllGenders}
+                            onSelectionChange={setSelectedGenders}
                             emptyText="선택된 성별이 없습니다"
                             showNoPreferenceOption={true}
                             enableSearch={false}
@@ -426,14 +323,12 @@ const JobPostingStep3 = () => {
 
                     {/* 4. 선호 비자 (성별 섹션이 표시되면 계속 표시) */}
                     {step3Data.selectedCountries.length > 0 && (
-                        <MultiSelectKeywordSelector
+                        <BaseKeywordSelector
                             title="선호 비자"
                             placeholder="비자를 선택하세요"
                             keywords={visaKeywords}
                             selectedIds={step3Data.selectedVisas}
-                            onSelect={handleVisaSelect}
-                            onRemove={removeVisa}
-                            onRemoveAll={removeAllVisas}
+                            onSelectionChange={setSelectedVisas}
                             emptyText="선택된 비자가 없습니다"
                             showNoPreferenceOption={true}
                             enableSearch={true}
@@ -442,14 +337,12 @@ const JobPostingStep3 = () => {
 
                     {/* 5. 선호 한국어 수준 (비자 섹션이 표시되면 계속 표시) */}
                     {step3Data.selectedCountries.length > 0 && (
-                        <MultiSelectKeywordSelector
+                        <BaseKeywordSelector
                             title="선호 한국어 수준"
                             placeholder="한국어 수준을 선택하세요"
                             keywords={koreanLevelKeywords}
                             selectedIds={step3Data.selectedKoreanLevels}
-                            onSelect={handleKoreanLevelSelect}
-                            onRemove={removeKoreanLevel}
-                            onRemoveAll={removeAllKoreanLevels}
+                            onSelectionChange={setSelectedKoreanLevels}
                             emptyText="선택된 한국어 수준이 없습니다"
                             showNoPreferenceOption={true}
                             enableSearch={true}
