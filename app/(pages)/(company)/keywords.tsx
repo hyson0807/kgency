@@ -32,6 +32,8 @@ interface SelectedKeywords {
     koreanLevel: number | null;
 }
 
+//회사 대표키워드 설정 페이지
+
 const Keywords = () => {
     const { user } = useAuth()
     const [keywords, setKeywords] = useState<Keyword[]>([])
@@ -52,6 +54,8 @@ const Keywords = () => {
         workDays: [],
         koreanLevel: null
     })
+    
+    const [isWorkDaysSelectLater, setIsWorkDaysSelectLater] = useState(false)
 
     const { showModal, ModalComponent} = useModal()
 
@@ -283,7 +287,7 @@ const Keywords = () => {
         <SafeAreaView className="flex-1 bg-gray-50">
             <View className="flex-row items-center p-4 border-b border-gray-200 bg-white">
                 <Back />
-                <Text className="text-lg font-bold ml-4">대표 키워드 설정</Text>
+                <Text className="text-lg font-bold ml-4">사장님과 가장 적합한 인재 찾아줄께요</Text>
             </View>
 
             <ScrollView
@@ -298,10 +302,18 @@ const Keywords = () => {
                     setSelectedLocation={(id) => handleSingleSelect('location', id)} 
                 />
 
-                <MoveableSelector 
-                    moveableKeyword={moveableKeyword} 
-                    selectedMoveable={selectedKeywords.moveable} 
-                    toggleMoveable={toggleMoveable} 
+                {/*<MoveableSelector */}
+                {/*    moveableKeyword={moveableKeyword} */}
+                {/*    selectedMoveable={selectedKeywords.moveable} */}
+                {/*    toggleMoveable={toggleMoveable} */}
+                {/*/>*/}
+
+                {/* 직종 선택 */}
+                <JobPreferencesSelector
+                    jobs={jobKeywords}
+                    selectedJobs={selectedKeywords.jobs}
+                    onToggle={(id) => toggleKeyword('jobs', id)}
+                    title="모집 직종"
                 />
 
                 {/* 국가 선택 */}
@@ -343,7 +355,7 @@ const Keywords = () => {
 
                 {/* 비자 선택 */}
                 <MultiSelectKeywordSelector
-                    title="필요한 비자"
+                    title="선호하는 비자"
                     placeholder="비자를 선택하세요"
                     keywords={visaKeywords}
                     selectedIds={selectedKeywords.visas}
@@ -353,27 +365,41 @@ const Keywords = () => {
                     emptyText="선택된 비자가 없습니다"
                 />
 
-                {/* 직종 선택 */}
-                <JobPreferencesSelector 
-                    jobs={jobKeywords} 
-                    selectedJobs={selectedKeywords.jobs} 
-                    onToggle={(id) => toggleKeyword('jobs', id)} 
-                    title="모집 직종"
+                {/* 한국어 수준 선택 */}
+                <KoreanLevelSelector
+                    selectedKoreanLevel={selectedKeywords.koreanLevel}
+                    handleKoreanLevelSelect={(id) => handleSingleSelect('koreanLevel', id)}
+                    koreanLevelKeywords={koreanLevelKeywords}
                 />
+
+
 
                 {/* 근무요일 선택 */}
                 <WorkDaySelector 
                     workDayKeywords={workDayKeywords} 
                     selectedWorkDays={selectedKeywords.workDays} 
-                    toggleWorkDay={(id) => toggleKeyword('workDays', id)} 
+                    toggleWorkDay={(id) => toggleKeyword('workDays', id)}
+                    onNegotiableClick={() => {
+                        // 협의가능 클릭시 전체 요일 선택
+                        const allWorkDayIds = workDayKeywords.map(day => day.id)
+                        setSelectedKeywords(prev => ({
+                            ...prev,
+                            workDays: allWorkDayIds
+                        }))
+                        setIsWorkDaysSelectLater(false)
+                    }}
+                    onSelectLaterClick={() => {
+                        // 나중에 선택 클릭시 전체 해제하고 비활성화
+                        setSelectedKeywords(prev => ({
+                            ...prev,
+                            workDays: []
+                        }))
+                        setIsWorkDaysSelectLater(true)
+                    }}
+                    isSelectLater={isWorkDaysSelectLater}
                 />
 
-                {/* 한국어 수준 선택 */}
-                <KoreanLevelSelector 
-                    selectedKoreanLevel={selectedKeywords.koreanLevel} 
-                    handleKoreanLevelSelect={(id) => handleSingleSelect('koreanLevel', id)} 
-                    koreanLevelKeywords={koreanLevelKeywords} 
-                />
+
 
 
             </ScrollView>

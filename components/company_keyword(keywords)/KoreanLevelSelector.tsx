@@ -16,9 +16,14 @@ export const KoreanLevelSelector = ({
                                     }: props) => {
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
-            <Text className="text-lg font-semibold mb-4 text-gray-900">한국어 수준 요구사항</Text>
+            <Text className="text-lg font-semibold mb-4 text-gray-900">최소 한국어 요구 수준</Text>
             <View className="flex-row flex-wrap gap-3">
-                {koreanLevelKeywords.map(level => (
+                {koreanLevelKeywords
+                    .sort((a, b) => {
+                        const order = ['초급', '중급', '고급'];
+                        return order.indexOf(a.keyword) - order.indexOf(b.keyword);
+                    })
+                    .map(level => (
                     <TouchableOpacity
                         key={level.id}
                         onPress={() => handleKoreanLevelSelect(level.id)}

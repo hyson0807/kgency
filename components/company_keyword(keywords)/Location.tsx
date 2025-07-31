@@ -22,7 +22,7 @@ export const LocationSelector = ({
 
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
-            <Text className="text-lg font-semibold mb-4 text-gray-900">사장님 회사 위치!</Text>
+            <Text className="text-lg font-semibold mb-4 text-gray-900">사업장 위치</Text>
             <Dropdown
                 style={{
                     height: 48,
