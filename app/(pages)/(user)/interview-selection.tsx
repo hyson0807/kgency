@@ -47,7 +47,15 @@ export default function InterviewSelection() {
 
             if (response?.success && response.data?.availableSlots) {
                 console.log('Raw availableSlots from server:', response.data.availableSlots)
-                setAvailableSlots(response.data.availableSlots)
+                
+                // 현재 시간 이후의 슬롯만 필터링
+                const now = new Date()
+                const futureSlots = response.data.availableSlots.filter((slot: TimeSlot) => {
+                    const slotStartTime = new Date(slot.start_time)
+                    return slotStartTime > now
+                })
+                
+                setAvailableSlots(futureSlots)
                 
                 // 특이사항 정보 가져오기
                 if (response.data?.jobPosting?.special_notes) {

@@ -44,13 +44,11 @@ const Settings = () => {
         setIsJobSeekingActive(profile?.job_seeking_active || true)
     }, [profile])
 
-    // 알림 토글 - 면접 관련 알림을 통합 제어
-    const toggleInterviewNotifications = () => {
-        const newValue = !notificationSettings.interviewProposal
+    // 알림 토글
+    const toggleNotification = (key: keyof typeof notificationSettings) => {
         const newSettings = {
             ...notificationSettings,
-            interviewProposal: newValue,
-            interviewCancelled: newValue
+            [key]: !notificationSettings[key]
         }
         updateNotificationSettings(newSettings)
     }
@@ -221,14 +219,66 @@ const Settings = () => {
                     <View className="space-y-4">
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">{t('settings.interview_notification', '면접 관련 알림')}</Text>
-                                <Text className="text-sm text-gray-600">{t('settings.interview_notification_description', '면접 제안 및 취소 알림')}</Text>
+                                <Text className="font-medium">면접 제안 알림</Text>
+                                <Text className="text-sm text-gray-600">회사로부터 면접 제안을 받을 때 알림</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.interviewProposal}
-                                onValueChange={toggleInterviewNotifications}
+                                onValueChange={() => toggleNotification('interviewProposal')}
                                 trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
                                 thumbColor={notificationSettings.interviewProposal ? '#ffffff' : '#f3f4f6'}
+                            />
+                        </View>
+                        
+                        <View className="flex-row items-center justify-between">
+                            <View className="flex-1">
+                                <Text className="font-medium">공고 면접 제안 알림</Text>
+                                <Text className="text-sm text-gray-600">지원한 공고에서 면접 제안을 받을 때 알림</Text>
+                            </View>
+                            <Switch
+                                value={notificationSettings.jobPostingInterviewProposal || false}
+                                onValueChange={() => toggleNotification('jobPostingInterviewProposal')}
+                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
+                                thumbColor={notificationSettings.jobPostingInterviewProposal ? '#ffffff' : '#f3f4f6'}
+                            />
+                        </View>
+                        
+                        <View className="flex-row items-center justify-between">
+                            <View className="flex-1">
+                                <Text className="font-medium">면접 취소 알림</Text>
+                                <Text className="text-sm text-gray-600">면접이 취소되었을 때 알림</Text>
+                            </View>
+                            <Switch
+                                value={notificationSettings.interviewCancelled || false}
+                                onValueChange={() => toggleNotification('interviewCancelled')}
+                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
+                                thumbColor={notificationSettings.interviewCancelled ? '#ffffff' : '#f3f4f6'}
+                            />
+                        </View>
+                        
+                        <View className="flex-row items-center justify-between">
+                            <View className="flex-1">
+                                <Text className="font-medium">즉시면접 취소 알림</Text>
+                                <Text className="text-sm text-gray-600">즉시면접이 취소되었을 때 알림</Text>
+                            </View>
+                            <Switch
+                                value={notificationSettings.instantInterviewCancelled || false}
+                                onValueChange={() => toggleNotification('instantInterviewCancelled')}
+                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
+                                thumbColor={notificationSettings.instantInterviewCancelled ? '#ffffff' : '#f3f4f6'}
+                            />
+                        </View>
+                        
+                        <View className="flex-row items-center justify-between">
+                            <View className="flex-1">
+                                <Text className="font-medium">지원 취소 알림</Text>
+                                <Text className="text-sm text-gray-600">일반 지원이 취소되었을 때 알림</Text>
+                            </View>
+                            <Switch
+                                value={notificationSettings.regularApplicationCancelled || false}
+                                onValueChange={() => toggleNotification('regularApplicationCancelled')}
+                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
+                                thumbColor={notificationSettings.regularApplicationCancelled ? '#ffffff' : '#f3f4f6'}
                             />
                         </View>
                     </View>

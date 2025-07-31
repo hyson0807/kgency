@@ -106,7 +106,7 @@ export const PostingCard = ({
                     onPress={(e) => {
                         e.stopPropagation()
                         router.push({
-                            pathname: '/(pages)/(company)/info2',
+                            pathname: '/job-posting-step1',
                             params: { jobPostingId: item.id }
                         })
                     }}

@@ -4,6 +4,7 @@ import React, {useEffect, useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
+import AntDesign from '@expo/vector-icons/AntDesign'
 import Back from '@/components/back'
 import { useModal } from '@/hooks/useModal'
 import { ActivityIndicator } from 'react-native'
@@ -19,7 +20,10 @@ export default function ViewResume() {
         userPhone,
         resume,
         subject,
-        createdAt
+        createdAt,
+        userId,
+        postingId,
+        proposalStatus
     } = params
 
     const [translatedResume, setTranslatedResume] = useState<string | null>(null)
@@ -190,16 +194,25 @@ export default function ViewResume() {
 
             {/* 하단 액션 버튼 */}
             <View className="px-4 pb-4">
-                <View className="flex-row gap-3">
+                {(!proposalStatus || proposalStatus === 'none') && applicationId && userId && postingId && (
                     <TouchableOpacity
-                        onPress={() => router.back()}
-                        className="flex-1 py-3 rounded-xl border border-gray-300"
+                        onPress={() => {
+                            router.push({
+                                pathname: '/(pages)/(company)/interview-schedule',
+                                params: {
+                                    applicationId: Array.isArray(applicationId) ? applicationId[0] : applicationId,
+                                    userId: Array.isArray(userId) ? userId[0] : userId,
+                                    postingId: Array.isArray(postingId) ? postingId[0] : postingId,
+                                    onComplete: 'refresh'
+                                }
+                            })
+                        }}
+                        className="bg-blue-500 py-3 rounded-xl flex-row items-center justify-center"
                     >
-                        <Text className="text-center text-gray-700 font-medium">
-                            목록으로
-                        </Text>
+                        <AntDesign name="calendar" size={18} color="white" />
+                        <Text className="text-white font-medium ml-2">면접 제안하기</Text>
                     </TouchableOpacity>
-                </View>
+                )}
             </View>
             <ModalComponent />
         </SafeAreaView>

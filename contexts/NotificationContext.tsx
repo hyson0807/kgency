@@ -9,6 +9,11 @@ interface NotificationSettings {
   interviewProposal: boolean;
   interviewScheduleConfirmed?: boolean;
   interviewCancelled?: boolean;
+  newApplication?: boolean;
+  interviewRequestAccepted?: boolean;
+  jobPostingInterviewProposal?: boolean;
+  instantInterviewCancelled?: boolean;
+  regularApplicationCancelled?: boolean;
 }
 
 interface NotificationContextType {
@@ -37,7 +42,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
     interviewProposal: true,
     interviewScheduleConfirmed: true,
-    interviewCancelled: true
+    interviewCancelled: true,
+    newApplication: true,
+    interviewRequestAccepted: true,
+    jobPostingInterviewProposal: true,
+    instantInterviewCancelled: true,
+    regularApplicationCancelled: true
   });
 
   // Configure notification handler
@@ -68,6 +78,56 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         }
         
         if (data?.type === 'interview_cancelled' && !notificationSettings.interviewCancelled) {
+          return {
+            shouldShowAlert: false,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+        
+        if (data?.type === 'new_application' && !notificationSettings.newApplication) {
+          return {
+            shouldShowAlert: false,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+        
+        if (data?.type === 'interview_request_accepted' && !notificationSettings.interviewRequestAccepted) {
+          return {
+            shouldShowAlert: false,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+        
+        if (data?.type === 'job_posting_interview_proposal' && !notificationSettings.jobPostingInterviewProposal) {
+          return {
+            shouldShowAlert: false,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+        
+        if (data?.type === 'instant_interview_cancelled' && !notificationSettings.instantInterviewCancelled) {
+          return {
+            shouldShowAlert: false,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+        
+        if (data?.type === 'regular_application_cancelled' && !notificationSettings.regularApplicationCancelled) {
           return {
             shouldShowAlert: false,
             shouldPlaySound: false,
@@ -142,6 +202,41 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       
       if (data?.type === 'interview_cancelled' && data?.applicationId) {
         // Navigate to the applications page for user to see cancelled interview
+        if (user?.userType === 'user') {
+          router.push(`/(user)/applications`);
+        }
+      }
+      
+      // Handle new application notifications for companies
+      if (data?.type === 'new_application' && data?.applicationId) {
+        if (user?.userType === 'company') {
+          router.push(`/(company)/myJobPostings`);
+        }
+      }
+      
+      // Handle interview request acceptance notifications for companies
+      if (data?.type === 'interview_request_accepted' && data?.applicationId) {
+        if (user?.userType === 'company') {
+          router.push(`/(company)/interview-calendar`);
+        }
+      }
+      
+      // Handle job posting interview proposals for users
+      if (data?.type === 'job_posting_interview_proposal' && data?.applicationId) {
+        if (user?.userType === 'user') {
+          router.push(`/(user)/applications`);
+        }
+      }
+      
+      // Handle instant interview cancellation for users
+      if (data?.type === 'instant_interview_cancelled' && data?.applicationId) {
+        if (user?.userType === 'user') {
+          router.push(`/(user)/applications`);
+        }
+      }
+      
+      // Handle regular application cancellation for users
+      if (data?.type === 'regular_application_cancelled' && data?.applicationId) {
         if (user?.userType === 'user') {
           router.push(`/(user)/applications`);
         }

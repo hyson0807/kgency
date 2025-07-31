@@ -114,7 +114,10 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     applicationId: application.id,
                     userName: application.user.name,
                     resume: application.message.content,
-                    userPhone: application.user.phone_number
+                    userPhone: application.user.phone_number,
+                    userId: application.user.id,
+                    postingId: postingId,
+                    proposalStatus: proposalStatus
                 }
             })
         }
@@ -206,58 +209,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
         }
     };
 
-    const renderInterviewButton = () => {
-        switch (proposalStatus) {
-            case 'pending':
-                return (
-                    <View className="flex-1 gap-2">
-                        <View className="bg-orange-100 py-3 rounded-lg flex-row items-center justify-center">
-                            <AntDesign name="clockcircleo" size={18} color="#ea580c" />
-                            <Text className="text-orange-600 font-medium ml-2">면접 제안됨</Text>
-                        </View>
-                        <TouchableOpacity
-                            onPress={handleCancelProposal}
-                            disabled={isDeleting}
-                            className="bg-red-500 py-2 rounded-lg flex-row items-center justify-center"
-                        >
-                            <AntDesign name="close" size={16} color="white" />
-                            <Text className="text-white text-sm font-medium ml-1">
-                                {isDeleting ? '취소 중...' : '면접 제안 취소'}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                );
-
-            case 'scheduled':
-                return (
-                    <View className="flex-1 bg-green-100 py-3 rounded-lg flex-row items-center justify-center">
-                        <AntDesign name="checkcircleo" size={18} color="#16a34a" />
-                        <Text className="text-green-600 font-medium ml-2">면접 확정됨</Text>
-                    </View>
-                );
-
-            default: // 'none'
-                return (
-                    <TouchableOpacity
-                        onPress={() => {
-                            router.push({
-                                pathname: '/(pages)/(company)/interview-schedule',
-                                params: {
-                                    applicationId: item.id,
-                                    userId: item.user.id,
-                                    postingId: postingId,
-                                    onComplete: 'refresh'
-                                }
-                            })
-                        }}
-                        className="flex-1 bg-blue-500 py-3 rounded-lg flex-row items-center justify-center"
-                    >
-                        <AntDesign name="calendar" size={18} color="white" />
-                        <Text className="text-white font-medium ml-2">면접 제안하기</Text>
-                    </TouchableOpacity>
-                );
-        }
-    };
 
     return (
         <>
@@ -340,7 +291,31 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                         </TouchableOpacity>
                     )}
 
-                    {renderInterviewButton()}
+                    {proposalStatus === 'pending' && (
+                        <View className="flex-1 gap-2">
+                            <View className="bg-orange-100 py-3 rounded-lg flex-row items-center justify-center">
+                                <AntDesign name="clockcircleo" size={18} color="#ea580c" />
+                                <Text className="text-orange-600 font-medium ml-2">면접 제안됨</Text>
+                            </View>
+                            <TouchableOpacity
+                                onPress={handleCancelProposal}
+                                disabled={isDeleting}
+                                className="bg-red-500 py-2 rounded-lg flex-row items-center justify-center"
+                            >
+                                <AntDesign name="close" size={16} color="white" />
+                                <Text className="text-white text-sm font-medium ml-1">
+                                    {isDeleting ? '취소 중...' : '면접 제안 취소'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
+                    {proposalStatus === 'scheduled' && (
+                        <View className="flex-1 bg-green-100 py-3 rounded-lg flex-row items-center justify-center">
+                            <AntDesign name="checkcircleo" size={18} color="#16a34a" />
+                            <Text className="text-green-600 font-medium ml-2">면접 확정됨</Text>
+                        </View>
+                    )}
                 </View>
             </View>
             <ModalComponent />

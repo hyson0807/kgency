@@ -7,7 +7,7 @@ import React from "react";
 export const FloatingButton = () => {
     return (
         <TouchableOpacity
-            onPress={() => router.push('/(pages)/(company)/info2')}
+            onPress={() => router.push('/job-posting-step1')}
             className="absolute bottom-6 right-6 w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg"
             style={{
                 shadowColor: '#000',
