@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import {api} from "@/lib/api";
+import { useApplicationFormStore } from '@/stores/applicationFormStore'
 
 export default function Resume() {
     const params = useLocalSearchParams();
@@ -19,6 +20,7 @@ export default function Resume() {
     const { user } = useAuth();
     const { t } = useTranslation()
     const { showModal, ModalComponent, hideModal } = useModal()
+    const { resetAllData } = useApplicationFormStore()
 
     const [resume, setResume] = useState('')
     const [loading, setLoading] = useState(true)
@@ -156,7 +158,8 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                     const checkDuplicateResponse = await api('GET', `/api/applications/check-duplicate?jobPostingId=${jobPostingId}`);
                     
                     if (checkDuplicateResponse.isDuplicate) {
-                        // 이미 지원한 경우 알림 없이 홈으로 이동
+                        // 이미 지원한 경우 스토어 데이터 삭제 후 홈으로 이동
+                        resetAllData();
                         router.replace('/(user)/home');
                         return;
                     }
@@ -185,7 +188,8 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                         return;
                     }
 
-                    // 성공 시 홈으로 이동
+                    // 성공 시 스토어 데이터 삭제 후 홈으로 이동
+                    resetAllData();
                     router.replace('/(user)/home');
                 } catch (error) {
                     console.error('이력서 전송 오류:', error);

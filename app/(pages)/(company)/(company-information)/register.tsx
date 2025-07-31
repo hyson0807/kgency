@@ -45,7 +45,7 @@ const Register = () => {
                 return
             }
 
-            router.push('/(pages)/(company)/keywords')
+            router.push('/keywords')
 
         } catch (error) {
             console.error('저장 실패:', error)
