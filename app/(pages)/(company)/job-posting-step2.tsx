@@ -99,11 +99,6 @@ const JobPostingStep2 = () => {
         }
     }
 
-    // 이전 단계로 돌아가기
-    const handlePrevious = () => {
-        router.back()
-    }
-
     // Step 2 데이터 저장 및 다음 단계로 이동
     const handleNext = async () => {
         // 유효성 검사
@@ -220,28 +215,17 @@ const JobPostingStep2 = () => {
 
             {/* 하단 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-                <View className="flex-row space-x-3">
-                    <TouchableOpacity
-                        onPress={handlePrevious}
-                        className="flex-1 py-4 rounded-xl border border-gray-300 bg-white"
-                    >
-                        <Text className="text-center text-gray-700 font-bold text-lg">
-                            이전
-                        </Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity
-                        onPress={handleNext}
-                        disabled={loading}
-                        className={`flex-1 py-4 rounded-xl ${
-                            loading ? 'bg-gray-400' : 'bg-blue-500'
-                        }`}
-                    >
-                        <Text className="text-center text-white font-bold text-lg">
-                            {loading ? '저장 중...' : '다음 단계'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                    onPress={handleNext}
+                    disabled={loading}
+                    className={`py-4 mb-4 rounded-xl ${
+                        loading ? 'bg-gray-400' : 'bg-blue-500'
+                    }`}
+                >
+                    <Text className="text-center text-white font-bold text-lg">
+                        {loading ? '저장 중...' : '다음 단계'}
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             <ModalComponent/>

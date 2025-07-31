@@ -60,6 +60,10 @@ const JobPostingStep3 = () => {
         setSelectedCountries(step3Data.selectedCountries.filter(id => id !== countryId))
     }
 
+    const removeAllCountries = () => {
+        setSelectedCountries([])
+    }
+
     const handleAgeRangeSelect = (item: any) => {
         if (item.value === 'all') {
             const allAgeRangeIds = ageRangeKeywords.map(k => k.id)
@@ -73,6 +77,10 @@ const JobPostingStep3 = () => {
 
     const removeAgeRange = (ageRangeId: number) => {
         setSelectedAgeRanges(step3Data.selectedAgeRanges.filter(id => id !== ageRangeId))
+    }
+
+    const removeAllAgeRanges = () => {
+        setSelectedAgeRanges([])
     }
 
     const handleGenderSelect = (item: any) => {
@@ -90,6 +98,10 @@ const JobPostingStep3 = () => {
         setSelectedGenders(step3Data.selectedGenders.filter(id => id !== genderId))
     }
 
+    const removeAllGenders = () => {
+        setSelectedGenders([])
+    }
+
     const handleVisaSelect = (item: any) => {
         if (item.value === 'all') {
             const allVisaIds = visaKeywords.map(k => k.id)
@@ -105,6 +117,10 @@ const JobPostingStep3 = () => {
         setSelectedVisas(step3Data.selectedVisas.filter(id => id !== visaId))
     }
 
+    const removeAllVisas = () => {
+        setSelectedVisas([])
+    }
+
     const handleKoreanLevelSelect = (item: any) => {
         if (item.value === 'all') {
             const allKoreanLevelIds = koreanLevelKeywords.map(k => k.id)
@@ -118,6 +134,10 @@ const JobPostingStep3 = () => {
 
     const removeKoreanLevel = (koreanLevelId: number) => {
         setSelectedKoreanLevels(step3Data.selectedKoreanLevels.filter(id => id !== koreanLevelId))
+    }
+
+    const removeAllKoreanLevels = () => {
+        setSelectedKoreanLevels([])
     }
 
     // 직종 선택/해제 토글
@@ -205,11 +225,6 @@ const JobPostingStep3 = () => {
         } catch (error) {
             console.error('Step3 데이터 로드 실패:', error)
         }
-    }
-
-    // 이전 단계로 돌아가기
-    const handlePrevious = () => {
-        router.back()
     }
 
     // 최종 저장 및 완료
@@ -371,6 +386,7 @@ const JobPostingStep3 = () => {
                         selectedIds={step3Data.selectedCountries}
                         onSelect={handleCountrySelect}
                         onRemove={removeCountry}
+                        onRemoveAll={removeAllCountries}
                         emptyText="선택된 국가가 없습니다"
                         showNoPreferenceOption={true}
                         enableSearch={true}
@@ -385,6 +401,7 @@ const JobPostingStep3 = () => {
                             selectedIds={step3Data.selectedAgeRanges}
                             onSelect={handleAgeRangeSelect}
                             onRemove={removeAgeRange}
+                            onRemoveAll={removeAllAgeRanges}
                             emptyText="선택된 나이대가 없습니다"
                             showNoPreferenceOption={true}
                             enableSearch={true}
@@ -400,6 +417,7 @@ const JobPostingStep3 = () => {
                             selectedIds={step3Data.selectedGenders}
                             onSelect={handleGenderSelect}
                             onRemove={removeGender}
+                            onRemoveAll={removeAllGenders}
                             emptyText="선택된 성별이 없습니다"
                             showNoPreferenceOption={true}
                             enableSearch={false}
@@ -415,6 +433,7 @@ const JobPostingStep3 = () => {
                             selectedIds={step3Data.selectedVisas}
                             onSelect={handleVisaSelect}
                             onRemove={removeVisa}
+                            onRemoveAll={removeAllVisas}
                             emptyText="선택된 비자가 없습니다"
                             showNoPreferenceOption={true}
                             enableSearch={true}
@@ -430,6 +449,7 @@ const JobPostingStep3 = () => {
                             selectedIds={step3Data.selectedKoreanLevels}
                             onSelect={handleKoreanLevelSelect}
                             onRemove={removeKoreanLevel}
+                            onRemoveAll={removeAllKoreanLevels}
                             emptyText="선택된 한국어 수준이 없습니다"
                             showNoPreferenceOption={true}
                             enableSearch={true}
@@ -479,28 +499,17 @@ const JobPostingStep3 = () => {
 
             {/* 하단 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-                <View className="flex-row space-x-3">
-                    <TouchableOpacity
-                        onPress={handlePrevious}
-                        className="flex-1 py-4 rounded-xl border border-gray-300 bg-white"
-                    >
-                        <Text className="text-center text-gray-700 font-bold text-lg">
-                            이전
-                        </Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity
-                        onPress={handleSubmit}
-                        disabled={loading}
-                        className={`flex-1 py-4 rounded-xl ${
-                            loading ? 'bg-gray-400' : 'bg-blue-500'
-                        }`}
-                    >
-                        <Text className="text-center text-white font-bold text-lg">
-                            {loading ? '저장 중...' : (step1Data.isEditMode ? '공고 수정' : '공고 등록')}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                    onPress={handleSubmit}
+                    disabled={loading}
+                    className={`py-4 mb-4 rounded-xl ${
+                        loading ? 'bg-gray-400' : 'bg-blue-500'
+                    }`}
+                >
+                    <Text className="text-center text-white font-bold text-lg">
+                        {loading ? '저장 중...' : (step1Data.isEditMode ? '공고 수정' : '공고 등록')}
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             <ModalComponent/>
