@@ -6,10 +6,12 @@ import {useProfile} from "@/hooks/useProfile";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import WorkConditionsSelector from "@/components/WorkConditionsSelector";
 import JobPreferencesSelector from "@/components/JobPreferencesSelector";
+import { useKeywordSelection } from '@/hooks/useKeywordSelection';
 import { router } from 'expo-router';
 import Back from "@/components/back";
 import {useModal} from "@/hooks/useModal";
 import { useTranslation } from "@/contexts/TranslationContext"
+import { KeywordMapper } from '@/utils/keywordMapper';
 import {Profile} from "@/components/user_keyword(info)/Profile";
 import {LocationSelector} from "@/components/user_keyword(info)/Location";
 import {Country} from "@/components/user_keyword(info)/Country";
@@ -115,76 +117,21 @@ const Info = () => {
         }
     }, [user_keywords, moveableKeyword]);
 
-    // 나이를 나이대 키워드 ID로 변환
-    const getAgeKeywordId = (ageValue: string): number | null => {
-        const ageNum = parseInt(ageValue);
-        if (isNaN(ageNum)) return null;
+    // KeywordMapper 인스턴스 생성
+    const keywordMapper = new KeywordMapper(keywords);
 
-        const ageKeyword = keywords.find(k => {
-            if (k.category !== '나이대') return false;
+    // useKeywordSelection 훅을 사용한 키워드 선택 로직
+    const { handleToggle: toggleJob } = useKeywordSelection({
+        keywords: jobKeywords,
+        selectedIds: selectedJobs,
+        onSelectionChange: setSelectedJobs
+    })
 
-            if (ageNum >= 20 && ageNum < 25 && k.keyword === '20-24세') return true;
-            if (ageNum >= 25 && ageNum < 30 && k.keyword === '25-29세') return true;
-            if (ageNum >= 30 && ageNum < 35 && k.keyword === '30-34세') return true;
-            if (ageNum >= 35 && k.keyword === '35세 이상') return true;
-
-            return false;
-        });
-
-        return ageKeyword?.id || null;
-    };
-
-    // 성별을 키워드 ID로 변환
-    const getGenderKeywordId = (genderValue: string): number | null => {
-        const genderKeyword = keywords.find(k =>
-            k.category === '성별' && k.keyword === genderValue
-        );
-        return genderKeyword?.id || null;
-    };
-
-    // 비자를 키워드 ID로 변환
-    const getVisaKeywordId = (visaValue: string): number | null => {
-        const visaKeyword = keywords.find(k =>
-            k.category === '비자' && k.keyword === visaValue
-        );
-        return visaKeyword?.id || null;
-    };
-
-    // 한국어수준을 키워드 ID로 변환
-    const getKoreanLevelKeywordId = (koreanLevelValue: string): number | null => {
-        const koreanLevelKeyword = keywords.find(k =>
-            k.category === '한국어수준' && k.keyword === koreanLevelValue
-        );
-        return koreanLevelKeyword?.id || null;
-    };
-
-    // 희망근무요일을 키워드 ID로 변환
-    const getPreferredDayKeywordIds = (preferredDays: string[]): number[] => {
-        return preferredDays.map(day => {
-            const dayKeyword = keywords.find(k =>
-                k.category === '근무요일' && k.keyword === day
-            );
-            return dayKeyword?.id;
-        }).filter((id): id is number => id !== undefined);
-    };
-
-    // 직종 선택/해제 토글
-    const toggleJob = (jobId: number) => {
-        setSelectedJobs(prev =>
-            prev.includes(jobId)
-                ? prev.filter(id => id !== jobId)
-                : [...prev, jobId]
-        );
-    };
-
-    // 근무조건 선택/해제 토글
-    const toggleCondition = (conditionId: number) => {
-        setSelectedConditions(prev =>
-            prev.includes(conditionId)
-                ? prev.filter(id => id !== conditionId)
-                : [...prev, conditionId]
-        );
-    };
+    const { handleToggle: toggleCondition } = useKeywordSelection({
+        keywords: conditionKeywords,
+        selectedIds: selectedConditions,
+        onSelectionChange: setSelectedConditions
+    })
 
 
     // 경력 정보 핸들러들
@@ -252,11 +199,11 @@ const Info = () => {
             }
 
             // 2. 프로필 관련 키워드 ID 가져오기
-            const ageKeywordId = getAgeKeywordId(age);
-            const genderKeywordId = getGenderKeywordId(gender);
-            const visaKeywordId = getVisaKeywordId(visa);
-            const koreanLevelKeywordId = getKoreanLevelKeywordId(koreanLevel);
-            const preferredDayKeywordIds = getPreferredDayKeywordIds(selectedDays);
+            const ageKeywordId = keywordMapper.getAgeKeywordId(age);
+            const genderKeywordId = keywordMapper.getGenderKeywordId(gender!);
+            const visaKeywordId = keywordMapper.getVisaKeywordId(visa!);
+            const koreanLevelKeywordId = keywordMapper.getKoreanLevelKeywordId(koreanLevel!);
+            const preferredDayKeywordIds = keywordMapper.getPreferredDayKeywordIds(selectedDays);
 
             // 키워드 ID가 없는 경우 경고
             if (!ageKeywordId) {
