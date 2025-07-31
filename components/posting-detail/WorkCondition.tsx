@@ -94,35 +94,47 @@ export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkCon
                         </View>
                         <View className="ml-3">
                             <Text className="text-xs text-gray-500">{t('posting_detail.salary', '급여')}</Text>
-                            <Text className="text-base text-gray-800">
-                                {isTranslated && translatedData?.salary_range
-                                    ? translatedData.salary_range
-                                    : posting.salary_range
-                                }
-                                {posting.salary_range_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
-                            </Text>
+                            <View className="flex-row items-center">
+                                {posting.salary_type && (
+                                    <View className="bg-blue-100 px-2 py-1 rounded-md mr-2">
+                                        <Text className="text-blue-700 text-sm font-medium">
+                                            {isTranslated && translatedData?.salary_type
+                                                ? translatedData.salary_type
+                                                : posting.salary_type
+                                            }
+                                        </Text>
+                                    </View>
+                                )}
+                                <Text className="text-base text-gray-800">
+                                    {isTranslated && translatedData?.salary_range
+                                        ? translatedData.salary_range
+                                        : posting.salary_range
+                                    }
+                                    {posting.salary_range_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
+                                </Text>
+                            </View>
                         </View>
                     </View>
                 )}
 
                 {/* 급여일 */}
-                {posting.pay_day && (
-                    <View className="flex-row items-center mb-3">
-                        <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
-                            <Ionicons name="wallet-outline" size={18} color="#3b82f6" />
-                        </View>
-                        <View className="ml-3">
-                            <Text className="text-xs text-gray-500">{t('posting_detail.pay_day', '급여일')}</Text>
-                            <Text className="text-base text-gray-800">
-                                {isTranslated && translatedData?.pay_day
-                                    ? translatedData.pay_day
-                                    : posting.pay_day
-                                }
-                                {posting.pay_day_negotiable && t('posting_detail.negotiable', ' (협의가능)')}
-                            </Text>
-                        </View>
-                    </View>
-                )}
+                {/*{posting.pay_day && (*/}
+                {/*    <View className="flex-row items-center mb-3">*/}
+                {/*        <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">*/}
+                {/*            <Ionicons name="wallet-outline" size={18} color="#3b82f6" />*/}
+                {/*        </View>*/}
+                {/*        <View className="ml-3">*/}
+                {/*            <Text className="text-xs text-gray-500">{t('posting_detail.pay_day', '급여일')}</Text>*/}
+                {/*            <Text className="text-base text-gray-800">*/}
+                {/*                {isTranslated && translatedData?.pay_day*/}
+                {/*                    ? translatedData.pay_day*/}
+                {/*                    : posting.pay_day*/}
+                {/*                }*/}
+                {/*                {posting.pay_day_negotiable && t('posting_detail.negotiable', ' (협의가능)')}*/}
+                {/*            </Text>*/}
+                {/*        </View>*/}
+                {/*    </View>*/}
+                {/*)}*/}
 
                 {posting.hiring_count && (
                     <View className="flex-row items-center">

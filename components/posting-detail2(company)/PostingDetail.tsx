@@ -96,10 +96,17 @@ export const PostingDetail = ({
                         <Ionicons name="cash-outline" size={20} color="#6b7280" />
                         <View className="ml-3">
                             <Text className="text-xs text-gray-500">급여</Text>
-                            <Text className="text-gray-700">
-                                {posting.salary_range}
-                                {posting.salary_range_negotiable && ' (협의가능)'}
-                            </Text>
+                            <View className="flex-row items-center">
+                                {posting.salary_type && (
+                                    <View className="bg-blue-100 px-2 py-1 rounded-md mr-2">
+                                        <Text className="text-blue-700 text-sm font-medium">{posting.salary_type}</Text>
+                                    </View>
+                                )}
+                                <Text className="text-gray-700">
+                                    {posting.salary_range}
+                                    {posting.salary_range_negotiable && ' (협의가능)'}
+                                </Text>
+                            </View>
                         </View>
                     </View>
                 )}

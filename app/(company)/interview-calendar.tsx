@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Calendar, LocaleConfig } from 'react-native-calendars'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, router } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
 import { getLocalDateString, getLocalTimeString, groupByDate } from '@/lib/dateUtils'
 
@@ -125,20 +125,13 @@ export default function InterviewCalendar() {
     }, [selectedDate, groupedSchedules])
 
     useEffect(() => {
-        // 시간대 설정 탭에서 날짜 선택 시 기존 시간들 로드
-        console.log('Date change effect triggered')
-        console.log('activeTab:', activeTab, 'selectedDate:', selectedDate)
-        console.log('dateTimeMap:', dateTimeMap)
-        console.log('bookedSlots:', bookedSlots)
-        
+
         if (activeTab === 'slots' && selectedDate) {
             const existingSlots = dateTimeMap[selectedDate] || []
             const bookedTimesForDate = bookedSlots[selectedDate] || []
             const allExistingTimes = existingSlots.map(slot => slot.startTime)
             
-            console.log('existingSlots for', selectedDate, ':', existingSlots)
-            console.log('allExistingTimes:', allExistingTimes)
-            
+
             setSelectedTimes(allExistingTimes)
             
             if (existingSlots.length > 0) {
@@ -156,15 +149,12 @@ export default function InterviewCalendar() {
             const response = await api('GET', `/api/interview-schedules/company?companyId=${user?.userId}&month=${month}`)
 
             if (response?.success) {
-                console.log('Raw schedules from server:', response.data.schedules)
-                console.log('Raw groupedSchedules from server:', response.data.groupedSchedules)
-                
+
                 // 클라이언트 측에서 직접 그룹화하여 시간대 문제 해결
                 const schedules = response.data.schedules || []
                 const clientGroupedSchedules = groupByDate(schedules, (schedule: InterviewSchedule) => schedule.interview_slot.start_time)
                 
-                console.log('Company page - grouped schedules:', clientGroupedSchedules)
-                
+
                 setSchedules(schedules)
                 setGroupedSchedules(clientGroupedSchedules as Record<string, InterviewSchedule[]>)
             }
@@ -179,21 +169,18 @@ export default function InterviewCalendar() {
     const fetchSlots = async () => {
         console.log('fetchSlots called')
         const result = await api('GET', '/api/company/interview-slots?companyId=' + user?.userId)
-        console.log('fetchSlots result:', result)
 
         if (result?.data && Array.isArray(result.data)) {
             const groupedSlots: Record<string, TimeSlot[]> = {}
             const bookedSlotsMap: Record<string, string[]> = {}
 
             result.data.forEach((slot: any) => {
-                console.log('Processing slot from server:', slot.start_time, '→', slot.end_time)
-                
+
                 // 유틸리티 함수 사용하여 일관된 날짜/시간 처리
                 const date = getLocalDateString(slot.start_time)
                 const startTime = getLocalTimeString(slot.start_time)
                 const endTime = getLocalTimeString(slot.end_time)
                 
-                console.log('Parsed:', { date, startTime, endTime })
 
                 const timeSlot: TimeSlot = {
                     date: date,
@@ -215,8 +202,6 @@ export default function InterviewCalendar() {
                 }
             })
 
-            console.log('Processed groupedSlots:', groupedSlots)
-            console.log('Processed bookedSlotsMap:', bookedSlotsMap)
 
             setDateTimeMap(groupedSlots)
             setBookedSlots(bookedSlotsMap)
@@ -224,7 +209,6 @@ export default function InterviewCalendar() {
             // 현재 선택된 날짜가 있다면 해당 날짜의 시간들을 다시 설정
             if (selectedDate && groupedSlots[selectedDate]) {
                 const updatedTimes = groupedSlots[selectedDate].map(slot => slot.startTime)
-                console.log('Setting selectedTimes from fetchSlots:', updatedTimes)
                 setSelectedTimes(updatedTimes)
             }
         }
@@ -261,9 +245,7 @@ export default function InterviewCalendar() {
     }
 
     const handleTimeToggle = (time: string) => {
-        console.log('handleTimeToggle called with time:', time)
-        console.log('Current selectedTimes:', selectedTimes)
-        
+
         // 예약된 시간은 선택 불가
         if (bookedSlots[selectedDate]?.includes(time)) {
             showModal('알림', '이미 예약된 시간대입니다.')
@@ -282,10 +264,6 @@ export default function InterviewCalendar() {
     }
 
     const handleSaveForDate = async () => {
-        console.log('handleSaveForDate called')
-        console.log('selectedDate:', selectedDate)
-        console.log('selectedTimes:', selectedTimes)
-        
         if (!selectedDate) {
             showModal('알림', '날짜를 선택해주세요.')
             return
@@ -296,9 +274,6 @@ export default function InterviewCalendar() {
         const newlySelectedTimes = selectedTimes.filter(time => !bookedTimesForDate.includes(time))
         const finalTimes = [...new Set([...mustIncludeBookedTimes, ...newlySelectedTimes])]
         
-        console.log('bookedTimesForDate:', bookedTimesForDate)
-        console.log('newlySelectedTimes:', newlySelectedTimes)
-        console.log('finalTimes:', finalTimes)
 
         if (finalTimes.length === 0) {
             if (dateTimeMap[selectedDate] && dateTimeMap[selectedDate].length > 0) {
@@ -353,19 +328,19 @@ export default function InterviewCalendar() {
             }
         })
 
-        console.log('Sending slots to server:', slots)
-        
+
         const response = await api('POST', '/api/company/interview-slots', {
             companyId: user?.userId,
             date: selectedDate,
             slots: slots
         })
 
-        console.log('Save response:', response)
 
         if (response?.success) {
             await fetchSlots()
-            showModal('성공', '선택된 시간대가 구직자에게 제공됩니다', 'info')
+            showModal('성공', '선택된 시간대가 구직자에게 제공됩니다', 'info', () => {
+                router.push('/(company)/home2')
+            })
         } else {
             console.error('Save failed:', response)
             showModal('오류', '시간대 저장에 실패했습니다: ' + (response?.message || '알 수 없는 오류'))
