@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
 import { api } from '@/lib/api'
@@ -138,7 +138,74 @@ const JobPostingStep3 = () => {
         setSelectedConditions(newConditions)
     }
 
-    // Zustand에서 데이터를 자동으로 관리하므로 별도의 로드 불필요
+    // 편집 모드일 때 기존 데이터 로드
+    useEffect(() => {
+        if (step1Data.isEditMode && step1Data.jobPostingId && keywords.length > 0) {
+            loadJobPostingStep3Data()
+        }
+    }, [step1Data.isEditMode, step1Data.jobPostingId, keywords])
+
+    const loadJobPostingStep3Data = async () => {
+        if (!step1Data.jobPostingId) return
+
+        try {
+            // 공고 키워드 조회
+            const keywordResponse = await api('GET', `/api/job-posting-keyword/${step1Data.jobPostingId}`)
+            
+            if (keywordResponse.success && keywordResponse.data) {
+                const jobPostingKeywords = keywordResponse.data
+                
+                // 카테고리별로 키워드 분류
+                const countries: number[] = []
+                const jobs: number[] = []
+                const conditions: number[] = []
+                const ageRanges: number[] = []
+                const genders: number[] = []
+                const visas: number[] = []
+                const koreanLevels: number[] = []
+                
+                jobPostingKeywords.forEach((jk: any) => {
+                    const keyword = keywords.find(k => k.id === jk.keyword_id)
+                    if (!keyword) return
+                    
+                    switch (keyword.category) {
+                        case '국가':
+                            countries.push(jk.keyword_id)
+                            break
+                        case '직종':
+                            jobs.push(jk.keyword_id)
+                            break
+                        case '근무조건':
+                            conditions.push(jk.keyword_id)
+                            break
+                        case '나이대':
+                            ageRanges.push(jk.keyword_id)
+                            break
+                        case '성별':
+                            genders.push(jk.keyword_id)
+                            break
+                        case '비자':
+                            visas.push(jk.keyword_id)
+                            break
+                        case '한국어수준':
+                            koreanLevels.push(jk.keyword_id)
+                            break
+                    }
+                })
+                
+                // Zustand store에 데이터 설정
+                setSelectedCountries(countries)
+                setSelectedJobs(jobs)
+                setSelectedConditions(conditions)
+                setSelectedAgeRanges(ageRanges)
+                setSelectedGenders(genders)
+                setSelectedVisas(visas)
+                setSelectedKoreanLevels(koreanLevels)
+            }
+        } catch (error) {
+            console.error('Step3 데이터 로드 실패:', error)
+        }
+    }
 
     // 이전 단계로 돌아가기
     const handlePrevious = () => {
@@ -264,7 +331,7 @@ const JobPostingStep3 = () => {
             <View className="flex-row items-center p-4 border-b border-gray-200">
                 <Back />
                 <Text className="text-lg font-bold ml-4">
-                    채용 공고 등록 (3/3)
+                    {step1Data.isEditMode ? '채용 공고 수정' : '채용 공고 등록'} (3/3)
                 </Text>
             </View>
 
@@ -296,6 +363,7 @@ const JobPostingStep3 = () => {
                         <Text className="text-gray-600 mb-6">공고에 적합한 인재를 찾아드리겠습니다.</Text>
                     </View>
 
+                    {/* 1. 선호 국가 선택 (필수) */}
                     <MultiSelectKeywordSelector
                         title="선호 국가 *"
                         placeholder="국가를 선택하세요"
@@ -308,85 +376,104 @@ const JobPostingStep3 = () => {
                         enableSearch={true}
                     />
 
-                    <MultiSelectKeywordSelector
-                        title="선호 나이대"
-                        placeholder="나이대를 선택하세요"
-                        keywords={ageRangeKeywords}
-                        selectedIds={step3Data.selectedAgeRanges}
-                        onSelect={handleAgeRangeSelect}
-                        onRemove={removeAgeRange}
-                        emptyText="선택된 나이대가 없습니다"
-                        showNoPreferenceOption={true}
-                        enableSearch={true}
-                    />
+                    {/* 2. 선호 나이대 (국가 선택 후 표시) */}
+                    {step3Data.selectedCountries.length > 0 && (
+                        <MultiSelectKeywordSelector
+                            title="선호 나이대"
+                            placeholder="나이대를 선택하세요"
+                            keywords={ageRangeKeywords}
+                            selectedIds={step3Data.selectedAgeRanges}
+                            onSelect={handleAgeRangeSelect}
+                            onRemove={removeAgeRange}
+                            emptyText="선택된 나이대가 없습니다"
+                            showNoPreferenceOption={true}
+                            enableSearch={true}
+                        />
+                    )}
 
-                    <MultiSelectKeywordSelector
-                        title="선호 성별"
-                        placeholder="선호 성별을 선택하세요"
-                        keywords={genderKeywords}
-                        selectedIds={step3Data.selectedGenders}
-                        onSelect={handleGenderSelect}
-                        onRemove={removeGender}
-                        emptyText="선택된 성별이 없습니다"
-                        showNoPreferenceOption={true}
-                        enableSearch={false}
-                    />
+                    {/* 3. 선호 성별 (나이대 섹션이 표시되면 계속 표시) */}
+                    {step3Data.selectedCountries.length > 0 && (
+                        <MultiSelectKeywordSelector
+                            title="선호 성별"
+                            placeholder="선호 성별을 선택하세요"
+                            keywords={genderKeywords}
+                            selectedIds={step3Data.selectedGenders}
+                            onSelect={handleGenderSelect}
+                            onRemove={removeGender}
+                            emptyText="선택된 성별이 없습니다"
+                            showNoPreferenceOption={true}
+                            enableSearch={false}
+                        />
+                    )}
 
-                    <MultiSelectKeywordSelector
-                        title="선호 비자"
-                        placeholder="비자를 선택하세요"
-                        keywords={visaKeywords}
-                        selectedIds={step3Data.selectedVisas}
-                        onSelect={handleVisaSelect}
-                        onRemove={removeVisa}
-                        emptyText="선택된 비자가 없습니다"
-                        showNoPreferenceOption={true}
-                        enableSearch={true}
-                    />
+                    {/* 4. 선호 비자 (성별 섹션이 표시되면 계속 표시) */}
+                    {step3Data.selectedCountries.length > 0 && (
+                        <MultiSelectKeywordSelector
+                            title="선호 비자"
+                            placeholder="비자를 선택하세요"
+                            keywords={visaKeywords}
+                            selectedIds={step3Data.selectedVisas}
+                            onSelect={handleVisaSelect}
+                            onRemove={removeVisa}
+                            emptyText="선택된 비자가 없습니다"
+                            showNoPreferenceOption={true}
+                            enableSearch={true}
+                        />
+                    )}
 
-                    <MultiSelectKeywordSelector
-                        title="선호 한국어 수준"
-                        placeholder="한국어 수준을 선택하세요"
-                        keywords={koreanLevelKeywords}
-                        selectedIds={step3Data.selectedKoreanLevels}
-                        onSelect={handleKoreanLevelSelect}
-                        onRemove={removeKoreanLevel}
-                        emptyText="선택된 한국어 수준이 없습니다"
-                        showNoPreferenceOption={true}
-                        enableSearch={true}
-                    />
+                    {/* 5. 선호 한국어 수준 (비자 섹션이 표시되면 계속 표시) */}
+                    {step3Data.selectedCountries.length > 0 && (
+                        <MultiSelectKeywordSelector
+                            title="선호 한국어 수준"
+                            placeholder="한국어 수준을 선택하세요"
+                            keywords={koreanLevelKeywords}
+                            selectedIds={step3Data.selectedKoreanLevels}
+                            onSelect={handleKoreanLevelSelect}
+                            onRemove={removeKoreanLevel}
+                            emptyText="선택된 한국어 수준이 없습니다"
+                            showNoPreferenceOption={true}
+                            enableSearch={true}
+                        />
+                    )}
 
-                    {/* 직종 선택 */}
-                    <JobPreferencesSelector
-                        jobs={jobKeywords}
-                        selectedJobs={step3Data.selectedJobs}
-                        onToggle={toggleJob}
-                        title="모집 직종 *"
-                    />
+                    {/* 6. 직종 선택 (필수 - 한국어 수준 섹션이 표시되면 계속 표시) */}
+                    {step3Data.selectedCountries.length > 0 && (
+                        <JobPreferencesSelector
+                            jobs={jobKeywords}
+                            selectedJobs={step3Data.selectedJobs}
+                            onToggle={toggleJob}
+                            title="모집 직종 *"
+                        />
+                    )}
 
-                    {/* 근무조건 선택 */}
-                    <WorkConditionsSelector
-                        conditions={conditionKeywords}
-                        selectedConditions={step3Data.selectedConditions}
-                        onToggle={toggleCondition}
-                        title="제공 조건"
-                    />
+                    {/* 7. 근무조건 선택 (직종 섹션이 표시되면 계속 표시) */}
+                    {step3Data.selectedCountries.length > 0 && (
+                        <WorkConditionsSelector
+                            conditions={conditionKeywords}
+                            selectedConditions={step3Data.selectedConditions}
+                            onToggle={toggleCondition}
+                            title="제공 조건"
+                        />
+                    )}
 
-                    {/* 공고 상태 */}
-                    <View className="p-6">
-                        <View className="flex-row items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <Text className="text-lg font-medium">공고 활성화</Text>
-                            <Switch
-                                value={step3Data.isPostingActive}
-                                onValueChange={setIsPostingActive}
-                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={step3Data.isPostingActive ? '#ffffff' : '#f3f4f6'}
-                            />
+                    {/* 8. 공고 상태 (모든 필수 항목 완료 후 표시) */}
+                    {step3Data.selectedCountries.length > 0 && 
+                     step3Data.selectedJobs.length > 0 && (
+                        <View className="p-6">
+                            <View className="flex-row items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <Text className="text-lg font-medium">공고 활성화</Text>
+                                <Switch
+                                    value={step3Data.isPostingActive}
+                                    onValueChange={setIsPostingActive}
+                                    trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
+                                    thumbColor={step3Data.isPostingActive ? '#ffffff' : '#f3f4f6'}
+                                />
+                            </View>
+                            <Text className="text-sm text-gray-600 mt-2 px-1">
+                                적합도가 90% 이상이면 자동면접 확정에 동의합니다
+                            </Text>
                         </View>
-                        <Text className="text-sm text-gray-600 mt-2 px-1">
-                            적합도가 90% 이상이면 자동면접 확정에 동의합니다
-                        </Text>
-                    </View>
+                    )}
                 </View>
             </ScrollView>
 
@@ -410,7 +497,7 @@ const JobPostingStep3 = () => {
                         }`}
                     >
                         <Text className="text-center text-white font-bold text-lg">
-                            {loading ? '저장 중...' : '공고 등록'}
+                            {loading ? '저장 중...' : (step1Data.isEditMode ? '공고 수정' : '공고 등록')}
                         </Text>
                     </TouchableOpacity>
                 </View>

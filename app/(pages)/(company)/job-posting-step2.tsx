@@ -1,7 +1,8 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
+import { api } from '@/lib/api'
 import Back from '@/components/back'
 import { useModal } from "@/hooks/useModal";
 import { useUserKeywords } from '@/hooks/useUserKeywords'
@@ -15,6 +16,7 @@ const JobPostingStep2 = () => {
     const { keywords, loading: keywordsLoading } = useUserKeywords()
     
     // Zustand store 사용
+    const step1Data = useJobPostingStore(state => state.step1)
     const step2Data = useJobPostingStore(state => state.step2)
     const {
         setSelectedLocation,
@@ -49,7 +51,53 @@ const JobPostingStep2 = () => {
         setWorkingDays(newDays)
     }
 
-    // Zustand에서 데이터를 자동으로 관리하므로 별도의 로드 불필요
+    // 편집 모드일 때 기존 데이터 로드
+    useEffect(() => {
+        if (step1Data.isEditMode && step1Data.jobPostingId && keywords.length > 0) {
+            loadJobPostingStep2Data()
+        }
+    }, [step1Data.isEditMode, step1Data.jobPostingId, keywords])
+
+    const loadJobPostingStep2Data = async () => {
+        if (!step1Data.jobPostingId) return
+
+        try {
+            // 공고 기본 정보 조회
+            const postingResponse = await api('GET', `/api/job-postings/${step1Data.jobPostingId}`)
+            
+            if (postingResponse.success && postingResponse.data) {
+                const posting = postingResponse.data
+                
+                // Step 2 관련 데이터 설정
+                setWorkingHours(posting.working_hours || '')
+                setWorkingHoursNegotiable(posting.working_hours_negotiable || false)
+                setWorkingDays(posting.working_days || [])
+                setWorkingDaysNegotiable(posting.working_days_negotiable || false)
+                setSalaryType(posting.salary_type || 'monthly')
+                setSalaryRange(posting.salary_range || '')
+                setSalaryRangeNegotiable(posting.salary_range_negotiable || false)
+                setPayDay(posting.pay_day || '')
+                setPayDayNegotiable(posting.pay_day_negotiable || false)
+            }
+
+            // 공고 키워드 조회 (지역 정보)
+            const keywordResponse = await api('GET', `/api/job-posting-keyword/${step1Data.jobPostingId}`)
+            
+            if (keywordResponse.success && keywordResponse.data) {
+                const jobPostingKeywords = keywordResponse.data
+                
+                // 지역 키워드 찾기
+                const locationKeyword = jobPostingKeywords.find((jk: any) => 
+                    keywords.find(k => k.id === jk.keyword_id && k.category === '지역')
+                )
+                if (locationKeyword) {
+                    setSelectedLocation(locationKeyword.keyword_id)
+                }
+            }
+        } catch (error) {
+            console.error('Step2 데이터 로드 실패:', error)
+        }
+    }
 
     // 이전 단계로 돌아가기
     const handlePrevious = () => {
@@ -97,7 +145,7 @@ const JobPostingStep2 = () => {
             <View className="flex-row items-center p-4 border-b border-gray-200">
                 <Back />
                 <Text className="text-lg font-bold ml-4">
-                    채용 공고 등록 (2/3)
+                    {step1Data.isEditMode ? '채용 공고 수정' : '채용 공고 등록'} (2/3)
                 </Text>
             </View>
 
@@ -137,32 +185,34 @@ const JobPostingStep2 = () => {
                         />
 
                         {step2Data.selectedLocation && (
-                            <>
-                                <WorkScheduleForm
-                                    workingHours={step2Data.workingHours}
-                                    setWorkingHours={setWorkingHours}
-                                    workingHoursNegotiable={step2Data.workingHoursNegotiable}
-                                    setWorkingHoursNegotiable={setWorkingHoursNegotiable}
-                                    workingDays={step2Data.workingDays}
-                                    toggleWorkingDay={toggleWorkingDay}
-                                    setWorkingDays={setWorkingDays}
-                                    workingDaysNegotiable={step2Data.workingDaysNegotiable}
-                                    setWorkingDaysNegotiable={setWorkingDaysNegotiable}
-                                />
+                            <WorkScheduleForm
+                                workingHours={step2Data.workingHours}
+                                setWorkingHours={setWorkingHours}
+                                workingHoursNegotiable={step2Data.workingHoursNegotiable}
+                                setWorkingHoursNegotiable={setWorkingHoursNegotiable}
+                                workingDays={step2Data.workingDays}
+                                toggleWorkingDay={toggleWorkingDay}
+                                setWorkingDays={setWorkingDays}
+                                workingDaysNegotiable={step2Data.workingDaysNegotiable}
+                                setWorkingDaysNegotiable={setWorkingDaysNegotiable}
+                            />
+                        )}
 
-                                <SalaryInfoForm
-                                    salaryType={step2Data.salaryType}
-                                    setSalaryType={setSalaryType}
-                                    salaryRange={step2Data.salaryRange}
-                                    setSalaryRange={setSalaryRange}
-                                    salaryRangeNegotiable={step2Data.salaryRangeNegotiable}
-                                    setSalaryRangeNegotiable={setSalaryRangeNegotiable}
-                                    payDay={step2Data.payDay}
-                                    setPayDay={setPayDay}
-                                    payDayNegotiable={step2Data.payDayNegotiable}
-                                    setPayDayNegotiable={setPayDayNegotiable}
-                                />
-                            </>
+                        {step2Data.selectedLocation && 
+                         step2Data.workingHours.trim() && 
+                         step2Data.workingDays.length > 0 && (
+                            <SalaryInfoForm
+                                salaryType={step2Data.salaryType}
+                                setSalaryType={setSalaryType}
+                                salaryRange={step2Data.salaryRange}
+                                setSalaryRange={setSalaryRange}
+                                salaryRangeNegotiable={step2Data.salaryRangeNegotiable}
+                                setSalaryRangeNegotiable={setSalaryRangeNegotiable}
+                                payDay={step2Data.payDay}
+                                setPayDay={setPayDay}
+                                payDayNegotiable={step2Data.payDayNegotiable}
+                                setPayDayNegotiable={setPayDayNegotiable}
+                            />
                         )}
                     </View>
                 </View>

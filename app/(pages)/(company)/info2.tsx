@@ -130,11 +130,15 @@ const JobPostingStep1 = () => {
             {/* 헤더 */}
             <View className="flex-row items-center p-4 border-b border-gray-200">
                 <Back onPress={() => {
-                    // 데이터가 있으면 확인 모달 표시
-                    if (!isDataEmpty()) {
+                    // 편집 모드이거나 데이터가 있으면 확인 모달 표시
+                    if (step1Data.isEditMode || !isDataEmpty()) {
+                        const message = step1Data.isEditMode 
+                            ? '수정 중인 내용이 저장되지 않습니다. 정말 나가시겠습니까?' 
+                            : '작성 중인 내용이 삭제됩니다. 정말 나가시겠습니까?'
+                        
                         showModal(
                             '확인',
-                            '작성 중인 내용이 삭제됩니다. 정말 나가시겠습니까?',
+                            message,
                             'confirm',
                             () => {
                                 resetAllData()

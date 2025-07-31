@@ -27,10 +27,10 @@ export const SalaryInfoForm: React.FC<SalaryInfoFormProps> = ({
     setPayDayNegotiable
 }) => {
     const salaryTypes = [
-        { label: '시급', value: 'hourly' },
-        { label: '일급', value: 'daily' },
-        { label: '월급', value: 'monthly' },
-        { label: '연봉', value: 'yearly' }
+        { label: '시급', value: '시급' },
+        { label: '일급', value: '일급' },
+        { label: '월급', value: '월급' },
+        { label: '연봉', value: '연봉' }
     ]
 
     return (
