@@ -3,18 +3,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 서버 주소 설정
 const SERVER_URL = __DEV__
-    ? 'http://192.168.0.15:5004'
-    : 'https://kgencyserver-production-45af.up.railway.app';
+    ? process.env.EXPO_PUBLIC_DEV_SERVER_URL
+    : process.env.EXPO_PUBLIC_PROD_SERVER_URL;
 
 // 토큰 메모리 캐시
 let cachedToken: string | null = null;
 let tokenCacheInitialized = false;
 
 
-// 192.168.219.126 시골
-// http://192.168.0.15:5004 집
-//커밋
-// 'http://192.168.0.20:5004' 밀파니
+
 // API 응답 타입 (서버 응답에 맞춰 수정)
 interface ApiResponse<T = any> {
     success: boolean;

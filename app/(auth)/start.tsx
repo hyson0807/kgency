@@ -37,18 +37,7 @@ const Start = () => {
     return (
         <SafeAreaView style={styles.container}>
             <View className="flex-1 px-6">
-                {/* 상단 헤더 */}
-                <View className="flex-row justify-between items-center pt-4 pb-2">
-                    <View className="w-12 h-12 bg-blue-100 rounded-xl items-center justify-center">
-                        <MaterialIcons name="work" size={24} color="#3b82f6" />
-                    </View>
-                    <TouchableOpacity
-                        className="p-2"
-                        onPress={() => setLanguageModalVisible(true)}
-                    >
-                        <MaterialIcons name="language" size={28} color="#6b7280" />
-                    </TouchableOpacity>
-                </View>
+
 
                 {/* 메인 컨텐츠 */}
                 <View className="flex-1 justify-center">
@@ -128,6 +117,19 @@ const Start = () => {
                                 <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
                             </View>
                         </TouchableOpacity>
+
+                        {/* 언어 선택 버튼 */}
+                        <View className="items-center mt-6">
+                            <TouchableOpacity
+                                className="flex-row items-center bg-gray-100 px-4 py-3 rounded-xl"
+                                onPress={() => setLanguageModalVisible(true)}
+                            >
+                                <MaterialIcons name="language" size={24} color="#6b7280" />
+                                <Text className="ml-2 text-gray-600 font-medium">
+                                    {t('language.select', '언어 선택')}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
 
