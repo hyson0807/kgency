@@ -1,4 +1,4 @@
-import {View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Modal, FlatList} from 'react-native'
+import {View, Text, StyleSheet, TouchableOpacity, Modal, FlatList, Image} from 'react-native'
 import React, {useState} from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {router} from "expo-router";
@@ -15,7 +15,7 @@ const Start = () => {
         setLanguageModalVisible(false);
     };
 
-    const renderLanguageItem = ({ item }: { item: typeof languages[0] }) => (
+    const renderLanguageItem = ({ item }: { item: typeof languages[number] }) => (
         <TouchableOpacity
             onPress={() => handleLanguageChange(item.code)}
             className={`flex-row items-center justify-between p-4 rounded-lg mb-2 ${
@@ -35,14 +35,18 @@ const Start = () => {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View className="flex-1 px-6">
-
-
-                {/* 메인 컨텐츠 */}
-                <View className="flex-1 justify-center">
-                    {/* 메인 텍스트 */}
-                    <View className="mb-8">
+        <View style={styles.container}>
+            <View className="flex-1">
+                {/* 상단 이미지 섹션 */}
+                <View className="flex-1 relative">
+                    <Image 
+                        source={require('@/assets/images/startImage.png')}
+                        style={{ width: '100%', height: '100%' }}
+                        resizeMode="cover"
+                    />
+                    
+                    {/* 메인 텍스트 - 이미지 위에 오버레이 */}
+                    <View className="absolute top-20 left-7  p-6">
                         <Text className="text-3xl font-bold text-gray-900 text-center mb-3">
                             {t('start.title', '일자리 찾고 있나요?')}
                         </Text>
@@ -50,11 +54,28 @@ const Start = () => {
                             {t('start.subtitle', '30초만에 나에게 딱 맞는\n일자리를 찾아드릴게요')}
                         </Text>
                     </View>
+                </View>
 
-                    {/* 선택 텍스트 */}
-                    <Text className="text-sm text-gray-500 text-center mb-6">
-                        {t('start.select_type', '어떤 서비스를 이용하시겠어요?')}
-                    </Text>
+                {/* 하단 카드 섹션 */}
+                <View 
+                    className="px-6 pb-8"
+                    style={{
+                        backgroundColor: '#eff6ff', // 부드러운 회색빛 흰색
+                        borderTopLeftRadius: 30,
+                        borderTopRightRadius: 30,
+                        marginTop: -20,
+                        paddingTop: 24,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: -4 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 12,
+                        elevation: 10,
+                    }}
+                >
+                    {/* 상단 핸들 바 */}
+                    <View className="items-center mb-4">
+                        <View className="w-12 h-1 bg-gray-300 rounded-full" />
+                    </View>
 
                     {/* 카드 스타일 버튼들 */}
                     <View className="space-y-4 gap-5">
@@ -119,9 +140,9 @@ const Start = () => {
                         </TouchableOpacity>
 
                         {/* 언어 선택 버튼 */}
-                        <View className="items-center mt-6">
+                        <View className="items-center mb-2">
                             <TouchableOpacity
-                                className="flex-row items-center bg-gray-100 px-4 py-3 rounded-xl"
+                                className="flex-row items-center bg-gray-200 px-4 py-3 rounded-xl"
                                 onPress={() => setLanguageModalVisible(true)}
                             >
                                 <MaterialIcons name="language" size={24} color="#6b7280" />
@@ -132,9 +153,6 @@ const Start = () => {
                         </View>
                     </View>
                 </View>
-
-                {/* 하단 여백 */}
-                <View className="h-20" />
             </View>
 
             {/* 언어 선택 모달 */}
@@ -156,7 +174,7 @@ const Start = () => {
                         </View>
 
                         <FlatList
-                            data={languages}
+                            data={[...languages]}
                             renderItem={renderLanguageItem}
                             keyExtractor={(item) => item.code}
                             showsVerticalScrollIndicator={true}
@@ -166,8 +184,7 @@ const Start = () => {
                     </View>
                 </View>
             </Modal>
-
-        </SafeAreaView>
+        </View>
     )
 }
 
