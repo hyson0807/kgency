@@ -6,9 +6,15 @@
 
 | 환경 | 모바일 앱 | 서버 | 데이터베이스 |
 |------|-----------|------|---------------|
-| **Development** | Expo Go/Dev Build | Local/Railway | Supabase Cloud |
+| **Development** | Expo Go/Custom Dev Build | Local/Railway | Supabase Cloud |
 | **Staging** | TestFlight/Internal Testing | Railway | Supabase Cloud |
 | **Production** | App Store/Google Play | Railway | Supabase Cloud |
+
+### 기술 스택
+- **Mobile**: React Native + Expo SDK 53, TypeScript, NativeWind
+- **Server**: Node.js + Express 5.x, JWT Authentication (7-day expiry)
+- **Database**: PostgreSQL (Supabase) with RLS
+- **External APIs**: Solapi (SMS), Google Translate, OpenAI
 
 ## 📱 모바일 앱 배포
 
