@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
 import { api } from '@/lib/api'
@@ -9,21 +9,27 @@ import { useUserKeywords } from '@/hooks/useUserKeywords'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 import { MultiSelectKeywordSelector } from '@/components/common/MultiSelectKeywordSelector';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useJobPostingStore } from '@/stores/jobPostingStore'
 
 // Step 3: 인재 선호 정보 입력 및 최종 저장 페이지
 const JobPostingStep3 = () => {
     const { keywords, loading: keywordsLoading } = useUserKeywords()
     
-    // Step 3: 키워드 선택 상태
-    const [selectedCountries, setSelectedCountries] = useState<number[]>([])
-    const [selectedJobs, setSelectedJobs] = useState<number[]>([])
-    const [selectedConditions, setSelectedConditions] = useState<number[]>([])
-    const [selectedAgeRanges, setSelectedAgeRanges] = useState<number[]>([])
-    const [selectedGenders, setSelectedGenders] = useState<number[]>([])
-    const [selectedVisas, setSelectedVisas] = useState<number[]>([])
-    const [selectedKoreanLevels, setSelectedKoreanLevels] = useState<number[]>([])
-    const [isPostingActive, setIsPostingActive] = useState(true)
+    // Zustand store 사용
+    const step1Data = useJobPostingStore(state => state.step1)
+    const step2Data = useJobPostingStore(state => state.step2)
+    const step3Data = useJobPostingStore(state => state.step3)
+    const {
+        setSelectedCountries,
+        setSelectedJobs,
+        setSelectedConditions,
+        setSelectedAgeRanges,
+        setSelectedGenders,
+        setSelectedVisas,
+        setSelectedKoreanLevels,
+        setIsPostingActive,
+        resetAllData
+    } = useJobPostingStore()
     
     const [loading, setLoading] = useState(false)
     const { showModal, ModalComponent, hideModal } = useModal()
@@ -44,14 +50,14 @@ const JobPostingStep3 = () => {
             const allCountryIds = countryKeywords.map(k => k.id)
             setSelectedCountries(allCountryIds)
         } else {
-            if (!selectedCountries.includes(item.value)) {
-                setSelectedCountries([...selectedCountries, item.value])
+            if (!step3Data.selectedCountries.includes(item.value)) {
+                setSelectedCountries([...step3Data.selectedCountries, item.value])
             }
         }
     }
 
     const removeCountry = (countryId: number) => {
-        setSelectedCountries(prev => prev.filter(id => id !== countryId))
+        setSelectedCountries(step3Data.selectedCountries.filter(id => id !== countryId))
     }
 
     const handleAgeRangeSelect = (item: any) => {
@@ -59,14 +65,14 @@ const JobPostingStep3 = () => {
             const allAgeRangeIds = ageRangeKeywords.map(k => k.id)
             setSelectedAgeRanges(allAgeRangeIds)
         } else {
-            if (!selectedAgeRanges.includes(item.value)) {
-                setSelectedAgeRanges([...selectedAgeRanges, item.value])
+            if (!step3Data.selectedAgeRanges.includes(item.value)) {
+                setSelectedAgeRanges([...step3Data.selectedAgeRanges, item.value])
             }
         }
     }
 
     const removeAgeRange = (ageRangeId: number) => {
-        setSelectedAgeRanges(prev => prev.filter(id => id !== ageRangeId))
+        setSelectedAgeRanges(step3Data.selectedAgeRanges.filter(id => id !== ageRangeId))
     }
 
     const handleGenderSelect = (item: any) => {
@@ -74,14 +80,14 @@ const JobPostingStep3 = () => {
             const allGenderIds = genderKeywords.map(k => k.id)
             setSelectedGenders(allGenderIds)
         } else {
-            if(!selectedGenders.includes(item.value)) {
-                setSelectedGenders([...selectedGenders, item.value])
+            if(!step3Data.selectedGenders.includes(item.value)) {
+                setSelectedGenders([...step3Data.selectedGenders, item.value])
             }
         }
     }
 
     const removeGender = (genderId: number) => {
-        setSelectedGenders(prev => prev.filter(id => id !== genderId))
+        setSelectedGenders(step3Data.selectedGenders.filter(id => id !== genderId))
     }
 
     const handleVisaSelect = (item: any) => {
@@ -89,14 +95,14 @@ const JobPostingStep3 = () => {
             const allVisaIds = visaKeywords.map(k => k.id)
             setSelectedVisas(allVisaIds)
         } else {
-            if (!selectedVisas.includes(item.value)) {
-                setSelectedVisas([...selectedVisas, item.value])
+            if (!step3Data.selectedVisas.includes(item.value)) {
+                setSelectedVisas([...step3Data.selectedVisas, item.value])
             }
         }
     }
 
     const removeVisa = (visaId: number) => {
-        setSelectedVisas(prev => prev.filter(id => id !== visaId))
+        setSelectedVisas(step3Data.selectedVisas.filter(id => id !== visaId))
     }
 
     const handleKoreanLevelSelect = (item: any) => {
@@ -104,54 +110,35 @@ const JobPostingStep3 = () => {
             const allKoreanLevelIds = koreanLevelKeywords.map(k => k.id)
             setSelectedKoreanLevels(allKoreanLevelIds)
         } else {
-            if (!selectedKoreanLevels.includes(item.value)) {
-                setSelectedKoreanLevels([...selectedKoreanLevels, item.value])
+            if (!step3Data.selectedKoreanLevels.includes(item.value)) {
+                setSelectedKoreanLevels([...step3Data.selectedKoreanLevels, item.value])
             }
         }
     }
 
     const removeKoreanLevel = (koreanLevelId: number) => {
-        setSelectedKoreanLevels(prev => prev.filter(id => id !== koreanLevelId))
+        setSelectedKoreanLevels(step3Data.selectedKoreanLevels.filter(id => id !== koreanLevelId))
     }
 
     // 직종 선택/해제 토글
     const toggleJob = (jobId: number) => {
-        setSelectedJobs(prev =>
-            prev.includes(jobId)
-                ? prev.filter(id => id !== jobId)
-                : [...prev, jobId]
-        )
+        const currentJobs = step3Data.selectedJobs
+        const newJobs = currentJobs.includes(jobId)
+            ? currentJobs.filter(id => id !== jobId)
+            : [...currentJobs, jobId]
+        setSelectedJobs(newJobs)
     }
 
     // 근무조건 선택/해제 토글
     const toggleCondition = (conditionId: number) => {
-        setSelectedConditions(prev =>
-            prev.includes(conditionId)
-                ? prev.filter(id => id !== conditionId)
-                : [...prev, conditionId]
-        )
+        const currentConditions = step3Data.selectedConditions
+        const newConditions = currentConditions.includes(conditionId)
+            ? currentConditions.filter(id => id !== conditionId)
+            : [...currentConditions, conditionId]
+        setSelectedConditions(newConditions)
     }
 
-    // Step 3 데이터 로드
-    const loadStep3Data = async () => {
-        const saved = await AsyncStorage.getItem('job_posting_step3')
-        if (saved) {
-            const data = JSON.parse(saved)
-            setSelectedCountries(data.selectedCountries || [])
-            setSelectedJobs(data.selectedJobs || [])
-            setSelectedConditions(data.selectedConditions || [])
-            setSelectedAgeRanges(data.selectedAgeRanges || [])
-            setSelectedGenders(data.selectedGenders || [])
-            setSelectedVisas(data.selectedVisas || [])
-            setSelectedKoreanLevels(data.selectedKoreanLevels || [])
-            setIsPostingActive(data.isPostingActive ?? true)
-        }
-    }
-
-    // 컴포넌트 마운트 시 데이터 로드
-    useEffect(() => {
-        loadStep3Data()
-    }, [])
+    // Zustand에서 데이터를 자동으로 관리하므로 별도의 로드 불필요
 
     // 이전 단계로 돌아가기
     const handlePrevious = () => {
@@ -161,16 +148,14 @@ const JobPostingStep3 = () => {
     // 최종 저장 및 완료
     const handleSubmit = async () => {
         // 유효성 검사
-        if (selectedCountries.length === 0 || selectedJobs.length === 0) {
+        if (step3Data.selectedCountries.length === 0 || step3Data.selectedJobs.length === 0) {
             showModal('알림', '필수 정보를 모두 선택해주세요. (선호 국가, 모집 직종)')
             return
         }
 
         setLoading(true)
         try {
-            // 모든 단계의 데이터를 가져와서 통합
-            const step1Data = JSON.parse(await AsyncStorage.getItem('job_posting_step1') || '{}')
-            const step2Data = JSON.parse(await AsyncStorage.getItem('job_posting_step2') || '{}')
+            // Zustand에서 모든 단계의 데이터를 가져옴
 
             // 공고 저장/업데이트
             const jobPostingData = {
@@ -181,6 +166,7 @@ const JobPostingStep3 = () => {
                 working_hours_negotiable: step2Data.workingHoursNegotiable,
                 working_days: step2Data.workingDays,
                 working_days_negotiable: step2Data.workingDaysNegotiable,
+                salary_type: step2Data.salaryType,
                 salary_range: step2Data.salaryRange,
                 salary_range_negotiable: step2Data.salaryRangeNegotiable,
                 pay_day: step2Data.payDay,
@@ -188,7 +174,7 @@ const JobPostingStep3 = () => {
                 job_address: step1Data.jobAddress,
                 interview_location: step1Data.interviewLocation,
                 special_notes: step1Data.specialNotes,
-                is_active: isPostingActive
+                is_active: step3Data.isPostingActive
             }
 
             let savedPostingId = step1Data.jobPostingId
@@ -220,14 +206,14 @@ const JobPostingStep3 = () => {
 
                 // 모든 선택된 키워드 통합
                 const allSelectedKeywords = [
-                    ...selectedCountries,
-                    ...selectedJobs,
-                    ...selectedConditions,
+                    ...step3Data.selectedCountries,
+                    ...step3Data.selectedJobs,
+                    ...step3Data.selectedConditions,
                     ...(step2Data.selectedLocation ? [step2Data.selectedLocation] : []),
-                    ...selectedAgeRanges,
-                    ...selectedVisas,
-                    ...selectedGenders,
-                    ...selectedKoreanLevels,
+                    ...step3Data.selectedAgeRanges,
+                    ...step3Data.selectedVisas,
+                    ...step3Data.selectedGenders,
+                    ...step3Data.selectedKoreanLevels,
                     ...selectedWorkDayKeywordIds
                 ].filter(Boolean)
 
@@ -242,7 +228,7 @@ const JobPostingStep3 = () => {
             }
 
             // 저장된 데이터 정리
-            await AsyncStorage.multiRemove(['job_posting_step1', 'job_posting_step2', 'job_posting_step3'])
+            resetAllData()
 
             showModal(
                 '성공',
@@ -314,7 +300,7 @@ const JobPostingStep3 = () => {
                         title="선호 국가 *"
                         placeholder="국가를 선택하세요"
                         keywords={countryKeywords}
-                        selectedIds={selectedCountries}
+                        selectedIds={step3Data.selectedCountries}
                         onSelect={handleCountrySelect}
                         onRemove={removeCountry}
                         emptyText="선택된 국가가 없습니다"
@@ -326,7 +312,7 @@ const JobPostingStep3 = () => {
                         title="선호 나이대"
                         placeholder="나이대를 선택하세요"
                         keywords={ageRangeKeywords}
-                        selectedIds={selectedAgeRanges}
+                        selectedIds={step3Data.selectedAgeRanges}
                         onSelect={handleAgeRangeSelect}
                         onRemove={removeAgeRange}
                         emptyText="선택된 나이대가 없습니다"
@@ -338,7 +324,7 @@ const JobPostingStep3 = () => {
                         title="선호 성별"
                         placeholder="선호 성별을 선택하세요"
                         keywords={genderKeywords}
-                        selectedIds={selectedGenders}
+                        selectedIds={step3Data.selectedGenders}
                         onSelect={handleGenderSelect}
                         onRemove={removeGender}
                         emptyText="선택된 성별이 없습니다"
@@ -350,7 +336,7 @@ const JobPostingStep3 = () => {
                         title="선호 비자"
                         placeholder="비자를 선택하세요"
                         keywords={visaKeywords}
-                        selectedIds={selectedVisas}
+                        selectedIds={step3Data.selectedVisas}
                         onSelect={handleVisaSelect}
                         onRemove={removeVisa}
                         emptyText="선택된 비자가 없습니다"
@@ -362,7 +348,7 @@ const JobPostingStep3 = () => {
                         title="선호 한국어 수준"
                         placeholder="한국어 수준을 선택하세요"
                         keywords={koreanLevelKeywords}
-                        selectedIds={selectedKoreanLevels}
+                        selectedIds={step3Data.selectedKoreanLevels}
                         onSelect={handleKoreanLevelSelect}
                         onRemove={removeKoreanLevel}
                         emptyText="선택된 한국어 수준이 없습니다"
@@ -373,7 +359,7 @@ const JobPostingStep3 = () => {
                     {/* 직종 선택 */}
                     <JobPreferencesSelector
                         jobs={jobKeywords}
-                        selectedJobs={selectedJobs}
+                        selectedJobs={step3Data.selectedJobs}
                         onToggle={toggleJob}
                         title="모집 직종 *"
                     />
@@ -381,7 +367,7 @@ const JobPostingStep3 = () => {
                     {/* 근무조건 선택 */}
                     <WorkConditionsSelector
                         conditions={conditionKeywords}
-                        selectedConditions={selectedConditions}
+                        selectedConditions={step3Data.selectedConditions}
                         onToggle={toggleCondition}
                         title="제공 조건"
                     />
@@ -391,10 +377,10 @@ const JobPostingStep3 = () => {
                         <View className="flex-row items-center justify-between p-4 bg-gray-50 rounded-lg">
                             <Text className="text-lg font-medium">공고 활성화</Text>
                             <Switch
-                                value={isPostingActive}
+                                value={step3Data.isPostingActive}
                                 onValueChange={setIsPostingActive}
                                 trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={isPostingActive ? '#ffffff' : '#f3f4f6'}
+                                thumbColor={step3Data.isPostingActive ? '#ffffff' : '#f3f4f6'}
                             />
                         </View>
                         <Text className="text-sm text-gray-600 mt-2 px-1">

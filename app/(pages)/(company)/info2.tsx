@@ -5,50 +5,81 @@ import { router, useLocalSearchParams } from "expo-router"
 import { api } from '@/lib/api'
 import Back from '@/components/back'
 import { useModal } from "@/hooks/useModal";
+import CustomModal from '@/components/CustomModal'
 import { JobBasicInfoForm } from '@/components/register_jobPosting(info2)/JobBasicInfoForm'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useJobPostingStore } from '@/stores/jobPostingStore'
 
 // Step 1: 채용공고 기본 정보 등록 페이지
 const JobPostingStep1 = () => {
     const params = useLocalSearchParams()
     const jobPostingId = params.jobPostingId as string | undefined
 
-    // Step 1: 기본 정보 상태
-    const [jobTitle, setJobTitle] = useState('')
-    const [jobDescription, setJobDescription] = useState('')
-    const [hiringCount, setHiringCount] = useState('1')
-    const [jobAddress, setJobAddress] = useState('')
-    const [interviewLocation, setInterviewLocation] = useState('')
-    const [specialNotes, setSpecialNotes] = useState('')
+    // Zustand store 사용
+    const step1Data = useJobPostingStore(state => state.step1)
+    const {
+        setJobTitle,
+        setJobDescription,
+        setHiringCount,
+        setJobAddress,
+        setInterviewLocation,
+        setSpecialNotes,
+        setEditMode,
+        resetAllData,
+        isDataEmpty
+    } = useJobPostingStore()
     
     const [loading, setLoading] = useState(false)
-    const [isEditMode, setIsEditMode] = useState(false)
-    const { showModal, ModalComponent, hideModal } = useModal()
+    const { showModal, ModalComponent } = useModal()
 
 
 
-    // Step 1에서 데이터 로드
-    const loadStep1Data = async () => {
-        const saved = await AsyncStorage.getItem('job_posting_step1')
-        if (saved) {
-            const data = JSON.parse(saved)
-            setJobTitle(data.jobTitle || '')
-            setJobDescription(data.jobDescription || '')
-            setHiringCount(data.hiringCount || '1')
-            setJobAddress(data.jobAddress || '')
-            setInterviewLocation(data.interviewLocation || '')
-            setSpecialNotes(data.specialNotes || '')
+    // 컴포넌트 마운트 시 데이터 로드 및 기존 작성 데이터 확인
+    useEffect(() => {
+        if (jobPostingId) {
+            setEditMode(true, jobPostingId)
+            loadJobPosting()
+        } else {
+            // 새로운 공고 작성 시 기존 작성 중인 데이터가 있는지 확인
+            checkExistingDraft()
+        }
+    }, [jobPostingId])
+
+    // 기존 작성 중인 공고 데이터 확인
+    const checkExistingDraft = () => {
+        if (!isDataEmpty()) {
+            setModalConfigForDraft(true)
         }
     }
 
-    // 컴포넌트 마운트 시 데이터 로드
-    useEffect(() => {
-        loadStep1Data()
-        if (jobPostingId) {
-            setIsEditMode(true)
-            loadJobPosting()
-        }
-    }, [jobPostingId])
+    // 모달 상태 관리를 위한 상태
+    const [showDraftModal, setShowDraftModal] = useState(false)
+
+    const setModalConfigForDraft = (show: boolean) => {
+        setShowDraftModal(show)
+    }
+
+    // 기존 작성 데이터 모달 컴포넌트
+    const DraftModalComponent = () => (
+        <CustomModal
+            visible={showDraftModal}
+            onClose={() => {
+                // 취소 버튼 누르면 데이터 초기화
+                resetAllData()
+                setShowDraftModal(false)
+            }}
+            title="기존 작성 데이터"
+            message="기존에 작성중인 공고가 존재합니다. 이어서 작성하시겠습니까?"
+            type="confirm"
+            onConfirm={() => {
+                // 확인 버튼 누르면 기존 데이터 유지
+                console.log('기존 데이터로 이어서 작성')
+                setShowDraftModal(false)
+            }}
+            showCancel={true}
+            confirmText="예"
+            cancelText="아니요"
+        />
+    )
 
     const loadJobPosting = async () => {
         if (!jobPostingId) return
@@ -76,32 +107,18 @@ const JobPostingStep1 = () => {
     // Step 1 데이터 저장 및 다음 단계로 이동
     const handleNext = async () => {
         // 유효성 검사
-        if (!jobTitle.trim()) {
+        if (!step1Data.jobTitle.trim()) {
             showModal('알림', '공고 제목을 입력해주세요.')
             return
         }
 
         setLoading(true)
         try {
-            // Step 1 데이터를 AsyncStorage에 저장
-            const step1Data = {
-                jobTitle,
-                jobDescription,
-                hiringCount,
-                jobAddress,
-                interviewLocation,
-                specialNotes,
-                isEditMode,
-                jobPostingId
-            }
-            
-            await AsyncStorage.setItem('job_posting_step1', JSON.stringify(step1Data))
-            
-            // Step 2로 이동
+            // Step 2로 이동 (데이터는 이미 Zustand에 저장됨)
             router.push('/job-posting-step2' as any)
         } catch (error) {
-            console.error('데이터 저장 실패:', error)
-            showModal('오류', '데이터 저장 중 문제가 발생했습니다.', 'warning')
+            console.error('네비게이션 실패:', error)
+            showModal('오류', '다음 단계로 이동 중 문제가 발생했습니다.', 'warning')
         } finally {
             setLoading(false)
         }
@@ -112,9 +129,24 @@ const JobPostingStep1 = () => {
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
             <View className="flex-row items-center p-4 border-b border-gray-200">
-                <Back />
+                <Back onPress={() => {
+                    // 데이터가 있으면 확인 모달 표시
+                    if (!isDataEmpty()) {
+                        showModal(
+                            '확인',
+                            '작성 중인 내용이 삭제됩니다. 정말 나가시겠습니까?',
+                            'confirm',
+                            () => {
+                                resetAllData()
+                                router.back()
+                            }
+                        )
+                    } else {
+                        router.back()
+                    }
+                }} />
                 <Text className="text-lg font-bold ml-4">
-                    {isEditMode ? '채용 공고 수정' : '채용 공고 등록'} (1/3)
+                    {step1Data.isEditMode ? '채용 공고 수정' : '채용 공고 등록'} (1/3)
                 </Text>
             </View>
 
@@ -147,17 +179,17 @@ const JobPostingStep1 = () => {
                     </View>
                     
                     <JobBasicInfoForm
-                        jobTitle={jobTitle}
+                        jobTitle={step1Data.jobTitle}
                         setJobTitle={setJobTitle}
-                        jobDescription={jobDescription}
+                        jobDescription={step1Data.jobDescription}
                         setJobDescription={setJobDescription}
-                        jobAddress={jobAddress}
+                        jobAddress={step1Data.jobAddress}
                         setJobAddress={setJobAddress}
-                        hiringCount={hiringCount}
+                        hiringCount={step1Data.hiringCount}
                         setHiringCount={setHiringCount}
-                        interviewLocation={interviewLocation}
+                        interviewLocation={step1Data.interviewLocation}
                         setInterviewLocation={setInterviewLocation}
-                        specialNotes={specialNotes}
+                        specialNotes={step1Data.specialNotes}
                         setSpecialNotes={setSpecialNotes}
                     />
                 </View>
@@ -179,6 +211,7 @@ const JobPostingStep1 = () => {
             </View>
 
             <ModalComponent/>
+            <DraftModalComponent/>
         </SafeAreaView>
     )
 }

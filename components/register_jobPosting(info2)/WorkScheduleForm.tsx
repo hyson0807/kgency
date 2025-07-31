@@ -8,6 +8,7 @@ interface WorkScheduleFormProps {
     setWorkingHoursNegotiable: (value: boolean) => void
     workingDays: string[]
     toggleWorkingDay: (day: string) => void
+    setWorkingDays: (days: string[]) => void
     workingDaysNegotiable: boolean
     setWorkingDaysNegotiable: (value: boolean) => void
 }
@@ -19,6 +20,7 @@ export const WorkScheduleForm: React.FC<WorkScheduleFormProps> = ({
     setWorkingHoursNegotiable,
     workingDays,
     toggleWorkingDay,
+    setWorkingDays,
     workingDaysNegotiable,
     setWorkingDaysNegotiable
 }) => {
@@ -60,7 +62,14 @@ export const WorkScheduleForm: React.FC<WorkScheduleFormProps> = ({
                 <View className="flex-row items-center justify-between mb-2">
                     <Text className="text-gray-700">근무일 *</Text>
                     <TouchableOpacity
-                        onPress={() => setWorkingDaysNegotiable(!workingDaysNegotiable)}
+                        onPress={() => {
+                            setWorkingDaysNegotiable(!workingDaysNegotiable)
+                            if (!workingDaysNegotiable) {
+                                // 협의가능을 선택하면 모든 요일 선택
+                                const allDays = ['월', '화', '수', '목', '금', '토', '일']
+                                setWorkingDays(allDays)
+                            }
+                        }}
                         className={`px-3 py-1 rounded-full ${
                             workingDaysNegotiable ? 'bg-blue-500' : 'bg-gray-200'
                         }`}

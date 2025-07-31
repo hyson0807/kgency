@@ -2,6 +2,8 @@ import React from 'react'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 
 interface SalaryInfoFormProps {
+    salaryType: string
+    setSalaryType: (value: string) => void
     salaryRange: string
     setSalaryRange: (value: string) => void
     salaryRangeNegotiable: boolean
@@ -13,11 +15,24 @@ interface SalaryInfoFormProps {
 }
 
 export const SalaryInfoForm: React.FC<SalaryInfoFormProps> = ({
+    salaryType,
+    setSalaryType,
     salaryRange,
     setSalaryRange,
     salaryRangeNegotiable,
     setSalaryRangeNegotiable,
+    payDay,
+    setPayDay,
+    payDayNegotiable,
+    setPayDayNegotiable
 }) => {
+    const salaryTypes = [
+        { label: '시급', value: 'hourly' },
+        { label: '일급', value: 'daily' },
+        { label: '월급', value: 'monthly' },
+        { label: '연봉', value: 'yearly' }
+    ]
+
     return (
         <>
             <View className="mb-4">
@@ -34,14 +49,37 @@ export const SalaryInfoForm: React.FC<SalaryInfoFormProps> = ({
                         }`}>협의가능</Text>
                     </TouchableOpacity>
                 </View>
+                
+                {/* 급여 타입 선택 */}
+                <View className="flex-row gap-2 mb-3">
+                    {salaryTypes.map(type => (
+                        <TouchableOpacity
+                            key={type.value}
+                            onPress={() => setSalaryType(type.value)}
+                            className={`px-3 py-2 rounded-lg border ${
+                                salaryType === type.value
+                                    ? 'bg-blue-500 border-blue-500'
+                                    : 'bg-white border-gray-300'
+                            }`}
+                        >
+                            <Text className={`text-sm ${
+                                salaryType === type.value
+                                    ? 'text-white'
+                                    : 'text-gray-700'
+                            }`}>
+                                {type.label}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+                
                 <TextInput
                     className="border border-gray-300 rounded-lg p-3"
-                    placeholder="예: 월 200-250만원"
+                    placeholder="예: 200-250만원"
                     value={salaryRange}
                     onChangeText={setSalaryRange}
                 />
             </View>
-
 
         </>
     )
