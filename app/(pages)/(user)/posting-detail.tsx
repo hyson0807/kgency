@@ -143,7 +143,7 @@ export default function PostingDetail() {
 
     const handleApply = () => {
         router.push({
-            pathname: '/(pages)/(user)/application-form',
+            pathname: '/(pages)/(user)/(application-registration)/application-step1',
             params: {
                 jobPostingId: postingId,
                 companyId: posting?.company.id || companyId,

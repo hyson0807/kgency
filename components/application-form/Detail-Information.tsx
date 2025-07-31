@@ -108,7 +108,7 @@ export const DetailInfromation = ({
     ]
 
     return (
-        <View className="mb-6 gap-4">
+        <View className="mb-6 gap-4 p-6">
             <Text className="text-lg font-bold mb-4">{t('apply.career_info', '경력 및 정보')}</Text>
 
             <View className="mb-4">

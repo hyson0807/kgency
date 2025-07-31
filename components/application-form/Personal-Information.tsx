@@ -50,7 +50,7 @@ export const PersonalInformation = ({
 
     return (
 
-    <View className="mb-6">
+    <View className="mb-6 p-6">
         <Text className="text-lg font-bold mb-4">{t('apply.basic_info', '기본 정보')}</Text>
         <View className="mb-4">
             <Text className="text-gray-700 mb-2">{t('apply.name', '이름')} *</Text>
