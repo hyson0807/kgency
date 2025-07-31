@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Calendar, LocaleConfig } from 'react-native-calendars'
+import { Calendar } from 'react-native-calendars'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useLocalSearchParams, router } from 'expo-router'
@@ -12,6 +12,7 @@ import { getLocalDateString, getLocalTimeString, groupByDate } from '@/lib/dateU
 // Components
 import { InterviewScheduleTab } from '@/components/interview-calendar/InterviewScheduleTab'
 import { InterviewSlotsTab } from '@/components/interview-calendar/InterviewSlotsTab'
+import { setupCalendarLocale } from '@/components/interview-calendar/config/calendarLocale'
 
 // Hooks & Utils
 import { api } from '@/lib/api'
@@ -19,14 +20,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 
 // 한국어 캘린더 설정
-LocaleConfig.locales['ko'] = {
-    monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-    monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-    dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
-    dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-    today: '오늘'
-}
-LocaleConfig.defaultLocale = 'ko'
+setupCalendarLocale()
 
 // Types
 interface InterviewSchedule {
