@@ -35,35 +35,42 @@ export const WorkScheduleForm: React.FC<WorkScheduleFormProps> = ({
     return (
         <>
             <View className="mb-4">
-                <Text className="text-gray-700 mb-2">근무시간</Text>
-                <View className="flex-row items-center gap-2">
-                    <TextInput
-                        className="flex-1 border border-gray-300 rounded-lg p-3"
-                        placeholder="예: 09:00-18:00"
-                        value={workingHours}
-                        onChangeText={setWorkingHours}
-                    />
+                <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-gray-700">근무시간</Text>
                     <TouchableOpacity
                         onPress={() => setWorkingHoursNegotiable(!workingHoursNegotiable)}
-                        className="flex-row items-center gap-2"
+                        className={`px-3 py-1 rounded-full ${
+                            workingHoursNegotiable ? 'bg-blue-500' : 'bg-gray-200'
+                        }`}
                     >
-                        <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                            workingHoursNegotiable
-                                ? 'bg-blue-500 border-blue-500'
-                                : 'bg-white border-gray-300'
-                        }`}>
-                            {workingHoursNegotiable && (
-                                <Text className="text-white text-xs">✓</Text>
-                            )}
-                        </View>
-                        <Text className="text-gray-700">협의가능</Text>
+                        <Text className={`text-sm ${
+                            workingHoursNegotiable ? 'text-white' : 'text-gray-700'
+                        }`}>협의가능</Text>
                     </TouchableOpacity>
                 </View>
+                <TextInput
+                    className="border border-gray-300 rounded-lg p-3"
+                    placeholder="예: 09:00-18:00"
+                    value={workingHours}
+                    onChangeText={setWorkingHours}
+                />
             </View>
 
             <View className="mb-4">
-                <Text className="text-gray-700 mb-2">근무일 *</Text>
-                <View className="flex-row flex-wrap gap-2 mb-3">
+                <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-gray-700">근무일 *</Text>
+                    <TouchableOpacity
+                        onPress={() => setWorkingDaysNegotiable(!workingDaysNegotiable)}
+                        className={`px-3 py-1 rounded-full ${
+                            workingDaysNegotiable ? 'bg-blue-500' : 'bg-gray-200'
+                        }`}
+                    >
+                        <Text className={`text-sm ${
+                            workingDaysNegotiable ? 'text-white' : 'text-gray-700'
+                        }`}>협의가능</Text>
+                    </TouchableOpacity>
+                </View>
+                <View className="flex-row flex-wrap gap-2">
                     {weekDays.map(day => (
                         <TouchableOpacity
                             key={day.value}
@@ -84,21 +91,6 @@ export const WorkScheduleForm: React.FC<WorkScheduleFormProps> = ({
                         </TouchableOpacity>
                     ))}
                 </View>
-                <TouchableOpacity
-                    onPress={() => setWorkingDaysNegotiable(!workingDaysNegotiable)}
-                    className="flex-row items-center gap-2"
-                >
-                    <View className={`w-5 h-5 rounded border-2 items-center justify-center ${
-                        workingDaysNegotiable
-                            ? 'bg-blue-500 border-blue-500'
-                            : 'bg-white border-gray-300'
-                    }`}>
-                        {workingDaysNegotiable && (
-                            <Text className="text-white text-xs">✓</Text>
-                        )}
-                    </View>
-                    <Text className="text-gray-700">협의가능</Text>
-                </TouchableOpacity>
             </View>
         </>
     )
