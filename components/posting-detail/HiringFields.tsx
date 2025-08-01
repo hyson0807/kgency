@@ -147,7 +147,7 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                 <View className="mb-4">
                     <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.work_days', '근무 요일')}</Text>
                     <View className="flex-row flex-wrap gap-2">
-                        {keywords.workDay.map((keyword) => (
+                        {sortWorkDayKeywords(keywords.workDay).map((keyword) => (
                             <View key={keyword.id} className="bg-indigo-100 px-3 py-1 rounded-full">
                                 <Text className="text-indigo-700 text-sm">
                                     {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
