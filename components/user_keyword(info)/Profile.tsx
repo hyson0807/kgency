@@ -3,6 +3,11 @@ import {Dropdown} from "react-native-element-dropdown";
 import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
 
+interface Keyword {
+    id: number;
+    keyword: string;
+    category: string;
+}
 
 interface ProfileProps {
     formData: {
@@ -19,33 +24,64 @@ interface ProfileProps {
         setVisa: (visa: string | null) => void,
         setKoreanLevel: (koreanLevel: string | null) => void,
     }
+    keywords: Keyword[];
 }
 
-export const Profile = ({ formData, handler }:ProfileProps) => {
+export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
     const { t } = useTranslation();
     const { name, age, gender, visa, koreanLevel } = formData;
     const { setName, setAge, setGender, setVisa, setKoreanLevel } = handler;
 
+    // DB에서 카테고리별 키워드 필터링
+    const genderKeywords = keywords.filter(k => k.category === '성별')
+    const anyGenderKeyword = genderKeywords.find(k => k.keyword === '상관없음')
+    
+    const visaKeywords = keywords.filter(k => k.category === '비자')
+    const anyVisaKeyword = visaKeywords.find(k => k.keyword === '상관없음')
+    
+    const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준')
+    const anyKoreanLevelKeyword = koreanLevelKeywords.find(k => k.keyword === '상관없음')
 
-
+    // 드롭다운 옵션 생성
     const genderOptions = [
-        { label: t('info.gender_male', '남성'), value: '남성' },
-        { label: t('info.gender_female', '여성'), value: '여성' }
+        // 나머지 성별들
+        ...genderKeywords
+            .filter(keyword => keyword.keyword !== '상관없음')
+            .map(keyword => ({
+                label: keyword.keyword,
+                value: keyword.keyword
+            })),
+        // 상관없음을 "기타"로 표시하여 맨 아래로
+        ...(anyGenderKeyword 
+            ? [{
+                label: '기타',
+                value: anyGenderKeyword.keyword  // 실제 DB 값은 '상관없음'
+            }]
+            : [])
     ];
+    
     const visaOptions = [
-        { label: 'F-2', value: 'F-2' },
-        { label: 'F-4', value: 'F-4' },
-        { label: 'F-5', value: 'F-5' },
-        { label: 'F-6', value: 'F-6' },
-        { label: 'E-9', value: 'E-9' },
-        { label: 'H-2', value: 'H-2' },
-        { label: 'D-2', value: 'D-2' },
-        { label: 'D-4', value: 'D-4' }
+        // 비자는 기타 옵션 숨김 - 상관없음 제외
+        ...visaKeywords
+            .filter(keyword => keyword.keyword !== '상관없음')
+            .map(keyword => ({
+                label: keyword.keyword,
+                value: keyword.keyword
+            }))
     ];
+    
     const koreanLevelOptions = [
-        { label: t('info.korean_beginner', '초급'), value: '초급' },
-        { label: t('info.korean_intermediate', '중급'), value: '중급' },
-        { label: t('info.korean_advanced', '고급'), value: '고급' }
+        // 한국어수준도 기타 옵션 숨김 - 상관없음 제외
+        ...koreanLevelKeywords
+            .filter(keyword => keyword.keyword !== '상관없음')
+            .sort((a, b) => {
+                const order = ['초급', '중급', '고급'];
+                return order.indexOf(a.keyword) - order.indexOf(b.keyword);
+            })
+            .map(keyword => ({
+                label: keyword.keyword,
+                value: keyword.keyword
+            }))
     ];
 
     return (

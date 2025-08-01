@@ -24,12 +24,25 @@ export const Country = ({
 
                         }: CountryProps) => {
     const {t, translateDB} = useTranslation();
-    const countryOptions = keywords
-        .filter(k => k.category.trim() === '국가')
-        .map(country => ({
-            label: translateDB('keyword', 'keyword', country.id.toString(), country.keyword),
-            value: country.id
-        }));
+    const countryKeywords = keywords.filter(k => k.category.trim() === '국가')
+    const anyCountryKeyword = countryKeywords.find(k => k.keyword === '상관없음')
+    
+    const countryOptions = [
+        // 상관없음을 "기타"로 표시하여 맨 위로
+        ...(anyCountryKeyword 
+            ? [{
+                label: '기타',  // 상관없음을 기타로 표시
+                value: anyCountryKeyword.id
+            }]
+            : []),
+        // 나머지 국가들
+        ...countryKeywords
+            .filter(country => country.keyword !== '상관없음')
+            .map(country => ({
+                label: translateDB('keyword', 'keyword', country.id.toString(), country.keyword),
+                value: country.id
+            }))
+    ];
 
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">

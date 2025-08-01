@@ -46,7 +46,7 @@ export const KoreanLevelSelector = ({
 
             {selectedKoreanLevel === null && (
                 <Text className="text-sm text-gray-500 mt-3 text-center">
-                    선택된 한국어 수준이 없습니다
+                    선택된 한국어 수준이 없습니다 (저장 시 '상관없음'으로 설정됩니다)
                 </Text>
             )}
         </View>

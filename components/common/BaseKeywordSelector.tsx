@@ -46,10 +46,16 @@ export const BaseKeywordSelector: React.FC<BaseKeywordSelectorProps> = ({
 
     const isAllSelected = selectedIds.length === keywords.length
     
+    // 상관없음 키워드 찾기
+    const anyCountryKeyword = keywords.find(k => k.keyword === '상관없음')
+    
     const dropdownOptions = [
-        ...(showNoPreferenceOption ? [{ label: '상관없음', value: 'all' }] : []),
+        // 상관없음을 맨 위로
+        ...(anyCountryKeyword && !selectedIds.includes(anyCountryKeyword.id) 
+            ? [{ label: '상관없음', value: anyCountryKeyword.id }]
+            : []),
         ...keywords
-            .filter(keyword => !selectedIds.includes(keyword.id))
+            .filter(keyword => !selectedIds.includes(keyword.id) && keyword.keyword !== '상관없음')
             .map(keyword => ({
                 label: keyword.keyword,
                 value: keyword.id
@@ -96,13 +102,6 @@ export const BaseKeywordSelector: React.FC<BaseKeywordSelectorProps> = ({
             <View className="flex-row flex-wrap mt-3">
                 {selectedKeywords.length === 0 ? (
                     <Text className="text-gray-400 text-sm">{emptyText}</Text>
-                ) : selectedIds.length === keywords.length ? (
-                    <View className="flex-row items-center bg-blue-100 rounded-full px-3 py-1.5 m-1">
-                        <Text className="text-blue-600 text-sm mr-1">상관없음</Text>
-                        <TouchableOpacity onPress={handleRemoveAll}>
-                            <Ionicons name="close" size={14} color="#2563eb" />
-                        </TouchableOpacity>
-                    </View>
                 ) : (
                     selectedKeywords.map(keyword => (
                         <View key={keyword.id} className="flex-row items-center bg-blue-100 rounded-full px-3 py-1.5 m-1">

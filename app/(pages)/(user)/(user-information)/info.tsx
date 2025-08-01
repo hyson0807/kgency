@@ -311,7 +311,9 @@ const Info = () => {
                             setGender,
                             setVisa,
                             setKoreanLevel,
-                        }} />
+                        }}
+                        keywords={keywords}
+                    />
 
                     {/* 지역 선택 섹션 */}
                     <LocationSelector

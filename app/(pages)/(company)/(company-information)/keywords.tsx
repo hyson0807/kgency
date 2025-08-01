@@ -67,14 +67,19 @@ const Keywords = () => {
             value: location.id
         }))
 
-    const countryKeywords = keywords.filter(k => k.category === '국가')
-    const genderKeywords = keywords.filter(k => k.category === '성별')
-    const ageKeywords = keywords.filter(k => k.category === '나이대')
-    const visaKeywords = keywords.filter(k => k.category === '비자')
+    const countryKeywords = keywords.filter(k => k.category === '국가' && k.keyword !== '상관없음')
+    const anyCountryKeyword = keywords.find(k => k.category === '국가' && k.keyword === '상관없음')
+    const genderKeywords = keywords.filter(k => k.category === '성별' && k.keyword !== '상관없음')
+    const anyGenderKeyword = keywords.find(k => k.category === '성별' && k.keyword === '상관없음')
+    const ageKeywords = keywords.filter(k => k.category === '나이대' && k.keyword !== '상관없음')
+    const anyAgeKeyword = keywords.find(k => k.category === '나이대' && k.keyword === '상관없음')
+    const visaKeywords = keywords.filter(k => k.category === '비자' && k.keyword !== '상관없음')
+    const anyVisaKeyword = keywords.find(k => k.category === '비자' && k.keyword === '상관없음')
     const jobKeywords = keywords.filter(k => k.category === '직종')
     const moveableKeyword = keywords.find(k => k.category === '지역이동')
     const workDayKeywords = keywords.filter(k => k.category === '근무요일')
-    const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준')
+    const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준' && k.keyword !== '상관없음')
+    const anyKoreanLevelKeyword = keywords.find(k => k.category === '한국어수준' && k.keyword === '상관없음')
 
 
     useEffect(() => {
@@ -160,7 +165,17 @@ const Keywords = () => {
                 const categoryKeywords = keywords
                     .filter(k => k.category === category && companyKeywords.includes(k.id))
                     .map(k => k.id)
-                setter(categoryKeywords)
+                
+                // 국가, 성별, 나이대, 비자, 한국어수준 카테고리의 경우 "상관없음" 제외
+                if (['국가', '성별', '나이대', '비자', '한국어수준'].includes(category)) {
+                    const filteredKeywords = categoryKeywords.filter(id => {
+                        const keyword = keywords.find(k => k.id === id)
+                        return keyword && keyword.keyword !== '상관없음'
+                    })
+                    setter(filteredKeywords)
+                } else {
+                    setter(categoryKeywords)
+                }
             })
 
             setSelectedKeywords(newSelectedKeywords)
@@ -169,26 +184,12 @@ const Keywords = () => {
 
     // 통합된 다중 선택 핸들러
     const handleMultiSelect = (category: keyof SelectedKeywords, item: any) => {
-        if (item.value === 'all') {
-            const allIds = getKeywordsByCategory(
-                category === 'countries' ? '국가' :
-                category === 'genders' ? '성별' :
-                category === 'ages' ? '나이대' :
-                category === 'visas' ? '비자' : ''
-            ).map(k => k.id)
-            
+        const currentArray = selectedKeywords[category] as number[]
+        if (!currentArray.includes(item.value)) {
             setSelectedKeywords(prev => ({
                 ...prev,
-                [category]: allIds
+                [category]: [...currentArray, item.value]
             }))
-        } else {
-            const currentArray = selectedKeywords[category] as number[]
-            if (!currentArray.includes(item.value)) {
-                setSelectedKeywords(prev => ({
-                    ...prev,
-                    [category]: [...currentArray, item.value]
-                }))
-            }
         }
     }
 
@@ -242,18 +243,43 @@ const Keywords = () => {
 
         setSaving(true)
         try {
+            // 국가가 선택되지 않았으면 상관없음 추가
+            const countriesToSave = selectedKeywords.countries.length === 0 && anyCountryKeyword
+                ? [anyCountryKeyword.id]
+                : selectedKeywords.countries
+            
+            // 성별이 선택되지 않았으면 상관없음 추가
+            const gendersToSave = selectedKeywords.genders.length === 0 && anyGenderKeyword
+                ? [anyGenderKeyword.id]
+                : selectedKeywords.genders
+                
+            // 나이대가 선택되지 않았으면 상관없음 추가
+            const agesToSave = selectedKeywords.ages.length === 0 && anyAgeKeyword
+                ? [anyAgeKeyword.id]
+                : selectedKeywords.ages
+                
+            // 비자가 선택되지 않았으면 상관없음 추가
+            const visasToSave = selectedKeywords.visas.length === 0 && anyVisaKeyword
+                ? [anyVisaKeyword.id]
+                : selectedKeywords.visas
+                
+            // 한국어수준이 선택되지 않았으면 상관없음 추가
+            const koreanLevelToSave = selectedKeywords.koreanLevel === null && anyKoreanLevelKeyword
+                ? anyKoreanLevelKeyword.id
+                : selectedKeywords.koreanLevel
+            
             // 선택된 키워드들 모으기
             const allSelectedKeywords = [
                 selectedKeywords.location,
                 selectedKeywords.moveable,
-                ...selectedKeywords.countries,
-                ...selectedKeywords.genders,
-                ...selectedKeywords.ages,
-                ...selectedKeywords.visas,
+                ...countriesToSave,
+                ...gendersToSave,
+                ...agesToSave,
+                ...visasToSave,
                 ...selectedKeywords.jobs,
                 ...selectedKeywords.conditions,
                 ...selectedKeywords.workDays,
-                selectedKeywords.koreanLevel
+                koreanLevelToSave
             ].filter(Boolean) // null 제거
 
             // API를 통해 키워드 업데이트
@@ -325,8 +351,9 @@ const Keywords = () => {
                     onSelect={(item) => handleMultiSelect('countries', item)}
                     onRemove={(id) => handleRemove('countries', id)}
                     onRemoveAll={() => handleRemoveAll('countries')}
-                    emptyText="선택된 국가가 없습니다"
+                    emptyText="선택된 국가가 없습니다 (저장 시 '상관없음'으로 설정됩니다)"
                     enableSearch={true}
+                    showNoPreferenceOption={false}
                 />
 
                 {/* 성별 선택 */}
@@ -338,7 +365,8 @@ const Keywords = () => {
                     onSelect={(item) => handleMultiSelect('genders', item)}
                     onRemove={(id) => handleRemove('genders', id)}
                     onRemoveAll={() => handleRemoveAll('genders')}
-                    emptyText="선택된 성별이 없습니다"
+                    emptyText="선택된 성별이 없습니다 (저장 시 '상관없음'으로 설정됩니다)"
+                    showNoPreferenceOption={false}
                 />
 
                 {/* 나이대 선택 */}
@@ -350,7 +378,8 @@ const Keywords = () => {
                     onSelect={(item) => handleMultiSelect('ages', item)}
                     onRemove={(id) => handleRemove('ages', id)}
                     onRemoveAll={() => handleRemoveAll('ages')}
-                    emptyText="선택된 나이대가 없습니다"
+                    emptyText="선택된 나이대가 없습니다 (저장 시 '상관없음'으로 설정됩니다)"
+                    showNoPreferenceOption={false}
                 />
 
                 {/* 비자 선택 */}
@@ -362,7 +391,8 @@ const Keywords = () => {
                     onSelect={(item) => handleMultiSelect('visas', item)}
                     onRemove={(id) => handleRemove('visas', id)}
                     onRemoveAll={() => handleRemoveAll('visas')}
-                    emptyText="선택된 비자가 없습니다"
+                    emptyText="선택된 비자가 없습니다 (저장 시 '상관없음'으로 설정됩니다)"
+                    showNoPreferenceOption={false}
                 />
 
                 {/* 한국어 수준 선택 */}
