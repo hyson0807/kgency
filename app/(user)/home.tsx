@@ -52,6 +52,7 @@ interface MatchedPosting {
         gender: string[]
         age: string[]
         visa: string[]
+        koreanLevel: string[]
     }
     suitability: SuitabilityResult // 추가
 }

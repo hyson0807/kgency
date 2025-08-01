@@ -183,7 +183,7 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
 
                         {jobSeeker.user_info?.gender && (
                             <Text className="text-sm text-gray-600">
-                                {jobSeeker.user_info.gender}
+                                {jobSeeker.user_info.gender === '상관없음' ? '기타' : jobSeeker.user_info.gender}
                             </Text>
                         )}
 

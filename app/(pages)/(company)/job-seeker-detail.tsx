@@ -203,7 +203,7 @@ export default function JobSeekerDetail() {
                 <TouchableOpacity
                     onPress={() => {
                         router.push({
-                            pathname: '/(pages)/(company)/interview-request',
+                            pathname: '/interview-request',
                             params: {
                                 userId: userId
                             }

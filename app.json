@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.welkit.kgency",
       "infoPlist": {
-        "NSUserNotificationUsageDescription": "이 앱은 면접 제안 및 지원 상태 알림을 보내기 위해 푸시 알림을 사용합니다."
+        "NSUserNotificationUsageDescription": "이 앱은 면접 제안 및 지원 상태 알림을 보내기 위해 푸시 알림을 사용합니다.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

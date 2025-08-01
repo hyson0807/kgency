@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
 
 interface JobPosting {
     id: string
@@ -24,9 +25,20 @@ export default function JobPostingSelector({
             <Text className="text-base font-semibold mb-3">공고 선택</Text>
             {jobPostings.length === 0 ? (
                 <View className="border border-gray-200 rounded-lg p-4">
-                    <Text className="text-gray-500 text-center">
+                    <Text className="text-gray-500 text-center mb-3">
                         활성화된 공고가 없습니다.
                     </Text>
+                    <TouchableOpacity
+                        onPress={() => router.push('/(pages)/(company)/(job-posting-registration)/job-posting-step1')}
+                        className="bg-blue-500 py-3 px-4 rounded-lg"
+                    >
+                        <View className="flex-row items-center justify-center">
+                            <Ionicons name="add" size={20} color="white" />
+                            <Text className="text-white font-medium ml-2">
+                                공고 등록하기
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
             ) : (
                 <View className="border border-gray-200 rounded-lg">

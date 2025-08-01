@@ -41,6 +41,7 @@ interface MatchedKeywords {
     gender: string[];
     age: string[];
     visa: string[];
+    koreanLevel: string[];
 }
 
 interface JobPostingCardProps {
@@ -197,6 +198,7 @@ export const JobPostingCard = ({
                             ...matchedKeywords.gender,
                             ...matchedKeywords.age,
                             ...matchedKeywords.visa,
+                            ...matchedKeywords.koreanLevel,
                         ].map((keyword, index) => (
                             <View
                                 key={index}

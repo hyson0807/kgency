@@ -83,7 +83,7 @@ export const Info = ({
                         </View>
                         <View className="ml-2">
                             <Text className="text-xs text-gray-500">성별</Text>
-                            <Text className="text-sm font-medium">{jobSeeker.user_info.gender}</Text>
+                            <Text className="text-sm font-medium">{jobSeeker.user_info.gender === '상관없음' ? '기타' : jobSeeker.user_info.gender}</Text>
                         </View>
                     </View>
                 )}
