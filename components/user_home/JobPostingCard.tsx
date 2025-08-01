@@ -32,16 +32,22 @@ interface JobPosting {
     }[];
 }
 
+interface MatchedKeyword {
+    id: number;
+    keyword: string;
+    category: string;
+}
+
 interface MatchedKeywords {
-    countries: string[];
-    jobs: string[];
-    conditions: string[];
-    location: string[];
-    moveable: string[];
-    gender: string[];
-    age: string[];
-    visa: string[];
-    koreanLevel: string[];
+    countries: MatchedKeyword[];
+    jobs: MatchedKeyword[];
+    conditions: MatchedKeyword[];
+    location: MatchedKeyword[];
+    moveable: MatchedKeyword[];
+    gender: MatchedKeyword[];
+    age: MatchedKeyword[];
+    visa: MatchedKeyword[];
+    koreanLevel: MatchedKeyword[];
 }
 
 interface JobPostingCardProps {
@@ -201,12 +207,12 @@ export const JobPostingCard = ({
                             ...matchedKeywords.koreanLevel,
                         ].map((keyword, index) => (
                             <View
-                                key={index}
+                                key={`${keyword.id}-${index}`}
                                 className="bg-green-100 px-4 py-2 rounded-3xl flex-row items-center justify-center"
                             >
                                 <Text className="text-green-700 mr-1">✓</Text>
                                 <Text className="text-green-700 text-sm font-bold" numberOfLines={1}>
-                                    {keyword}
+                                    {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
                                 </Text>
                             </View>
                         ))}
@@ -228,7 +234,9 @@ export const JobPostingCard = ({
                         <View className="bg-blue-50 px-3 py-2 rounded-lg mt-3">
                             <Text className="text-blue-700 text-sm font-medium">
                                 {t('home.company_prefers', '이 회사는 {{country}} 사람을 선호해요!', {
-                                    country: matchedKeywords.countries[0] || '',
+                                    country: translateDB('keyword', 'keyword', 
+                                        matchedKeywords.countries[0].id.toString(), 
+                                        matchedKeywords.countries[0].keyword) || '',
                                 })}
                             </Text>
                         </View>

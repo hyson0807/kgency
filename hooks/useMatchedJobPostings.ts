@@ -39,19 +39,25 @@ interface JobPosting {
     }[];
 }
 
+interface MatchedKeyword {
+    id: number;
+    keyword: string;
+    category: string;
+}
+
 interface MatchedPosting {
     posting: JobPosting;
     matchedCount: number; // 기존 유지 (하위 호환성)
     matchedKeywords: {
-        countries: string[];
-        jobs: string[];
-        conditions: string[];
-        location: string[];
-        moveable: string[];
-        gender: string[];
-        age: string[];
-        visa: string[];
-        koreanLevel: string[];
+        countries: MatchedKeyword[];
+        jobs: MatchedKeyword[];
+        conditions: MatchedKeyword[];
+        location: MatchedKeyword[];
+        moveable: MatchedKeyword[];
+        gender: MatchedKeyword[];
+        age: MatchedKeyword[];
+        visa: MatchedKeyword[];
+        koreanLevel: MatchedKeyword[];
     };
     suitability: SuitabilityResult; // 새로 추가
 }
