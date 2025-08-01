@@ -34,31 +34,29 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
 
     // DB에서 카테고리별 키워드 필터링
     const genderKeywords = keywords.filter(k => k.category === '성별')
-    const anyGenderKeyword = genderKeywords.find(k => k.keyword === '상관없음')
     
     const visaKeywords = keywords.filter(k => k.category === '비자')
-    const anyVisaKeyword = visaKeywords.find(k => k.keyword === '상관없음')
-    
     const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준')
-    const anyKoreanLevelKeyword = koreanLevelKeywords.find(k => k.keyword === '상관없음')
 
-    // 드롭다운 옵션 생성
-    const genderOptions = [
-        // 나머지 성별들
-        ...genderKeywords
-            .filter(keyword => keyword.keyword !== '상관없음')
-            .map(keyword => ({
-                label: keyword.keyword,
-                value: keyword.keyword
-            })),
-        // 상관없음을 "기타"로 표시하여 맨 아래로
-        ...(anyGenderKeyword 
-            ? [{
-                label: '기타',
-                value: anyGenderKeyword.keyword  // 실제 DB 값은 '상관없음'
-            }]
-            : [])
-    ];
+    // 성별 옵션을 번역과 함께 생성
+    const getGenderLabel = (keyword: string) => {
+        switch (keyword) {
+            case '남성':
+                return t('info.gender_male', '남성');
+            case '여성':
+                return t('info.gender_female', '여성');
+            default:
+                return keyword;
+        }
+    };
+
+    // 드롭다운 옵션 생성 (상관없음 제외, 남성/여성만)
+    const genderOptions = genderKeywords
+        .filter(keyword => keyword.keyword !== '상관없음')
+        .map(keyword => ({
+            label: getGenderLabel(keyword.keyword),
+            value: keyword.keyword
+        }));
     
     const visaOptions = [
         // 비자는 기타 옵션 숨김 - 상관없음 제외
@@ -70,6 +68,20 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
             }))
     ];
     
+    // 한국어 수준 옵션을 번역과 함께 생성
+    const getKoreanLevelLabel = (keyword: string) => {
+        switch (keyword) {
+            case '초급':
+                return t('info.korean_beginner', '초급');
+            case '중급':
+                return t('info.korean_intermediate', '중급');
+            case '고급':
+                return t('info.korean_advanced', '고급');
+            default:
+                return keyword;
+        }
+    };
+
     const koreanLevelOptions = [
         // 한국어수준도 기타 옵션 숨김 - 상관없음 제외
         ...koreanLevelKeywords
@@ -79,7 +91,7 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                 return order.indexOf(a.keyword) - order.indexOf(b.keyword);
             })
             .map(keyword => ({
-                label: keyword.keyword,
+                label: getKoreanLevelLabel(keyword.keyword),
                 value: keyword.keyword
             }))
     ];
@@ -134,7 +146,7 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                         fontSize: 14,
                     }}
                     data={genderOptions}
-                    labelField="label"
+                    labelField="label" 
                     valueField="value"
                     placeholder={t('info.select_gender', '성별을 선택하세요')}
                     value={gender}

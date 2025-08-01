@@ -465,5 +465,33 @@ export const infoTranslations: TranslationData = {
         ky: 'Карьераңызды жазуу жумушка орношуу мүмкүнчүлүгүн 15% өстүрөт!',
         ha: 'Rubuta aikin ku yana kara damar samun aiki da kashi 15%!',
         mn: 'Ажлын туршлагаа бичих нь ажилд орох боломжийг 15% нэмэгдүүлдэг!'
+    },
+    'info.career_optional_title': {
+        en: '💡 This is optional',
+        ja: '💡 こちらは任意項目です',
+        zh: '💡 这是可选项',
+        vi: '💡 Đây là mục tùy chọn',
+        hi: '💡 यह वैकल्पिक है',
+        si: '💡 මෙය විකල්ප වේ',
+        ar: '💡 هذا اختياري',
+        tr: '💡 Bu isteğe bağlıdır',
+        my: '💡 ၎င်းသည် ရွေးချယ်ခွင့်ရှိသော အရာဖြစ်သည်',
+        ky: '💡 Бул милдеттүү эмес',
+        ha: '💡 Wannan na zaɓi ne',
+        mn: '💡 Энэ нь заавал биш'
+    },
+    'info.career_optional_desc': {
+        en: 'Completing this increases your hiring chances and automatically fills your applications',
+        ja: '記入すると採用確率が高まり、応募時に自動入力されます',
+        zh: '填写后可提高录用几率，申请时会自动填充',
+        vi: 'Hoàn thành sẽ tăng cơ hội được tuyển dụng và tự động điền vào đơn ứng tuyển',
+        hi: 'इसे पूरा करने से आपकी नियुक्ति की संभावना बढ़ जाती है और आवेदन स्वचालित रूप से भर जाते हैं',
+        si: 'මෙය සම්පූර්ණ කිරීම ඔබේ කම්කරු ගැනීමේ අවස්ථා වැඩි කරයි සහ ඉල්ලීම් ස්වයංක්රීයව පුරවයි',
+        ar: 'إكمال هذا يزيد من فرص التوظيف ويملأ طلباتك تلقائيًا',
+        tr: 'Bunu tamamlamak işe alınma şansınızı artırır ve başvurularınızı otomatik olarak doldurur',
+        my: 'ဤအရာကို ဖြည့်စွက်ခြင်းဖြင့် သင့်အလုပ်ရရှိနိုင်ခြေ တိုးလာပြီး လျှောက်လွှာများကို အလိုအလျောက် ဖြည့်စွက်ပေးပါမည်',
+        ky: 'Муну аткаруу жумушка орношуу мүмкүнчүлүгүн жогорулатат жана арыздарды автоматтык түрдө толтурат',
+        ha: 'Kammala wannan yana kara damar samun aiki kuma yana cika aikace-aikacen ku kai tsaye',
+        mn: 'Үүнийг бөглөх нь таны ажилд орох боломжийг нэмэгдүүлж, өргөдлүүдийг автоматаар бөглөнө'
     }
 }
