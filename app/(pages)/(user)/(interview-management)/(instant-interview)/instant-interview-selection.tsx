@@ -6,6 +6,7 @@ import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslation } from '@/contexts/TranslationContext'
 import Back from '@/components/back'
 import { useModal } from '@/hooks/useModal'
 import { groupByDate, formatTime24 } from '@/lib/dateUtils'
@@ -33,14 +34,23 @@ export default function InstantInterviewSelection() {
     } = params
 
     const { user } = useAuth()
+    const { t, language } = useTranslation()
     const { showModal, ModalComponent } = useModal()
     const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
     const [selectedSlotId, setSelectedSlotId] = useState<string>('')
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
+    const [translating, setTranslating] = useState(false)
+    const [translatedJobTitle, setTranslatedJobTitle] = useState<string>('')
+    const [translatedSpecialNotes, setTranslatedSpecialNotes] = useState<string>('')
 
     useEffect(() => {
         fetchAvailableSlots()
+        // 언어가 한국어가 아닌 경우 초기 번역 상태 설정
+        if (language !== 'ko') {
+            setTranslatedJobTitle(jobTitle as string || '')
+            setTranslatedSpecialNotes(specialNotes as string || '')
+        }
     }, [])
 
     const fetchAvailableSlots = async () => {
@@ -58,9 +68,52 @@ export default function InstantInterviewSelection() {
             }
         } catch (error) {
             console.error('Failed to fetch available slots:', error)
-            showModal('오류', '면접 시간대를 불러오는데 실패했습니다.')
+            showModal(t('alert.error', '오류'), t('instant_interview.fetch_slots_failed', '면접 시간대를 불러오는데 실패했습니다.'))
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleTranslate = async () => {
+        if (language === 'ko' || translating) return
+
+        setTranslating(true)
+        try {
+            const textsToTranslate = []
+            
+            if (jobTitle) {
+                textsToTranslate.push(jobTitle as string)
+            }
+            
+            if (specialNotes) {
+                textsToTranslate.push(specialNotes as string)
+            }
+
+            if (textsToTranslate.length > 0) {
+                const response = await api('POST', '/api/translate/translate-batch', {
+                    texts: textsToTranslate,
+                    targetLang: language
+                })
+
+                if (response?.success && response.translations) {
+                    const translations = response.translations
+                    let translationIndex = 0
+
+                    if (jobTitle && translations[translationIndex]) {
+                        setTranslatedJobTitle(translations[translationIndex])
+                        translationIndex++
+                    }
+
+                    if (specialNotes && translations[translationIndex]) {
+                        setTranslatedSpecialNotes(translations[translationIndex])
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Translation failed:', error)
+            showModal(t('alert.error', '오류'), t('posting_detail.translate_failed', '번역에 실패했습니다.'))
+        } finally {
+            setTranslating(false)
         }
     }
 
@@ -88,12 +141,12 @@ export default function InstantInterviewSelection() {
 
     const handleSubmit = async () => {
         if (!selectedSlotId) {
-            showModal('알림', '면접 시간을 선택해주세요.')
+            showModal(t('alert.notification', '알림'), t('instant_interview.select_time_first', '면접 시간을 선택해주세요.'))
             return
         }
 
         if (!user) {
-            showModal('오류', '로그인이 필요합니다.')
+            showModal(t('alert.error', '오류'), t('interview.login_required', '로그인이 필요합니다.'))
             return
         }
 
@@ -107,7 +160,7 @@ export default function InstantInterviewSelection() {
 
             if (!applicationResponse?.success) {
                 if (applicationResponse?.error === '이미 지원한 공고입니다.') {
-                    showModal('알림', '이미 지원한 공고입니다.')
+                    showModal(t('alert.notification', '알림'), t('instant_interview.already_applied', '이미 지원한 공고입니다.'))
                     return
                 }
                 throw new Error(applicationResponse?.error || '지원서 생성 실패')
@@ -119,7 +172,7 @@ export default function InstantInterviewSelection() {
             const proposalResponse = await api('POST', '/api/interview-proposals/company', {
                 applicationId: application.id,
                 companyId: companyId,
-                location: interviewLocation || jobAddress || '회사 주소' // interview_location이 있으면 우선 사용
+                location: interviewLocation || jobAddress || t('interview.default_location', '회사 주소') // interview_location이 있으면 우선 사용
             })
 
             if (!proposalResponse?.success || !proposalResponse.data) {
@@ -134,8 +187,8 @@ export default function InstantInterviewSelection() {
 
             if (scheduleResponse?.success) {
                 showModal(
-                    '성공', 
-                    '면접 일정이 확정되었습니다!', 
+                    t('alert.success', '성공'), 
+                    t('instant_interview.schedule_confirmed', '면접 일정이 확정되었습니다!'), 
                     'info',
                     () => {
                         router.replace('/(user)/applications')
@@ -146,7 +199,7 @@ export default function InstantInterviewSelection() {
             }
         } catch (error) {
             console.error('Failed to submit instant interview:', error)
-            showModal('오류', '면접 일정 확정에 실패했습니다.')
+            showModal(t('alert.error', '오류'), t('instant_interview.schedule_failed', '면접 일정 확정에 실패했습니다.'))
         } finally {
             setSubmitting(false)
         }
@@ -167,9 +220,27 @@ export default function InstantInterviewSelection() {
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
             <View className="bg-white border-b border-gray-200">
-                <View className="flex-row items-center p-4">
-                    <Back />
-                    <Text className="text-lg font-bold ml-4">면접 시간 선택</Text>
+                <View className="flex-row items-center justify-between p-4">
+                    <View className="flex-row items-center">
+                        <Back />
+                        <Text className="text-lg font-bold ml-4">{t('instant_interview.select_time_title', '면접 시간 선택')}</Text>
+                    </View>
+                    {language !== 'ko' && (jobTitle || specialNotes) && (
+                        <TouchableOpacity
+                            onPress={handleTranslate}
+                            disabled={translating}
+                            className="flex-row items-center px-3 py-1 bg-blue-100 rounded-lg"
+                        >
+                            <Ionicons 
+                                name="language" 
+                                size={16} 
+                                color="#3b82f6" 
+                            />
+                            <Text className="text-blue-600 text-sm ml-1">
+                                {translating ? t('interview.processing', '처리중...') : t('posting_detail.translate', '번역하기')}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
 
@@ -181,9 +252,11 @@ export default function InstantInterviewSelection() {
                             <Ionicons name="flash" size={24} color="#8b5cf6" />
                         </View>
                         <View className="flex-1">
-                            <Text className="text-purple-800 font-bold text-base">완벽한 매칭!</Text>
+                            <Text className="text-purple-800 font-bold text-base">
+                                {t('instant_interview.perfect_match_banner', '완벽한 매칭!')}
+                            </Text>
                             <Text className="text-purple-600 text-sm mt-1">
-                                이력서 제출 없이 바로 면접 일정을 확정할 수 있습니다.
+                                {t('instant_interview.no_resume_required', '이력서 제출 없이 바로 면접 일정을 확정할 수 있습니다.')}
                             </Text>
                         </View>
                     </View>
@@ -191,10 +264,12 @@ export default function InstantInterviewSelection() {
 
                 {/* 회사 정보 */}
                 <View className="bg-white p-4 mb-2">
-                    <Text className="text-sm text-gray-600">회사</Text>
+                    <Text className="text-sm text-gray-600">{t('instant_interview.company', '회사')}</Text>
                     <Text className="text-base font-semibold">{companyName}</Text>
-                    <Text className="text-sm text-gray-600 mt-1">직무</Text>
-                    <Text className="text-base">{jobTitle}</Text>
+                    <Text className="text-sm text-gray-600 mt-1">{t('instant_interview.position', '직무')}</Text>
+                    <Text className="text-base">
+                        {language !== 'ko' && translatedJobTitle ? translatedJobTitle : jobTitle}
+                    </Text>
                 </View>
 
                 {/* 면접 장소 */}
@@ -202,7 +277,9 @@ export default function InstantInterviewSelection() {
                     <View className="bg-white p-4 mb-2">
                         <View className="flex-row items-center">
                             <Ionicons name="location-outline" size={20} color="#6b7280" />
-                            <Text className="text-sm text-gray-600 ml-2">면접 장소</Text>
+                            <Text className="text-sm text-gray-600 ml-2">
+                                {t('instant_interview.interview_location', '면접 장소')}
+                            </Text>
                         </View>
                         <Text className="text-base mt-1">{interviewLocation || jobAddress}</Text>
                     </View>
@@ -213,19 +290,27 @@ export default function InstantInterviewSelection() {
                     <View className="bg-yellow-50 p-4 mb-2 border border-yellow-200">
                         <View className="flex-row items-center">
                             <Ionicons name="information-circle" size={20} color="#d97706" />
-                            <Text className="text-sm text-yellow-800 font-semibold ml-2">특이사항</Text>
+                            <Text className="text-sm text-yellow-800 font-semibold ml-2">
+                                {t('instant_interview.special_notes', '특이사항')}
+                            </Text>
                         </View>
-                        <Text className="text-base text-yellow-800 mt-2">{specialNotes}</Text>
+                        <Text className="text-base text-yellow-800 mt-2">
+                            {language !== 'ko' && translatedSpecialNotes ? translatedSpecialNotes : specialNotes}
+                        </Text>
                     </View>
                 )}
 
                 {/* 시간대 선택 */}
                 <View className="bg-white p-4">
-                    <Text className="text-base font-semibold mb-4">면접 가능 시간대를 선택해주세요</Text>
+                    <Text className="text-base font-semibold mb-4">
+                        {t('instant_interview.select_available_time', '면접 가능 시간대를 선택해주세요')}
+                    </Text>
 
                     {Object.keys(groupedSlots).length === 0 ? (
                         <View className="py-8 items-center">
-                            <Text className="text-gray-500">선택 가능한 시간대가 없습니다.</Text>
+                            <Text className="text-gray-500">
+                                {t('instant_interview.no_available_slots', '선택 가능한 시간대가 없습니다.')}
+                            </Text>
                         </View>
                     ) : (
                         Object.entries(groupedSlots).map(([dateKey, slots]) => {
@@ -274,7 +359,7 @@ export default function InstantInterviewSelection() {
                                                                 color="#6b7280"
                                                             />
                                                             <Text className="text-sm text-gray-600 ml-1">
-                                                                {slot.interview_type} 면접
+                                                                {slot.interview_type} {t('instant_interview.interview_type', '면접')}
                                                             </Text>
                                                         </View>
 
@@ -330,7 +415,7 @@ export default function InstantInterviewSelection() {
                     }`}
                 >
                     <Text className="text-center text-white font-semibold">
-                        {submitting ? '처리중...' : '면접 즉시 확정하기'}
+                        {submitting ? t('interview.processing', '처리중...') : t('instant_interview.confirm_immediately', '면접 즉시 확정하기')}
                     </Text>
                 </TouchableOpacity>
             </View>

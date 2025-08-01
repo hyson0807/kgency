@@ -340,6 +340,20 @@ export const postingDetailTranslations: TranslationData = {
         ha: 'Fassara',
         mn: 'Орчуулах'
     },
+    'posting_detail.translate_failed': {
+        en: 'Translation failed.',
+        ja: '翻訳に失敗しました。',
+        zh: '翻译失败。',
+        vi: 'Dịch thất bại.',
+        hi: 'अनुवाद असफल हुआ।',
+        si: 'පරිවර්තනය අසාර්ථක විය.',
+        ar: 'فشل في الترجمة.',
+        tr: 'Çeviri başarısız oldu.',
+        my: 'ဘာသာပြန်ဆိုမှု မအောင်မြင်ပါ။',
+        ky: 'Которуу оңунан чыккан жок.',
+        ha: 'Fassarar ta gaza.',
+        mn: 'Орчуулга амжилтгүй боллоо.'
+    },
     'posting_detail.instant_interview': {
         en: 'Instant Interview Confirmation',
         ja: '面接即時確定',
