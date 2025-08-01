@@ -155,8 +155,8 @@ export default function PostingDetail() {
 
     const handleInstantInterview = () => {
         showModal(
-            '면접 즉시 확정',
-            '완벽한 매칭입니다! 면접 일정을 즉시 확정하시겠습니까?',
+            t('posting_detail.instant_interview_title', '면접 즉시 확정'),
+            t('posting_detail.instant_interview_message', '완벽한 매칭입니다! 면접 일정을 즉시 확정하시겠습니까?'),
             'confirm', // type
             () => {
                 // onConfirm 콜백 - 경력 정보 입력 페이지로 이동
@@ -174,8 +174,8 @@ export default function PostingDetail() {
                 })
             },
             true, // showCancel
-            '확정', // confirmText
-            '취소' // cancelText
+            t('posting_detail.confirm', '확정'), // confirmText
+            t('posting_detail.cancel', '취소') // cancelText
         )
     }
 
@@ -332,11 +332,7 @@ export default function PostingDetail() {
                                         <Text className="text-white text-lg font-bold ml-2">
                                             {t('posting_detail.instant_interview', '면접 즉시 확정')}
                                         </Text>
-                                        <View className="ml-2 bg-white/20 px-2 py-1 rounded-full">
-                                            <Text className="text-white text-xs font-semibold">
-                                                {t('posting_detail.perfect_match', '완벽 매칭')}
-                                            </Text>
-                                        </View>
+
                                     </View>
                                 </TouchableOpacity>
                             </Animated.View>

@@ -31,7 +31,7 @@ export const Country = ({
         // 상관없음을 "기타"로 표시하여 맨 위로
         ...(anyCountryKeyword 
             ? [{
-                label: '기타',  // 상관없음을 기타로 표시
+                label: t('common.other', '기타'),  // 상관없음을 기타로 표시
                 value: anyCountryKeyword.id
             }]
             : []),

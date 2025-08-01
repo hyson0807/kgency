@@ -152,7 +152,7 @@ const Settings = () => {
                 job_seeking_active: newStatus
             }
         })
-        if(!res) showModal('알림', '공고 활성화 실패', 'warning')
+        if(!res) showModal(t('settings.error', '알림'), t('settings.activation_failed', '공고 활성화 실패'), 'warning')
         setIsJobSeekingActive(newStatus)
 
     }
@@ -182,7 +182,7 @@ const Settings = () => {
                             </View>
                         </View>
                         <TouchableOpacity
-                            onPress={() => router.push('/(pages)/(user)/info')}
+                            onPress={() => router.push('/(pages)/(user)/(user-information)/info')}
                             className="bg-blue-100 px-3 py-1 rounded-lg"
                         >
                             <Text className="text-blue-600 text-sm font-medium">{t('settings.edit_profile', '프로필 수정')}</Text>
@@ -219,8 +219,8 @@ const Settings = () => {
                     <View className="space-y-4">
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">면접 제안 알림</Text>
-                                <Text className="text-sm text-gray-600">회사로부터 면접 제안을 받을 때 알림</Text>
+                                <Text className="font-medium">{t('settings.interview_proposal_notification', '면접 제안 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.interview_proposal_description', '회사로부터 면접 제안을 받을 때 알림')}</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.interviewProposal}
@@ -232,8 +232,8 @@ const Settings = () => {
                         
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">공고 면접 제안 알림</Text>
-                                <Text className="text-sm text-gray-600">지원한 공고에서 면접 제안을 받을 때 알림</Text>
+                                <Text className="font-medium">{t('settings.job_posting_interview_notification', '공고 면접 제안 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.job_posting_interview_description', '지원한 공고에서 면접 제안을 받을 때 알림')}</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.jobPostingInterviewProposal || false}
@@ -245,8 +245,8 @@ const Settings = () => {
                         
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">면접 취소 알림</Text>
-                                <Text className="text-sm text-gray-600">면접이 취소되었을 때 알림</Text>
+                                <Text className="font-medium">{t('settings.interview_cancellation_notification', '면접 취소 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.interview_cancellation_description', '면접이 취소되었을 때 알림')}</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.interviewCancelled || false}
@@ -258,8 +258,8 @@ const Settings = () => {
                         
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">즉시면접 취소 알림</Text>
-                                <Text className="text-sm text-gray-600">즉시면접이 취소되었을 때 알림</Text>
+                                <Text className="font-medium">{t('settings.instant_interview_cancellation_notification', '즉시면접 취소 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.instant_interview_cancellation_description', '즉시면접이 취소되었을 때 알림')}</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.instantInterviewCancelled || false}
@@ -271,8 +271,8 @@ const Settings = () => {
                         
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">지원 취소 알림</Text>
-                                <Text className="text-sm text-gray-600">일반 지원이 취소되었을 때 알림</Text>
+                                <Text className="font-medium">{t('settings.application_cancellation_notification', '지원 취소 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.application_cancellation_description', '일반 지원이 취소되었을 때 알림')}</Text>
                             </View>
                             <Switch
                                 value={notificationSettings.regularApplicationCancelled || false}

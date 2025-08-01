@@ -202,5 +202,21 @@ export const commonTranslations: TranslationData = {
         ky: 'Каалаган жеңилдиктер',
         ha: 'Fa\'idodin da ake So',
         mn: 'Хүссэн ашиг тус'
+    },
+    
+    // 기타 (Other)
+    'common.other': {
+        en: 'Other',
+        ja: 'その他',
+        zh: '其他',
+        vi: 'Khác',
+        hi: 'अन्य',
+        si: 'අනෙක්',
+        ar: 'آخر',
+        tr: 'Diğer',
+        my: 'အခြား',
+        ky: 'Башка',
+        ha: 'Wani',
+        mn: 'Бусад'
     }
 };

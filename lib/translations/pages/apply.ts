@@ -1023,4 +1023,20 @@ export const applyTranslations: TranslationData = {
         ha: 'Asuba',
         mn: 'Үүр цайх'
     },
+    
+    // 협의 가능 번역
+    'apply.negotiable': {
+        en: 'Negotiable',
+        ja: '応相談',
+        zh: '可协商',
+        vi: 'Có thể thương lượng',
+        hi: 'बातचीत योग्य',
+        si: 'සාකච්ඡා කළ හැකි',
+        ar: 'قابل للتفاوض',
+        tr: 'Görüşülür',
+        my: 'ညှိနှိုင်းနိုင်သော',
+        ky: 'Макулдашуу мүмкүн',
+        ha: 'Ana iya shawarwari',
+        mn: 'Харилцан тохиролцох'
+    },
 }

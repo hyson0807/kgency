@@ -147,7 +147,7 @@ const Start = () => {
                             >
                                 <MaterialIcons name="language" size={24} color="#6b7280" />
                                 <Text className="ml-2 text-gray-600 font-medium">
-                                    {t('language.select', '언어 선택')}
+                                    {t('language.select', 'Language')}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -166,7 +166,7 @@ const Start = () => {
                     <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10 max-h-[500px]">
                         <View className="flex-row items-center justify-between mb-6">
                             <Text className="text-xl font-bold">
-                                {t('language.select', '언어 선택')}
+                                {t('language.select', 'Language')}
                             </Text>
                             <TouchableOpacity onPress={() => setLanguageModalVisible(false)}>
                                 <Ionicons name="close" size={24} color="#6b7280" />

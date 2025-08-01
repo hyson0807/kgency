@@ -211,4 +211,48 @@ export const interviewTranslations: TranslationData = {
         ha: 'Adireshin Kamfani',
         mn: 'Компанийн хаяг'
     },
+    
+    // Instant Interview 관련 번역
+    'instant_interview.perfect_match': {
+        en: 'Perfect Match!',
+        ja: '完璧なマッチングです！',
+        zh: '完美匹配！',
+        vi: 'Khớp hoàn hảo!',
+        hi: 'परफेक्ट मैच!',
+        si: 'පරිපූර්ණ ගැලපීමක්!',
+        ar: 'مطابقة مثالية!',
+        tr: 'Mükemmel Eşleşme!',
+        my: 'ပြီးပြည့်စုံသောကိုက်ညီမှု!',
+        ky: 'Мыкты дал келүү!',
+        ha: 'Cikakkiyar Daidaitawa!',
+        mn: 'Төгс тохирол!'
+    },
+    'instant_interview.career_info_required': {
+        en: 'Please complete all career information to confirm the interview.',
+        ja: '面接確定のため、経歴情報をすべて入力してください。',
+        zh: '请完整填写职业信息以确认面试。',
+        vi: 'Vui lòng hoàn thành tất cả thông tin nghề nghiệp để xác nhận phỏng vấn.',
+        hi: 'साक्षात्कार की पुष्टि के लिए कृपया सभी करियर की जानकारी पूरी करें।',
+        si: 'සම්මුඛ පරීක්ෂණය තහවුරු කිරීමට කරුණාකර සියලුම වෘත්තීය තොරතුරු සම්පූර්ණ කරන්න.',
+        ar: 'يرجى إكمال جميع معلومات المهنة لتأكيد المقابلة.',
+        tr: 'Mülakatı onaylamak için lütfen tüm kariyer bilgilerini tamamlayın.',
+        my: 'အင်တာဗျူးကို အတည်ပြုရန် ကျေးဇူးပြု၍ အလုပ်အကိုင်အချက်အလက်အားလုံးကို ပြီးမြောက်အောင်ဆောင်ရွက်ပါ။',
+        ky: 'Маекти ырастоо үчүн карьера жөнүндө бардык маалыматты толуктаңыз.',
+        ha: 'Da fatan za a kammala dukkan bayanan sana\'a don tabbatar da hira.',
+        mn: 'Ярилцлагыг баталгаажуулахын тулд бүх мэргэжлийн мэдээллийг бөглөнө үү.'
+    },
+    'instant_interview.complete_and_next': {
+        en: 'Complete and Select Interview Schedule',
+        ja: '作成完了後面接日程選択',
+        zh: '完成后选择面试时间',
+        vi: 'Hoàn thành và chọn lịch phỏng vấn',
+        hi: 'पूरा करें और साक्षात्कार कार्यक्रम चुनें',
+        si: 'සම්පූර්ණ කර සම්මුඛ පරීක්ෂණ කාලසටහන තෝරන්න',
+        ar: 'أكمل واختر موعد المقابلة',
+        tr: 'Tamamla ve Mülakat Programını Seç',
+        my: 'ပြီးမြောက်အောင်ဆောင်ရွက်ပြီး အင်တာဗျူးအချိန်ဇယားကို ရွေးချယ်ပါ',
+        ky: 'Аягына чыгарып маек тартибин тандаңыз',
+        ha: 'Ka kammala ka kuma ka zaɓa jadawalin hira',
+        mn: 'Бөглөж дуусгаад ярилцлагын хуваарь сонгоно уу'
+    },
 }
