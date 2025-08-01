@@ -159,9 +159,9 @@ export default function PostingDetail() {
             '완벽한 매칭입니다! 면접 일정을 즉시 확정하시겠습니까?',
             'confirm', // type
             () => {
-                // onConfirm 콜백 - 바로 면접 일정 선택 페이지로 이동
+                // onConfirm 콜백 - 경력 정보 입력 페이지로 이동
                 router.push({
-                    pathname: '/(pages)/(user)/instant-interview-selection',
+                    pathname: '/instant-interview-career',
                     params: {
                         jobPostingId: postingId,
                         companyId: posting?.company.id || companyId,

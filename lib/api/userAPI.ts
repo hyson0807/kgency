@@ -20,6 +20,8 @@ export interface UserDetailsResponse {
         experience: string;
         experience_content?: string;
         topic?: string;
+        preferred_days?: string[];
+        preferred_times?: string[];
     };
     keywords: Array<{
         id: number;

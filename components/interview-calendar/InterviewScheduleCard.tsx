@@ -25,6 +25,7 @@ interface InterviewScheduleCardProps {
                 job_posting: {
                     title: string
                 }
+                type?: string
             }
         }
     }
@@ -94,9 +95,17 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                     </Text>
                 </View>
                 <View className="ml-3 flex-1">
-                    <Text className="text-base font-semibold">
-                        {schedule.proposal.application.user.name}
-                    </Text>
+                    <View className="flex-row items-center">
+                        <Text className="text-base font-semibold">
+                            {schedule.proposal.application.user.name}
+                        </Text>
+                        {/* 즉시 면접 지원자 표시 */}
+                        {schedule.proposal.application.type === 'user_instant_interview' && (
+                            <View className="ml-2 bg-purple-100 px-2 py-0.5 rounded-full">
+                                <Text className="text-xs text-purple-700 font-medium">즉시면접</Text>
+                            </View>
+                        )}
+                    </View>
                     <Text className="text-sm text-gray-600">
                         {schedule.proposal.application.user.phone_number}
                     </Text>

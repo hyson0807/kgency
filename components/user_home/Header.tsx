@@ -101,7 +101,7 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                         {t('info.career_boost_title', '당신의 경력을 작성하면, 채용확률이 15% 올라가요!')}
                     </Text>
                     <TouchableOpacity
-                        onPress={() => router.push('/(pages)/(user)/info')}
+                        onPress={() => router.push('/(pages)/(user)/(user-information)/info')}
                         className="bg-white rounded-full px-6 py-3 mt-4"
                     >
                         <Text className="text-emerald-600 font-bold text-center">

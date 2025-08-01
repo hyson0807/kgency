@@ -13,6 +13,8 @@ interface UserInfo {
     experience: string
     experience_content?: string
     topic?: string
+    preferred_days?: string[]
+    preferred_times?: string[]
 }
 
 interface Keyword {
@@ -149,9 +151,47 @@ export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalPro
                                             <InfoRow label="성별" value={userInfo.gender} />
                                             <InfoRow label="비자" value={userInfo.visa} />
                                             <InfoRow label="한국어 수준" value={userInfo.korean_level} />
-                                            <InfoRow label="희망 근무 기간" value={userInfo.how_long} />
                                             {userInfo.topic && (
                                                 <InfoRow label="토픽" value={userInfo.topic} />
+                                            )}
+                                        </View>
+                                    </View>
+
+                                    {/* Career Info */}
+                                    <View className="mb-6">
+                                        <Text className="text-lg font-bold mb-3">경력 정보</Text>
+                                        <View className="bg-gray-50 rounded-xl p-4 space-y-3">
+                                            <InfoRow label="희망 근무 기간" value={userInfo.how_long} />
+                                            <InfoRow label="관련 경력" value={userInfo.experience} />
+                                            {userInfo.experience_content && (
+                                                <View className="mt-2">
+                                                    <Text className="text-sm text-gray-600 mb-1">경력 내용</Text>
+                                                    <Text className="text-base text-gray-800">{userInfo.experience_content}</Text>
+                                                </View>
+                                            )}
+                                            {userInfo.preferred_days && userInfo.preferred_days.length > 0 && (
+                                                <View className="mt-2">
+                                                    <Text className="text-sm text-gray-600 mb-1">희망 근무 요일</Text>
+                                                    <View className="flex-row flex-wrap gap-2">
+                                                        {userInfo.preferred_days.map((day, index) => (
+                                                            <View key={index} className="bg-blue-100 px-2 py-1 rounded">
+                                                                <Text className="text-sm text-blue-700">{day}</Text>
+                                                            </View>
+                                                        ))}
+                                                    </View>
+                                                </View>
+                                            )}
+                                            {userInfo.preferred_times && userInfo.preferred_times.length > 0 && (
+                                                <View className="mt-2">
+                                                    <Text className="text-sm text-gray-600 mb-1">희망 시간대</Text>
+                                                    <View className="flex-row flex-wrap gap-2">
+                                                        {userInfo.preferred_times.map((time, index) => (
+                                                            <View key={index} className="bg-green-100 px-2 py-1 rounded">
+                                                                <Text className="text-sm text-green-700">{time}</Text>
+                                                            </View>
+                                                        ))}
+                                                    </View>
+                                                </View>
                                             )}
                                         </View>
                                     </View>
