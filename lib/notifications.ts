@@ -4,16 +4,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { api } from './api';
 
-// Configure notification handler
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: false,
-    shouldShowList: false,
-  }),
-});
+// Notification handler is now managed in NotificationContext.tsx to avoid conflicts
 
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
   let token: string | null = null;

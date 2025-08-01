@@ -182,64 +182,81 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     // Handle notification when user taps on it
     responseListener.current = addNotificationResponseReceivedListener(response => {
       console.log('Notification response:', response);
+      console.log('Notification data:', response.notification.request.content.data);
+      console.log('Current user:', user);
       
       const data = response.notification.request.content.data;
       
-      // Navigate based on notification type
-      if (data?.type === 'interview_proposal' && data?.applicationId) {
-        // Navigate to the application detail or interview proposal page
-        if (user?.userType === 'user') {
-          router.push(`/(user)/applications`);
-        }
+      // Check if user is properly loaded
+      if (!user || !user.userType) {
+        console.log('User not loaded yet, skipping navigation');
+        return;
       }
       
-      if (data?.type === 'interview_schedule_confirmed' && data?.applicationId) {
-        // Navigate to the interview slots page for company
-        if (user?.userType === 'company') {
-          router.push(`/(company)/interview-calendar`);
+      try {
+        // Navigate based on notification type
+        if (data?.type === 'interview_proposal' && data?.applicationId) {
+          console.log('Navigating for interview_proposal');
+          if (user.userType === 'user') {
+            router.push(`/(user)/applications`);
+          }
         }
-      }
-      
-      if (data?.type === 'interview_cancelled' && data?.applicationId) {
-        // Navigate to the applications page for user to see cancelled interview
-        if (user?.userType === 'user') {
-          router.push(`/(user)/applications`);
+        
+        if (data?.type === 'interview_schedule_confirmed' && data?.applicationId) {
+          console.log('Navigating for interview_schedule_confirmed');
+          if (user.userType === 'company') {
+            router.push(`/(company)/interview-calendar`);
+          }
         }
-      }
-      
-      // Handle new application notifications for companies
-      if (data?.type === 'new_application' && data?.applicationId) {
-        if (user?.userType === 'company') {
-          router.push(`/(company)/myJobPostings`);
+        
+        if (data?.type === 'interview_cancelled' && data?.applicationId) {
+          console.log('Navigating for interview_cancelled');
+          if (user.userType === 'user') {
+            router.push(`/(user)/applications`);
+          }
         }
-      }
-      
-      // Handle interview request acceptance notifications for companies
-      if (data?.type === 'interview_request_accepted' && data?.applicationId) {
-        if (user?.userType === 'company') {
-          router.push(`/(company)/interview-calendar`);
+        
+        // Handle new application notifications for companies
+        if (data?.type === 'new_application' && data?.applicationId) {
+          console.log('Navigating for new_application');
+          if (user.userType === 'company') {
+            router.push(`/(company)/myJobPostings`);
+          }
         }
-      }
-      
-      // Handle job posting interview proposals for users
-      if (data?.type === 'job_posting_interview_proposal' && data?.applicationId) {
-        if (user?.userType === 'user') {
-          router.push(`/(user)/applications`);
+        
+        // Handle interview request acceptance notifications for companies
+        if (data?.type === 'interview_request_accepted' && data?.applicationId) {
+          console.log('Navigating for interview_request_accepted');
+          if (user.userType === 'company') {
+            router.push(`/(company)/interview-calendar`);
+          }
         }
-      }
-      
-      // Handle instant interview cancellation for users
-      if (data?.type === 'instant_interview_cancelled' && data?.applicationId) {
-        if (user?.userType === 'user') {
-          router.push(`/(user)/applications`);
+        
+        // Handle job posting interview proposals for users
+        if (data?.type === 'job_posting_interview_proposal' && data?.applicationId) {
+          console.log('Navigating for job_posting_interview_proposal');
+          if (user.userType === 'user') {
+            router.push(`/(user)/applications`);
+          }
         }
-      }
-      
-      // Handle regular application cancellation for users
-      if (data?.type === 'regular_application_cancelled' && data?.applicationId) {
-        if (user?.userType === 'user') {
-          router.push(`/(user)/applications`);
+        
+        // Handle instant interview cancellation for users
+        if (data?.type === 'instant_interview_cancelled' && data?.applicationId) {
+          console.log('Navigating for instant_interview_cancelled');
+          if (user.userType === 'user') {
+            router.push(`/(user)/applications`);
+          }
         }
+        
+        // Handle regular application cancellation for users
+        if (data?.type === 'regular_application_cancelled' && data?.applicationId) {
+          console.log('Navigating for regular_application_cancelled');
+          if (user.userType === 'user') {
+            router.push(`/(user)/applications`);
+          }
+        }
+      } catch (error) {
+        console.error('Error navigating from notification:', error);
       }
     });
 
