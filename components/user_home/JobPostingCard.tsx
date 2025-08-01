@@ -4,6 +4,7 @@ import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
 import { SuitabilityResult } from '@/lib/suitability';
 import {router} from "expo-router";
+import { sortMatchedKeywords } from '@/lib/utils/keywordUtils';
 
 interface Company {
     id: string;
@@ -48,6 +49,7 @@ interface MatchedKeywords {
     age: MatchedKeyword[];
     visa: MatchedKeyword[];
     koreanLevel: MatchedKeyword[];
+    workDay: MatchedKeyword[];
 }
 
 interface JobPostingCardProps {
@@ -195,7 +197,7 @@ export const JobPostingCard = ({
                     </Text>
 
                     <View className="flex-row flex-wrap gap-2">
-                        {[
+                        {sortMatchedKeywords([
                             ...matchedKeywords.countries,
                             ...matchedKeywords.jobs,
                             ...matchedKeywords.conditions,
@@ -205,7 +207,8 @@ export const JobPostingCard = ({
                             ...matchedKeywords.age,
                             ...matchedKeywords.visa,
                             ...matchedKeywords.koreanLevel,
-                        ].map((keyword, index) => (
+                            ...matchedKeywords.workDay,
+                        ]).map((keyword, index) => (
                             <View
                                 key={`${keyword.id}-${index}`}
                                 className="bg-green-100 px-4 py-2 rounded-3xl flex-row items-center justify-center"

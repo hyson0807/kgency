@@ -2,6 +2,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { SuitabilityResult } from '@/lib/suitability/types';
+import { sortMatchedKeywords } from '@/lib/utils/keywordUtils';
 
 interface UserKeyword {
     keyword: {
@@ -50,6 +51,7 @@ interface UserCardProps {
  * bg-blue-100 text-blue-700 bg-green-100 text-green-700
  * bg-teal-100 text-teal-700 bg-pink-100 text-pink-700
  * bg-yellow-100 text-yellow-700 bg-indigo-100 text-indigo-700
+ * bg-cyan-100 text-cyan-700 bg-lime-100 text-lime-700
  * bg-gray-100 text-gray-700
  */
 
@@ -97,6 +99,10 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                 return 'bg-yellow-100 text-yellow-700';
             case '비자':
                 return 'bg-indigo-100 text-indigo-700';
+            case '한국어수준':
+                return 'bg-cyan-100 text-cyan-700';
+            case '근무요일':
+                return 'bg-lime-100 text-lime-700';
             default:
                 return 'bg-gray-100 text-gray-700';
         }
@@ -224,7 +230,7 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                         </View>
 
                         <View className="flex-row flex-wrap gap-2">
-                            {keywordsWithCategory.map((item, index) => (
+                            {sortMatchedKeywords(keywordsWithCategory).map((item, index) => (
                                 <View
                                     key={index}
                                     className={`px-3 py-1 rounded-3xl flex-row items-center justify-center ${

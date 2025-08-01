@@ -58,6 +58,7 @@ interface MatchedPosting {
         age: MatchedKeyword[];
         visa: MatchedKeyword[];
         koreanLevel: MatchedKeyword[];
+        workDay: MatchedKeyword[];
     };
     suitability: SuitabilityResult; // 새로 추가
 }
@@ -184,7 +185,7 @@ export const useMatchedJobPostings = () => {
 
     // 공고의 키워드 가져오기
     const getPostingKeywords = (posting: JobPosting) => {
-        if (!posting.job_posting_keywords) return { countries: [], jobs: [], conditions: [],location: [], moveable: [], gender: [], age: [], visa: [], koreanLevel: [] };
+        if (!posting.job_posting_keywords) return { countries: [], jobs: [], conditions: [],location: [], moveable: [], gender: [], age: [], visa: [], koreanLevel: [], workDay: [] };
 
         const keywords = posting.job_posting_keywords;
 
@@ -206,6 +207,7 @@ export const useMatchedJobPostings = () => {
             age: keywords.filter(k => k.keyword.category === '나이대').map(k => transformKeywordForDisplay(k.keyword)),
             visa: keywords.filter(k => k.keyword.category === '비자').map(k => transformKeywordForDisplay(k.keyword)),
             koreanLevel: keywords.filter(k => k.keyword.category === '한국어수준').map(k => transformKeywordForDisplay(k.keyword)),
+            workDay: keywords.filter(k => k.keyword.category === '근무요일').map(k => k.keyword),
         };
     };
 

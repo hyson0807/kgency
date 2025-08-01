@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { sortWorkDayKeywords } from '@/lib/utils/keywordUtils';
 
 interface Keyword {
     id: number;
@@ -15,6 +16,7 @@ interface Keywords {
     age: Keyword[];
     visa: Keyword[];
     koreanLevel: Keyword[];
+    workDay: Keyword[];
 }
 
 interface HiringFieldsProps {
@@ -133,6 +135,21 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                         {keywords.visa.map((keyword) => (
                             <View key={keyword.id} className="bg-yellow-100 px-3 py-1 rounded-full">
                                 <Text className="text-yellow-700 text-sm">
+                                    {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            )}
+
+            {keywords.workDay.length > 0 && (
+                <View className="mb-4">
+                    <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.work_days', '근무 요일')}</Text>
+                    <View className="flex-row flex-wrap gap-2">
+                        {keywords.workDay.map((keyword) => (
+                            <View key={keyword.id} className="bg-indigo-100 px-3 py-1 rounded-full">
+                                <Text className="text-indigo-700 text-sm">
                                     {translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword)}
                                 </Text>
                             </View>
