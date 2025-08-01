@@ -10,12 +10,14 @@ import { PersonalInformation } from "@/components/application-form/Personal-Info
 import { useApplicationFormStore } from '@/stores/applicationFormStore'
 import { api } from '@/lib/api'
 import CustomModal from '@/components/CustomModal'
+import { useUserKeywords } from '@/hooks/useUserKeywords'
 
 // Step 1: 기본 정보 입력 페이지
 export default function ApplicationStep1() {
     const params = useLocalSearchParams()
     const { jobPostingId, companyId, companyName, jobTitle } = params
     const { profile, loading: profileLoading } = useProfile()
+    const { keywords, loading: keywordsLoading } = useUserKeywords()
     
     // Zustand store 사용
     const step1Data = useApplicationFormStore(state => state.step1)
@@ -109,7 +111,7 @@ export default function ApplicationStep1() {
         }
     }
 
-    if (profileLoading) {
+    if (profileLoading || keywordsLoading) {
         return (
             <SafeAreaView className="flex-1 bg-white justify-center items-center">
                 <ActivityIndicator size="large" color="#3b82f6" />
@@ -193,6 +195,7 @@ export default function ApplicationStep1() {
                         setGender={setGender}
                         visa={step1Data.visa}
                         setVisa={setVisa}
+                        keywords={keywords}
                     />
                 </View>
             </ScrollView>

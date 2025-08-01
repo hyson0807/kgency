@@ -2,6 +2,11 @@ import React from "react";
 import {Text, TextInput, View} from "react-native";
 import {Dropdown} from "react-native-element-dropdown";
 
+interface Keyword {
+    id: number;
+    keyword: string;
+    category: string;
+}
 
 interface PersonalInformationProps {
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
@@ -13,6 +18,7 @@ interface PersonalInformationProps {
     setGender: (gender: string) => void,
     visa: string | null,
     setVisa: (visa: string) => void,
+    keywords?: Keyword[];
 }
 
 
@@ -27,25 +33,39 @@ export const PersonalInformation = ({
     setGender,
     visa,
     setVisa,
-
+    keywords = []
 }: PersonalInformationProps) => {
 
+    // DB에서 카테고리별 키워드 필터링
+    const genderKeywords = keywords.filter(k => k.category === '성별' && k.keyword !== '상관없음')
+    const anyGenderKeyword = keywords.find(k => k.category === '성별' && k.keyword === '상관없음')
+    
+    const visaKeywords = keywords.filter(k => k.category === '비자' && k.keyword !== '상관없음')
+    
+    // 드롭다운 옵션 생성
     const genderOptions = [
-        { label: t('apply.gender_male', '남성'), value: '남성' },
-        { label: t('apply.gender_female', '여성'), value: '여성' },
-        { label: t('apply.gender_other', '기타'), value: '기타' }
-    ]
-
+        // 나머지 성별들
+        ...genderKeywords
+            .map(keyword => ({
+                label: keyword.keyword,
+                value: keyword.keyword
+            })),
+        // 상관없음을 "기타"로 표시하여 맨 아래로
+        ...(anyGenderKeyword 
+            ? [{
+                label: '기타',
+                value: anyGenderKeyword.keyword  // 실제 DB 값은 '상관없음'
+            }]
+            : [])
+    ];
+    
     const visaOptions = [
-        { label: t('apply.visa_f2', 'F-2 (거주비자)'), value: 'F-2' },
-        { label: t('apply.visa_f4', 'F-4 (재외동포)'), value: 'F-4' },
-        { label: t('apply.visa_f5', 'F-5 (영주)'), value: 'F-5' },
-        { label: t('apply.visa_f6', 'F-6 (결혼이민)'), value: 'F-6' },
-        { label: t('apply.visa_e9', 'E-9 (비전문취업)'), value: 'E-9' },
-        { label: t('apply.visa_h2', 'H-2 (방문취업)'), value: 'H-2' },
-        { label: t('apply.visa_d2', 'D-2 (유학)'), value: 'D-2' },
-        { label: t('apply.visa_d4', 'D-4 (일반연수)'), value: 'D-4' },
-        { label: t('apply.visa_other', '기타'), value: '기타' }
+        // 비자는 상관없음 제외
+        ...visaKeywords
+            .map(keyword => ({
+                label: keyword.keyword,
+                value: keyword.keyword
+            }))
     ];
 
     return (
