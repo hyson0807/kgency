@@ -102,7 +102,16 @@ export const useMatchedJobPostings = () => {
             const response = await api('GET', '/api/user-keyword');
 
             if (response && response.data) {
-                setUserKeywordIds(response.data.map((uk: any) => uk.keyword_id));
+                const keywordIds = response.data.map((uk: any) => uk.keyword_id);
+                
+                // 디버깅: 사용자 키워드 상세 로그
+                console.log('👤 사용자 키워드 상세:', response.data.map((uk: any) => ({
+                    id: uk.keyword_id,
+                    keyword: uk.keyword?.keyword,
+                    category: uk.keyword?.category
+                })));
+                
+                setUserKeywordIds(keywordIds);
             }
         } catch (error) {
             console.error('사용자 키워드 조회 실패:', error);
@@ -120,10 +129,26 @@ export const useMatchedJobPostings = () => {
         try {
             setError(null);
 
+            // 디버깅: 사용자 키워드 로그
+            console.log('🔍 사용자 키워드 IDs:', userKeywordIds);
+
             // 서버에서 적합도 계산된 결과 요청
             const response = await api('GET', '/api/job-postings/matched');
 
             if (response && response.data) {
+                // 디버깅: 매칭된 공고 수 로그
+                console.log('📊 매칭된 공고 수:', response.data.length);
+                
+                // 디버깅: 각 공고의 키워드 로그 (처음 3개만)
+                response.data.slice(0, 3).forEach((posting: any, index: number) => {
+                    console.log(`📋 공고 ${index + 1} 키워드:`, posting.posting?.job_posting_keywords?.map((k: any) => ({
+                        id: k.keyword.id,
+                        keyword: k.keyword.keyword,
+                        category: k.keyword.category
+                    })));
+                    console.log(`🎯 공고 ${index + 1} 적합도:`, posting.suitability);
+                });
+
                 // 서버에서 이미 적합도 계산과 정렬이 완료된 데이터
                 setMatchedPostings(response.data);
             }
@@ -157,18 +182,24 @@ export const useMatchedJobPostings = () => {
 
         const keywords = posting.job_posting_keywords;
 
+        // "상관없음"을 "기타"로 표시하는 헬퍼 함수
+        const transformKeywordForDisplay = (keyword: { id: number; keyword: string; category: string }) => {
+            if (keyword.keyword === '상관없음') {
+                return { ...keyword, keyword: '기타' };
+            }
+            return keyword;
+        };
+
         return {
-            countries: keywords.filter(k => k.keyword.category === '국가').map(k => k.keyword),
+            countries: keywords.filter(k => k.keyword.category === '국가').map(k => transformKeywordForDisplay(k.keyword)),
             jobs: keywords.filter(k => k.keyword.category === '직종').map(k => k.keyword),
             conditions: keywords.filter(k => k.keyword.category === '근무조건').map(k => k.keyword),
             location: keywords.filter(k => k.keyword.category === '지역').map(k => k.keyword),
             moveable: keywords.filter(k => k.keyword.category === '지역이동').map(k => k.keyword),
-            gender: keywords.filter(k => k.keyword.category === '성별').map(k => k.keyword),
-            age: keywords.filter(k => k.keyword.category === '나이대').map(k => k.keyword),
-            visa: keywords.filter(k => k.keyword.category === '비자').map(k => k.keyword),
-            koreanLevel: keywords.filter(k => k.keyword.category === '한국어수준').map(k => k.keyword),
-
-
+            gender: keywords.filter(k => k.keyword.category === '성별').map(k => transformKeywordForDisplay(k.keyword)),
+            age: keywords.filter(k => k.keyword.category === '나이대').map(k => transformKeywordForDisplay(k.keyword)),
+            visa: keywords.filter(k => k.keyword.category === '비자').map(k => transformKeywordForDisplay(k.keyword)),
+            koreanLevel: keywords.filter(k => k.keyword.category === '한국어수준').map(k => transformKeywordForDisplay(k.keyword)),
         };
     };
 

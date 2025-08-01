@@ -105,25 +105,31 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
     // matchedKeywordsWithCategory가 없는 경우를 대비한 처리
     // 기존 matchedKeywords 배열에서 카테고리 정보 추출 시도
     const getKeywordsWithCategory = () => {
+        let keywordsWithCategory = [];
+        
         if (matchedKeywordsWithCategory) {
-            return matchedKeywordsWithCategory;
-        }
-
-        // jobSeeker의 user_keywords에서 매칭된 키워드 찾아서 카테고리 정보 추출
-        if (jobSeeker.user_keywords) {
-            return matchedKeywords.map(keyword => {
+            keywordsWithCategory = matchedKeywordsWithCategory;
+        } else if (jobSeeker.user_keywords) {
+            // jobSeeker의 user_keywords에서 매칭된 키워드 찾아서 카테고리 정보 추출
+            keywordsWithCategory = matchedKeywords.map(keyword => {
                 const found = jobSeeker.user_keywords?.find(uk => uk.keyword.keyword === keyword);
                 return {
                     keyword,
                     category: found?.keyword.category || ''
                 };
             });
+        } else {
+            // 카테고리 정보를 찾을 수 없는 경우 기본값 반환
+            keywordsWithCategory = matchedKeywords.map(keyword => ({
+                keyword,
+                category: ''
+            }));
         }
 
-        // 카테고리 정보를 찾을 수 없는 경우 기본값 반환
-        return matchedKeywords.map(keyword => ({
-            keyword,
-            category: ''
+        // "상관없음"을 "기타"로 변환
+        return keywordsWithCategory.map(item => ({
+            ...item,
+            keyword: item.keyword === '상관없음' ? '기타' : item.keyword
         }));
     };
 

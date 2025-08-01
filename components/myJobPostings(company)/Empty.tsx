@@ -12,7 +12,7 @@ export const Empty = () => {
                 아직 등록한 공고가 없습니다
             </Text>
             <TouchableOpacity
-                onPress={() => router.push('/(pages)/(company)/info2')}
+                onPress={() => router.push('/(pages)/(company)/(job-posting-registration)/job-posting-step1')}
                 className="mt-4 px-6 py-3 bg-blue-500 rounded-xl"
             >
                 <Text className="text-white font-medium">첫 공고 등록하기</Text>
