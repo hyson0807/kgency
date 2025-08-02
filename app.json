@@ -21,7 +21,7 @@
         "foregroundImage": "./assets/images/kgency_logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
+      "edgeToEdgeEnabled": false,
       "package": "com.welkit.kgency"
     },
     "web": {

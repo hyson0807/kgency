@@ -3,9 +3,11 @@ import {Tabs} from "expo-router";
 import { Ionicons } from "@expo/vector-icons"
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 const company_Layout = () => {
+    const insets = useSafeAreaInsets();
     return (
         <Tabs
             screenOptions={{
@@ -15,8 +17,8 @@ const company_Layout = () => {
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: 80,
-                    paddingBottom: 20
+                    height: 80 + insets.bottom,
+                    paddingBottom: insets.bottom + 10
                 },
             }}
         >

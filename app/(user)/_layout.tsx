@@ -5,10 +5,12 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useTranslation } from "@/contexts/TranslationContext";
 import {useAuth} from "@/contexts/AuthContext";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const User_Layout = () => {
     const { t } = useTranslation();
     const {user} = useAuth();
+    const insets = useSafeAreaInsets();
     console.log("유저정보123123", user)
 
     useEffect(() => {
@@ -24,9 +26,8 @@ const User_Layout = () => {
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: 80,
-                    paddingBottom: 10
-
+                    height: 80 + insets.bottom,
+                    paddingBottom: insets.bottom + 10
                 },
             }}
         >
