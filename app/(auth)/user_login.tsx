@@ -85,9 +85,17 @@ const UserLogin = () => {
             } else {
                 showModal(t('alert.send_failed', '전송 실패'), response.data.error || t('alert.code_send_error', '인증번호 전송에 실패했습니다'), 'warning');
             }
-        } catch (error) {
-            console.error(error);
-            showModal(t('alert.error', '오류'), t('alert.check_network', '네트워크 연결을 확인해주세요'), 'warning');
+        } catch (error: any) {
+            console.error('OTP 전송 에러:', error);
+            console.error('에러 상세:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status,
+                url: error.config?.url
+            });
+            
+            const errorMessage = error.response?.data?.error || error.message || t('alert.check_network', '네트워크 연결을 확인해주세요');
+            showModal(t('alert.error', '오류'), errorMessage, 'warning');
         } finally {
             setLoading(false);
         }
@@ -121,7 +129,7 @@ const UserLogin = () => {
                     if (response.onboardingStatus.completed) {
                         router.replace('/(user)/home');
                     } else {
-                        router.replace('/(pages)/(user)/info');
+                        router.replace('/(pages)/(user)/(user-information)/info');
                     }
                 } else {
                     // 인증 시도 플래그 즉시 리셋

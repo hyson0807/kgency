@@ -6,6 +6,9 @@ const SERVER_URL = __DEV__
     ? 'http://192.168.0.15:5004'
     : process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgencyserver-production-45af.up.railway.app';
 
+
+// 192.168.0.15:5004
+
 // 토큰 메모리 캐시
 let cachedToken: string | null = null;
 let tokenCacheInitialized = false;
