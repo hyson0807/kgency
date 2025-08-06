@@ -145,27 +145,6 @@ const Start = () => {
             </View>
 
             <View className="flex-1 items-center justify-center px-6 py-8">
-                {/* Logo */}
-                <Animated.View 
-                    style={[
-                        styles.logo,
-                        {
-                            opacity: fadeAnim,
-                            transform: [{ translateY: slideAnim }]
-                        }
-                    ]}
-                >
-                    <LinearGradient
-                        colors={['#4A90E2', '#8FAFFF']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={styles.logoTextGradient}
-                    >
-                        <Text className="text-4xl font-extrabold text-white">K-Gency</Text>
-                    </LinearGradient>
-                    <Text className="text-gray-600 text-sm font-medium mt-1">{t('start.logo_subtitle', 'AI로 찾는 완벽한 매칭')}</Text>
-                </Animated.View>
-
                 {/* Main content */}
                 <Animated.View 
                     className="w-full max-w-md flex-1 justify-center"
@@ -174,6 +153,26 @@ const Start = () => {
                         transform: [{ translateY: slideAnimDelay }]
                     }}
                 >
+                    {/* Logo */}
+                    <Animated.View 
+                        style={[
+                            styles.logo,
+                            {
+                                opacity: fadeAnim,
+                                transform: [{ translateY: slideAnim }]
+                            }
+                        ]}
+                    >
+                        <LinearGradient
+                            colors={['#4A90E2', '#8FAFFF']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.logoTextGradient}
+                        >
+                            <Text className="text-4xl font-extrabold text-white">K-Gency</Text>
+                        </LinearGradient>
+                        <Text className="text-gray-600 text-sm font-medium mt-1">{t('start.logo_subtitle', 'AI로 찾는 완벽한 매칭')}</Text>
+                    </Animated.View>
                     {/* Title section */}
                     <View className="items-center mb-6">
                         <Text className="text-2xl font-bold text-gray-800 text-center mb-2">
@@ -321,7 +320,7 @@ const styles = StyleSheet.create({
         right: width * 0.2,
     },
     logo: {
-        marginBottom: 24,
+        marginBottom: 40,
         alignItems: 'center',
     },
     logoTextGradient: {
