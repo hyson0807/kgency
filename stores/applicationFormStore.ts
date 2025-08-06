@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 // Step 1: 기본 정보 타입
@@ -95,8 +95,7 @@ const initialStep3: Step3Data = {
 
 // Zustand Store 생성
 export const useApplicationFormStore = create<ApplicationFormStore>()(
-  devtools(
-    persist(
+  persist(
       (set, get) => ({
       // 초기 데이터
       step1: initialStep1,
@@ -107,90 +106,89 @@ export const useApplicationFormStore = create<ApplicationFormStore>()(
       setStep1Data: (data) =>
         set((state) => ({
           step1: { ...state.step1, ...data }
-        }), false, 'setStep1Data'),
+        })),
         
       setName: (name) =>
         set((state) => ({
           step1: { ...state.step1, name }
-        }), false, 'setName'),
+        })),
         
       setAge: (age) =>
         set((state) => ({
           step1: { ...state.step1, age }
-        }), false, 'setAge'),
+        })),
         
       setGender: (gender) =>
         set((state) => ({
           step1: { ...state.step1, gender }
-        }), false, 'setGender'),
+        })),
         
       setVisa: (visa) =>
         set((state) => ({
           step1: { ...state.step1, visa }
-        }), false, 'setVisa'),
+        })),
       
       // Step 2 액션들
       setStep2Data: (data) =>
         set((state) => ({
           step2: { ...state.step2, ...data }
-        }), false, 'setStep2Data'),
-        
+        })),
         
       setHowLong: (period) =>
         set((state) => ({
           step2: { ...state.step2, howLong: period }
-        }), false, 'setHowLong'),
+        })),
         
       setExperience: (experience) =>
         set((state) => ({
           step2: { ...state.step2, experience }
-        }), false, 'setExperience'),
+        })),
         
       setExperienceContent: (content) =>
         set((state) => ({
           step2: { ...state.step2, experienceContent: content }
-        }), false, 'setExperienceContent'),
+        })),
         
       setSelectedDays: (days) =>
         set((state) => ({
           step2: { ...state.step2, selectedDays: days }
-        }), false, 'setSelectedDays'),
+        })),
         
       setDaysNegotiable: (negotiable) =>
         set((state) => ({
           step2: { ...state.step2, daysNegotiable: negotiable }
-        }), false, 'setDaysNegotiable'),
+        })),
         
       setSelectedTimes: (times) =>
         set((state) => ({
           step2: { ...state.step2, selectedTimes: times }
-        }), false, 'setSelectedTimes'),
+        })),
         
       setTimesNegotiable: (negotiable) =>
         set((state) => ({
           step2: { ...state.step2, timesNegotiable: negotiable }
-        }), false, 'setTimesNegotiable'),
+        })),
         
       // Step 3 액션들
       setStep3Data: (data) =>
         set((state) => ({
           step3: { ...state.step3, ...data }
-        }), false, 'setStep3Data'),
+        })),
         
       setKoreanLevel: (level) =>
         set((state) => ({
           step3: { ...state.step3, koreanLevel: level }
-        }), false, 'setKoreanLevel'),
+        })),
         
       setTopic: (topic) =>
         set((state) => ({
           step3: { ...state.step3, topic }
-        }), false, 'setTopic'),
+        })),
         
       setQuestion: (question) =>
         set((state) => ({
           step3: { ...state.step3, question }
-        }), false, 'setQuestion'),
+        })),
       
       // 유틸리티 액션들
       resetAllData: () =>
@@ -198,7 +196,7 @@ export const useApplicationFormStore = create<ApplicationFormStore>()(
           step1: initialStep1,
           step2: initialStep2,
           step3: initialStep3
-        }), false, 'resetAllData'),
+        })),
         
       getCurrentStep1Data: () => get().step1,
       getCurrentStep2Data: () => get().step2,
@@ -254,7 +252,7 @@ export const useApplicationFormStore = create<ApplicationFormStore>()(
             koreanLevel: profile.user_info?.korean_level || null,
             topic: profile.user_info?.topic || null,
           }
-        }), false, 'loadFromProfile')
+        }))
       },
     }),
     {
@@ -278,11 +276,7 @@ export const useApplicationFormStore = create<ApplicationFormStore>()(
         step3: state.step3
       })
     }
-  ),
-  {
-    name: 'application-form-store'
-  }
-)
+  )
 )
 
 // 편의 함수들

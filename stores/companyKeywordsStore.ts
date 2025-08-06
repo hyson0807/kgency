@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
 
 // 키워드 타입
 interface Keyword {
@@ -100,8 +99,7 @@ const initialStep3: Step3Data = {
 
 // Zustand Store 생성 (AsyncStorage 없이)
 export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
-  devtools(
-    (set, get) => ({
+  (set, get) => ({
       // 초기 데이터
       step1: initialStep1,
       step2: initialStep2,
@@ -111,17 +109,17 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
       setStep1Data: (data) =>
         set((state) => ({
           step1: { ...state.step1, ...data }
-        }), false, 'setStep1Data'),
+        })),
         
       setLocation: (location) =>
         set((state) => ({
           step1: { ...state.step1, location }
-        }), false, 'setLocation'),
+        })),
         
       setJobs: (jobs) =>
         set((state) => ({
           step1: { ...state.step1, jobs }
-        }), false, 'setJobs'),
+        })),
         
       toggleJob: (jobId) =>
         set((state) => ({
@@ -131,33 +129,33 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
               ? state.step1.jobs.filter(id => id !== jobId)
               : [...state.step1.jobs, jobId]
           }
-        }), false, 'toggleJob'),
+        })),
       
       // Step 2 액션들
       setStep2Data: (data) =>
         set((state) => ({
           step2: { ...state.step2, ...data }
-        }), false, 'setStep2Data'),
+        })),
         
       setCountries: (countries) =>
         set((state) => ({
           step2: { ...state.step2, countries }
-        }), false, 'setCountries'),
+        })),
         
       setGenders: (genders) =>
         set((state) => ({
           step2: { ...state.step2, genders }
-        }), false, 'setGenders'),
+        })),
         
       setAges: (ages) =>
         set((state) => ({
           step2: { ...state.step2, ages }
-        }), false, 'setAges'),
+        })),
         
       setVisas: (visas) =>
         set((state) => ({
           step2: { ...state.step2, visas }
-        }), false, 'setVisas'),
+        })),
         
       addCountry: (countryId) =>
         set((state) => ({
@@ -167,7 +165,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
               ? state.step2.countries
               : [...state.step2.countries, countryId]
           }
-        }), false, 'addCountry'),
+        })),
         
       removeCountry: (countryId) =>
         set((state) => ({
@@ -175,7 +173,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
             ...state.step2,
             countries: state.step2.countries.filter(id => id !== countryId)
           }
-        }), false, 'removeCountry'),
+        })),
         
       addGender: (genderId) =>
         set((state) => ({
@@ -185,7 +183,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
               ? state.step2.genders
               : [...state.step2.genders, genderId]
           }
-        }), false, 'addGender'),
+        })),
         
       removeGender: (genderId) =>
         set((state) => ({
@@ -193,7 +191,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
             ...state.step2,
             genders: state.step2.genders.filter(id => id !== genderId)
           }
-        }), false, 'removeGender'),
+        })),
         
       addAge: (ageId) =>
         set((state) => ({
@@ -203,7 +201,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
               ? state.step2.ages
               : [...state.step2.ages, ageId]
           }
-        }), false, 'addAge'),
+        })),
         
       removeAge: (ageId) =>
         set((state) => ({
@@ -211,7 +209,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
             ...state.step2,
             ages: state.step2.ages.filter(id => id !== ageId)
           }
-        }), false, 'removeAge'),
+        })),
         
       addVisa: (visaId) =>
         set((state) => ({
@@ -221,7 +219,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
               ? state.step2.visas
               : [...state.step2.visas, visaId]
           }
-        }), false, 'addVisa'),
+        })),
         
       removeVisa: (visaId) =>
         set((state) => ({
@@ -229,43 +227,43 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
             ...state.step2,
             visas: state.step2.visas.filter(id => id !== visaId)
           }
-        }), false, 'removeVisa'),
+        })),
         
       clearCountries: () =>
         set((state) => ({
           step2: { ...state.step2, countries: [] }
-        }), false, 'clearCountries'),
+        })),
         
       clearGenders: () =>
         set((state) => ({
           step2: { ...state.step2, genders: [] }
-        }), false, 'clearGenders'),
+        })),
         
       clearAges: () =>
         set((state) => ({
           step2: { ...state.step2, ages: [] }
-        }), false, 'clearAges'),
+        })),
         
       clearVisas: () =>
         set((state) => ({
           step2: { ...state.step2, visas: [] }
-        }), false, 'clearVisas'),
+        })),
       
       // Step 3 액션들
       setStep3Data: (data) =>
         set((state) => ({
           step3: { ...state.step3, ...data }
-        }), false, 'setStep3Data'),
+        })),
         
       setKoreanLevel: (level) =>
         set((state) => ({
           step3: { ...state.step3, koreanLevel: level }
-        }), false, 'setKoreanLevel'),
+        })),
         
       setWorkDays: (workDays) =>
         set((state) => ({
           step3: { ...state.step3, workDays }
-        }), false, 'setWorkDays'),
+        })),
         
       toggleWorkDay: (workDayId) =>
         set((state) => ({
@@ -275,12 +273,12 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
               ? state.step3.workDays.filter(id => id !== workDayId)
               : [...state.step3.workDays, workDayId]
           }
-        }), false, 'toggleWorkDay'),
+        })),
         
       setWorkDaysSelectLater: (isSelectLater) =>
         set((state) => ({
           step3: { ...state.step3, isWorkDaysSelectLater: isSelectLater }
-        }), false, 'setWorkDaysSelectLater'),
+        })),
         
       setAllWorkDays: (allWorkDayIds) =>
         set((state) => ({
@@ -289,7 +287,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
             workDays: allWorkDayIds,
             isWorkDaysSelectLater: false 
           }
-        }), false, 'setAllWorkDays'),
+        })),
         
       clearWorkDays: () =>
         set((state) => ({
@@ -298,7 +296,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
             workDays: [],
             isWorkDaysSelectLater: true 
           }
-        }), false, 'clearWorkDays'),
+        })),
       
       // 유틸리티 액션들
       resetAllData: () =>
@@ -306,7 +304,7 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
           step1: initialStep1,
           step2: initialStep2,
           step3: initialStep3
-        }), false, 'resetAllData'),
+        })),
         
       getCurrentStep1Data: () => get().step1,
       getCurrentStep2Data: () => get().step2,
@@ -377,13 +375,9 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
           }
         })
         
-        set(newState, false, 'setInitialData')
+        set(newState)
       }
-    }),
-    {
-      name: 'company-keywords-store'
-    }
-  )
+    })
 )
 
 // 편의 함수들

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 // Step 1: 기본 정보 타입
@@ -130,8 +130,7 @@ const initialStep3: Step3Data = {
 
 // Zustand Store 생성
 export const useJobPostingStore = create<JobPostingStore>()(
-  devtools(
-    persist(
+  persist(
       (set, get) => ({
       // 초기 데이터
       step1: initialStep1,
@@ -142,144 +141,144 @@ export const useJobPostingStore = create<JobPostingStore>()(
       setStep1Data: (data) =>
         set((state) => ({
           step1: { ...state.step1, ...data }
-        }), false, 'setStep1Data'),
+        })),
         
       setJobTitle: (title) =>
         set((state) => ({
           step1: { ...state.step1, jobTitle: title }
-        }), false, 'setJobTitle'),
+        })),
         
       setJobDescription: (description) =>
         set((state) => ({
           step1: { ...state.step1, jobDescription: description }
-        }), false, 'setJobDescription'),
+        })),
         
       setHiringCount: (count) =>
         set((state) => ({
           step1: { ...state.step1, hiringCount: count }
-        }), false, 'setHiringCount'),
+        })),
         
       setJobAddress: (address) =>
         set((state) => ({
           step1: { ...state.step1, jobAddress: address }
-        }), false, 'setJobAddress'),
+        })),
         
       setInterviewLocation: (location) =>
         set((state) => ({
           step1: { ...state.step1, interviewLocation: location }
-        }), false, 'setInterviewLocation'),
+        })),
         
       setSpecialNotes: (notes) =>
         set((state) => ({
           step1: { ...state.step1, specialNotes: notes }
-        }), false, 'setSpecialNotes'),
+        })),
         
       setEditMode: (isEdit, jobPostingId) =>
         set((state) => ({
           step1: { ...state.step1, isEditMode: isEdit, jobPostingId }
-        }), false, 'setEditMode'),
+        })),
       
       // Step 2 액션들
       setStep2Data: (data) =>
         set((state) => ({
           step2: { ...state.step2, ...data }
-        }), false, 'setStep2Data'),
+        })),
         
       setSelectedLocation: (location) =>
         set((state) => ({
           step2: { ...state.step2, selectedLocation: location }
-        }), false, 'setSelectedLocation'),
+        })),
         
       setWorkingHours: (hours) =>
         set((state) => ({
           step2: { ...state.step2, workingHours: hours }
-        }), false, 'setWorkingHours'),
+        })),
         
       setWorkingHoursNegotiable: (negotiable) =>
         set((state) => ({
           step2: { ...state.step2, workingHoursNegotiable: negotiable }
-        }), false, 'setWorkingHoursNegotiable'),
+        })),
         
       setWorkingDays: (days) =>
         set((state) => ({
           step2: { ...state.step2, workingDays: days }
-        }), false, 'setWorkingDays'),
+        })),
         
       setWorkingDaysNegotiable: (negotiable) =>
         set((state) => ({
           step2: { ...state.step2, workingDaysNegotiable: negotiable }
-        }), false, 'setWorkingDaysNegotiable'),
+        })),
         
       setSalaryType: (type) =>
         set((state) => ({
           step2: { ...state.step2, salaryType: type }
-        }), false, 'setSalaryType'),
+        })),
         
       setSalaryRange: (range) =>
         set((state) => ({
           step2: { ...state.step2, salaryRange: range }
-        }), false, 'setSalaryRange'),
+        })),
         
       setSalaryRangeNegotiable: (negotiable) =>
         set((state) => ({
           step2: { ...state.step2, salaryRangeNegotiable: negotiable }
-        }), false, 'setSalaryRangeNegotiable'),
+        })),
         
       setPayDay: (day) =>
         set((state) => ({
           step2: { ...state.step2, payDay: day }
-        }), false, 'setPayDay'),
+        })),
         
       setPayDayNegotiable: (negotiable) =>
         set((state) => ({
           step2: { ...state.step2, payDayNegotiable: negotiable }
-        }), false, 'setPayDayNegotiable'),
+        })),
       
       // Step 3 액션들
       setStep3Data: (data) =>
         set((state) => ({
           step3: { ...state.step3, ...data }
-        }), false, 'setStep3Data'),
+        })),
         
       setSelectedCountries: (countries) =>
         set((state) => ({
           step3: { ...state.step3, selectedCountries: countries }
-        }), false, 'setSelectedCountries'),
+        })),
         
       setSelectedJobs: (jobs) =>
         set((state) => ({
           step3: { ...state.step3, selectedJobs: jobs }
-        }), false, 'setSelectedJobs'),
+        })),
         
       setSelectedConditions: (conditions) =>
         set((state) => ({
           step3: { ...state.step3, selectedConditions: conditions }
-        }), false, 'setSelectedConditions'),
+        })),
         
       setSelectedAgeRanges: (ages) =>
         set((state) => ({
           step3: { ...state.step3, selectedAgeRanges: ages }
-        }), false, 'setSelectedAgeRanges'),
+        })),
         
       setSelectedGenders: (genders) =>
         set((state) => ({
           step3: { ...state.step3, selectedGenders: genders }
-        }), false, 'setSelectedGenders'),
+        })),
         
       setSelectedVisas: (visas) =>
         set((state) => ({
           step3: { ...state.step3, selectedVisas: visas }
-        }), false, 'setSelectedVisas'),
+        })),
         
       setSelectedKoreanLevels: (levels) =>
         set((state) => ({
           step3: { ...state.step3, selectedKoreanLevels: levels }
-        }), false, 'setSelectedKoreanLevels'),
+        })),
         
       setIsPostingActive: (active) =>
         set((state) => ({
           step3: { ...state.step3, isPostingActive: active }
-        }), false, 'setIsPostingActive'),
+        })),
       
       // 유틸리티 액션들
       resetAllData: () =>
@@ -287,7 +286,7 @@ export const useJobPostingStore = create<JobPostingStore>()(
           step1: initialStep1,
           step2: initialStep2,
           step3: initialStep3
-        }), false, 'resetAllData'),
+        })),
         
       getCurrentStep1Data: () => get().step1,
       getCurrentStep2Data: () => get().step2,
@@ -357,11 +356,7 @@ export const useJobPostingStore = create<JobPostingStore>()(
         step3: state.step3
       })
     }
-  ),
-  {
-    name: 'job-posting-store'
-  }
-)
+  )
 )
 
 // 편의 함수들
