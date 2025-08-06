@@ -9,6 +9,7 @@ export const Header = () => {
                 <Image 
                     source={require('@/assets/images/kgency_logo.png')}
                     className="w-10 h-10 mr-3"
+                    style={{ width: 40, height: 40 }}
                     resizeMode="contain"
                 />
                 <Text className="text-xl font-bold text-gray-800">K-gency</Text>
