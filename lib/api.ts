@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 서버 주소 설정
 const SERVER_URL = __DEV__
-    ? 'http://192.168.219.126:5004'
+    ? 'http://192.168.219.129:5004'
     : process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgencyserver-production-45af.up.railway.app';
 
 
@@ -80,7 +80,7 @@ export const authAPI = {
     sendOTP: (phone: string) =>
         api<ApiResponse>('POST', '/api/auth/send-otp', { phone }),
 
-    verifyOTP: (phone: string, otp: string, userType?: 'user' | 'company') =>
+    verifyOTP: (phone: string, otp: string, userType?: 'user' | 'company', isDemoAccount?: boolean) =>
         api<ApiResponse<{
             token: string;
             user: {
@@ -92,7 +92,7 @@ export const authAPI = {
             onboardingStatus: {
                 completed: boolean;
             };
-        }>>('POST', '/api/auth/verify-otp', { phone, otp, userType }),
+        }>>('POST', '/api/auth/verify-otp', { phone, otp, userType, isDemoAccount }),
 
     deleteAccount: () =>
         api<ApiResponse>('DELETE', '/api/auth/delete-account')

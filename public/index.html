@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    
+    <!-- import.meta polyfill을 가장 먼저 실행 -->
+    <script>
+      (function() {
+        if (typeof globalThis === 'undefined') {
+          window.globalThis = window;
+        }
+        if (!globalThis.import) {
+          globalThis.import = {};
+        }
+        if (!globalThis.import.meta) {
+          globalThis.import.meta = {
+            env: {
+              MODE: 'production',
+              PROD: true,
+              DEV: false
+            }
+          };
+        }
+      })();
+    </script>
+    
+    <style id="expo-reset">
+      html, body, #root {
+        height: 100%;
+      }
+      body {
+        overflow: hidden;
+      }
+      #root {
+        display: flex;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
