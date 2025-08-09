@@ -87,6 +87,14 @@ const CompanyLogin = () => {
             showModal('알림', '회사 전화번호를 입력해주세요');
             return;
         }
+        
+        // 애플 심사용 데모 계정은 OTP 전송 스킵
+        if (cleanPhone === '01088888888') {
+            setInputOtp(true);
+            setResendTimer(180);
+            setTimeout(() => otpInputRef.current?.focus(), 100);
+            return;
+        }
 
         setLoading(true);
         try {
@@ -116,13 +124,18 @@ const CompanyLogin = () => {
 
         setLoading(true);
         try {
+            const cleanPhone = sanitizePhoneNumber(phone);
             const formattedPhone = formatPhone(phone);
+            
+            // 애플 심사용 데모 계정 체크
+            const isDemoAccount = cleanPhone === '01088888888' && otp === '888888';
             
             try {
                 const response = await api('POST', '/api/auth/verify-otp', {
                     phone: formattedPhone,
                     otp,
-                    userType: 'company'
+                    userType: 'company',
+                    isDemoAccount: isDemoAccount // 데모 계정 플래그 추가
                 });
 
                 // 성공한 경우
@@ -132,7 +145,7 @@ const CompanyLogin = () => {
                     if (response.onboardingStatus.completed) {
                         router.replace('/(company)/home2');
                     } else {
-                        router.replace('/(pages)/(company)/register');
+                        router.replace('/(pages)/(company)/(company-information)/register');
                     }
                 } else {
                     // 인증 시도 플래그 즉시 리셋

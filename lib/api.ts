@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 서버 주소 설정
 const SERVER_URL = __DEV__
-    ? 'http://192.168.0.15:5004'
+    ? 'http://192.168.219.126:5004'
     : process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgencyserver-production-45af.up.railway.app';
 
 

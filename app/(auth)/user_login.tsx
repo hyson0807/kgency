@@ -72,6 +72,15 @@ const UserLogin = () => {
             showModal(t('alert.notification', '알림'), t('alert.enter_valid_phone', '올바른 휴대폰 번호를 입력해주세요'));
             return;
         }
+        
+        // 애플 심사용 데모 계정은 OTP 전송 스킵
+        if (cleanPhone === '01099999999') {
+            setInputOtp(true);
+            setResendTimer(180);
+            setTimeout(() => otpInputRef.current?.focus(), 100);
+            return;
+        }
+        
         setLoading(true);
 
         try {
@@ -111,11 +120,15 @@ const UserLogin = () => {
             const cleanPhone = phone.replace(/-/g, '');
             const formattedPhone = `+82${cleanPhone.slice(1)}`;
 
+            // 애플 심사용 데모 계정 체크
+            const isDemoAccount = cleanPhone === '01099999999' && otp === '999999';
+
             try {
                 const response = await api ('POST','/api/auth/verify-otp', {
                     phone: formattedPhone,
                     otp: otp,
-                    userType: 'user'
+                    userType: 'user',
+                    isDemoAccount: isDemoAccount // 데모 계정 플래그 추가
                 });
 
                 // 성공한 경우
