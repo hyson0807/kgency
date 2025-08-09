@@ -87,7 +87,7 @@ const Register = () => {
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
                     onPress={handleSave}
-                    className="bg-blue-500 py-4 rounded-xl items-center mx-4 my-2"
+                    className="bg-blue-500 py-4 rounded-xl items-center mx-4 mb-4"
                 >
                     <Text className="text-center text-white font-bold text-lg">
                         회사 정보 입력
