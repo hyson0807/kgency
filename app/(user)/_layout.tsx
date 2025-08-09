@@ -6,6 +6,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useTranslation } from "@/contexts/TranslationContext";
 import {useAuth} from "@/contexts/AuthContext";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform } from 'react-native';
 
 const User_Layout = () => {
     const { t } = useTranslation();
@@ -26,7 +27,7 @@ const User_Layout = () => {
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: 80 + insets.bottom,
+                    height: (Platform.OS === 'ios' ? 50 : 60) + insets.bottom,
                     paddingBottom: insets.bottom + 10
                 },
             }}

@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons"
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform } from 'react-native';
 
 
 const company_Layout = () => {
@@ -17,7 +18,7 @@ const company_Layout = () => {
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: 80 + insets.bottom,
+                    height: (Platform.OS === 'ios' ? 50 : 60) + insets.bottom,
                     paddingBottom: insets.bottom + 10
                 },
             }}
