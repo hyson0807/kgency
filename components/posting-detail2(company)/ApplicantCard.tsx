@@ -212,7 +212,18 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
 
     return (
         <>
-            <View className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm gap-3 relative">
+            <TouchableOpacity
+                onPress={() => {
+                    router.push({
+                        pathname: '/(pages)/(company)/job-seeker-detail',
+                        params: {
+                            userId: item.user.id,
+                            hideInterviewButton: 'true'  // 면접 제안하기 버튼 숨기기
+                        }
+                    })
+                }}
+                activeOpacity={0.9}
+                className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm gap-3 relative">
                 {/* 적합도 배지 - 우상단 */}
                 {suitabilityResult && (
                     <View className="absolute top-3 right-3 z-10">
@@ -317,7 +328,7 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                         </View>
                     )}
                 </View>
-            </View>
+            </TouchableOpacity>
             <ModalComponent />
         </>
     )

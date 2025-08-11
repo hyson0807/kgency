@@ -57,7 +57,7 @@ interface GroupedKeywords {
 
 export default function JobSeekerDetail() {
     const params = useLocalSearchParams()
-    const { userId } = params
+    const { userId, hideInterviewButton } = params
     const { showModal, ModalComponent } = useModal()
 
     const [jobSeeker, setJobSeeker] = useState<JobSeekerDetail | null>(null)
@@ -198,25 +198,27 @@ export default function JobSeekerDetail() {
                 
             </ScrollView>
 
-            {/* 하단 버튼 */}
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-                <TouchableOpacity
-                    onPress={() => {
-                        router.push({
-                            pathname: '/interview-request',
-                            params: {
-                                userId: userId
-                            }
-                        })
-                    }}
-                    className="bg-blue-500 py-4 rounded-xl mx-4 my-2"
-                >
-                    <View className="flex-row items-center justify-center">
-                        <Ionicons name="calendar" size={20} color="white" />
-                        <Text className="text-white font-bold text-lg ml-2">면접 제안하기</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
+            {/* 하단 버튼 - hideInterviewButton이 'true'가 아닐 때만 표시 */}
+            {hideInterviewButton !== 'true' && (
+                <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.push({
+                                pathname: '/interview-request',
+                                params: {
+                                    userId: userId
+                                }
+                            })
+                        }}
+                        className="bg-blue-500 py-4 rounded-xl mx-4 my-2"
+                    >
+                        <View className="flex-row items-center justify-center">
+                            <Ionicons name="calendar" size={20} color="white" />
+                            <Text className="text-white font-bold text-lg ml-2">면접 제안하기</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            )}
 
 
             <ModalComponent />
