@@ -1,6 +1,7 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { router } from 'expo-router';
 import Back from '@/components/back';
 import { useTranslation } from '@/contexts/TranslationContext';
@@ -81,10 +82,15 @@ const CareerPage = () => {
           </View>
         </View>
 
-        <ScrollView
+        <KeyboardAwareScrollView
           className="flex-1 bg-gray-50"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
+          contentContainerStyle={{ paddingTop: 16, paddingBottom: 20 }}
+          keyboardShouldPersistTaps="handled"
+          extraScrollHeight={100}
+          enableOnAndroid={true}
+          enableAutomaticScroll={true}
+          keyboardOpeningTime={0}
         >
           <CareerInformation
             t={t}
@@ -105,10 +111,10 @@ const CareerPage = () => {
               setExperienceContent: (value) => updateField('experienceContent', value)
             }}
           />
-        </ScrollView>
+        </KeyboardAwareScrollView>
 
-        {/* 버튼 영역 */}
-        <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 pb-8">
+        {/* 버튼 영역 - flex 사용 */}
+        <View className="bg-white border-t border-gray-200 px-4 py-4 pb-8">
           <View className="flex-row gap-3">
             <TouchableOpacity
               className="flex-1 bg-gray-200 items-center justify-center py-4 rounded-2xl"
