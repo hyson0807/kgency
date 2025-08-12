@@ -192,14 +192,20 @@ const Shop = () => {
       );
 
     } catch (error: any) {
+      // 사용자가 취소한 경우 - 다양한 취소 코드 처리
+      if (error.code === 'E_USER_CANCELLED' || 
+          error.code === 'E_DEFERRED' ||
+          error.userCancelled === true ||
+          (error.message && error.message.includes('cancelled')) ||
+          (error.message && error.message.includes('SKErrorDomain error 2'))) {
+        console.log('User cancelled the purchase');
+        return; // 에러 메시지를 표시하지 않음
+      }
+      
+      // 취소가 아닌 실제 에러인 경우만 에러 로그 출력
       console.error('Purchase failed:', error);
       
       let errorMessage = '결제 처리 중 오류가 발생했습니다.';
-      
-      // 사용자가 취소한 경우
-      if (error.code === 'E_USER_CANCELLED') {
-        return; // 에러 메시지를 표시하지 않음
-      }
       
       // 기타 에러 메시지 처리
       if (error.message) {

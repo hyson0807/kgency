@@ -187,78 +187,120 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       
       const data = response.notification.request.content.data;
       
-      // Check if user is properly loaded
+      // Check if user is properly loaded with retry mechanism
       if (!user || !user.userType) {
-        console.log('User not loaded yet, skipping navigation');
+        console.log('User not loaded yet, retrying navigation in 1 second');
+        setTimeout(() => {
+          if (user && user.userType) {
+            handleNotificationNavigation(data, user);
+          } else {
+            console.log('User still not loaded after retry, skipping navigation');
+          }
+        }, 1000);
         return;
       }
       
+      handleNotificationNavigation(data, user);
+    });
+
+    const handleNotificationNavigation = (data: any, user: any) => {
       try {
-        // Navigate based on notification type
-        if (data?.type === 'interview_proposal' && data?.applicationId) {
-          console.log('Navigating for interview_proposal');
+        console.log('🔔 Handling notification navigation:', { 
+          type: data?.type, 
+          applicationId: data?.applicationId,
+          userType: user?.userType 
+        });
+
+        // Validate required data
+        if (!data?.type || !data?.applicationId) {
+          console.warn('❌ Missing required notification data:', { type: data?.type, applicationId: data?.applicationId });
+          return;
+        }
+
+        if (!user?.userType) {
+          console.warn('❌ User type not available:', user);
+          return;
+        }
+
+        // Navigate based on notification type with proper route replacement
+        let targetRoute = null;
+        
+        if (data.type === 'interview_proposal') {
           if (user.userType === 'user') {
-            router.push(`/(user)/applications`);
+            targetRoute = '/(user)/applications';
+          } else if (user.userType === 'company') {
+            targetRoute = '/(company)/interview-calendar';
           }
         }
-        
-        if (data?.type === 'interview_schedule_confirmed' && data?.applicationId) {
-          console.log('Navigating for interview_schedule_confirmed');
+        else if (data.type === 'interview_schedule_confirmed') {
           if (user.userType === 'company') {
-            router.push(`/(company)/interview-calendar`);
+            targetRoute = '/(company)/interview-calendar';
+          } else if (user.userType === 'user') {
+            targetRoute = '/(user)/user-calendar';
           }
         }
-        
-        if (data?.type === 'interview_cancelled' && data?.applicationId) {
-          console.log('Navigating for interview_cancelled');
+        else if (data.type === 'interview_cancelled') {
           if (user.userType === 'user') {
-            router.push(`/(user)/applications`);
+            targetRoute = '/(user)/applications';
+          } else if (user.userType === 'company') {
+            targetRoute = '/(company)/interview-calendar';
           }
         }
-        
-        // Handle new application notifications for companies
-        if (data?.type === 'new_application' && data?.applicationId) {
-          console.log('Navigating for new_application');
+        else if (data.type === 'new_application') {
           if (user.userType === 'company') {
-            router.push(`/(company)/myJobPostings`);
+            targetRoute = '/(company)/myJobPostings';
           }
         }
-        
-        // Handle interview request acceptance notifications for companies
-        if (data?.type === 'interview_request_accepted' && data?.applicationId) {
-          console.log('Navigating for interview_request_accepted');
+        else if (data.type === 'interview_request_accepted') {
           if (user.userType === 'company') {
-            router.push(`/(company)/interview-calendar`);
+            targetRoute = '/(company)/interview-calendar';
           }
         }
-        
-        // Handle job posting interview proposals for users
-        if (data?.type === 'job_posting_interview_proposal' && data?.applicationId) {
-          console.log('Navigating for job_posting_interview_proposal');
+        else if (data.type === 'job_posting_interview_proposal') {
           if (user.userType === 'user') {
-            router.push(`/(user)/applications`);
+            targetRoute = '/(user)/applications';
           }
         }
-        
-        // Handle instant interview cancellation for users
-        if (data?.type === 'instant_interview_cancelled' && data?.applicationId) {
-          console.log('Navigating for instant_interview_cancelled');
+        else if (data.type === 'instant_interview_cancelled') {
           if (user.userType === 'user') {
-            router.push(`/(user)/applications`);
+            targetRoute = '/(user)/applications';
           }
         }
-        
-        // Handle regular application cancellation for users
-        if (data?.type === 'regular_application_cancelled' && data?.applicationId) {
-          console.log('Navigating for regular_application_cancelled');
+        else if (data.type === 'regular_application_cancelled') {
           if (user.userType === 'user') {
-            router.push(`/(user)/applications`);
+            targetRoute = '/(user)/applications';
           }
+        }
+        else {
+          console.warn('❌ Unknown notification type:', data.type);
+          return;
+        }
+
+        if (targetRoute) {
+          console.log(`✅ Navigating to: ${targetRoute} for ${data.type}`);
+          
+          // Use a small delay to ensure the app is ready for navigation
+          setTimeout(() => {
+            try {
+              router.replace(targetRoute as any);
+              console.log(`🎯 Successfully navigated to: ${targetRoute}`);
+            } catch (navError) {
+              console.error('❌ Navigation error:', navError);
+              console.log('🔄 Retrying with push navigation...');
+              try {
+                router.push(targetRoute as any);
+              } catch (pushError) {
+                console.error('❌ Push navigation also failed:', pushError);
+              }
+            }
+          }, 100);
+        } else {
+          console.warn(`❌ No target route determined for ${data.type} with userType ${user.userType}`);
         }
       } catch (error) {
-        console.error('Error navigating from notification:', error);
+        console.error('❌ Error in notification navigation handler:', error);
       }
-    });
+    };
 
     return () => {
       if (notificationListener.current) {

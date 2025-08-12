@@ -316,6 +316,14 @@ const JobPostingStep3 = () => {
                         <Text className="text-gray-600 mb-6">공고에 적합한 인재를 찾아드리겠습니다.</Text>
                     </View>
 
+                    {/* 6. 직종 선택 (필수) */}
+                    <JobPreferencesSelector
+                        jobs={jobKeywords}
+                        selectedJobs={step3Data.selectedJobs}
+                        onToggle={toggleJob}
+                        title="모집 직종 *"
+                    />
+
                     {/* 1. 선호 국가 선택 (필수) */}
                     <BaseKeywordSelector
                         title="선호 국가"
@@ -377,13 +385,7 @@ const JobPostingStep3 = () => {
                         enableSearch={true}
                     />
 
-                    {/* 6. 직종 선택 (필수) */}
-                    <JobPreferencesSelector
-                        jobs={jobKeywords}
-                        selectedJobs={step3Data.selectedJobs}
-                        onToggle={toggleJob}
-                        title="모집 직종 *"
-                    />
+
 
                     {/* 7. 근무조건 선택 */}
                     <WorkConditionsSelector
