@@ -24,7 +24,8 @@ const Settings = () => {
     const { t, language, changeLanguage } = useTranslation()
     const { notificationSettings, updateNotificationSettings } = useNotification()
 
-    const [selectedLanguage] = useState(language)
+    const [selectedLanguage, setSelectedLanguage] = useState(language)
+    const [pendingLanguageChange, setPendingLanguageChange] = useState<string | null>(null)
 
     // 모달 상태
     const [languageModalVisible, setLanguageModalVisible] = useState(false)
@@ -43,6 +44,23 @@ const Settings = () => {
         checkAuthState()
         setIsJobSeekingActive(profile?.job_seeking_active || true)
     }, [profile])
+
+    // 언어 변경 시 selectedLanguage 동기화
+    useEffect(() => {
+        setSelectedLanguage(language)
+    }, [language])
+
+    // 언어 변경 완료 후 모달 표시
+    useEffect(() => {
+        if (pendingLanguageChange && language === pendingLanguageChange) {
+            showModal(
+                t('settings.language_change', '언어 변경'),
+                t('settings.restart_required', '앱을 재시작해주세요'),
+                'info'
+            )
+            setPendingLanguageChange(null)
+        }
+    }, [language, pendingLanguageChange, t, showModal])
 
     // 알림 토글
     const toggleNotification = (key: keyof typeof notificationSettings) => {
@@ -118,16 +136,13 @@ const Settings = () => {
     // 언어 변경
     const handleLanguageChange = async (lang: string) => {
         try {
+            setPendingLanguageChange(lang) // 변경하려는 언어 저장
             await changeLanguage(lang) // TranslationContext의 changeLanguage 사용
+            setSelectedLanguage(lang) // 선택된 언어 상태 업데이트
             setLanguageModalVisible(false)
-
-            showModal(
-                t('settings.language_change', '언어 변경'),
-                t('settings.restart_required', '앱을 재시작해주세요'), // 메시지 변경
-                'info'
-            )
         } catch (error) {
             console.error('언어 설정 저장 실패:', error)
+            setPendingLanguageChange(null) // 실패 시 초기화
             showModal(
                 t('settings.error', '오류'),
                 t('settings.language_change_error', '언어 변경 중 오류가 발생했습니다.'),

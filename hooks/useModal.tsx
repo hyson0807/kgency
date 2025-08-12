@@ -27,9 +27,6 @@ export const useModal = () => {
         confirmText?: string,
         cancelText?: string
     ) => {
-        // 이미 모달이 떠 있으면 재호출 방지
-        if (modalConfig.visible) return;
-
         const defaultConfirmText = t('button.confirm', '확인')
         const defaultCancelText = t('button.cancel', '취소')
 
@@ -57,8 +54,10 @@ export const useModal = () => {
             message={modalConfig.message}
             type={modalConfig.type}
             onConfirm={() => {
-                modalConfig.onConfirm()
                 hideModal()
+                setTimeout(() => {
+                    modalConfig.onConfirm()
+                }, 0)
             }}
             showCancel={modalConfig.showCancel}
             confirmText={modalConfig.confirmText}

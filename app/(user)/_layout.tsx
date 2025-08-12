@@ -12,11 +12,7 @@ const User_Layout = () => {
     const { t } = useTranslation();
     const {user} = useAuth();
     const insets = useSafeAreaInsets();
-    console.log("유저정보123123", user)
 
-    useEffect(() => {
-        console.log("유저정보123123", user)
-    }, []);
 
     return (
         <Tabs
@@ -61,6 +57,13 @@ const User_Layout = () => {
                 }}
             />
 
+            <Tabs.Screen
+                name="shop"
+                options={{
+                    tabBarLabel: t('tab.shop', '상점'),
+                    tabBarIcon: ({size, color}) => <Ionicons name="storefront" size={size} color={color} />
+                }}
+            />
 
             <Tabs.Screen
                 name="settings"
