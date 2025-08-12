@@ -39,20 +39,27 @@ interface JobPosting {
     }[]
 }
 
+interface MatchedKeyword {
+    id: number
+    keyword: string
+    category: string
+}
+
 // MatchedPosting 인터페이스에 suitability 추가
 interface MatchedPosting {
     posting: JobPosting
     matchedCount: number
     matchedKeywords: {
-        countries: string[]
-        jobs: string[]
-        conditions: string[]
-        location: string[]
-        moveable: string[]
-        gender: string[]
-        age: string[]
-        visa: string[]
-        koreanLevel: string[]
+        countries: MatchedKeyword[]
+        jobs: MatchedKeyword[]
+        conditions: MatchedKeyword[]
+        location: MatchedKeyword[]
+        moveable: MatchedKeyword[]
+        gender: MatchedKeyword[]
+        age: MatchedKeyword[]
+        visa: MatchedKeyword[]
+        koreanLevel: MatchedKeyword[]
+        workDay: MatchedKeyword[]
     }
     suitability: SuitabilityResult // 추가
 }
