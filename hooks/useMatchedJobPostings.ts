@@ -70,7 +70,6 @@ export const useMatchedJobPostings = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [userKeywordIds, setUserKeywordIds] = useState<number[]>([]);
-    const { translateDB } = useTranslation();
     const [refreshing, setRefreshing] = useState(false);
 
 
@@ -110,13 +109,7 @@ export const useMatchedJobPostings = () => {
 
             if (response && response.data) {
                 const keywordIds = response.data.map((uk: any) => uk.keyword_id);
-                
-                // 디버깅: 사용자 키워드 상세 로그
-                console.log('👤 사용자 키워드 상세:', response.data.map((uk: any) => ({
-                    id: uk.keyword_id,
-                    keyword: uk.keyword?.keyword,
-                    category: uk.keyword?.category
-                })));
+
                 
                 setUserKeywordIds(keywordIds);
             }
@@ -136,25 +129,11 @@ export const useMatchedJobPostings = () => {
         try {
             setError(null);
 
-            // 디버깅: 사용자 키워드 로그
-            console.log('🔍 사용자 키워드 IDs:', userKeywordIds);
 
             // 서버에서 적합도 계산된 결과 요청
             const response = await api('GET', '/api/job-postings/matched');
 
             if (response && response.data) {
-                // 디버깅: 매칭된 공고 수 로그
-                console.log('📊 매칭된 공고 수:', response.data.length);
-                
-                // 디버깅: 각 공고의 키워드 로그 (처음 3개만)
-                response.data.slice(0, 3).forEach((posting: any, index: number) => {
-                    console.log(`📋 공고 ${index + 1} 키워드:`, posting.posting?.job_posting_keywords?.map((k: any) => ({
-                        id: k.keyword.id,
-                        keyword: k.keyword.keyword,
-                        category: k.keyword.category
-                    })));
-                    console.log(`🎯 공고 ${index + 1} 적합도:`, posting.suitability);
-                });
 
                 // 서버에서 이미 적합도 계산과 정렬이 완료된 데이터
                 setMatchedPostings(response.data);

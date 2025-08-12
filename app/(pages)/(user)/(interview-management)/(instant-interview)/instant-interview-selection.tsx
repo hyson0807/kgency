@@ -33,7 +33,7 @@ export default function InstantInterviewSelection() {
         specialNotes
     } = params
 
-    const { user } = useAuth()
+    const { user, authenticatedRequest } = useAuth()
     const { t, language } = useTranslation()
     const { showModal, ModalComponent } = useModal()
     const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
@@ -152,10 +152,28 @@ export default function InstantInterviewSelection() {
 
         setSubmitting(true)
         try {
-            // 1. 지원서 생성 (이력서 없이, 바로 scheduled 상태로)
+            // 1. 토큰 잔액 확인
+            const balanceResponse = await authenticatedRequest('get', '/api/purchase/tokens/balance');
+            if (balanceResponse?.success && balanceResponse.balance < 1) {
+                showModal(
+                    t('alert.notification', '토큰 부족'), 
+                    t('instant_interview.insufficient_tokens', '즉시면접 예약을 위해서는 토큰 1개가 필요합니다. 상점에서 토큰을 구매해주세요.'),
+                    'warning',
+                    () => {
+                        router.push('/(user)/shop')
+                    },
+                    true,
+                    t('instant_interview.go_to_shop', '상점으로 가기'),
+                    t('button.cancel', '취소')
+                )
+                return
+            }
+
+            // 2. 지원서 생성 (토큰 사용, 이력서 없이, 바로 scheduled 상태로)
             const applicationResponse = await api('POST', '/api/applications/instant-interview', {
                 companyId: companyId,
-                jobPostingId: jobPostingId
+                jobPostingId: jobPostingId,
+                useToken: true // 토큰 사용 플래그
             });
 
             if (!applicationResponse?.success) {
@@ -163,12 +181,26 @@ export default function InstantInterviewSelection() {
                     showModal(t('alert.notification', '알림'), t('instant_interview.already_applied', '이미 지원한 공고입니다.'))
                     return
                 }
+                if (applicationResponse?.error === '토큰이 부족합니다. 상점에서 토큰을 구매해주세요.') {
+                    showModal(
+                        t('alert.notification', '토큰 부족'), 
+                        t('instant_interview.insufficient_tokens', '즉시면접 예약을 위해서는 토큰 1개가 필요합니다. 상점에서 토큰을 구매해주세요.'),
+                        'warning',
+                        () => {
+                            router.push('/(user)/shop')
+                        },
+                        true,
+                        t('instant_interview.go_to_shop', '상점으로 가기'),
+                        t('button.cancel', '취소')
+                    )
+                    return
+                }
                 throw new Error(applicationResponse?.error || '지원서 생성 실패')
             }
 
             const application = applicationResponse.data;
 
-            // 2. 면접 제안서 생성 (실제로는 유저가 스스로 만든 것이지만 형식상 필요)
+            // 3. 면접 제안서 생성 (실제로는 유저가 스스로 만든 것이지만 형식상 필요)
             const proposalResponse = await api('POST', '/api/interview-proposals/company', {
                 applicationId: application.id,
                 companyId: companyId,
@@ -179,7 +211,7 @@ export default function InstantInterviewSelection() {
                 throw new Error('면접 제안 생성 실패')
             }
 
-            // 3. 면접 스케줄 생성
+            // 4. 면접 스케줄 생성
             const scheduleResponse = await api('POST', '/api/interview-schedules/user', {
                 proposalId: proposalResponse.data.id,
                 interviewSlotId: selectedSlotId
@@ -188,7 +220,7 @@ export default function InstantInterviewSelection() {
             if (scheduleResponse?.success) {
                 showModal(
                     t('alert.success', '성공'), 
-                    t('instant_interview.schedule_confirmed', '면접 일정이 확정되었습니다!'), 
+                    t('instant_interview.schedule_confirmed_with_token', '면접 일정이 확정되었습니다! 토큰 1개가 사용되었습니다.'), 
                     'info',
                     () => {
                         router.replace('/(user)/applications')
