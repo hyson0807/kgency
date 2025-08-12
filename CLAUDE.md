@@ -67,7 +67,7 @@ This is **kgency**, a React Native Expo job matching mobile application that con
 ### Authentication System
 - JWT-based authentication with AsyncStorage persistence
 - Dual user types: 'user' (job seekers) and 'company' (employers)
-- AuthContext provides authenticated API requests via `authenticatedRequest()`
+- AuthContext provides authentication state management
 - Automatic token validation and session management
 - Phone-based OTP authentication system
 
@@ -157,8 +157,8 @@ This is **kgency**, a React Native Expo job matching mobile application that con
 - Use useState for simple component-specific data
 
 #### API Integration Patterns
-**Server API (via AuthContext)**
-- Use `authenticatedRequest()` from AuthContext for server API calls
+**Server API (via api function)**
+- Use `api()` from `@/lib/api` for server API calls
 - Automatic JWT token handling and 401 error management
 - Structured API modules: `authAPI.sendOTP()`, `authAPI.verifyOTP()`, `profileAPI.get()`
 

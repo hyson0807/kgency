@@ -44,7 +44,6 @@ interface AuthContextType {
   login: (phoneNumber: string, userType: UserType) => Promise<void>;
   verifyOTP: (otp: string) => Promise<void>;
   logout: () => Promise<void>;
-  authenticatedRequest: (url: string, options?: RequestInit) => Promise<Response>;
 }
 ```
 
@@ -78,28 +77,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
   };
 
-  const authenticatedRequest = async (url: string, options: RequestInit = {}) => {
-    if (!token) {
-      throw new Error('No authentication token');
-    }
-
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        ...options.headers,
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    // 401 에러시 자동 로그아웃
-    if (response.status === 401) {
-      await logout();
-      throw new Error('Authentication expired');
-    }
-
-    return response;
-  };
+  // API 요청은 lib/api.ts의 api 함수를 사용
+  // JWT 토큰은 자동으로 헤더에 포함됨
 };
 ```
 

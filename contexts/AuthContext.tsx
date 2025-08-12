@@ -31,11 +31,6 @@ interface AuthContextType {
     login: (token: string, userData: User, onboardingStatus: any) => Promise<LoginResult>;
     logout: (skipPushTokenRemoval?: boolean) => Promise<void>;
     checkAuthState: () => Promise<void>;
-    authenticatedRequest: <T = any>(
-        method: 'get' | 'post' | 'put' | 'delete',
-        url: string,
-        data?: any
-    ) => Promise<T>;
 
     // 유틸리티
     userType: 'user' | 'company' | null;
@@ -176,55 +171,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         updateTokenCache(null); // api.ts 토큰 캐시도 클리어
     };
 
-    // API 요청 헬퍼 (자동으로 토큰 포함)
-    const authenticatedRequest = async <T = any>(
-        method: 'get' | 'post' | 'put' | 'delete',
-        url: string,
-        data: any = null
-    ): Promise<T> => {
-        try {
-            // 메모리 캐시에서 토큰 가져오기 (AsyncStorage 접근 제거)
-            if (!authToken) {
-                throw new Error('인증이 필요합니다');
-            }
-
-            const config = {
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            };
-
-            let response;
-
-            switch (method.toLowerCase()) {
-                case 'get':
-                    response = await axios.get<T>(url, config);
-                    break;
-                case 'post':
-                    response = await axios.post<T>(url, data, config);
-                    break;
-                case 'put':
-                    response = await axios.put<T>(url, data, config);
-                    break;
-                case 'delete':
-                    response = await axios.delete<T>(url, config);
-                    break;
-                default:
-                    throw new Error('지원하지 않는 메소드');
-            }
-
-            return response.data;
-
-        } catch (error) {
-            // 401 에러면 자동 로그아웃
-            if ((error as AxiosError)?.response?.status === 401) {
-                await clearAuth();
-                throw new Error('세션이 만료되었습니다');
-            }
-            throw error;
-        }
-    };
 
     // Memoize user object to prevent unnecessary re-renders
     const memoizedUser = useMemo(() => user, [user?.userId, user?.phone, user?.userType]);
@@ -242,7 +188,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         login,
         logout,
         checkAuthState,
-        authenticatedRequest,
 
         // 유틸리티
         userType: memoizedUser?.userType || null,

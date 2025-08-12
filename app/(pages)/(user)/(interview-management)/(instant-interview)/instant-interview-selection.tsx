@@ -33,7 +33,7 @@ export default function InstantInterviewSelection() {
         specialNotes
     } = params
 
-    const { user, authenticatedRequest } = useAuth()
+    const { user } = useAuth()
     const { t, language } = useTranslation()
     const { showModal, ModalComponent } = useModal()
     const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
@@ -153,7 +153,7 @@ export default function InstantInterviewSelection() {
         setSubmitting(true)
         try {
             // 1. 토큰 잔액 확인
-            const balanceResponse = await authenticatedRequest('get', '/api/purchase/tokens/balance');
+            const balanceResponse = await api('GET', '/api/purchase/tokens/balance');
             if (balanceResponse?.success && balanceResponse.balance < 1) {
                 showModal(
                     t('alert.notification', '토큰 부족'), 

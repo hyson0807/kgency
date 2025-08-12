@@ -711,7 +711,7 @@ const Shop = () => {
 
   const fetchTokenBalance = async () => {
     try {
-      const response = await authenticatedRequest('GET', '/api/purchase/tokens/balance');
+      const response = await api('GET', '/api/purchase/tokens/balance');
       if (response.success) {
         setUserTokens(response.balance);
       }
@@ -763,7 +763,7 @@ const Shop = () => {
       )
     };
 
-    const response = await authenticatedRequest('POST', '/api/purchase/verify', payload);
+    const response = await api('POST', '/api/purchase/verify', payload);
     
     if (!response.success) {
       throw new Error('Purchase verification failed');
@@ -783,7 +783,7 @@ const Shop = () => {
 const handleSlotSelection = async (slotId: string) => {
   try {
     // 1. 토큰 잔액 확인
-    const balanceResponse = await authenticatedRequest('GET', '/api/purchase/tokens/balance');
+    const balanceResponse = await api('GET', '/api/purchase/tokens/balance');
     if (balanceResponse.balance < 1) {
       showModal(
         '토큰 부족',

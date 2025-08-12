@@ -102,10 +102,9 @@ hooks/
 
 ```typescript
 // Server API 패턴
-const { authenticatedRequest } = useAuth();
-const response = await authenticatedRequest('/api/auth/verify-otp', {
-  method: 'POST',
-  body: { phone, otp }
+import { api } from '@/lib/api';
+const response = await api('POST', '/api/auth/verify-otp', {
+  phone, otp
 });
 
 // Direct Supabase 패턴
@@ -141,7 +140,7 @@ import { useJobPostingStore } from '@/stores/jobPostingStore';
 const { formData, updateField, resetForm } = useJobPostingStore();
 
 // Context API 패턴 예시  
-const { user, authenticatedRequest } = useAuth();
+const { user } = useAuth();
 const { t, currentLanguage } = useTranslation();
 
 // Custom Hook 패턴 예시
