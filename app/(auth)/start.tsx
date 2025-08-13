@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, TouchableOpacity, Modal, FlatList, Animated, Dimensions} from 'react-native'
+import {View, Text, StyleSheet, TouchableOpacity, Modal, FlatList, Animated, Dimensions, ScrollView} from 'react-native'
 import React, {useState, useEffect, useRef} from 'react'
 import {router} from "expo-router";
 import {useTranslation} from "@/contexts/TranslationContext";
@@ -102,49 +102,52 @@ const Start = () => {
                 style={StyleSheet.absoluteFillObject}
             />
             
-            {/* Floating circles */}
-            <View style={styles.floatingElements}>
-                <Animated.View 
-                    style={[
-                        styles.floatingCircle,
-                        styles.circle1,
-                        { transform: [{ translateY: floatAnim1 }] }
-                    ]}
-                >
-                    <LinearGradient
-                        colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
-                        style={{ width: '100%', height: '100%', borderRadius: 60 }}
-                    />
-                </Animated.View>
-                
-                <Animated.View 
-                    style={[
-                        styles.floatingCircle,
-                        styles.circle2,
-                        { transform: [{ translateY: floatAnim2 }] }
-                    ]}
-                >
-                    <LinearGradient
-                        colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
-                        style={{ width: '100%', height: '100%', borderRadius: 40 }}
-                    />
-                </Animated.View>
-                
-                <Animated.View 
-                    style={[
-                        styles.floatingCircle,
-                        styles.circle3,
-                        { transform: [{ translateY: floatAnim3 }] }
-                    ]}
-                >
-                    <LinearGradient
-                        colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
-                        style={{ width: '100%', height: '100%', borderRadius: 30 }}
-                    />
-                </Animated.View>
-            </View>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
+                {/* First section - Main landing */}
+                <View style={styles.firstSection}>
+                    {/* Floating circles */}
+                    <View style={styles.floatingElements}>
+                        <Animated.View 
+                            style={[
+                                styles.floatingCircle,
+                                styles.circle1,
+                                { transform: [{ translateY: floatAnim1 }] }
+                            ]}
+                        >
+                            <LinearGradient
+                                colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
+                                style={{ width: '100%', height: '100%', borderRadius: 60 }}
+                            />
+                        </Animated.View>
+                        
+                        <Animated.View 
+                            style={[
+                                styles.floatingCircle,
+                                styles.circle2,
+                                { transform: [{ translateY: floatAnim2 }] }
+                            ]}
+                        >
+                            <LinearGradient
+                                colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
+                                style={{ width: '100%', height: '100%', borderRadius: 40 }}
+                            />
+                        </Animated.View>
+                        
+                        <Animated.View 
+                            style={[
+                                styles.floatingCircle,
+                                styles.circle3,
+                                { transform: [{ translateY: floatAnim3 }] }
+                            ]}
+                        >
+                            <LinearGradient
+                                colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
+                                style={{ width: '100%', height: '100%', borderRadius: 30 }}
+                            />
+                        </Animated.View>
+                    </View>
 
-            <View className="flex-1 items-center justify-center px-6 py-8">
+                    <View className="flex-1 items-center justify-center px-6 py-8">
                 {/* Main content */}
                 <Animated.View 
                     className="w-full max-w-md flex-1 justify-center"
@@ -253,7 +256,240 @@ const Start = () => {
                         <Text className="text-gray-600 font-medium">{t('start.language', 'Language')}</Text>
                     </TouchableOpacity>
                 </Animated.View>
-            </View>
+                    </View>
+                </View>
+
+                {/* Platform Strengths Section */}
+                <View style={styles.sectionContainer}>
+                    <View className="px-6 py-16">
+                        <View className="items-center mb-12">
+                            <Text className="text-3xl font-bold text-gray-800 text-center mb-4">
+                                {t('start.strengths_title', 'K-Gency만의 특별한 강점')}
+                            </Text>
+                            <Text className="text-lg text-gray-600 text-center">
+                                {t('start.strengths_subtitle', 'AI 기술로 완성된 혁신적인 채용 플랫폼')}
+                            </Text>
+                        </View>
+                        
+                        <View className="gap-6">
+                            {/* Strength 1 */}
+                            <View style={styles.strengthCard}>
+                                <LinearGradient
+                                    colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
+                                    style={styles.strengthGradient}
+                                >
+                                    <Text className="text-4xl mb-4">🎯</Text>
+                                    <Text className="text-xl font-bold text-gray-800 mb-3">
+                                        {t('start.strength1_title', '100% 매칭 확률')}
+                                    </Text>
+                                    <Text className="text-gray-600 leading-6">
+                                        {t('start.strength1_desc', 'AI 분석을 통해 조건이 맞는 경우에만 매칭하여 면접 성사율 100%를 보장합니다')}
+                                    </Text>
+                                </LinearGradient>
+                            </View>
+                            
+                            {/* Strength 2 */}
+                            <View style={styles.strengthCard}>
+                                <LinearGradient
+                                    colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
+                                    style={styles.strengthGradient}
+                                >
+                                    <Text className="text-4xl mb-4">⚡</Text>
+                                    <Text className="text-xl font-bold text-gray-800 mb-3">
+                                        {t('start.strength2_title', '즉시 연결 시스템')}
+                                    </Text>
+                                    <Text className="text-gray-600 leading-6">
+                                        {t('start.strength2_desc', '매칭 즉시 면접 일정이 자동 조율되어 빠른 채용 프로세스를 경험하세요')}
+                                    </Text>
+                                </LinearGradient>
+                            </View>
+                            
+                            {/* Strength 3 */}
+                            <View style={styles.strengthCard}>
+                                <LinearGradient
+                                    colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
+                                    style={styles.strengthGradient}
+                                >
+                                    <Text className="text-4xl mb-4">🛡️</Text>
+                                    <Text className="text-xl font-bold text-gray-800 mb-3">
+                                        {t('start.strength3_title', '검증된 프로필')}
+                                    </Text>
+                                    <Text className="text-gray-600 leading-6">
+                                        {t('start.strength3_desc', '모든 구직자와 구인자의 정보를 철저히 검증하여 신뢰할 수 있는 매칭을 제공합니다')}
+                                    </Text>
+                                </LinearGradient>
+                            </View>
+                            
+                            {/* Strength 4 */}
+                            <View style={styles.strengthCard}>
+                                <LinearGradient
+                                    colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
+                                    style={styles.strengthGradient}
+                                >
+                                    <Text className="text-4xl mb-4">📊</Text>
+                                    <Text className="text-xl font-bold text-gray-800 mb-3">
+                                        {t('start.strength4_title', '실시간 분석')}
+                                    </Text>
+                                    <Text className="text-gray-600 leading-6">
+                                        {t('start.strength4_desc', '채용 트렌드와 시장 데이터를 실시간으로 분석하여 최적의 매칭을 제공합니다')}
+                                    </Text>
+                                </LinearGradient>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Statistics Section */}
+                <LinearGradient colors={['#4A90E2', '#8FAFFF']} style={styles.statsSection}>
+                    <View className="px-6 py-16">
+                        <View className="flex-row flex-wrap justify-center gap-8">
+                            <View className="items-center">
+                                <Text className="text-4xl font-bold text-white mb-2">98%</Text>
+                                <Text className="text-white text-lg">{t('start.stat1_label', '매칭 성공률')}</Text>
+                            </View>
+                            <View className="items-center">
+                                <Text className="text-4xl font-bold text-white mb-2">24H</Text>
+                                <Text className="text-white text-lg">{t('start.stat2_label', '평균 매칭 시간')}</Text>
+                            </View>
+                            {/*<View className="items-center">*/}
+                            {/*    <Text className="text-4xl font-bold text-white mb-2">50,000+</Text>*/}
+                            {/*    <Text className="text-white text-lg">{t('start.stat3_label', '누적 매칭 건수')}</Text>*/}
+                            {/*</View>*/}
+                            <View className="items-center">
+                                <Text className="text-4xl font-bold text-white mb-2">95%</Text>
+                                <Text className="text-white text-lg">{t('start.stat4_label', '고객 만족도')}</Text>
+                            </View>
+                        </View>
+                    </View>
+                </LinearGradient>
+
+                {/* Features Section */}
+                <View style={styles.sectionContainer}>
+                    <View className="px-6 py-16">
+                        <View className="items-center mb-12">
+                            <Text className="text-3xl font-bold text-gray-800 text-center mb-4">
+                                {t('start.features_title', '혁신적인 기능들')}
+                            </Text>
+                            <Text className="text-lg text-gray-600 text-center">
+                                {t('start.features_subtitle', '채용의 모든 과정을 스마트하게')}
+                            </Text>
+                        </View>
+                        
+                        <View className="gap-8">
+                            {/* Feature 1 */}
+                            <View className="flex-row items-start gap-4">
+                                <View style={styles.featureIcon}>
+                                    <Text className="text-2xl">🤖</Text>
+                                </View>
+                                <View className="flex-1">
+                                    <Text className="text-xl font-bold text-gray-800 mb-2">
+                                        {t('start.feature1_title', 'AI 매칭 엔진')}
+                                    </Text>
+                                    <Text className="text-gray-600 leading-6">
+                                        {t('start.feature1_desc', '머신러닝 알고리즘을 통해 경력, 스킬, 성향을 종합 분석하여 최적의 매칭을 제공합니다')}
+                                    </Text>
+                                </View>
+                            </View>
+                            
+                            {/* Feature 2 */}
+                            <View className="flex-row items-start gap-4">
+                                <View style={styles.featureIcon}>
+                                    <Text className="text-2xl">📅</Text>
+                                </View>
+                                <View className="flex-1">
+                                    <Text className="text-xl font-bold text-gray-800 mb-2">
+                                        {t('start.feature2_title', '스마트 스케줄링')}
+                                    </Text>
+                                    <Text className="text-gray-600 leading-6">
+                                        {t('start.feature2_desc', '양쪽 일정을 자동으로 조율하여 최적의 면접 시간을 제안하고 예약까지 완료합니다')}
+                                    </Text>
+                                </View>
+                            </View>
+                            
+                            {/* Feature 3 */}
+                            <View className="flex-row items-start gap-4">
+                                <View style={styles.featureIcon}>
+                                    <Text className="text-2xl">🔍</Text>
+                                </View>
+                                <View className="flex-1">
+                                    <Text className="text-xl font-bold text-gray-800 mb-2">
+                                        {t('start.feature3_title', '스킬 검증 시스템')}
+                                    </Text>
+                                    <Text className="text-gray-600 leading-6">
+                                        {t('start.feature3_desc', '포트폴리오 분석과 실무 능력 테스트를 통해 정확한 스킬 레벨을 검증합니다')}
+                                    </Text>
+                                </View>
+                            </View>
+                            
+                            {/* Feature 4 */}
+                            <View className="flex-row items-start gap-4">
+                                <View style={styles.featureIcon}>
+                                    <Text className="text-2xl">💬</Text>
+                                </View>
+                                <View className="flex-1">
+                                    <Text className="text-xl font-bold text-gray-800 mb-2">
+                                        {t('start.feature4_title', '실시간 소통')}
+                                    </Text>
+                                    <Text className="text-gray-600 leading-6">
+                                        {t('start.feature4_desc', '매칭 후 실시간 채팅과 화상 면접 기능으로 원활한 소통을 지원합니다')}
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Footer */}
+                <View style={styles.footer}>
+                    <LinearGradient colors={['#1f2937', '#374151']} style={{ flex: 1, paddingVertical: 40, paddingHorizontal: 24 }}>
+                        <View className="items-center mb-8">
+                            <Text className="text-3xl font-bold text-white mb-2">K-Gency</Text>
+                            <Text className="text-gray-300 text-center">
+                                {t('start.footer_desc', 'AI로 찾는 완벽한 매칭, 채용의 새로운 패러다임')}
+                            </Text>
+                        </View>
+                        
+                        <View className="gap-6 mb-8">
+                            <View>
+                                <Text className="text-lg font-bold text-white mb-3">
+                                    {t('start.footer_service', '서비스')}
+                                </Text>
+                                <TouchableOpacity className="mb-2" onPress={() => router.push('/user_login')}>
+                                    <Text className="text-gray-300">{t('start.footer_job_seeker', '구직자 서비스')}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity className="mb-2" onPress={() => router.push('/company_login')}>
+                                    <Text className="text-gray-300">{t('start.footer_employer', '구인자 서비스')}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            
+                            <View>
+                                <Text className="text-lg font-bold text-white mb-3">
+                                    {t('start.footer_company', '회사')}
+                                </Text>
+                                <Text className="text-gray-300 mb-2">{t('start.footer_about', '회사 소개')}</Text>
+                                <Text className="text-gray-300 mb-2">{t('start.footer_contact', '문의하기')}</Text>
+                            </View>
+                            
+                            <View>
+                                <Text className="text-lg font-bold text-white mb-3">
+                                    {t('start.footer_legal', '약관 및 정책')}
+                                </Text>
+                                <Text className="text-gray-300 mb-2">{t('start.footer_terms', '이용약관')}</Text>
+                                <Text className="text-gray-300 mb-2">{t('start.footer_privacy', '개인정보처리방침')}</Text>
+                                <Text className="text-gray-300 mb-2">{t('start.footer_help', '고객센터')}</Text>
+                            </View>
+                        </View>
+                        
+                        <View className="border-t border-gray-600 pt-6">
+                            <View className="flex-row justify-between items-center">
+                                <Text className="text-gray-400">© 2024 K-Gency. All rights reserved.</Text>
+                                <View className="flex-row gap-4">
+                                </View>
+                            </View>
+                        </View>
+                    </LinearGradient>
+                </View>
+            </ScrollView>
 
             {/* Language modal */}
             <Modal
@@ -360,6 +596,39 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         borderWidth: 1,
         borderColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    firstSection: {
+        minHeight: height,
+        position: 'relative',
+    },
+    sectionContainer: {
+        backgroundColor: '#ffffff',
+    },
+    strengthCard: {
+        marginHorizontal: 4,
+        shadowColor: '#4A90E2',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.1,
+        shadowRadius: 16,
+        elevation: 4,
+    },
+    strengthGradient: {
+        borderRadius: 16,
+        padding: 20,
+    },
+    statsSection: {
+        marginVertical: 0,
+    },
+    featureIcon: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: 'rgba(74, 144, 226, 0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    footer: {
+        backgroundColor: '#1f2937',
     },
 })
 
