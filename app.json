@@ -13,7 +13,8 @@
       "bundleIdentifier": "com.welkit.kgency",
       "infoPlist": {
         "NSUserNotificationUsageDescription": "이 앱은 면접 제안 및 지원 상태 알림을 보내기 위해 푸시 알림을 사용합니다.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "LSApplicationQueriesSchemes": ["mailto"]
       }
     },
     "android": {
@@ -22,7 +23,15 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": false,
-      "package": "com.welkit.kgency"
+      "package": "com.welkit.kgency",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": {
+            "scheme": "mailto"
+          }
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

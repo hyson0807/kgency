@@ -467,16 +467,33 @@ const Start = () => {
                                     {t('start.footer_company', '회사')}
                                 </Text>
                                 <Text className="text-gray-300 mb-2">{t('start.footer_about', '회사 소개')}</Text>
-                                <Text className="text-gray-300 mb-2">{t('start.footer_contact', '문의하기')}</Text>
+                                <TouchableOpacity className="mb-2" onPress={() => router.push('/(pages)/(landing-page)/contact')}>
+                                    <Text className="text-gray-300">{t('start.footer_contact', '문의하기')}</Text>
+                                </TouchableOpacity>
                             </View>
                             
                             <View>
                                 <Text className="text-lg font-bold text-white mb-3">
                                     {t('start.footer_legal', '약관 및 정책')}
                                 </Text>
-                                <Text className="text-gray-300 mb-2">{t('start.footer_terms', '이용약관')}</Text>
-                                <Text className="text-gray-300 mb-2">{t('start.footer_privacy', '개인정보처리방침')}</Text>
-                                <Text className="text-gray-300 mb-2">{t('start.footer_help', '고객센터')}</Text>
+                                <TouchableOpacity className="mb-2" onPress={() => router.push('/(pages)/(landing-page)/faq')}>
+                                    <Text className="text-gray-300">{t('start.footer_faq', 'FAQ')}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity className="mb-2" onPress={() => router.push('/(pages)/(landing-page)/terms-of-service')}>
+                                    <Text className="text-gray-300">{t('start.footer_terms', '이용약관')}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity className="mb-2" onPress={() => router.push('/(pages)/(landing-page)/privacy-policy')}>
+                                    <Text className="text-gray-300">{t('start.footer_privacy', '개인정보처리방침')}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity className="mb-2" onPress={() => router.push('/(pages)/(landing-page)/account-deletion')}>
+                                    <Text className="text-gray-300">{t('start.footer_account_deletion', '계정 삭제')}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity className="mb-2" onPress={() => router.push('/(pages)/(landing-page)/refund-policy')}>
+                                    <Text className="text-gray-300">{t('start.footer_refund', '환불정책')}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity className="mb-2" onPress={() => router.push('/(pages)/(landing-page)/contact')}>
+                                    <Text className="text-gray-300">{t('start.footer_help', '고객센터')}</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                         
