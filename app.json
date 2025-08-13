@@ -24,6 +24,9 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "com.welkit.kgency",
+      "permissions": [
+        "com.android.vending.BILLING"
+      ],
       "intentFilters": [
         {
           "action": "VIEW",
