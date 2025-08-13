@@ -294,7 +294,7 @@ export default function PostingDetail() {
             {/* 하단 지원 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-8 pt-2" >
                 {hasApplied ? (
-                    <View className="bg-gray-300 py-4 rounded-xl items-center mx-4 my-2">
+                    <View className="bg-gray-300 py-4 web:py-3 rounded-xl items-center mx-4 my-2">
                         <View className="flex-row items-center">
                             <Ionicons name="checkmark-circle" size={20} color="#4b5563" />
                             <Text className="text-gray-700 font-bold text-lg ml-2">{t('posting_detail.already_applied', '이미 지원한 공고')}</Text>
@@ -315,7 +315,7 @@ export default function PostingDetail() {
                                 className="mx-4 mb-3"
                             >
                                 <TouchableOpacity
-                                    className="bg-gradient-to-r from-purple-600 to-pink-600 py-4 rounded-xl items-center shadow-lg"
+                                    className="bg-gradient-to-r from-purple-600 to-pink-600 py-4 web:py-3 rounded-xl items-center shadow-lg"
                                     style={{
                                         backgroundColor: '#8b5cf6',
                                         shadowColor: '#8b5cf6',
@@ -340,7 +340,7 @@ export default function PostingDetail() {
 
                         {/* 일반 지원하기 버튼 */}
                         <TouchableOpacity
-                            className="bg-blue-500 py-4 rounded-xl items-center mx-4 my-2"
+                            className="bg-blue-500 py-4 web:py-3 rounded-xl items-center mx-4 my-2"
                             onPress={handleApply}
                         >
                             <Text className="text-white text-lg font-bold">{t('posting_detail.apply', '지원하기')}</Text>

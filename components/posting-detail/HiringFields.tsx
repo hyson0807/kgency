@@ -33,7 +33,7 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
 
     <View className="flex-1">
 
-        <View className="p-6 border-b border-gray-100">
+        <View className="p-6 web:p-4 border-b border-gray-100">
             <Text className="text-lg font-semibold mb-4">{t('posting_detail.company_benefits', '회사의 강점!')}</Text>
             {keywords.conditions.length > 0 && (
                 <View className="mb-4">
@@ -50,7 +50,7 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
             )}
         </View>
 
-        <View className="p-6">
+        <View className="p-6 web:p-4">
             <Text className="text-lg font-semibold mb-4">{t('posting_detail.hiring_fields', '채용 분야')}</Text>
 
             {keywords.countries.length > 0 && (
