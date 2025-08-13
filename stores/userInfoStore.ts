@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface UserInfoFormData {
@@ -83,8 +83,7 @@ const initialFormData: UserInfoFormData = {
 };
 
 export const useUserInfoStore = create<UserInfoStore>()(
-  devtools(
-    persist(
+  persist(
       (set) => ({
         formData: initialFormData,
         currentStep: 1,
@@ -146,6 +145,5 @@ export const useUserInfoStore = create<UserInfoStore>()(
           },
         },
       }
-    )
   )
 );

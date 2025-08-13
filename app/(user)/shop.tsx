@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 // IAP 라이브러리는 development build에서만 동작
 let RNIap: any = null;
 let isIAPAvailable = false;
@@ -175,7 +176,13 @@ const Shop = () => {
       }
       
       console.log('Starting purchase for:', packageItem.id);
-      const purchase = await RNIap.requestPurchase({ sku: packageItem.id }) as any;
+      // Android와 iOS에서 다른 파라미터 형식 사용
+      const purchaseParams = Platform.OS === 'android' 
+        ? { skus: [packageItem.id] } 
+        : { sku: packageItem.id };
+      
+      console.log('Purchase params:', purchaseParams);
+      const purchase = await RNIap.requestPurchase(purchaseParams) as any;
 
       console.log('Purchase initiated:', purchase);
       
@@ -284,9 +291,21 @@ const Shop = () => {
               <Ionicons name="refresh" size={14} color="#3B82F6" style={{ marginLeft: 4 }} />
             </TouchableOpacity>
           </View>
-          <Text className="text-gray-600 text-sm">
+          <Text className="text-gray-600 text-sm mb-4">
             토큰을 사용하여 프리미엄 기능을 이용할 수 있습니다
           </Text>
+          
+          {/* 이용 내역 확인 버튼 */}
+          <TouchableOpacity
+            onPress={() => router.push('/(pages)/(user)/(shop)/usage-history')}
+            className="flex-row items-center justify-between p-3 bg-gray-50 rounded-lg"
+          >
+            <View className="flex-row items-center">
+              <Ionicons name="receipt-outline" size={20} color="#6B7280" />
+              <Text className="text-gray-700 font-medium ml-2">토큰 이용 내역</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+          </TouchableOpacity>
         </View>
 
         {/* 개발 환경 안내 */}
