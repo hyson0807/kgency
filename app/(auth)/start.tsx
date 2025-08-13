@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, TouchableOpacity, Modal, FlatList, Animated, Dimensions, ScrollView} from 'react-native'
+import {View, Text, StyleSheet, TouchableOpacity, Modal, FlatList, Animated, Dimensions, ScrollView, Platform} from 'react-native'
 import React, {useState, useEffect, useRef} from 'react'
 import {router} from "expo-router";
 import {useTranslation} from "@/contexts/TranslationContext";
@@ -199,7 +199,7 @@ const Start = () => {
                                 style={[styles.gradientCard, { borderWidth: 2, borderColor: '#4A90E2' }]}
                             >
                                 <View className="flex-row justify-between items-start">
-                                    <View className="flex-1">
+                                    <View className={Platform.OS === 'web' && width > 1024 ? "items-center" : "flex-1"}>
                                         <View className="flex-row items-center mb-3">
                                             <LinearGradient
                                                 colors={['#4A90E2', '#8FAFFF']}
@@ -226,7 +226,7 @@ const Start = () => {
                         >
                             <View style={[styles.gradientCard, styles.employerCard]}>
                                 <View className="flex-row justify-between items-start">
-                                    <View className="flex-1">
+                                    <View className={Platform.OS === 'web' && width > 1024 ? "items-center" : "flex-1"}>
                                         <View className="flex-row items-center mb-3">
                                             <LinearGradient
                                                 colors={['#64748b', '#94a3b8']}
@@ -271,9 +271,9 @@ const Start = () => {
                             </Text>
                         </View>
                         
-                        <View className="gap-6">
+                        <View className={Platform.OS === 'web' && width > 1024 ? "flex-row flex-wrap justify-center gap-6" : "gap-6"}>
                             {/* Strength 1 */}
-                            <View style={styles.strengthCard}>
+                            <View style={[styles.strengthCard, Platform.OS === 'web' && width > 1024 && { width: '45%' }]}>
                                 <LinearGradient
                                     colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
                                     style={styles.strengthGradient}
@@ -289,7 +289,7 @@ const Start = () => {
                             </View>
                             
                             {/* Strength 2 */}
-                            <View style={styles.strengthCard}>
+                            <View style={[styles.strengthCard, Platform.OS === 'web' && width > 1024 && { width: '45%' }]}>
                                 <LinearGradient
                                     colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
                                     style={styles.strengthGradient}
@@ -305,7 +305,7 @@ const Start = () => {
                             </View>
                             
                             {/* Strength 3 */}
-                            <View style={styles.strengthCard}>
+                            <View style={[styles.strengthCard, Platform.OS === 'web' && width > 1024 && { width: '45%' }]}>
                                 <LinearGradient
                                     colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
                                     style={styles.strengthGradient}
@@ -321,7 +321,7 @@ const Start = () => {
                             </View>
                             
                             {/* Strength 4 */}
-                            <View style={styles.strengthCard}>
+                            <View style={[styles.strengthCard, Platform.OS === 'web' && width > 1024 && { width: '45%' }]}>
                                 <LinearGradient
                                     colors={['rgba(74, 144, 226, 0.1)', 'rgba(143, 175, 255, 0.05)']}
                                     style={styles.strengthGradient}
@@ -375,13 +375,13 @@ const Start = () => {
                             </Text>
                         </View>
                         
-                        <View className="gap-8">
+                        <View className={Platform.OS === 'web' && width > 1024 ? "flex-row flex-wrap justify-center gap-8" : "gap-8"}>
                             {/* Feature 1 */}
-                            <View className="flex-row items-start gap-4">
-                                <View style={styles.featureIcon}>
+                            <View className={Platform.OS === 'web' && width > 1024 ? "w-[45%] flex-col gap-4" : "flex-row items-start gap-4"}>
+                                <View style={[styles.featureIcon, Platform.OS === 'web' && width > 1024 && { alignSelf: 'center', marginBottom: 12 }]}>
                                     <Text className="text-2xl">🤖</Text>
                                 </View>
-                                <View className="flex-1">
+                                <View className={Platform.OS === 'web' && width > 1024 ? "items-center" : "flex-1"}>
                                     <Text className="text-xl font-bold text-gray-800 mb-2">
                                         {t('start.feature1_title', 'AI 매칭 엔진')}
                                     </Text>
@@ -392,11 +392,11 @@ const Start = () => {
                             </View>
                             
                             {/* Feature 2 */}
-                            <View className="flex-row items-start gap-4">
-                                <View style={styles.featureIcon}>
+                            <View className={Platform.OS === 'web' && width > 1024 ? "w-[45%] flex-col gap-4" : "flex-row items-start gap-4"}>
+                                <View style={[styles.featureIcon, Platform.OS === 'web' && width > 1024 && { alignSelf: 'center', marginBottom: 12 }]}>
                                     <Text className="text-2xl">📅</Text>
                                 </View>
-                                <View className="flex-1">
+                                <View className={Platform.OS === 'web' && width > 1024 ? "items-center" : "flex-1"}>
                                     <Text className="text-xl font-bold text-gray-800 mb-2">
                                         {t('start.feature2_title', '스마트 스케줄링')}
                                     </Text>
@@ -407,11 +407,11 @@ const Start = () => {
                             </View>
                             
                             {/* Feature 3 */}
-                            <View className="flex-row items-start gap-4">
-                                <View style={styles.featureIcon}>
+                            <View className={Platform.OS === 'web' && width > 1024 ? "w-[45%] flex-col gap-4" : "flex-row items-start gap-4"}>
+                                <View style={[styles.featureIcon, Platform.OS === 'web' && width > 1024 && { alignSelf: 'center', marginBottom: 12 }]}>
                                     <Text className="text-2xl">🔍</Text>
                                 </View>
-                                <View className="flex-1">
+                                <View className={Platform.OS === 'web' && width > 1024 ? "items-center" : "flex-1"}>
                                     <Text className="text-xl font-bold text-gray-800 mb-2">
                                         {t('start.feature3_title', '스킬 검증 시스템')}
                                     </Text>
@@ -422,11 +422,11 @@ const Start = () => {
                             </View>
                             
                             {/* Feature 4 */}
-                            <View className="flex-row items-start gap-4">
-                                <View style={styles.featureIcon}>
+                            <View className={Platform.OS === 'web' && width > 1024 ? "w-[45%] flex-col gap-4" : "flex-row items-start gap-4"}>
+                                <View style={[styles.featureIcon, Platform.OS === 'web' && width > 1024 && { alignSelf: 'center', marginBottom: 12 }]}>
                                     <Text className="text-2xl">💬</Text>
                                 </View>
-                                <View className="flex-1">
+                                <View className={Platform.OS === 'web' && width > 1024 ? "items-center" : "flex-1"}>
                                     <Text className="text-xl font-bold text-gray-800 mb-2">
                                         {t('start.feature4_title', '실시간 소통')}
                                     </Text>
