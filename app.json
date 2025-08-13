@@ -60,6 +60,12 @@
           "color": "#ffffff",
           "sounds": []
         }
+      ],
+      [
+        "react-native-iap",
+        {
+          "androidPlayStorePackageName": "com.welkit.kgency"
+        }
       ]
     ],
     "experiments": {
