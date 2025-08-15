@@ -46,7 +46,7 @@ const Shop = () => {
 
   const tokenPackages: TokenPackage[] = [
     {
-      id: 'token_5_pack',
+      id: Platform.OS === 'android' ? 'token_5_pack_android' : 'token_5_pack',
       tokens: 5,
       price: 5500,
       isPopular: true
@@ -80,8 +80,38 @@ const Shop = () => {
       console.log('Initializing IAP connection...');
       await RNIap.initConnection();
       
+      // 앱 시작 시 미소비 구매 확인 및 처리 (Android용)
+      if (Platform.OS === 'android') {
+        try {
+          console.log('Checking for unconsumed purchases...');
+          const purchases = await RNIap.getAvailablePurchases();
+          
+          if (purchases && purchases.length > 0) {
+            console.log(`Found ${purchases.length} unconsumed purchases`);
+            
+            for (const purchase of purchases) {
+              if ((purchase.productId === 'token_5_pack' || purchase.productId === 'token_5_pack_android') && purchase.purchaseToken) {
+                console.log('Consuming previous purchase:', purchase.productId);
+                try {
+                  await RNIap.consumePurchaseAndroid({
+                    purchaseToken: purchase.purchaseToken,
+                    developerPayload: ''
+                  });
+                  console.log('Previous purchase consumed successfully');
+                } catch (consumeError) {
+                  console.log('Error consuming previous purchase:', consumeError);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.log('Error checking available purchases:', error);
+        }
+      }
+      
       console.log('Getting products...');
-      const products = await RNIap.getProducts({ skus: ['token_5_pack'] });
+      const productId = Platform.OS === 'android' ? 'token_5_pack_android' : 'token_5_pack';
+      const products = await RNIap.getProducts({ skus: [productId] });
       console.log('Raw IAP products response:', products);
       setProducts(products);
       
@@ -268,6 +298,19 @@ const Shop = () => {
     // 구매 완료 처리
     if (isIAPAvailable && RNIap && typeof RNIap.finishTransaction === 'function') {
       await RNIap.finishTransaction({ purchase, isConsumable: true });
+      
+      // Android에서는 추가로 consumePurchase 호출 필요
+      if (Platform.OS === 'android' && purchase.purchaseToken) {
+        try {
+          await RNIap.consumePurchaseAndroid({ 
+            purchaseToken: purchase.purchaseToken,
+            developerPayload: ''
+          });
+          console.log('Purchase consumed successfully');
+        } catch (error) {
+          console.log('Error consuming purchase:', error);
+        }
+      }
     }
   };
 
