@@ -39,7 +39,13 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/kgency_logo.png"
+      "favicon": "./assets/images/kgency_logo.png",
+      "name": "케이전시 - 외국인 구인구직 채용 플랫폼",
+      "shortName": "케이전시",
+      "description": "외국인 구직자와 한국 기업을 연결하는 스마트 채용 매칭 플랫폼. 맞춤형 일자리 추천과 간편한 지원 시스템을 제공합니다.",
+      "themeColor": "#ffffff",
+      "backgroundColor": "#ffffff",
+      "lang": "ko"
     },
     "plugins": [
       "expo-router",
