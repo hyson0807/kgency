@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+User-agent: Yeti
+Allow: /
+Crawl-delay: 1
+
+Sitemap: https://kgency.co.kr/sitemap.xml
