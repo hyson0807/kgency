@@ -247,7 +247,7 @@ export const PostingDetail = ({
             <View className="p-6">
                 <TouchableOpacity
                     onPress={() => router.push({
-                        pathname: '/(pages)/(company)/info2',
+                        pathname: '/(pages)/(company)/(job-posting-registration)/job-posting-step1',
                         params: { jobPostingId: postingId }
                     })}
                     className="bg-blue-500 py-3 rounded-xl mb-3"

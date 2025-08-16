@@ -6,7 +6,6 @@ import { router } from "expo-router";
 import { useMatchedJobPostings } from "@/hooks/useMatchedJobPostings";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { api } from "@/lib/api";
-import { SuitabilityCalculator } from "@/lib/suitability/calculator";
 import { SuitabilityResult } from "@/lib/suitability/types";
 
 interface Application {
@@ -73,38 +72,68 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     ...postingKeywords.moveable,
                     ...postingKeywords.gender,
                     ...postingKeywords.age,
-                    ...postingKeywords.visa
+                    ...postingKeywords.visa,
+                    ...postingKeywords.koreanLevel,
+                    ...postingKeywords.workDay
                 ];
 
+                // 유저가 지역이동 가능 키워드를 가지고 있는지 확인
+                const userCanMove = item.user.user_keyword?.some(uk => uk.keywords.category === '지역이동');
+
                 // 유저 키워드와 공고 키워드 매칭
-                const matched = item.user.user_keyword?.filter(userKw =>
+                let matched = item.user.user_keyword?.filter(userKw =>
                     allPostingKeywords.some(postingKw => postingKw.id === userKw.keywords.id)
                 ).map(uk => uk.keywords) || [];
 
+                // 지역이동 가능인 경우 공고의 지역 키워드를 매칭된 것으로 추가
+                if (userCanMove) {
+                    const postingLocationKeywords = postingKeywords.location.filter(loc => 
+                        !matched.some(m => m.id === loc.id) // 중복 제거
+                    );
+                    matched = [...matched, ...postingLocationKeywords];
+                }
+
                 setMatchedKeywords(matched);
 
-                // 적합도 계산
-                if (item.user.user_keyword && posting.job_posting_keywords) {
-                    const calculator = new SuitabilityCalculator();
-                    const userKeywordIds = item.user.user_keyword.map(uk => uk.keyword_id);
-                    
-                    // 공고 키워드를 SuitabilityCalculator가 요구하는 형식으로 변환
-                    const jobKeywords = posting.job_posting_keywords.map((jpk: any) => ({
-                        keyword: {
-                            id: jpk.keyword.id,
-                            keyword: jpk.keyword.keyword,
-                            category: jpk.keyword.category
+                // 서버에서 적합도 계산
+                if (item.user.id && postingId) {
+                    try {
+                        const response = await api('GET', `/api/applications/suitability/${item.user.id}/${postingId}`);
+                        if (response?.success && response.data) {
+                            setSuitabilityResult(response.data);
                         }
-                    }));
-
-                    const result = calculator.calculate(userKeywordIds, jobKeywords);
-                    setSuitabilityResult(result);
+                    } catch (error) {
+                        console.error('적합도 계산 실패:', error);
+                        // 적합도 계산 실패시 기본값 설정
+                        setSuitabilityResult({
+                            score: 0,
+                            level: 'low',
+                            details: {
+                                categoryScores: {},
+                                bonusPoints: 0,
+                                matchedKeywords: {
+                                    countries: [],
+                                    jobs: [],
+                                    conditions: [],
+                                    location: [],
+                                    moveable: [],
+                                    gender: [],
+                                    age: [],
+                                    visa: [],
+                                    workDays: [],
+                                    koreanLevel: []
+                                },
+                                missingRequired: [],
+                                appliedBonuses: []
+                            }
+                        });
+                    }
                 }
             }
         };
 
         loadPostingAndMatchKeywords();
-    }, [postingId, item.user.user_keyword]);
+    }, [postingId, item.user.id]);
 
     const handleViewResume = (application: Application) => {
         if (application.message) {
@@ -181,6 +210,8 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
             case '성별': return 'bg-pink-100 text-pink-700';
             case '나이대': return 'bg-yellow-100 text-yellow-700';
             case '비자': return 'bg-indigo-100 text-indigo-700';
+            case '한국어수준': return 'bg-red-100 text-red-700';
+            case '근무요일': return 'bg-cyan-100 text-cyan-700';
             default: return 'bg-gray-100 text-gray-700';
         }
     };

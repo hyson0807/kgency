@@ -134,7 +134,6 @@ export const useMatchedJobPostings = () => {
             const response = await api('GET', '/api/job-postings/matched');
 
             if (response && response.data) {
-
                 // 서버에서 이미 적합도 계산과 정렬이 완료된 데이터
                 setMatchedPostings(response.data);
             }

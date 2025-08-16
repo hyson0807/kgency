@@ -197,18 +197,28 @@ export const JobPostingCard = ({
                     </Text>
 
                     <View className="flex-row flex-wrap gap-2">
-                        {sortMatchedKeywords([
-                            ...matchedKeywords.countries,
-                            ...matchedKeywords.jobs,
-                            ...matchedKeywords.conditions,
-                            ...matchedKeywords.location,
-                            ...matchedKeywords.moveable,
-                            ...matchedKeywords.gender,
-                            ...matchedKeywords.age,
-                            ...matchedKeywords.visa,
-                            ...matchedKeywords.koreanLevel,
-                            ...matchedKeywords.workDay,
-                        ]).map((keyword, index) => (
+                        {(() => {
+                            const allKeywords = sortMatchedKeywords([
+                                ...matchedKeywords.countries,
+                                ...matchedKeywords.jobs,
+                                ...matchedKeywords.conditions,
+                                ...matchedKeywords.location,
+                                ...matchedKeywords.moveable,
+                                ...matchedKeywords.gender,
+                                ...matchedKeywords.age,
+                                ...matchedKeywords.visa,
+                                ...matchedKeywords.koreanLevel,
+                                ...matchedKeywords.workDay,
+                            ]);
+                            
+                            // 디버깅: 실제 표시되는 키워드들 확인
+                            console.log(`===== 공고 ${posting.id} 매칭된 키워드 표시 =====`);
+                            console.log('지역 키워드:', matchedKeywords.location);
+                            console.log('지역이동 키워드:', matchedKeywords.moveable);
+                            console.log('모든 키워드:', allKeywords);
+                            
+                            return allKeywords;
+                        })().map((keyword, index) => (
                             <View
                                 key={`${keyword.id}-${index}`}
                                 className="bg-green-100 px-4 py-2 rounded-3xl flex-row items-center justify-center"
