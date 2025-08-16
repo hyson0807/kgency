@@ -76,13 +76,17 @@ export const JobPostingCard = ({
                 postingId: posting.id,
                 companyId: posting.company.id,
                 companyName: posting.company.name,
-                suitability: suitability.level,
+                suitability: suitability?.level || 'low',
             }
         })
     }
 
     // 적합도 레벨에 따른 색상 설정
     const getSuitabilityColor = () => {
+        if (!suitability) {
+            return { bg: 'bg-gray-400', text: 'text-white' };
+        }
+        
         switch (suitability.level) {
             case 'perfect':
                 return { bg: 'bg-green-500', text: 'text-white' };
@@ -122,7 +126,7 @@ export const JobPostingCard = ({
                 {/* 적합도 뱃지 */}
                 <View className={`${suitabilityColors.bg} px-3 py-1 rounded-full`}>
                     <Text className={`${suitabilityColors.text} text-sm font-bold`}>
-                        {suitability.score}%
+                        {suitability?.score || 0}%
                     </Text>
                 </View>
             </View>
@@ -140,23 +144,24 @@ export const JobPostingCard = ({
                 <View className="flex-row justify-between items-center mb-1">
                     <Text className="text-xs text-gray-600">{t('suitability.label', '적합도')}</Text>
                     <Text className="text-xs font-medium text-gray-700">
-                        {suitability.level === 'perfect' && t('suitability.perfect', '완벽한 매칭')}
-                        {suitability.level === 'excellent' && t('suitability.excellent', '매우 적합')}
-                        {suitability.level === 'good' && t('suitability.good', '적합')}
-                        {suitability.level === 'fair' && t('suitability.fair', '보통')}
-                        {suitability.level === 'low' && t('suitability.low', '낮음')}
+                        {suitability?.level === 'perfect' && t('suitability.perfect', '완벽한 매칭')}
+                        {suitability?.level === 'excellent' && t('suitability.excellent', '매우 적합')}
+                        {suitability?.level === 'good' && t('suitability.good', '적합')}
+                        {suitability?.level === 'fair' && t('suitability.fair', '보통')}
+                        {suitability?.level === 'low' && t('suitability.low', '낮음')}
+                        {!suitability && t('suitability.low', '낮음')}
                     </Text>
                 </View>
                 <View className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                     <View
                         className={`h-full ${suitabilityColors.bg}`}
-                        style={{ width: `${suitability.score}%` }}
+                        style={{ width: `${suitability?.score || 0}%` }}
                     />
                 </View>
             </View>
 
             {/* 즉시 면접 가능 표시 */}
-            {suitability.level === 'perfect' && (
+            {suitability?.level === 'perfect' && (
                 <View className="bg-green-50 border border-green-200 rounded-lg p-2 mb-3">
                     <View className="flex-row items-center">
                         <Ionicons name="sparkles" size={16} color="#10b981" />
@@ -232,12 +237,12 @@ export const JobPostingCard = ({
                     </View>
 
                     {/* 보너스 포인트 표시 */}
-                    {suitability.details.bonusPoints > 0 && (
+                    {suitability?.details?.bonusPoints > 0 && (
                         <View className="mt-2 flex-row items-center">
                             <Ionicons name="add-circle-outline" size={14} color="#10b981" />
                             <Text className="text-xs text-green-600 ml-1">
                                 {t('suitability.bonus_applied', '보너스 {{points}}점 적용', {
-                                    points: suitability.details.bonusPoints
+                                    points: suitability?.details?.bonusPoints || 0
                                 })}
                             </Text>
                         </View>
