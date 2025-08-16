@@ -117,11 +117,11 @@ const OthersPage = () => {
         },
         userInfo: {
           age: parseInt(formData.age),
-          gender: formData.gender,
-          visa: formData.visa,
-          korean_level: formData.koreanLevel,
-          how_long: formData.howLong,
-          experience: formData.experience,
+          gender: formData.gender || undefined,
+          visa: formData.visa || undefined,
+          korean_level: formData.koreanLevel || undefined,
+          how_long: formData.howLong || undefined,
+          experience: formData.experience || undefined,
           experience_content: formData.experienceContent,
           preferred_days: formData.selectedDays,
           preferred_times: formData.selectedTimes
@@ -135,9 +135,9 @@ const OthersPage = () => {
 
       // 2. 프로필 관련 키워드 ID 가져오기
       const ageKeywordId = keywordMapper.getAgeKeywordId(formData.age);
-      const genderKeywordId = keywordMapper.getGenderKeywordId(formData.gender!);
-      const visaKeywordId = keywordMapper.getVisaKeywordId(formData.visa!);
-      const koreanLevelKeywordId = keywordMapper.getKoreanLevelKeywordId(formData.koreanLevel!);
+      const genderKeywordId = formData.gender ? keywordMapper.getGenderKeywordId(formData.gender) : null;
+      const visaKeywordId = formData.visa ? keywordMapper.getVisaKeywordId(formData.visa) : null;
+      const koreanLevelKeywordId = formData.koreanLevel ? keywordMapper.getKoreanLevelKeywordId(formData.koreanLevel) : null;
       const preferredDayKeywordIds = keywordMapper.getPreferredDayKeywordIds(formData.selectedDays);
 
       // 3. 모든 선택된 키워드 ID 모으기

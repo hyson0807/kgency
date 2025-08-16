@@ -206,15 +206,54 @@ const Shop = () => {
       }
       
       console.log('Starting purchase for:', packageItem.id);
-      // Android와 iOS에서 다른 파라미터 형식 사용
-      const purchaseParams = Platform.OS === 'android' 
-        ? { skus: [packageItem.id] } 
-        : { sku: packageItem.id };
       
-      console.log('Purchase params:', purchaseParams);
-      const purchase = await RNIap.requestPurchase(purchaseParams) as any;
+      let purchase: any;
+      
+      if (Platform.OS === 'android') {
+        // Android: requestPurchase는 purchase 객체를 직접 반환하지 않음
+        console.log('Android purchase starting...');
+        
+        // 구매 요청 - requestPurchase가 실제로 구매 데이터를 반환할 수도 있음
+        try {
+          const purchaseResult = await RNIap.requestPurchase({ skus: [packageItem.id] });
+          console.log('RequestPurchase result:', purchaseResult);
+          
+          // requestPurchase가 구매 정보를 반환했다면 사용
+          if (purchaseResult && purchaseResult.purchaseToken) {
+            purchase = purchaseResult;
+            console.log('Using purchase from requestPurchase');
+          }
+        } catch (purchaseError) {
+          console.log('RequestPurchase error or returned void:', purchaseError);
+        }
+        
+        // purchase가 없으면 getAvailablePurchases로 가져오기
+        if (!purchase) {
+          console.log('Fetching purchase details from getAvailablePurchases...');
+          const purchases = await RNIap.getAvailablePurchases();
+          console.log('Available purchases:', purchases);
+          
+          // 방금 구매한 상품 찾기
+          purchase = purchases.find((p: any) => p.productId === packageItem.id);
+          
+          if (!purchase && purchases.length > 0) {
+            // 구매 정보를 못 찾으면 가장 최근 구매 사용
+            purchase = purchases[purchases.length - 1];
+          }
+        }
+        
+        console.log('Android purchase found:', purchase);
+      } else {
+        // iOS: requestPurchase가 purchase 객체를 직접 반환
+        const purchaseParams = { sku: packageItem.id };
+        console.log('iOS purchase params:', purchaseParams);
+        purchase = await RNIap.requestPurchase(purchaseParams);
+        console.log('iOS purchase initiated:', purchase);
+      }
 
-      console.log('Purchase initiated:', purchase);
+      if (!purchase) {
+        throw new Error('Purchase object not received');
+      }
       
       // 서버에 영수증 전송
       await verifyPurchaseWithServer(purchase);
@@ -267,22 +306,37 @@ const Shop = () => {
     const platform = Platform.OS;
     const payload: any = {};
     
+    // Android 구매 객체 디버깅
+    console.log('=== Purchase Object Debug ===');
+    console.log('Full purchase object:', JSON.stringify(purchase, null, 2));
+    console.log('Purchase keys:', Object.keys(purchase));
+    
     // 플랫폼별 데이터 설정
     if (platform === 'ios') {
       payload.receiptData = purchase.transactionReceipt;
-      payload.device = 'ios';
     } else {
-      payload.purchaseToken = purchase.purchaseToken;
-      payload.device = 'android';
+      // Android - 다양한 키 이름 시도 (purchaseStateAndroid는 토큰이 아니므로 제외)
+      const androidToken = purchase.purchaseToken || 
+                          purchase.purchase_token || 
+                          purchase.token;
+      
+      if (!androidToken) {
+        console.error('Android purchase token not found in:', purchase);
+        console.error('Available keys:', Object.keys(purchase));
+        // 토큰이 없으면 에러 발생
+        throw new Error('구매 토큰을 찾을 수 없습니다. 구매 정보가 올바르지 않습니다.');
+      }
+      
+      payload.purchaseToken = androidToken;
     }
     
-    // 플랫폼 정보도 추가
+    // 플랫폼 정보 설정 (device 필드 제거, platform만 사용)
     payload.platform = platform;
 
     console.log('Verifying purchase with server:');
     console.log('Platform:', platform);
     console.log('Purchase object keys:', Object.keys(purchase));
-    console.log('Purchase transactionReceipt:', purchase.transactionReceipt ? 'Present' : 'Missing');
+    console.log('Purchase purchaseToken:', payload.purchaseToken ? 'Present' : 'Missing');
     console.log('Payload being sent:', JSON.stringify(payload, null, 2));
     
     const response = await api('POST', '/api/purchase/verify', payload);
