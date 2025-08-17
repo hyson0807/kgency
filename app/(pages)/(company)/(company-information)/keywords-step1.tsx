@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
@@ -79,6 +79,26 @@ const KeywordsStep1 = () => {
     }
 
     const handleNext = () => {
+        // 지역 선택 확인
+        if (!step1Data.location) {
+            Alert.alert(
+                '필수 항목',
+                '지역을 선택해주세요.',
+                [{ text: '확인' }]
+            )
+            return
+        }
+
+        // 직종 선택 확인 (최소 1개 이상)
+        if (step1Data.jobs.length === 0) {
+            Alert.alert(
+                '필수 항목',
+                '최소 하나 이상의 직종을 선택해주세요.',
+                [{ text: '확인' }]
+            )
+            return
+        }
+
         router.push('/keywords-step2')
     }
 
@@ -102,30 +122,48 @@ const KeywordsStep1 = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingTop: 16, paddingBottom: 120 }}
             >
-                {/* 지역 선택 */}
-                <LocationSelector 
-                    locationOptions={locationOptions} 
-                    selectedLocation={step1Data.location} 
-                    setSelectedLocation={setLocation} 
-                />
+                {/* 지역 선택 - 필수 */}
+                <View>
+                    <View className="px-4 mb-2">
+                        <Text className="text-red-500 text-xs">* 필수 선택</Text>
+                    </View>
+                    <LocationSelector 
+                        locationOptions={locationOptions} 
+                        selectedLocation={step1Data.location} 
+                        setSelectedLocation={setLocation} 
+                    />
+                </View>
 
-                {/* 직종 선택 */}
-                <JobPreferencesSelector
-                    jobs={jobKeywords}
-                    selectedJobs={step1Data.jobs}
-                    onToggle={toggleJob}
-                    title="모집 직종"
-                />
+                {/* 직종 선택 - 필수 */}
+                <View>
+                    <View className="px-4 mb-2">
+                        <Text className="text-red-500 text-xs">* 필수 선택 (최소 1개)</Text>
+                    </View>
+                    <JobPreferencesSelector
+                        jobs={jobKeywords}
+                        selectedJobs={step1Data.jobs}
+                        onToggle={toggleJob}
+                        title="모집 직종"
+                    />
+                </View>
             </ScrollView>
 
             {/* 다음 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 pb-8">
                 <TouchableOpacity
                     onPress={handleNext}
-                    className="py-4 rounded-2xl shadow-sm bg-blue-500"
+                    className={`py-4 rounded-2xl shadow-sm ${
+                        step1Data.location && step1Data.jobs.length > 0 
+                            ? 'bg-blue-500' 
+                            : 'bg-gray-300'
+                    }`}
+                    disabled={!step1Data.location || step1Data.jobs.length === 0}
                 >
                     <Text className="text-center text-white font-semibold text-base">
-                        다음
+                        {!step1Data.location || step1Data.jobs.length === 0
+                            ? '필수 항목을 선택해주세요'
+                            : '다음'
+                        }
                     </Text>
                 </TouchableOpacity>
             </View>

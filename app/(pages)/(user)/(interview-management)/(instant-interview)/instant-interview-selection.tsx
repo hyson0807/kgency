@@ -157,7 +157,7 @@ export default function InstantInterviewSelection() {
             if (balanceResponse?.success && balanceResponse.balance < 1) {
                 showModal(
                     t('alert.notification', '토큰 부족'), 
-                    t('instant_interview.insufficient_tokens', '즉시면접 예약을 위해서는 토큰 1개가 필요합니다. 상점에서 토큰을 구매해주세요.'),
+                    t('instant_interview.insufficient_tokens', '토큰을 이용하면, 무응답 걱정 없이, 100% 면접이 확정되요!'),
                     'warning',
                     () => {
                         router.push('/(user)/shop')

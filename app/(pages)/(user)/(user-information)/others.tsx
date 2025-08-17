@@ -96,6 +96,24 @@ const OthersPage = () => {
   };
 
   const handleSaveAndComplete = async () => {
+    // 지역 선택 확인 (지역이동 가능을 선택하지 않은 경우 필수)
+    if (!formData.selectedMoveable && formData.selectedLocations.length === 0) {
+      showModal(
+        t('alert.notification', '알림'), 
+        t('info.select_location_required', '지역을 선택하거나 지역이동 가능을 선택해주세요')
+      );
+      return;
+    }
+
+    // 직종 선택 확인 (최소 1개 이상)
+    if (formData.selectedJobs.length === 0) {
+      showModal(
+        t('alert.notification', '알림'), 
+        t('info.select_job_required', '최소 하나 이상의 희망직종을 선택해주세요')
+      );
+      return;
+    }
+
     // 국가 선택 확인
     if (!formData.selectedCountry) {
       showModal(
@@ -201,28 +219,43 @@ const OthersPage = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
         >
-          {/* 지역 선택 섹션 */}
-          <LocationSelector
-            keywords={keywords}
-            selectedLocations={formData.selectedLocations}
-            selectedMoveable={formData.selectedMoveable}
-            onLocationChange={(ids) => updateField('selectedLocations', ids)}
-            onMoveableToggle={(id) => updateField('selectedMoveable', id)}
-          />
+          {/* 지역 선택 섹션 - 필수 */}
+          <View>
+            <View className="px-4 mb-2">
+              <Text className="text-red-500 text-xs">* 필수 선택 (지역 또는 지역이동 가능 선택)</Text>
+            </View>
+            <LocationSelector
+              keywords={keywords}
+              selectedLocations={formData.selectedLocations}
+              selectedMoveable={formData.selectedMoveable}
+              onLocationChange={(ids) => updateField('selectedLocations', ids)}
+              onMoveableToggle={(id) => updateField('selectedMoveable', id)}
+            />
+          </View>
 
-          {/* 국가 선택 섹션 */}
-          <Country 
-            keywords={keywords} 
-            selectedCountry={formData.selectedCountry} 
-            setSelectedCountry={(id) => updateField('selectedCountry', id)} 
-          />
+          {/* 국가 선택 섹션 - 필수 */}
+          <View>
+            <View className="px-4 mb-2">
+              <Text className="text-red-500 text-xs">* 필수 선택</Text>
+            </View>
+            <Country 
+              keywords={keywords} 
+              selectedCountry={formData.selectedCountry} 
+              setSelectedCountry={(id) => updateField('selectedCountry', id)} 
+            />
+          </View>
 
-          {/* 희망직종 섹션 */}
-          <JobPreferencesSelector
-            jobs={jobKeywords}
-            selectedJobs={formData.selectedJobs}
-            onToggle={toggleJob}
-          />
+          {/* 희망직종 섹션 - 필수 */}
+          <View>
+            <View className="px-4 mb-2">
+              <Text className="text-red-500 text-xs">* 필수 선택 (최소 1개)</Text>
+            </View>
+            <JobPreferencesSelector
+              jobs={jobKeywords}
+              selectedJobs={formData.selectedJobs}
+              onToggle={toggleJob}
+            />
+          </View>
 
           {/* 근무조건 섹션 */}
           <WorkConditionsSelector
@@ -235,11 +268,27 @@ const OthersPage = () => {
         {/* 저장 버튼 - 고정 위치 */}
         <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 pb-8">
           <TouchableOpacity
-            className="w-full bg-blue-500 items-center justify-center py-4 rounded-2xl shadow-sm"
+            className={`w-full items-center justify-center py-4 rounded-2xl shadow-sm ${
+              (!formData.selectedMoveable && formData.selectedLocations.length === 0) || 
+              formData.selectedJobs.length === 0 || 
+              !formData.selectedCountry
+                ? 'bg-gray-300'
+                : 'bg-blue-500'
+            }`}
             onPress={handleSaveAndComplete}
+            disabled={
+              (!formData.selectedMoveable && formData.selectedLocations.length === 0) || 
+              formData.selectedJobs.length === 0 || 
+              !formData.selectedCountry
+            }
           >
             <Text className="font-semibold text-base text-white">
-              {t('info.save', '저장하기')}
+              {(!formData.selectedMoveable && formData.selectedLocations.length === 0) || 
+               formData.selectedJobs.length === 0 || 
+               !formData.selectedCountry
+                ? '필수 항목을 선택해주세요'
+                : t('info.save', '저장하기')
+              }
             </Text>
           </TouchableOpacity>
         </View>
