@@ -13,7 +13,10 @@ const User_Layout = () => {
     const { t } = useTranslation();
     const {user} = useAuth();
     const insets = useSafeAreaInsets();
-    const { isTabBarVisible } = useTabBar();
+    const { isTabBarVisible, translateY } = useTabBar();
+    
+    const maxHeight = (Platform.OS === 'ios' ? 50 : 60) + insets.bottom;
+    const maxPadding = insets.bottom + 10;
 
 
     return (
@@ -22,12 +25,20 @@ const User_Layout = () => {
                 headerShown: false,
                 tabBarActiveTintColor: 'blue',
                 tabBarInactiveTintColor: 'gray',
-                tabBarStyle: {
+                tabBarStyle: Platform.OS === 'ios' ? {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: isTabBarVisible ? (Platform.OS === 'ios' ? 50 : 60) + insets.bottom : 0,
-                    paddingBottom: isTabBarVisible ? insets.bottom + 10 : 0,
-                    overflow: 'hidden'
+                    height: isTabBarVisible ? maxHeight : 0,
+                    paddingBottom: isTabBarVisible ? maxPadding : 0,
+                    overflow: 'hidden',
+                    position: isTabBarVisible ? 'relative' : 'absolute',
+                    bottom: isTabBarVisible ? 0 : -maxHeight,
+                } : {
+                    backgroundColor: 'white',
+                    borderTopWidth: 1,
+                    height: isTabBarVisible ? maxHeight : 0,
+                    paddingBottom: isTabBarVisible ? maxPadding : 0,
+                    overflow: 'hidden',
                 },
             }}
         >

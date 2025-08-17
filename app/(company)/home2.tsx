@@ -11,6 +11,7 @@ import {UserCard} from "@/components/company_home(home2)/UserCard";
 import { SuitabilityResult } from '@/lib/suitability/types'
 import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
 import { useTabBarVisibility } from '@/hooks/useTabBarVisibility';
+import { useTabBar } from '@/contexts/TabBarContext';
 
 interface UserKeyword {
     keyword: {
@@ -57,6 +58,7 @@ interface ApiResponse<T> {
 const Home2 = () => {
     const { user } = useAuth()
     const { isTabBarVisible, handleScroll } = useTabBarVisibility()
+    const { tabBarHeight } = useTabBar()
     const [matchedJobSeekers, setMatchedJobSeekers] = useState<MatchedJobSeeker[]>([])
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
@@ -137,7 +139,10 @@ const Home2 = () => {
                 ListHeaderComponent={() => <SecondHeader/> }
                 ItemSeparatorComponent={() => <View className="h-2" />}
                 style={{ flex: 1 }}
-                contentContainerStyle={{ paddingTop: 2 }}
+                contentContainerStyle={{ 
+                    paddingTop: 2,
+                    paddingBottom: isTabBarVisible ? 0 : tabBarHeight 
+                }}
                 showsVerticalScrollIndicator={false}
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
