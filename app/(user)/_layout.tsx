@@ -6,12 +6,14 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useTranslation } from "@/contexts/TranslationContext";
 import {useAuth} from "@/contexts/AuthContext";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Platform } from 'react-native';
+import { Platform, Animated } from 'react-native';
+import { useTabBar } from '@/contexts/TabBarContext';
 
 const User_Layout = () => {
     const { t } = useTranslation();
     const {user} = useAuth();
     const insets = useSafeAreaInsets();
+    const { isTabBarVisible } = useTabBar();
 
 
     return (
@@ -23,8 +25,9 @@ const User_Layout = () => {
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: (Platform.OS === 'ios' ? 50 : 60) + insets.bottom,
-                    paddingBottom: insets.bottom + 10
+                    height: isTabBarVisible ? (Platform.OS === 'ios' ? 50 : 60) + insets.bottom : 0,
+                    paddingBottom: isTabBarVisible ? insets.bottom + 10 : 0,
+                    overflow: 'hidden'
                 },
             }}
         >

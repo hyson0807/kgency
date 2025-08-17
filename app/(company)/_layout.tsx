@@ -5,10 +5,12 @@ import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
+import { useTabBar } from '@/contexts/TabBarContext';
 
 
 const company_Layout = () => {
     const insets = useSafeAreaInsets();
+    const { isTabBarVisible } = useTabBar();
     return (
         <Tabs
             screenOptions={{
@@ -18,8 +20,9 @@ const company_Layout = () => {
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    height: (Platform.OS === 'ios' ? 50 : 60) + insets.bottom,
-                    paddingBottom: insets.bottom + 10
+                    height: isTabBarVisible ? (Platform.OS === 'ios' ? 50 : 60) + insets.bottom : 0,
+                    paddingBottom: isTabBarVisible ? insets.bottom + 10 : 0,
+                    overflow: 'hidden'
                 },
             }}
         >

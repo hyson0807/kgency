@@ -11,6 +11,7 @@ import { SuitabilityResult } from '@/lib/suitability';
 import {Header_Home} from "@/components/user_home/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
+import { useTabBarVisibility } from '@/hooks/useTabBarVisibility';
 
 // 타입은 hooks/useMatchedJobPostings에서 import
 interface JobPosting {
@@ -66,6 +67,7 @@ interface MatchedPosting {
 const Home = () => {
     const { t } = useTranslation()
     const { user } = useAuth()
+    const { isTabBarVisible, handleScroll } = useTabBarVisibility()
 
     // 커스텀 훅에서 모든 데이터와 함수 가져오기
     const {
@@ -129,8 +131,11 @@ const Home = () => {
                 renderItem={renderPosting}
                 ListHeaderComponent={<Header_Home matchedPostings={matchedPostings}/>}
                 ItemSeparatorComponent={() => <View className="h-2" />}
+                style={{ flex: 1 }}
                 contentContainerStyle={{ paddingTop: 2 }}
                 showsVerticalScrollIndicator={false}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
