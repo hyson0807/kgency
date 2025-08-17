@@ -1,7 +1,6 @@
 import { View, Text, FlatList, RefreshControl, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { router } from 'expo-router'
-import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { useModal } from '@/hooks/useModal'
 import LoadingScreen from "@/components/common/LoadingScreen";
@@ -149,7 +148,7 @@ const JobPosting = () => {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
             <View className="bg-white px-4 py-3 border-b border-gray-200">
                 <View className="flex-row items-center justify-between">
@@ -183,7 +182,7 @@ const JobPosting = () => {
             <FloatingButton/>
 
             <ModalComponent />
-        </SafeAreaView>
+        </View>
     )
 }
 

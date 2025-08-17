@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, ScrollView, ActivityIndicator, Linking } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
 import { Calendar, LocaleConfig } from 'react-native-calendars'
 import { Ionicons } from '@expo/vector-icons'
@@ -221,16 +220,16 @@ export default function UserInterviewCalendar() {
 
     if (loading) {
         return (
-            <SafeAreaView className="flex-1 bg-white">
+            <View className="flex-1 bg-white" style={{paddingTop: 44}}>
                 <View className="flex-1 justify-center items-center">
                     <ActivityIndicator size="large" color="#3b82f6" />
                 </View>
-            </SafeAreaView>
+            </View>
         )
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
             <View className="bg-white border-b border-gray-200">
                 <View className="flex-row items-center p-4">
@@ -300,6 +299,6 @@ export default function UserInterviewCalendar() {
             </ScrollView>
 
             <ModalComponent />
-        </SafeAreaView>
+        </View>
     )
 }

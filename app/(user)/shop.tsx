@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 // IAP 라이브러리는 development build에서만 동작
@@ -369,7 +368,7 @@ const Shop = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
       <ScrollView className="flex-1">
         <View className="bg-white px-6 py-8 border-b border-gray-200">
           <Text className="text-2xl font-bold text-gray-900 mb-2">상점</Text>
@@ -518,7 +517,7 @@ const Shop = () => {
         </View>
       </ScrollView>
       <ModalComponent />
-    </SafeAreaView>
+    </View>
   );
 };
 

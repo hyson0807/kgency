@@ -1,7 +1,6 @@
 // app/(company)/interview-calendar.tsx
 import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Calendar } from 'react-native-calendars'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
@@ -386,17 +385,17 @@ export default function InterviewCalendar() {
 
     if (loading) {
         return (
-            <SafeAreaView className="flex-1 bg-white">
+            <View className="flex-1 bg-white" style={{paddingTop: 44}}>
                 <View className="flex-1 justify-center items-center">
                     <ActivityIndicator size="large" color="#3b82f6" />
                 </View>
-            </SafeAreaView>
+            </View>
         )
     }
 
     // ==================== Main Render ====================
     return (
-        <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
             <View className="bg-white border-b border-gray-200">
                 <View className="flex-row items-center p-4">
@@ -486,6 +485,6 @@ export default function InterviewCalendar() {
             </ScrollView>
 
             <ModalComponent />
-        </SafeAreaView>
+        </View>
     )
 }
