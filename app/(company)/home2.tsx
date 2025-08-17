@@ -1,6 +1,5 @@
 import { View, Text, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { api } from '@/lib/api'
 import { Ionicons } from '@expo/vector-icons'
@@ -125,7 +124,7 @@ const Home2 = () => {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
             <Header />
 
@@ -134,7 +133,8 @@ const Home2 = () => {
                 keyExtractor={(item) => item.user.id}
                 renderItem={({item}) => <UserCard item={item} onPress={handleJobSeekerPress}/>}
                 ListHeaderComponent={() => <SecondHeader/> }
-                contentContainerStyle={{ paddingBottom: 20 }}
+                ItemSeparatorComponent={() => <View className="h-2" />}
+                contentContainerStyle={{ paddingTop: 2 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
@@ -156,7 +156,7 @@ const Home2 = () => {
                     </View>
                 }
             />
-        </SafeAreaView>
+        </View>
     )
 }
 

@@ -1,6 +1,5 @@
 import { View, Text, FlatList, RefreshControl, TouchableOpacity } from 'react-native'
 import React, { useEffect } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import { useTranslation } from "@/contexts/TranslationContext"
@@ -121,7 +120,7 @@ const Home = () => {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             <Header/>
 
             <FlatList
@@ -129,7 +128,8 @@ const Home = () => {
                 keyExtractor={(item) => item.posting.id}
                 renderItem={renderPosting}
                 ListHeaderComponent={<Header_Home matchedPostings={matchedPostings}/>}
-                contentContainerStyle={{ paddingBottom: 20 }}
+                ItemSeparatorComponent={() => <View className="h-2" />}
+                contentContainerStyle={{ paddingTop: 2 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
@@ -156,7 +156,7 @@ const Home = () => {
                     </View>
                 }
             />
-        </SafeAreaView>
+        </View>
     )
 }
 

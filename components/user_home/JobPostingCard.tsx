@@ -106,7 +106,7 @@ export const JobPostingCard = ({
     return (
         <TouchableOpacity
             onPress={() => handlePostingPress(posting)}
-            className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
+            className="bg-white mx-4 p-4 rounded-2xl shadow-sm"
             activeOpacity={0.7}
         >
             {/* 상단 뱃지 영역 */}

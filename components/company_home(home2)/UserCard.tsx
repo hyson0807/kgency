@@ -145,7 +145,7 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
     return (
         <TouchableOpacity
             onPress={() => onPress(jobSeeker)}
-            className="bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm"
+            className="bg-white mx-4 p-4 rounded-2xl shadow-sm"
             activeOpacity={0.7}
         >
             {/* 적합도 뱃지 */}
