@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import type { AndroidPurchaseData, IOSPurchaseData, PurchaseVerificationRequest } from '@/types/purchase';
 // IAP 라이브러리는 development build에서만 동작
 let RNIap: any = null;
 let isIAPAvailable = false;
@@ -209,39 +210,97 @@ const Shop = () => {
       let purchase: any;
       
       if (Platform.OS === 'android') {
-        // Android: requestPurchase는 purchase 객체를 직접 반환하지 않음
+        // Android: Promise 기반 구매 처리
         console.log('Android purchase starting...');
         
-        // 구매 요청 - requestPurchase가 실제로 구매 데이터를 반환할 수도 있음
+        // Promise로 구매 결과 대기
+        let purchaseUpdateSubscription: any = null;
+        
+        const purchasePromise = new Promise<any>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            if (purchaseUpdateSubscription) {
+              purchaseUpdateSubscription.remove();
+            }
+            reject(new Error('Purchase timeout'));
+          }, 30000); // 30초 타임아웃
+          
+          purchaseUpdateSubscription = RNIap.purchaseUpdatedListener(
+            async (purchaseUpdate: any) => {
+              console.log('Purchase update received:', purchaseUpdate);
+              
+              clearTimeout(timeout);
+              if (purchaseUpdateSubscription) {
+                purchaseUpdateSubscription.remove();
+                purchaseUpdateSubscription = null;
+              }
+              
+              // 구매 성공한 경우만 처리 (Android: 0=purchased, 1=canceled)
+              if (purchaseUpdate && purchaseUpdate.purchaseStateAndroid === 0) {
+                console.log('Purchase successful! State:', purchaseUpdate.purchaseStateAndroid);
+                console.log('Purchase token:', purchaseUpdate.purchaseToken ? 'Present' : 'Missing');
+                resolve(purchaseUpdate);
+              } else if (purchaseUpdate && purchaseUpdate.purchaseStateAndroid === 1) {
+                console.log('Purchase was canceled by user');
+                reject(new Error('E_USER_CANCELLED'));
+              } else {
+                console.log('Purchase failed with unknown state:', purchaseUpdate.purchaseStateAndroid);
+                reject(new Error('Purchase failed'));
+              }
+            }
+          );
+        });
+        
         try {
-          const purchaseResult = await RNIap.requestPurchase({ skus: [packageItem.id] });
-          console.log('RequestPurchase result:', purchaseResult);
+          // 구매 요청
+          await RNIap.requestPurchase({ 
+            skus: [packageItem.id]
+          });
           
-          // requestPurchase가 구매 정보를 반환했다면 사용
-          if (purchaseResult && purchaseResult.purchaseToken) {
-            purchase = purchaseResult;
-            console.log('Using purchase from requestPurchase');
+          // Promise로 결과 대기
+          purchase = await purchasePromise;
+          
+        } catch (error) {
+          console.log('Purchase error:', error);
+          
+          // 리스너 정리
+          if (purchaseUpdateSubscription) {
+            purchaseUpdateSubscription.remove();
+            purchaseUpdateSubscription = null;
           }
-        } catch (purchaseError) {
-          console.log('RequestPurchase error or returned void:', purchaseError);
+          
+          // 타임아웃이나 기타 실패 시 폴백으로 미소비 구매 확인
+          if (!purchase) {
+            console.log('Checking available purchases as fallback...');
+            try {
+              const purchases = await RNIap.getAvailablePurchases();
+              
+              if (purchases && purchases.length > 0) {
+                console.log('Available purchases found:', purchases.length);
+                
+                // 해당 상품의 최근 구매 찾기
+                purchase = purchases.find((p: any) => 
+                  (p.productId === packageItem.id || p.productId === 'token_5_pack_android') &&
+                  p.purchaseToken
+                );
+                
+                if (purchase) {
+                  console.log('Found valid purchase from available purchases');
+                } else {
+                  throw error; // 원본 에러 다시 던지기
+                }
+              } else {
+                throw error; // 원본 에러 다시 던지기
+              }
+            } catch (fallbackError) {
+              console.log('Fallback also failed:', fallbackError);
+              throw error; // 원본 에러 던지기
+            }
+          } else {
+            throw error;
+          }
         }
         
-        // purchase가 없으면 getAvailablePurchases로 가져오기
-        if (!purchase) {
-          console.log('Fetching purchase details from getAvailablePurchases...');
-          const purchases = await RNIap.getAvailablePurchases();
-          console.log('Available purchases:', purchases);
-          
-          // 방금 구매한 상품 찾기
-          purchase = purchases.find((p: any) => p.productId === packageItem.id);
-          
-          if (!purchase && purchases.length > 0) {
-            // 구매 정보를 못 찾으면 가장 최근 구매 사용
-            purchase = purchases[purchases.length - 1];
-          }
-        }
-        
-        console.log('Android purchase found:', purchase);
+        console.log('Final Android purchase:', purchase);
       } else {
         // iOS: requestPurchase가 purchase 객체를 직접 반환
         const purchaseParams = { sku: packageItem.id };
@@ -270,10 +329,12 @@ const Shop = () => {
       // 사용자가 취소한 경우 - 다양한 취소 코드 처리
       if (error.code === 'E_USER_CANCELLED' || 
           error.code === 'E_DEFERRED' ||
+          error.code === 'E_ALREADY_OWNED' ||
           error.userCancelled === true ||
           (error.message && error.message.includes('cancelled')) ||
+          (error.message && error.message.includes('already owned')) ||
           (error.message && error.message.includes('SKErrorDomain error 2'))) {
-        console.log('User cancelled the purchase');
+        console.log('User cancelled the purchase or already owned:', error.code || error.message);
         return; // 에러 메시지를 표시하지 않음
       }
       
@@ -301,23 +362,23 @@ const Shop = () => {
     }
   };
 
-  const verifyPurchaseWithServer = async (purchase: any) => {
-    const platform = Platform.OS;
-    const payload: any = {};
+  const verifyPurchaseWithServer = async (purchase: AndroidPurchaseData | IOSPurchaseData) => {
+    const platform = Platform.OS as 'ios' | 'android';
+    const payload: PurchaseVerificationRequest = { platform };
     
     // Android 구매 객체 디버깅
     console.log('=== Purchase Object Debug ===');
     console.log('Full purchase object:', JSON.stringify(purchase, null, 2));
     console.log('Purchase keys:', Object.keys(purchase));
     
-    // 플랫폼별 데이터 설정
+    // 플랫폼별 데이터 설정 (타입 안전성 강화)
     if (platform === 'ios') {
-      payload.receiptData = purchase.transactionReceipt;
+      const iosPurchase = purchase as IOSPurchaseData;
+      payload.receiptData = iosPurchase.transactionReceipt;
     } else {
-      // Android - 다양한 키 이름 시도 (purchaseStateAndroid는 토큰이 아니므로 제외)
-      const androidToken = purchase.purchaseToken || 
-                          purchase.purchase_token || 
-                          purchase.token;
+      const androidPurchase = purchase as AndroidPurchaseData;
+      // Android - purchaseToken 확인
+      const androidToken = androidPurchase.purchaseToken;
       
       if (!androidToken) {
         console.error('Android purchase token not found in:', purchase);
@@ -328,14 +389,11 @@ const Shop = () => {
       
       payload.purchaseToken = androidToken;
     }
-    
-    // 플랫폼 정보 설정 (device 필드 제거, platform만 사용)
-    payload.platform = platform;
 
     console.log('Verifying purchase with server:');
     console.log('Platform:', platform);
     console.log('Purchase object keys:', Object.keys(purchase));
-    console.log('Purchase purchaseToken:', payload.purchaseToken ? 'Present' : 'Missing');
+    console.log('Purchase token:', payload.purchaseToken ? 'Present' : payload.receiptData ? 'Receipt Present' : 'Missing');
     console.log('Payload being sent:', JSON.stringify(payload, null, 2));
     
     const response = await api('POST', '/api/purchase/verify', payload);
@@ -353,15 +411,18 @@ const Shop = () => {
       await RNIap.finishTransaction({ purchase, isConsumable: true });
       
       // Android에서는 추가로 consumePurchase 호출 필요
-      if (Platform.OS === 'android' && purchase.purchaseToken) {
-        try {
-          await RNIap.consumePurchaseAndroid({ 
-            purchaseToken: purchase.purchaseToken,
-            developerPayload: ''
-          });
-          console.log('Purchase consumed successfully');
-        } catch (error) {
-          console.log('Error consuming purchase:', error);
+      if (Platform.OS === 'android') {
+        const androidPurchase = purchase as AndroidPurchaseData;
+        if (androidPurchase.purchaseToken) {
+          try {
+            await RNIap.consumePurchaseAndroid({ 
+              purchaseToken: androidPurchase.purchaseToken,
+              developerPayload: ''
+            });
+            console.log('Purchase consumed successfully');
+          } catch (error) {
+            console.log('Error consuming purchase:', error);
+          }
         }
       }
     }
