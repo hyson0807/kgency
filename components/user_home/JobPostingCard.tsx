@@ -1,6 +1,6 @@
 import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-import React from "react";
+import React, { useRef, useState } from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
 import { SuitabilityResult } from '@/lib/suitability';
 import {router} from "expo-router";
@@ -68,8 +68,17 @@ export const JobPostingCard = ({
                                    suitability, // 추가
                                }: JobPostingCardProps) => {
     const {t, translateDB} = useTranslation();
+    const [isNavigating, setIsNavigating] = useState(false);
 
     const handlePostingPress = (posting: JobPosting) => {
+        // 이미 navigation이 진행 중이면 무시
+        if (isNavigating) {
+            return;
+        }
+
+        // navigation 시작 - 버튼 비활성화
+        setIsNavigating(true);
+
         router.push({
             pathname: '/(pages)/(user)/posting-detail',
             params: {
@@ -78,7 +87,12 @@ export const JobPostingCard = ({
                 companyName: posting.company.name,
                 suitability: suitability?.level || 'low',
             }
-        })
+        });
+
+        // 1.5초 후 버튼 재활성화 (navigation이 완료될 시간 제공)
+        setTimeout(() => {
+            setIsNavigating(false);
+        }, 1500);
     }
 
     // 적합도 레벨에 따른 색상 설정
@@ -108,6 +122,7 @@ export const JobPostingCard = ({
             onPress={() => handlePostingPress(posting)}
             className="bg-white mx-4 p-4 rounded-2xl shadow-sm"
             activeOpacity={0.7}
+            disabled={isNavigating}
         >
             {/* 상단 뱃지 영역 */}
             <View className="flex-row justify-between items-start mb-2">

@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import { SuitabilityResult } from '@/lib/suitability/types';
 import { sortMatchedKeywords } from '@/lib/utils/keywordUtils';
 
@@ -58,7 +58,7 @@ interface UserCardProps {
 export const UserCard = ({ item, onPress }: UserCardProps) => {
     const { user: jobSeeker, matchedCount, matchedKeywords, matchedKeywordsWithCategory, suitability } = item;
     const hasMatches = matchedCount > 0;
-    
+    const [isNavigating, setIsNavigating] = useState(false);
     
     // 적합도 레벨에 따른 색상과 텍스트
     const getSuitabilityInfo = (level?: string) => {
@@ -141,12 +141,29 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
 
     const keywordsWithCategory = getKeywordsWithCategory();
     
+    const handlePress = () => {
+        // 이미 navigation이 진행 중이면 무시
+        if (isNavigating) {
+            return;
+        }
+
+        // navigation 시작 - 버튼 비활성화
+        setIsNavigating(true);
+
+        onPress(jobSeeker);
+
+        // 1.5초 후 버튼 재활성화 (navigation이 완료될 시간 제공)
+        setTimeout(() => {
+            setIsNavigating(false);
+        }, 1500);
+    };
 
     return (
         <TouchableOpacity
-            onPress={() => onPress(jobSeeker)}
+            onPress={handlePress}
             className="bg-white mx-4 p-4 rounded-2xl shadow-sm"
             activeOpacity={0.7}
+            disabled={isNavigating}
         >
             {/* 적합도 뱃지 */}
             {suitability && suitabilityInfo && (
