@@ -5,16 +5,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { api } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 interface TokenTransaction {
   id: string;
-  type: 'purchase' | 'usage';
+  type: 'purchase' | 'usage' | 'spend';
   amount: number;
-  description: string;
+  description?: string;
   created_at: string;
-  balance_after: number;
+  balance_after?: number;
+  reference_id?: string;
 }
 const UsageHistory = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState<TokenTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -64,14 +67,31 @@ const UsageHistory = () => {
     return type === 'purchase' ? '#10B981' : '#EF4444';
   };
   const getAmountText = (type: string, amount: number) => {
-    return type === 'purchase' ? `+${amount}` : `-${amount}`;
+    return type === 'purchase' ? `+${amount}` : `-${Math.abs(amount)}`;
+  };
+
+  const getTransactionDescription = (transaction: TokenTransaction) => {
+    if (transaction.description) {
+      return transaction.description;
+    }
+    
+    // 기본 설명 제공
+    switch (transaction.type) {
+      case 'purchase':
+        return t('usageHistory.tokenPurchase', '토큰 구매');
+      case 'spend':
+      case 'usage':
+        return t('usageHistory.tokenUsage', '토큰 사용');
+      default:
+        return t('usageHistory.transaction', '거래');
+    }
   };
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#3B82F6" />
-          <Text className="text-gray-600 mt-4">토큰 이용 내역을 불러오고 있습니다...</Text>
+          <Text className="text-gray-600 mt-4">{t('usageHistory.loading', '토큰 이용 내역을 불러오고 있습니다...')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -93,7 +113,7 @@ const UsageHistory = () => {
             >
               <Ionicons name="arrow-back" size={24} color="#374151" />
             </TouchableOpacity>
-            <Text className="text-xl font-bold text-gray-900">토큰 이용 내역</Text>
+            <Text className="text-xl font-bold text-gray-900">{t('usageHistory.title', '토큰 이용 내역')}</Text>
             <View className="w-10" />
           </View>
         </View>
@@ -104,10 +124,10 @@ const UsageHistory = () => {
               <View className="items-center">
                 <Ionicons name="receipt-outline" size={48} color="#9CA3AF" />
                 <Text className="text-gray-500 text-lg font-medium mt-4 mb-2">
-                  이용 내역이 없습니다
+                  {t('usageHistory.noHistory', '이용 내역이 없습니다')}
                 </Text>
                 <Text className="text-gray-400 text-center">
-                  토큰을 구매하거나 사용하면 이곳에서 확인할 수 있습니다
+                  {t('usageHistory.noHistoryDesc', '토큰을 구매하거나 사용하면 이곳에서 확인할 수 있습니다')}
                 </Text>
               </View>
             </View>
@@ -129,7 +149,7 @@ const UsageHistory = () => {
                       </View>
                       <View className="flex-1">
                         <Text className="text-gray-900 font-semibold text-base">
-                          {transaction.description}
+                          {getTransactionDescription(transaction)}
                         </Text>
                         <Text className="text-gray-500 text-sm">
                           {formatDate(transaction.created_at)}
@@ -143,9 +163,11 @@ const UsageHistory = () => {
                       >
                         {getAmountText(transaction.type, transaction.amount)}
                       </Text>
-                      <Text className="text-gray-500 text-sm">
-                        잔액: {transaction.balance_after}
-                      </Text>
+                      {transaction.balance_after !== undefined && (
+                        <Text className="text-gray-500 text-sm">
+                          {t('usageHistory.balance', '잔액: ')}{transaction.balance_after}
+                        </Text>
+                      )}
                     </View>
                   </View>
                 </View>

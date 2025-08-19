@@ -112,4 +112,18 @@ export const tabTranslations: TranslationData = {
         ha: 'Jadawali',
         mn: 'Хуваарь'
     },
+    'tab.shop': {
+        en: 'Shop',
+        ja: 'ショップ',
+        zh: '商店',
+        vi: 'Cửa hàng',
+        hi: 'दुकान',
+        si: 'කඩය',
+        ar: 'المتجر',
+        tr: 'Mağaza',
+        my: 'ဆိုင်',
+        ky: 'Дүкөн',
+        ha: 'Shago',
+        mn: 'Дэлгүүр'
+    },
 };

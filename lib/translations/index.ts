@@ -11,6 +11,8 @@ import { infoTranslations } from './pages/info';
 import { calendarTranslations } from './pages/calendar';
 import { interviewTranslations } from './pages/interview';
 import { suitabilityTranslations } from './pages/suitability';
+import { shopTranslations } from './pages/shop';
+import { usageHistoryTranslations } from './pages/usage-history';
 import { commonTranslations } from './common';
 import { tabTranslations } from './components/tabs';
 import { jobDetailModalTranslations } from './components/jobDetailModal';
@@ -31,5 +33,7 @@ export const translations: TranslationData = {
     ...calendarTranslations,
     ...interviewTranslations,
     ...suitabilityTranslations,
+    ...shopTranslations,
+    ...usageHistoryTranslations,
     ...jobDetailModalTranslations,
 };

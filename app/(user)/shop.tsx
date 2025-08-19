@@ -104,8 +104,8 @@ const Shop = () => {
       // 개발 환경에서는 에러 메시지를 표시하지 않음
       if (!__DEV__) {
         showModal(
-          '오류',
-          '결제 시스템 초기화에 실패했습니다.',
+          t('shop.error', '오류'),
+          t('shop.errorInit', '결제 시스템 초기화에 실패했습니다.'),
           'warning'
         );
       }
@@ -145,13 +145,13 @@ const Shop = () => {
     const displayPrice = product ? product.localizedPrice : `₩${packageItem.price.toLocaleString()}`;
     
     showModal(
-      '토큰 구매',
-      `${packageItem.tokens}개의 토큰을 ${displayPrice}에 구매하시겠습니까?`,
+      t('shop.purchaseToken', '토큰 구매'),
+      t('shop.purchaseConfirm', `${packageItem.tokens}개의 토큰을 ${displayPrice}에 구매하시겠습니까?`, { count: packageItem.tokens, price: displayPrice }),
       'confirm',
       () => processPurchase(packageItem),
       true,
-      '구매',
-      '취소'
+      t('shop.purchaseBtn', '구매'),
+      t('shop.cancel', '취소')
     );
   };
   const processPurchase = async (packageItem: TokenPackage) => {
@@ -162,8 +162,8 @@ const Shop = () => {
       if (!isIAPAvailable) {
         // 개발 환경에서는 모의 구매 처리
         showModal(
-          '개발 모드',
-          '현재 Expo Go에서 실행 중이거나 IAP가 설치되지 않았습니다. \n\n실제 IAP 테스트를 위해서는 development build를 사용해주세요:\n\nnpx expo run:ios',
+          t('shop.devModeInfo', '개발 모드'),
+          t('shop.devModeNotice', '현재 Expo Go에서 실행 중이거나 IAP가 설치되지 않았습니다. \n\n실제 IAP 테스트를 위해서는 development build를 사용해주세요:\n\nnpx expo run:ios'),
           'info'
         );
         return;
@@ -197,8 +197,8 @@ const Shop = () => {
       await fetchTokenBalance();
       
       showModal(
-        '구매 완료',
-        '5개의 토큰이 지급되었습니다!',
+        t('shop.purchaseComplete', '구매 완료'),
+        t('shop.purchaseSuccess', '5개의 토큰이 지급되었습니다!', { count: 5 }),
         'info'
       );
     } catch (error: any) {
@@ -222,23 +222,23 @@ const Shop = () => {
       
       // 취소가 아닌 실제 에러인 경우만 에러 로그 출력
       
-      let errorMessage = '결제 처리 중 오류가 발생했습니다.';
+      let errorMessage = t('shop.errorGeneral', '결제 처리 중 오류가 발생했습니다.');
       
       // 플랫폼별 에러 메시지 처리
       if (error.message) {
         if (error.message.includes('already processed')) {
-          errorMessage = '이미 처리된 구매입니다.';
+          errorMessage = t('shop.errorAlreadyProcessed', '이미 처리된 구매입니다.');
         } else if (error.message.includes('verification failed')) {
-          errorMessage = '구매 검증에 실패했습니다.';
+          errorMessage = t('shop.errorVerification', '구매 검증에 실패했습니다.');
         } else if (error.message.includes('Network Error')) {
-          errorMessage = '네트워크 연결을 확인해주세요.';
+          errorMessage = t('shop.errorNetwork', '네트워크 연결을 확인해주세요.');
         } else if (error.message.includes('Google Play API') || error.message.includes('Apple Store')) {
-          errorMessage = '결제 서비스에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요.';
+          errorMessage = t('shop.errorService', '결제 서비스에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
         }
       }
       
       showModal(
-        '구매 실패',
+        t('shop.purchaseFailed', '구매 실패'),
         errorMessage,
         'warning'
       );
@@ -299,12 +299,12 @@ const Shop = () => {
     <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
       <ScrollView className="flex-1">
         <View className="bg-white px-6 py-8 border-b border-gray-200">
-          <Text className="text-2xl font-bold text-gray-900 mb-2">상점</Text>
-          <Text className="text-gray-600">토큰을 구매하여 더 많은 기능을 이용해보세요</Text>
+          <Text className="text-2xl font-bold text-gray-900 mb-2">{t('shop.title', '상점')}</Text>
+          <Text className="text-gray-600">{t('shop.subtitle', '토큰을 구매하여 더 많은 기능을 이용해보세요')}</Text>
         </View>
         <View className="bg-white mx-4 mt-6 rounded-xl shadow-sm border border-gray-200 p-6">
           <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-lg font-semibold text-gray-900">내 토큰</Text>
+            <Text className="text-lg font-semibold text-gray-900">{t('shop.myTokens', '내 토큰')}</Text>
             <TouchableOpacity 
               onPress={fetchTokenBalance}
               className="flex-row items-center bg-blue-50 px-3 py-1 rounded-full"
@@ -315,7 +315,7 @@ const Shop = () => {
             </TouchableOpacity>
           </View>
           <Text className="text-gray-600 text-sm mb-4">
-            토큰을 사용하여 프리미엄 기능을 이용할 수 있습니다
+            {t('shop.myTokensDesc', '토큰을 사용하여 프리미엄 기능을 이용할 수 있습니다')}
           </Text>
           
           {/* 이용 내역 확인 버튼 */}
@@ -325,7 +325,7 @@ const Shop = () => {
           >
             <View className="flex-row items-center">
               <Ionicons name="receipt-outline" size={20} color="#6B7280" />
-              <Text className="text-gray-700 font-medium ml-2">토큰 이용 내역</Text>
+              <Text className="text-gray-700 font-medium ml-2">{t('shop.tokenHistory', '토큰 이용 내역')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#6B7280" />
           </TouchableOpacity>
@@ -335,21 +335,21 @@ const Shop = () => {
           <View className="bg-orange-50 mx-4 rounded-xl shadow-sm border border-orange-200 p-4 mb-4">
             <View className="flex-row items-center mb-3">
               <Ionicons name="information-circle" size={20} color="#f97316" />
-              <Text className="text-orange-800 font-semibold ml-2">개발 모드</Text>
+              <Text className="text-orange-800 font-semibold ml-2">{t('shop.devMode', '개발 모드')}</Text>
             </View>
             <Text className="text-orange-700 text-sm leading-5 mb-3">
-              현재 Expo Go에서 실행 중이므로 In-App Purchase 기능이 비활성화되어 있습니다.
+              {t('shop.devModeDesc', '현재 Expo Go에서 실행 중이므로 In-App Purchase 기능이 비활성화되어 있습니다.')}
             </Text>
             <View className="bg-orange-100 p-3 rounded-lg">
-              <Text className="text-orange-800 text-xs font-semibold mb-1">테스트 방법:</Text>
+              <Text className="text-orange-800 text-xs font-semibold mb-1">{t('shop.testMethod', '테스트 방법:')}</Text>
               <Text className="font-mono text-xs text-orange-700">npx expo run:ios</Text>
-              <Text className="text-orange-700 text-xs mt-1">또는</Text>
+              <Text className="text-orange-700 text-xs mt-1">{t('shop.or', '또는')}</Text>
               <Text className="font-mono text-xs text-orange-700">npx expo run:android</Text>
             </View>
           </View>
         )}
         <View className="px-4 mt-8 mb-6">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">토큰 패키지</Text>
+          <Text className="text-lg font-semibold text-gray-900 mb-4">{t('shop.tokenPackages', '토큰 패키지')}</Text>
           
           {tokenPackages.map((packageItem) => (
             <View 
@@ -359,7 +359,7 @@ const Shop = () => {
               {packageItem.isPopular && (
                 <View className="absolute -top-3 left-4">
                   <View className="bg-orange-500 px-3 py-1 rounded-full">
-                    <Text className="text-white text-xs font-semibold">인기</Text>
+                    <Text className="text-white text-xs font-semibold">{t('shop.popular', '인기')}</Text>
                   </View>
                 </View>
               )}
@@ -371,10 +371,10 @@ const Shop = () => {
                   </View>
                   <View>
                     <Text className="text-xl font-bold text-gray-900">
-                      {packageItem.tokens}개 토큰
+                      {t('shop.tokenCount', `${packageItem.tokens}개 토큰`, { count: packageItem.tokens })}
                     </Text>
                     <Text className="text-gray-600 text-sm">
-                      다양한 프리미엄 기능 이용
+                      {t('shop.premiumFeatures', '다양한 프리미엄 기능 이용')}
                     </Text>
                   </View>
                 </View>
@@ -393,7 +393,7 @@ const Shop = () => {
                         return product.localizedPrice;
                       }
                       // 개발 환경에서는 기본 가격 표시
-                      return `₩${packageItem.price.toLocaleString()}${!isIAPAvailable ? ' (개발모드)' : ''}`;
+                      return `₩${packageItem.price.toLocaleString()}${!isIAPAvailable ? ` ${t('shop.devModePrice', '(개발모드)')}` : ''}`;
                     })()}
                   </Text>
                 </View>
@@ -401,7 +401,7 @@ const Shop = () => {
                 {packageItem.originalPrice && (
                   <View className="bg-red-50 px-2 py-1 rounded">
                     <Text className="text-red-600 text-xs font-semibold">
-                      {Math.round((1 - packageItem.price / packageItem.originalPrice) * 100)}% 할인
+                      {t('shop.discount', `${Math.round((1 - packageItem.price / packageItem.originalPrice) * 100)}% 할인`, { percent: Math.round((1 - packageItem.price / packageItem.originalPrice) * 100) })}
                     </Text>
                   </View>
                 )}
@@ -414,26 +414,26 @@ const Shop = () => {
                 disabled={purchasing || loading}
               >
                 <Text className="text-white text-center font-semibold text-lg">
-                  {purchasing ? '구매 중...' : loading ? '로딩 중...' : !isIAPAvailable ? 'Expo Go' : '구매하기'}
+                  {purchasing ? t('shop.purchasing', '구매 중...') : loading ? t('shop.loading', '로딩 중...') : !isIAPAvailable ? t('shop.expoGo', 'Expo Go') : t('shop.purchase', '구매하기')}
                 </Text>
               </TouchableOpacity>
             </View>
           ))}
         </View>
         <View className="bg-white mx-4 rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-3">토큰 사용 안내</Text>
+          <Text className="text-lg font-semibold text-gray-900 mb-3">{t('shop.tokenUsageGuide', '토큰 사용 안내')}</Text>
           <View className="space-y-2">
             <View className="flex-row items-start mb-3">
               <Ionicons name="checkmark-circle" size={20} color="#10B981" style={{ marginRight: 12, marginTop: 2 }} />
-              <Text className="text-gray-600 flex-1">즉시면접 예약 (토큰 1개)</Text>
+              <Text className="text-gray-600 flex-1">{t('shop.instantInterview', '즉시면접 예약 (토큰 1개)')}</Text>
             </View>
             <View className="flex-row items-start mb-3">
               <Ionicons name="checkmark-circle" size={20} color="#10B981" style={{ marginRight: 12, marginTop: 2 }} />
-              <Text className="text-gray-600 flex-1">프리미엄 기능 이용</Text>
+              <Text className="text-gray-600 flex-1">{t('shop.premiumFeature', '프리미엄 기능 이용')}</Text>
             </View>
             <View className="flex-row items-start">
               <Ionicons name="checkmark-circle" size={20} color="#10B981" style={{ marginRight: 12, marginTop: 2 }} />
-              <Text className="text-gray-600 flex-1">추가 서비스 준비 중</Text>
+              <Text className="text-gray-600 flex-1">{t('shop.additionalService', '추가 서비스 준비 중')}</Text>
             </View>
           </View>
         </View>
