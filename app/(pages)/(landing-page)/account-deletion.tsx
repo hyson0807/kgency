@@ -8,7 +8,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useModal } from '@/hooks/useModal';
 const AccountDeletion = () => {
-    const { t } = useTranslation();
     const { showModal, ModalComponent } = useModal();
     const [formData, setFormData] = useState({
         phoneNumber: '',

@@ -1,6 +1,6 @@
 import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
 import { SuitabilityResult } from '@/lib/suitability';
 import {router} from "expo-router";

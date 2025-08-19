@@ -1,9 +1,8 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from "expo-router"
 import Back from '@/components/back'
-import { useProfile } from '@/hooks/useProfile'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import { WorkExperienceInformation } from "@/components/application-form/WorkExperience-Information"
@@ -12,8 +11,7 @@ import { useApplicationFormStore } from '@/stores/applicationFormStore'
 export default function ApplicationStep2() {
     const params = useLocalSearchParams()
     const { jobPostingId, companyId, companyName, jobTitle } = params
-    const { profile, updateProfile } = useProfile()
-    
+
     // Zustand store 사용
     const step1Data = useApplicationFormStore(state => state.step1)
     const step2Data = useApplicationFormStore(state => state.step2)

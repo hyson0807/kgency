@@ -6,7 +6,6 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 const PrivacyPolicy = () => {
-    const { t } = useTranslation();
     const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
         <View className="mb-6">
             <Text className="text-lg font-bold mb-3 text-gray-900">{title}</Text>

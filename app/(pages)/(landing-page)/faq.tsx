@@ -12,7 +12,6 @@ interface FAQItem {
     category: string;
 }
 const FAQ = () => {
-    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
     const faqData: FAQItem[] = [

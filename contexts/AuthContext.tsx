@@ -1,10 +1,10 @@
 // contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import {router} from "expo-router";
-import { registerForPushNotificationsAsync, savePushToken, removePushToken } from '@/lib/notifications';
+import { removePushToken } from '@/lib/notifications';
 import { updateTokenCache } from '@/lib/api';
 // 타입 정의
 interface User {

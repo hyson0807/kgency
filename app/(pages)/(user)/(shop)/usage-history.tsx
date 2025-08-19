@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { api } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTranslation } from '@/contexts/TranslationContext';
 interface TokenTransaction {
   id: string;
   type: 'purchase' | 'usage';
@@ -15,7 +14,6 @@ interface TokenTransaction {
   balance_after: number;
 }
 const UsageHistory = () => {
-  const { t } = useTranslation();
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<TokenTransaction[]>([]);
   const [loading, setLoading] = useState(true);

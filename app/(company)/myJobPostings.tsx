@@ -1,13 +1,11 @@
-import { View, Text, FlatList, RefreshControl, TouchableOpacity } from 'react-native'
+import { View, Text, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
-import { router } from 'expo-router'
 import { useAuth } from "@/contexts/AuthContext"
 import { useModal } from '@/hooks/useModal'
 import LoadingScreen from "@/components/common/LoadingScreen";
 import {PostingCard} from "@/components/myJobPostings(company)/PostingCard";
 import {FloatingButton} from "@/components/myJobPostings(company)/FloatingButton";
 import {Empty} from "@/components/myJobPostings(company)/Empty";
-import {Ionicons} from "@expo/vector-icons";
 import { api } from '@/lib/api';
 interface MyJobPostings {
     id: string

@@ -1,12 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode, useRef } from 'react';
-import { Animated, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { Animated, LayoutAnimation, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// Android에서 LayoutAnimation 활성화
-// New Architecture (newArchEnabled: true)에서는 자동으로 활성화되므로 제거
-// Old Architecture를 사용하는 경우 아래 주석을 해제하세요:
-// if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-//     UIManager.setLayoutAnimationEnabledExperimental(true);
-// }
+
+
 interface TabBarContextType {
     isTabBarVisible: boolean;
     setIsTabBarVisible: (visible: boolean) => void;

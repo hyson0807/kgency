@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import {Tabs} from "expo-router";
 import { Ionicons } from "@expo/vector-icons"
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -6,13 +6,12 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useTranslation } from "@/contexts/TranslationContext";
 import {useAuth} from "@/contexts/AuthContext";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Platform, Animated } from 'react-native';
+import { Platform } from 'react-native';
 import { useTabBar } from '@/contexts/TabBarContext';
 const User_Layout = () => {
     const { t } = useTranslation();
-    const {user} = useAuth();
     const insets = useSafeAreaInsets();
-    const { isTabBarVisible, translateY } = useTabBar();
+    const { isTabBarVisible } = useTabBar();
     
     const maxHeight = (Platform.OS === 'ios' ? 50 : 60) + insets.bottom;
     const maxPadding = insets.bottom + 10;

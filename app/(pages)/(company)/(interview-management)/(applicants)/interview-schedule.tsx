@@ -1,14 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useModal } from '@/hooks/useModal'
 import Back from '@/components/back'
-import { useAuth } from '@/contexts/AuthContext'
-import {api} from "@/lib/api";
 export default function InterviewSchedule() {
     const { applicationId, userId, postingId } = useLocalSearchParams()
-    const { user } = useAuth()
     const { showModal, ModalComponent } = useModal()
     const [location, setLocation] = useState('')
     const [loading, setLoading] = useState(false)

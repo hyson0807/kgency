@@ -13,7 +13,6 @@ interface Keyword {
     category: string;
 }
 const KeywordsStep2 = () => {
-    const { user } = useAuth()
     const [keywords, setKeywords] = useState<Keyword[]>([])
     const [loading, setLoading] = useState(true)
     // Zustand store 사용

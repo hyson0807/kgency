@@ -8,7 +8,7 @@ import { Platform } from 'react-native';
 import { useTabBar } from '@/contexts/TabBarContext';
 const company_Layout = () => {
     const insets = useSafeAreaInsets();
-    const { isTabBarVisible, translateY } = useTabBar();
+    const { isTabBarVisible } = useTabBar();
     
     const maxHeight = (Platform.OS === 'ios' ? 50 : 60) + insets.bottom;
     const maxPadding = insets.bottom + 10;

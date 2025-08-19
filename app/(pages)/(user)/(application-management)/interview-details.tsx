@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useLocalSearchParams, router } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { useTranslation } from '@/contexts/TranslationContext'
 import Back from '@/components/back'
 import { Ionicons } from '@expo/vector-icons'
@@ -16,7 +16,6 @@ interface InterviewDetails {
 }
 export default function InterviewDetails() {
     const { applicationId } = useLocalSearchParams()
-    const { t } = useTranslation()
     const [interview, setInterview] = useState<InterviewDetails | null>(null)
     const [loading, setLoading] = useState(true)
     useEffect(() => {
