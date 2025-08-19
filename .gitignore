@@ -47,6 +47,9 @@ yarn-error.*
 *.swp
 *.swo
 
+# Backup files
+*.bak
+
 # Logs
 logs
 *.log
