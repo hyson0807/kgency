@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
 // Step 1: 기본 정보 타입
 interface Step1Data {
   name: string
@@ -9,7 +8,6 @@ interface Step1Data {
   gender: string | null
   visa: string | null
 }
-
 // Step 2: 경력 및 근무 정보 타입
 interface Step2Data {
   howLong: string | null
@@ -20,14 +18,12 @@ interface Step2Data {
   selectedTimes: string[]
   timesNegotiable: boolean
 }
-
 // Step 3: 한국어 실력 및 질문 타입
 interface Step3Data {
   koreanLevel: string | null
   topic: string | null
   question: string
 }
-
 // 전체 스토어 타입
 interface ApplicationFormStore {
   // 데이터
@@ -68,7 +64,6 @@ interface ApplicationFormStore {
   // 데이터베이스에서 기본값 로드
   loadFromProfile: (profile: any) => void
 }
-
 // 초기 상태
 const initialStep1: Step1Data = {
   name: '',
@@ -76,7 +71,6 @@ const initialStep1: Step1Data = {
   gender: null,
   visa: null,
 }
-
 const initialStep2: Step2Data = {
   howLong: null,
   experience: null,
@@ -86,13 +80,11 @@ const initialStep2: Step2Data = {
   selectedTimes: [],
   timesNegotiable: false,
 }
-
 const initialStep3: Step3Data = {
   koreanLevel: null,
   topic: null,
   question: '',
 }
-
 // Zustand Store 생성
 export const useApplicationFormStore = create<ApplicationFormStore>()(
   persist(
@@ -278,7 +270,6 @@ export const useApplicationFormStore = create<ApplicationFormStore>()(
     }
   )
 )
-
 // 편의 함수들
 export const useStep1Data = () => useApplicationFormStore((state) => state.step1)
 export const useStep2Data = () => useApplicationFormStore((state) => state.step2)

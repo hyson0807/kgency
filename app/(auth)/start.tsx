@@ -5,9 +5,7 @@ import {useTranslation} from "@/contexts/TranslationContext";
 import {Ionicons} from "@expo/vector-icons";
 import { languages } from '@/lib/constants/languages';
 import { LinearGradient } from 'expo-linear-gradient';
-
 const { width, height } = Dimensions.get('window');
-
 const Start = () => {
     const { language, changeLanguage, t } = useTranslation();
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
@@ -19,7 +17,6 @@ const Start = () => {
     const floatAnim1 = useRef(new Animated.Value(0)).current;
     const floatAnim2 = useRef(new Animated.Value(0)).current;
     const floatAnim3 = useRef(new Animated.Value(0)).current;
-
     useEffect(() => {
         // Start animations
         Animated.parallel([
@@ -40,7 +37,6 @@ const Start = () => {
                 useNativeDriver: true,
             })
         ]).start();
-
         // Floating animations
         const createFloatingAnimation = (animValue: Animated.Value, delay: number) => {
             return Animated.loop(
@@ -64,17 +60,14 @@ const Start = () => {
                 ])
             );
         };
-
         createFloatingAnimation(floatAnim1, 0).start();
         createFloatingAnimation(floatAnim2, 2000).start();
         createFloatingAnimation(floatAnim3, 4000).start();
     }, []);
-
     const handleLanguageChange = async (langCode: string) => {
         await changeLanguage(langCode);
         setLanguageModalVisible(false);
     };
-
     const renderLanguageItem = ({ item }: { item: typeof languages[number] }) => (
         <TouchableOpacity
             onPress={() => handleLanguageChange(item.code)}
@@ -93,7 +86,6 @@ const Start = () => {
             )}
         </TouchableOpacity>
     );
-
     return (
         <View style={styles.container}>
             {/* Background gradient */}
@@ -146,7 +138,6 @@ const Start = () => {
                             />
                         </Animated.View>
                     </View>
-
                     <View className="flex-1 items-center justify-center px-6 py-8">
                 {/* Main content */}
                 <Animated.View 
@@ -185,7 +176,6 @@ const Start = () => {
                             {t('start.main_subtitle', '답장 걱정 없는 매칭과\n시간 낭비 없는 채용의 시작')}
                         </Text>
                     </View>
-
                     {/* Option cards */}
                     <View className="gap-4">
                         {/* Job seeker card */}
@@ -217,7 +207,6 @@ const Start = () => {
                                 </View>
                             </LinearGradient>
                         </TouchableOpacity>
-
                         {/* Employer card */}
                         <TouchableOpacity
                             activeOpacity={0.9}
@@ -245,7 +234,6 @@ const Start = () => {
                             </View>
                         </TouchableOpacity>
                     </View>
-
                     {/* Language selector */}
                     <TouchableOpacity
                         className="mt-6 self-center"
@@ -258,7 +246,6 @@ const Start = () => {
                 </Animated.View>
                     </View>
                 </View>
-
                 {/* Platform Strengths Section */}
                 <View style={styles.sectionContainer}>
                     <View className="px-6 py-16">
@@ -338,7 +325,6 @@ const Start = () => {
                         </View>
                     </View>
                 </View>
-
                 {/* Statistics Section */}
                 <LinearGradient colors={['#4A90E2', '#8FAFFF']} style={styles.statsSection}>
                     <View className="px-6 py-16">
@@ -362,7 +348,6 @@ const Start = () => {
                         </View>
                     </View>
                 </LinearGradient>
-
                 {/* Features Section */}
                 <View style={styles.sectionContainer}>
                     <View className="px-6 py-16">
@@ -438,7 +423,6 @@ const Start = () => {
                         </View>
                     </View>
                 </View>
-
                 {/* Footer */}
                 <View style={styles.footer}>
                     <LinearGradient colors={['#1f2937', '#374151']} style={{ flex: 1, paddingVertical: 40, paddingHorizontal: 24 }}>
@@ -507,7 +491,6 @@ const Start = () => {
                     </LinearGradient>
                 </View>
             </ScrollView>
-
             {/* Language modal */}
             <Modal
                 animationType="slide"
@@ -523,7 +506,6 @@ const Start = () => {
                                 <Ionicons name="close" size={24} color="#6b7280" />
                             </TouchableOpacity>
                         </View>
-
                         <FlatList
                             data={[...languages]}
                             renderItem={renderLanguageItem}
@@ -538,7 +520,6 @@ const Start = () => {
         </View>
     )
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -648,5 +629,4 @@ const styles = StyleSheet.create({
         backgroundColor: '#1f2937',
     },
 })
-
 export default Start

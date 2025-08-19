@@ -2,13 +2,11 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Dropdown } from 'react-native-element-dropdown'
 import { Ionicons } from '@expo/vector-icons'
-
 interface Keyword {
     id: number
     keyword: string
     category: string
 }
-
 interface MultiSelectKeywordSelectorProps {
     title: string
     placeholder: string
@@ -21,7 +19,6 @@ interface MultiSelectKeywordSelectorProps {
     showNoPreferenceOption?: boolean
     enableSearch?: boolean
 }
-
 export const MultiSelectKeywordSelector: React.FC<MultiSelectKeywordSelectorProps> = ({
     title,
     placeholder,
@@ -51,7 +48,6 @@ export const MultiSelectKeywordSelector: React.FC<MultiSelectKeywordSelectorProp
                 value: keyword.id
             }))
     ]
-
     const selectedKeywords = keywords.filter(k => selectedIds.includes(k.id))
     
     // Dynamic placeholder based on selection state
@@ -62,7 +58,6 @@ export const MultiSelectKeywordSelector: React.FC<MultiSelectKeywordSelectorProp
         : availableItemsCount === 0
         ? "선택 가능한 항목 없음"
         : `${placeholder} (${availableItemsCount}개 남음)`
-
     return (
         <View className="bg-white mx-4 mb-4 p-4 rounded-2xl shadow-sm">
             <Text className="text-base font-semibold mb-3">{title}</Text>
@@ -88,7 +83,6 @@ export const MultiSelectKeywordSelector: React.FC<MultiSelectKeywordSelectorProp
                 value={null}
                 onChange={onSelect}
             />
-
             <View className="flex-row flex-wrap mt-3">
                 {selectedKeywords.length === 0 ? (
                     <Text className="text-gray-400 text-sm">{emptyText}</Text>

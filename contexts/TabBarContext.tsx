@@ -1,25 +1,22 @@
 import React, { createContext, useContext, useState, ReactNode, useRef } from 'react';
 import { Animated, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 // Android에서 LayoutAnimation 활성화
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-
+// New Architecture (newArchEnabled: true)에서는 자동으로 활성화되므로 제거
+// Old Architecture를 사용하는 경우 아래 주석을 해제하세요:
+// if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+//     UIManager.setLayoutAnimationEnabledExperimental(true);
+// }
 interface TabBarContextType {
     isTabBarVisible: boolean;
     setIsTabBarVisible: (visible: boolean) => void;
     tabBarHeight: number;
     translateY: Animated.Value;
 }
-
 const TabBarContext = createContext<TabBarContextType | undefined>(undefined);
-
 interface TabBarProviderProps {
     children: ReactNode;
 }
-
 export const TabBarProvider: React.FC<TabBarProviderProps> = ({ children }) => {
     const [isTabBarVisible, setIsTabBarVisible] = useState(true);
     const insets = useSafeAreaInsets();
@@ -27,7 +24,6 @@ export const TabBarProvider: React.FC<TabBarProviderProps> = ({ children }) => {
     // 탭바 전체 높이 계산 (높이 + 패딩)
     const tabBarHeight = (Platform.OS === 'ios' ? 50 : 60) + insets.bottom + 10;
     const translateY = useRef(new Animated.Value(0)).current;
-
     const setIsTabBarVisibleWithAnimation = (visible: boolean) => {
         if (Platform.OS === 'ios') {
             // iOS: LayoutAnimation 사용 (부드러운 애니메이션)
@@ -51,7 +47,6 @@ export const TabBarProvider: React.FC<TabBarProviderProps> = ({ children }) => {
             setIsTabBarVisible(visible);
         }
     };
-
     return (
         <TabBarContext.Provider value={{ 
             isTabBarVisible, 
@@ -63,7 +58,6 @@ export const TabBarProvider: React.FC<TabBarProviderProps> = ({ children }) => {
         </TabBarContext.Provider>
     );
 };
-
 export const useTabBar = () => {
     const context = useContext(TabBarContext);
     if (context === undefined) {

@@ -4,18 +4,15 @@ import { View, Text, TouchableOpacity, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-
 // Components
 import Back from '@/components/back'
 import { PostingDetail } from "@/components/posting-detail2(company)/PostingDetail"
 import { ApplicantCard } from "@/components/posting-detail2(company)/ApplicantCard"
-
 // Hooks & Utils
 import { api } from "@/lib/api"
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import { useModal } from '@/hooks/useModal'
 import LoadingScreen from "@/components/common/LoadingScreen";
-
 // Types
 interface Application {
     id: string
@@ -50,14 +47,12 @@ interface Application {
         is_read: boolean
     }
 }
-
 export default function CompanyPostingDetail() {
     // ==================== Hooks ====================
     const params = useLocalSearchParams()
     const { postingId, refresh } = params
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings()
     const { showModal, ModalComponent } = useModal()
-
     // ==================== State ====================
     const [posting, setPosting] = useState<any>(null)
     const [applications, setApplications] = useState<Application[]>([])
@@ -65,7 +60,6 @@ export default function CompanyPostingDetail() {
     const [activeTab, setActiveTab] = useState<'info' | 'applicants'>('info')
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
-
     // ==================== Effects ====================
     // 초기 데이터 로드
     useEffect(() => {
@@ -74,7 +68,6 @@ export default function CompanyPostingDetail() {
             loadApplications()
         }
     }, [postingId])
-
     // 지원자 목록 변경 시 면접 제안 상태 조회
     useEffect(() => {
         if (applications.length > 0) {
@@ -82,7 +75,6 @@ export default function CompanyPostingDetail() {
             fetchAllProposalStatuses(applicationIds)
         }
     }, [applications])
-
     // 면접 제안 후 돌아왔을 때 새로고침
     useEffect(() => {
         if (refresh === 'true' && applications.length > 0) {
@@ -90,43 +82,35 @@ export default function CompanyPostingDetail() {
             fetchAllProposalStatuses(applicationIds)
         }
     }, [refresh])
-
     // ==================== Data Loading Functions ====================
     const loadPostingDetail = async () => {
         if (!postingId) return
-
         try {
             const data = await fetchPostingById(postingId as string)
             if (data) {
                 setPosting(data)
             }
         } catch (error) {
-            console.error('공고 로드 실패:', error)
             showModal('오류', '공고 정보를 불러오는데 실패했습니다.', 'warning')
         } finally {
             setLoading(false)
         }
     }
-
     const loadApplications = async () => {
         try {
             // 서버 API 호출로 변경
             const response = await api('GET', `/api/applications/company/${postingId}`)
-
             if (response?.success) {
                 setApplications(response.data || [])
             } else {
                 throw new Error(response?.message || '지원자 정보를 불러오는데 실패했습니다.')
             }
         } catch (error) {
-            console.error('지원자 로드 실패:', error)
             showModal('오류', '지원자 정보를 불러오는데 실패했습니다.', 'warning')
         }
     }
-
     const fetchAllProposalStatuses = async (applicationIds: string[]) => {
         const statuses: Record<string, string> = {}
-
         await Promise.all(
             applicationIds.map(async (id) => {
                 try {
@@ -139,10 +123,8 @@ export default function CompanyPostingDetail() {
                 }
             })
         )
-
         setProposalStatuses(statuses)
     }
-
     // ==================== Event Handlers ====================
     const onRefresh = async () => {
         setRefreshing(true)
@@ -151,7 +133,6 @@ export default function CompanyPostingDetail() {
         await fetchAllProposalStatuses(applicationIds)
         setRefreshing(false)
     }
-
     // ==================== Render Functions ====================
     // 로딩 상태
     if (loading) {
@@ -159,7 +140,6 @@ export default function CompanyPostingDetail() {
             <LoadingScreen />
         )
     }
-
     // 공고 없음
     if (!posting) {
         return (
@@ -173,9 +153,7 @@ export default function CompanyPostingDetail() {
             </SafeAreaView>
         )
     }
-
     const keywords = getPostingKeywords(posting)
-
     // ==================== Main Render ====================
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
@@ -187,7 +165,6 @@ export default function CompanyPostingDetail() {
                         {posting?.title || '공고 상세'}
                     </Text>
                 </View>
-
                 {/* 탭 */}
                 <View className="flex-row">
                     <TouchableOpacity
@@ -204,7 +181,6 @@ export default function CompanyPostingDetail() {
                             공고 정보
                         </Text>
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         onPress={() => setActiveTab('applicants')}
                         className={`flex-1 py-3 ${
@@ -221,7 +197,6 @@ export default function CompanyPostingDetail() {
                     </TouchableOpacity>
                 </View>
             </View>
-
             {/* 컨텐츠 */}
             {activeTab === 'info' ? (
                 <PostingDetail
@@ -258,7 +233,6 @@ export default function CompanyPostingDetail() {
                     }
                 />
             )}
-
             <ModalComponent />
         </SafeAreaView>
     )

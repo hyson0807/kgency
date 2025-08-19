@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { useTranslation } from '@/contexts/TranslationContext'
 import { JobDetailModal } from './JobDetailModal'
-
 interface UserInterviewCardProps {
     schedule: {
         id: string
@@ -34,7 +33,6 @@ interface UserInterviewCardProps {
     }
     onAddToCalendar: () => void
 }
-
 export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCardProps) => {
     const { t } = useTranslation()
     const [jobModalVisible, setJobModalVisible] = useState(false)
@@ -42,13 +40,11 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
     const formatTime = (dateString: string) => {
         return format(new Date(dateString), 'HH:mm')
     }
-
     const handleCall = () => {
         if (schedule.interview_slot.company.phone_number) {
             Linking.openURL(`tel:${schedule.interview_slot.company.phone_number}`)
         }
     }
-
     const handleMap = () => {
         const address = schedule.proposal.location || schedule.interview_slot.company.address
         if (address) {
@@ -57,8 +53,6 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
             Linking.openURL(`https://map.kakao.com/link/search/${encodedAddress}`)
         }
     }
-
-
     return (
         <View className="bg-white rounded-xl p-4 shadow-sm">
             {/* 회사 정보 */}
@@ -84,7 +78,6 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                     </Text>
                 </View>
             </TouchableOpacity>
-
             {/* 면접 정보 */}
             <View className="space-y-2 mb-3">
                 {/*<View className="flex-row items-center">*/}
@@ -97,7 +90,6 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                 {/*        {schedule.interview_slot.interview_type} 면접*/}
                 {/*    </Text>*/}
                 {/*</View>*/}
-
                 {(schedule.proposal.location || schedule.interview_slot.company.address) && (
                     <TouchableOpacity 
                         onPress={handleMap}
@@ -110,7 +102,6 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                         </Text>
                     </TouchableOpacity>
                 )}
-
                 {schedule.proposal.application.job_posting.salary_range && (
                     <View className="flex-row items-center">
                         <Ionicons name="cash-outline" size={16} color="#6b7280" />
@@ -120,7 +111,6 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                     </View>
                 )}
             </View>
-
             {/* 액션 버튼들 */}
             <View className="flex-row gap-2 pt-3 border-t border-gray-100">
                 {schedule.interview_slot.company.phone_number && (
@@ -132,7 +122,6 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                         <Text className="text-green-600 text-sm font-medium ml-1">{t('calendar.call', '전화')}</Text>
                     </TouchableOpacity>
                 )}
-
                 <TouchableOpacity
                     onPress={handleMap}
                     className="flex-1 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
@@ -140,7 +129,6 @@ export const UserInterviewCard = ({ schedule, onAddToCalendar }: UserInterviewCa
                     <Ionicons name="map-outline" size={18} color="#3b82f6" />
                     <Text className="text-blue-600 text-sm font-medium ml-1">{t('calendar.map', '지도')}</Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                     onPress={onAddToCalendar}
                     className="flex-1 flex-row items-center justify-center bg-purple-50 py-2 rounded-lg"

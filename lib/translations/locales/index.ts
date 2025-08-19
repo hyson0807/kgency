@@ -11,7 +11,6 @@ import { calendarConfig as my } from './my';
 import { calendarConfig as ky } from './ky';
 import { calendarConfig as ha } from './ha';
 import { calendarConfig as mn } from './mn';
-
 export interface CalendarConfig {
     monthNames: string[];
     monthNamesShort: string[];
@@ -19,7 +18,6 @@ export interface CalendarConfig {
     dayNamesShort: string[];
     today: string;
 }
-
 export const calendarConfigs: Record<string, CalendarConfig> = {
     ko,
     en,
@@ -35,7 +33,6 @@ export const calendarConfigs: Record<string, CalendarConfig> = {
     ha,
     mn
 };
-
 // 특정 언어의 캘린더 설정을 가져오는 함수
 export const getCalendarConfig = (locale: string): CalendarConfig => {
     return calendarConfigs[locale] || calendarConfigs.ko; // 기본값은 한국어

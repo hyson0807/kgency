@@ -10,7 +10,6 @@ import { useTranslation } from '@/contexts/TranslationContext'
 import Back from '@/components/back'
 import { useModal } from '@/hooks/useModal'
 import { groupByDate, formatTime24 } from '@/lib/dateUtils'
-
 interface TimeSlot {
     id: string
     start_time: string
@@ -20,7 +19,6 @@ interface TimeSlot {
     is_available: boolean
     is_booked?: boolean
 }
-
 export default function InstantInterviewSelection() {
     const params = useLocalSearchParams()
     const {
@@ -32,7 +30,6 @@ export default function InstantInterviewSelection() {
         interviewLocation,
         specialNotes
     } = params
-
     const { user } = useAuth()
     const { t, language } = useTranslation()
     const { showModal, ModalComponent } = useModal()
@@ -43,7 +40,6 @@ export default function InstantInterviewSelection() {
     const [translating, setTranslating] = useState(false)
     const [translatedJobTitle, setTranslatedJobTitle] = useState<string>('')
     const [translatedSpecialNotes, setTranslatedSpecialNotes] = useState<string>('')
-
     useEffect(() => {
         fetchAvailableSlots()
         // 언어가 한국어가 아닌 경우 초기 번역 상태 설정
@@ -52,31 +48,24 @@ export default function InstantInterviewSelection() {
             setTranslatedSpecialNotes(specialNotes as string || '')
         }
     }, [])
-
     const fetchAvailableSlots = async () => {
         try {
             setLoading(true)
             // 회사의 면접 가능 시간대 조회
             const response = await api('GET', '/api/company/interview-slots?companyId=' + companyId)
-
-            console.log(response)
-
             if (response?.success && response.data) {
                 // 확정된 면접 시간(is_booked: true) 제외하고 설정
                 const availableOnly = response.data.filter((slot: TimeSlot) => !slot.is_booked)
                 setAvailableSlots(availableOnly)
             }
         } catch (error) {
-            console.error('Failed to fetch available slots:', error)
             showModal(t('alert.error', '오류'), t('instant_interview.fetch_slots_failed', '면접 시간대를 불러오는데 실패했습니다.'))
         } finally {
             setLoading(false)
         }
     }
-
     const handleTranslate = async () => {
         if (language === 'ko' || translating) return
-
         setTranslating(true)
         try {
             const textsToTranslate = []
@@ -88,35 +77,29 @@ export default function InstantInterviewSelection() {
             if (specialNotes) {
                 textsToTranslate.push(specialNotes as string)
             }
-
             if (textsToTranslate.length > 0) {
                 const response = await api('POST', '/api/translate/translate-batch', {
                     texts: textsToTranslate,
                     targetLang: language
                 })
-
                 if (response?.success && response.translations) {
                     const translations = response.translations
                     let translationIndex = 0
-
                     if (jobTitle && translations[translationIndex]) {
                         setTranslatedJobTitle(translations[translationIndex])
                         translationIndex++
                     }
-
                     if (specialNotes && translations[translationIndex]) {
                         setTranslatedSpecialNotes(translations[translationIndex])
                     }
                 }
             }
         } catch (error) {
-            console.error('Translation failed:', error)
             showModal(t('alert.error', '오류'), t('posting_detail.translate_failed', '번역에 실패했습니다.'))
         } finally {
             setTranslating(false)
         }
     }
-
     const formatDateTime = (dateTimeString: string) => {
         const date = new Date(dateTimeString)
         const month = date.getMonth() + 1
@@ -124,32 +107,26 @@ export default function InstantInterviewSelection() {
         const weekDay = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
         const hours = date.getHours()
         const minutes = date.getMinutes()
-
         return {
             date: `${month}월 ${day}일 (${weekDay})`,
             time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
         }
     }
-
     const groupSlotsByDate = (slots: TimeSlot[]) => {
         return groupByDate(slots, (slot) => slot.start_time)
     }
-
     const handleSelectSlot = (slotId: string) => {
         setSelectedSlotId(slotId)
     }
-
     const handleSubmit = async () => {
         if (!selectedSlotId) {
             showModal(t('alert.notification', '알림'), t('instant_interview.select_time_first', '면접 시간을 선택해주세요.'))
             return
         }
-
         if (!user) {
             showModal(t('alert.error', '오류'), t('interview.login_required', '로그인이 필요합니다.'))
             return
         }
-
         setSubmitting(true)
         try {
             // 1. 토큰 잔액 확인
@@ -168,14 +145,12 @@ export default function InstantInterviewSelection() {
                 )
                 return
             }
-
             // 2. 지원서 생성 (토큰 사용, 이력서 없이, 바로 scheduled 상태로)
             const applicationResponse = await api('POST', '/api/applications/instant-interview', {
                 companyId: companyId,
                 jobPostingId: jobPostingId,
                 useToken: true // 토큰 사용 플래그
             });
-
             if (!applicationResponse?.success) {
                 if (applicationResponse?.error === '이미 지원한 공고입니다.') {
                     showModal(t('alert.notification', '알림'), t('instant_interview.already_applied', '이미 지원한 공고입니다.'))
@@ -197,26 +172,21 @@ export default function InstantInterviewSelection() {
                 }
                 throw new Error(applicationResponse?.error || '지원서 생성 실패')
             }
-
             const application = applicationResponse.data;
-
             // 3. 면접 제안서 생성 (실제로는 유저가 스스로 만든 것이지만 형식상 필요)
             const proposalResponse = await api('POST', '/api/interview-proposals/company', {
                 applicationId: application.id,
                 companyId: companyId,
                 location: interviewLocation || jobAddress || t('interview.default_location', '회사 주소') // interview_location이 있으면 우선 사용
             })
-
             if (!proposalResponse?.success || !proposalResponse.data) {
                 throw new Error('면접 제안 생성 실패')
             }
-
             // 4. 면접 스케줄 생성
             const scheduleResponse = await api('POST', '/api/interview-schedules/user', {
                 proposalId: proposalResponse.data.id,
                 interviewSlotId: selectedSlotId
             })
-
             if (scheduleResponse?.success) {
                 showModal(
                     t('alert.success', '성공'), 
@@ -230,15 +200,12 @@ export default function InstantInterviewSelection() {
                 throw new Error('면접 스케줄 생성 실패')
             }
         } catch (error) {
-            console.error('Failed to submit instant interview:', error)
             showModal(t('alert.error', '오류'), t('instant_interview.schedule_failed', '면접 일정 확정에 실패했습니다.'))
         } finally {
             setSubmitting(false)
         }
     }
-
     const groupedSlots = groupSlotsByDate(availableSlots)
-
     if (loading) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -248,7 +215,6 @@ export default function InstantInterviewSelection() {
             </SafeAreaView>
         )
     }
-
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
             <View className="bg-white border-b border-gray-200">
@@ -275,7 +241,6 @@ export default function InstantInterviewSelection() {
                     )}
                 </View>
             </View>
-
             <ScrollView className="flex-1">
                 {/* 완벽 매칭 배너 */}
                 <View className="bg-purple-50 p-4 mb-2">
@@ -293,7 +258,6 @@ export default function InstantInterviewSelection() {
                         </View>
                     </View>
                 </View>
-
                 {/* 회사 정보 */}
                 <View className="bg-white p-4 mb-2">
                     <Text className="text-sm text-gray-600">{t('instant_interview.company', '회사')}</Text>
@@ -303,7 +267,6 @@ export default function InstantInterviewSelection() {
                         {language !== 'ko' && translatedJobTitle ? translatedJobTitle : jobTitle}
                     </Text>
                 </View>
-
                 {/* 면접 장소 */}
                 {(interviewLocation || jobAddress) && (
                     <View className="bg-white p-4 mb-2">
@@ -316,7 +279,6 @@ export default function InstantInterviewSelection() {
                         <Text className="text-base mt-1">{interviewLocation || jobAddress}</Text>
                     </View>
                 )}
-
                 {/* 특이사항 */}
                 {specialNotes && (
                     <View className="bg-yellow-50 p-4 mb-2 border border-yellow-200">
@@ -331,13 +293,11 @@ export default function InstantInterviewSelection() {
                         </Text>
                     </View>
                 )}
-
                 {/* 시간대 선택 */}
                 <View className="bg-white p-4">
                     <Text className="text-base font-semibold mb-4">
                         {t('instant_interview.select_available_time', '면접 가능 시간대를 선택해주세요')}
                     </Text>
-
                     {Object.keys(groupedSlots).length === 0 ? (
                         <View className="py-8 items-center">
                             <Text className="text-gray-500">
@@ -347,18 +307,15 @@ export default function InstantInterviewSelection() {
                     ) : (
                         Object.entries(groupedSlots).map(([dateKey, slots]) => {
                             const { date } = formatDateTime(slots[0].start_time)
-
                             return (
                                 <View key={dateKey} className="mb-6">
                                     <Text className="text-sm font-semibold text-gray-700 mb-3">
                                         {date}
                                     </Text>
-
                                     {slots.map((slot) => {
                                         const startTime = formatTime24(slot.start_time)
                                         const endTime = formatTime24(slot.end_time)
                                         const isSelected = selectedSlotId === slot.id
-
                                         return (
                                             <TouchableOpacity
                                                 key={slot.id}
@@ -376,7 +333,6 @@ export default function InstantInterviewSelection() {
                                                         }`}>
                                                             {startTime} - {endTime}
                                                         </Text>
-
                                                         {/* 면접 유형 */}
                                                         <View className="flex-row items-center mt-2">
                                                             <Ionicons
@@ -394,7 +350,6 @@ export default function InstantInterviewSelection() {
                                                                 {slot.interview_type} {t('instant_interview.interview_type', '면접')}
                                                             </Text>
                                                         </View>
-
                                                         {/* 개별 장소 */}
                                                         {slot.location && (
                                                             <View className="flex-row items-center mt-1">
@@ -409,7 +364,6 @@ export default function InstantInterviewSelection() {
                                                             </View>
                                                         )}
                                                     </View>
-
                                                     <View className={`w-6 h-6 rounded-full border-2 ${
                                                         isSelected
                                                             ? 'border-purple-500 bg-purple-500'
@@ -434,7 +388,6 @@ export default function InstantInterviewSelection() {
                     )}
                 </View>
             </ScrollView>
-
             {/* 하단 버튼 */}
             <View className="bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
@@ -451,7 +404,6 @@ export default function InstantInterviewSelection() {
                     </Text>
                 </TouchableOpacity>
             </View>
-
             <ModalComponent />
         </SafeAreaView>
     )

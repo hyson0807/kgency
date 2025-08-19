@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TimePeriod } from './types'
-
 interface TimeSlotSelectorProps {
     timeSlots: string[]
     selectedTimes: string[]
@@ -10,7 +9,6 @@ interface TimeSlotSelectorProps {
     presetSlots: string[]
     onTimeToggle: (time: string) => void
 }
-
 export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
     timeSlots,
     selectedTimes,
@@ -19,7 +17,6 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
     onTimeToggle
 }) => {
     const [expandedPeriod, setExpandedPeriod] = useState<string | null>(null)
-
     const timePeriods: TimePeriod[] = [
         {
             id: 'dawn',
@@ -58,15 +55,12 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
             })
         }
     ]
-
     const getSelectedCountForPeriod = (times: string[]) => {
         return times.filter(time => selectedTimes.includes(time)).length
     }
-
     const togglePeriod = (periodId: string) => {
         setExpandedPeriod(expandedPeriod === periodId ? null : periodId)
     }
-
     return (
         <View>
             <Text className="text-base font-medium mb-2">가능한 시간대 (여러 개 선택 가능)</Text>
@@ -79,15 +73,12 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
                     </Text>
                 </View>
             )}
-
             <View className="flex-row flex-wrap gap-3 mb-4">
                 {timePeriods.map((period) => {
                     const isExpanded = expandedPeriod === period.id
                     const selectedCount = getSelectedCountForPeriod(period.times)
                     const totalCount = period.times.length
-
                     if (totalCount === 0) return null
-
                     return (
                         <View key={period.id} className={`rounded-lg overflow-hidden w-[48%] border-2 ${
                             isExpanded ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-gray-50'
@@ -124,14 +115,12 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
                     )
                 })}
             </View>
-
             {/* 선택된 시간대의 시간들을 아래에 표시 */}
             {expandedPeriod && (
                 <View className="mb-4">
                     {(() => {
                         const selectedPeriod = timePeriods.find(p => p.id === expandedPeriod)
                         if (!selectedPeriod) return null
-
                         return (
                             <View className="bg-white rounded-lg p-4 border border-gray-200">
                                 <Text className="text-lg font-semibold text-gray-900 mb-3">
@@ -144,7 +133,6 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
                                             const isBooked = bookedSlots.includes(time)
                                             const isPreset = presetSlots.includes(time)
                                             const isSelected = selectedTimes.includes(time)
-
                                             return (
                                                 <TouchableOpacity
                                                     key={time}

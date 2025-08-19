@@ -7,7 +7,6 @@ import { useProfile } from '@/hooks/useProfile'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import { useApplicationFormStore } from '@/stores/applicationFormStore'
-
 // Step 3: 한국어 실력 및 질문 입력 페이지
 export default function ApplicationStep3() {
     const params = useLocalSearchParams()
@@ -29,7 +28,6 @@ export default function ApplicationStep3() {
     const [loading, setLoading] = useState(false)
     const { showModal, ModalComponent } = useModal()
     const { t } = useTranslation()
-
     const koreanLevelOptions = [
         { label: t('apply.korean_beginner', '초급'), value: '초급' },
         { label: t('apply.korean_intermediate', '중급'), value: '중급' },
@@ -41,13 +39,11 @@ export default function ApplicationStep3() {
         { label: t('apply.topik_2', '2급'), value: '2급' },
         { label: t('apply.topik_3plus', '3급이상'), value: '3급이상' }
     ]
-
     const handleSubmit = async () => {
         setLoading(true)
         try {
             // userInfo 객체 생성 - 타입 안전하게 처리
             const userInfoData: any = {}
-
             // Step 1 데이터 처리
             if (step1Data.age) userInfoData.age = parseInt(step1Data.age)
             if (step1Data.gender) userInfoData.gender = step1Data.gender
@@ -61,7 +57,6 @@ export default function ApplicationStep3() {
             // Step 3 데이터 처리
             if (step3Data.koreanLevel) userInfoData.korean_level = step3Data.koreanLevel
             if (step3Data.topic) userInfoData.topic = step3Data.topic
-
             // 프로필 업데이트
             const updated = await updateProfile({
                 profile: {
@@ -69,7 +64,6 @@ export default function ApplicationStep3() {
                 },
                 userInfo: userInfoData
             })
-
             if (updated) {
                 // Resume 페이지로 이동
                 router.push({
@@ -92,17 +86,14 @@ export default function ApplicationStep3() {
                 showModal(t('alert.error', '오류'), t('apply.save_failed', '정보 저장에 실패했습니다.'), 'warning')
             }
         } catch (error) {
-            console.error('프로필 업데이트 오류:', error)
             showModal(t('alert.error', '오류'), t('apply.save_error', '정보 저장 중 문제가 발생했습니다.'), 'warning')
         } finally {
             setLoading(false)
         }
     }
-
     const handleBack = () => {
         router.back()
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
@@ -112,7 +103,6 @@ export default function ApplicationStep3() {
                     {t('apply.title', '지원서 작성')} (3/3)
                 </Text>
             </View>
-
             {/* 진행 상황 인디케이터 */}
             <View className="flex-row items-center px-6 py-4 bg-gray-50">
                 <View className="flex-1 flex-row items-center">
@@ -129,7 +119,6 @@ export default function ApplicationStep3() {
                     </View>
                 </View>
             </View>
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -140,7 +129,6 @@ export default function ApplicationStep3() {
                         <Text className="text-xl font-bold mb-2">한국어 실력과 질문을 입력해주세요</Text>
                         <Text className="text-gray-600 mb-6">마지막 단계입니다. 한국어 실력과 궁금한 점을 작성해주세요.</Text>
                     </View>
-
                     {/* 지원 공고 정보 */}
                     <View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">
                         <Text className="text-sm text-gray-600">{t('apply.applying_to', '지원 공고')}</Text>
@@ -171,7 +159,6 @@ export default function ApplicationStep3() {
                                 ))}
                             </View>
                         </View>
-
                         {/* 토픽 급수 */}
                         <View className="mb-6">
                             <Text className="text-lg font-bold mb-4">{t('apply.topik_level', '토픽 급수')}</Text>
@@ -193,7 +180,6 @@ export default function ApplicationStep3() {
                                 ))}
                             </View>
                         </View>
-
                         {/* 질문 내용 */}
                         <View className="mb-6">
                             <Text className="text-lg font-bold mb-4">{t('apply.questions', '사장님께 물어보고 싶은 내용')}</Text>
@@ -209,7 +195,6 @@ export default function ApplicationStep3() {
                     </View>
                 </View>
             </ScrollView>
-
             {/* 하단 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
@@ -224,7 +209,6 @@ export default function ApplicationStep3() {
                     </Text>
                 </TouchableOpacity>
             </View>
-
             <ModalComponent />
         </SafeAreaView>
     )

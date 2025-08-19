@@ -1,6 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
-
 export const settingsTranslations: TranslationData = {
     // Settings 페이지
     'settings.title': {

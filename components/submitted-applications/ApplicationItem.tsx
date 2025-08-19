@@ -4,7 +4,6 @@ import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
 import { api } from '@/lib/api'
 import {InterviewDetailModal} from "@/components/submitted-applications/InterviewDetailModal";
-
 interface InterviewProposal {
     id: string
     application_id: string
@@ -17,7 +16,6 @@ interface InterviewProposal {
         name: string
     }
 }
-
 interface Application {
     id: string
     applied_at: string
@@ -41,16 +39,13 @@ interface Application {
     }
     interviewProposal?: InterviewProposal | null
 }
-
 interface ApplicationItemProps {
     item: Application;
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
 }
-
 export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
     const [showDetailModal, setShowDetailModal] = useState(false)
     const [interviewDetails, setInterviewDetails] = useState<any>(null)
-
     const handleViewPosting = (application: Application) => {
         if (application.job_posting) {
             router.push({
@@ -63,13 +58,11 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
             })
         }
     }
-
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
         const now = new Date()
         const diffTime = Math.abs(now.getTime() - date.getTime())
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
         if (diffDays === 0) {
             return t('applications.today', '오늘') + ` ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
         } else if (diffDays === 1) {
@@ -80,11 +73,10 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
             return `${date.getMonth() + 1}/${date.getDate()}`
         }
     }
-
     const handleViewResume = (application: Application) => {
         if (application.message) {
             router.push({
-                pathname: '/(pages)/(user)/view-my-resume',
+                pathname: '/(pages)/(user)/(application-management)/view-my-resume',
                 params: {
                     applicationId: application.id,
                     companyName: application.job_posting.company.name,
@@ -95,12 +87,10 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
             })
         }
     }
-
     const handleInterviewSelection = () => {
         if (!item.interviewProposal) return;
-
         router.push({
-            pathname: '/(pages)/(user)/interview-selection',
+            pathname: '/(pages)/(user)/(interview-management)/interview-selection',
             params: {
                 applicationId: item.id,
                 companyId: item.interviewProposal.company_id,
@@ -111,25 +101,21 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
             }
         })
     }
-
     const fetchInterviewDetails = async () => {
         try {
             // 면접 예약 정보 조회 API 호출
             const response = await api('GET', `/api/interview-schedules/by-proposal/${item.interviewProposal?.id}`)
-
             if (response?.success && response.data) {
                 setInterviewDetails(response.data)
                 setShowDetailModal(true)
             }
         } catch (error) {
-            console.error('Failed to fetch interview details:', error)
+            // Failed to fetch interview details
         }
     }
-
     const handleShowInterviewDetails = () => {
         fetchInterviewDetails()
     }
-
     return (
         <>
             <TouchableOpacity
@@ -150,14 +136,12 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                         </Text>
                     </View>
                 </View>
-
                 {/* 지원 정보 */}
                 <View className="flex-row items-center justify-between pt-3 border-t border-gray-100">
                     <Text className="text-sm text-gray-500">
                         {t('applications.applied_date', '지원일')}: {formatDate(item.applied_at)}
                     </Text>
                 </View>
-
                 {/* 이력서 보기 버튼 */}
                 {item.message && (
                     <TouchableOpacity
@@ -173,7 +157,6 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                         </Text>
                     </TouchableOpacity>
                 )}
-
                 {/* 면접 취소 상태 체크 - 최우선으로 표시 */}
                 {item.status === 'cancelled' ? (
                     <View className="mt-2 flex-row items-center justify-center bg-red-50 py-2 rounded-lg">
@@ -241,7 +224,6 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                     )
                 )}
             </TouchableOpacity>
-
             {/* 면접 상세 모달 */}
             <InterviewDetailModal
                 visible={showDetailModal}

@@ -1,7 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
-
 interface CompanyCardProps {
     company: {
         id: string;
@@ -18,7 +17,6 @@ interface CompanyCardProps {
     onPress?: () => void;
     hasApplied?: boolean;
 }
-
 const CompanyCard: React.FC<CompanyCardProps> = ({
                                                      company,
                                                      matchedCount,
@@ -27,7 +25,6 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
                                                      hasApplied = false
                                                  }) => {
     const hasMatches = matchedCount > 0;
-
     return (
         <TouchableOpacity
             onPress={onPress}
@@ -41,7 +38,6 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
                     <Text className="text-white text-xs font-medium ml-1">지원완료</Text>
                 </View>
             )}
-
             {/* 회사 정보 */}
             <View className="mb-3">
                 <Text className="text-lg font-bold text-gray-800 pr-20">
@@ -56,20 +52,17 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
                     </View>
                 )}
             </View>
-
             {company.description && (
                 <Text className="text-gray-600 mb-3" numberOfLines={2}>
                     {company.description}
                 </Text>
             )}
-
             {/* 매칭된 키워드 표시 */}
             {hasMatches ? (
                 <View className="border-t border-gray-100 pt-3">
                     <Text className="text-sm text-blue-600 font-semibold mb-2">
                         매칭된 키워드 ({matchedCount}개)
                     </Text>
-
                     <View className="space-y-1">
                         {matchedKeywords.countries.length > 0 && (
                             <View className="flex-row items-center">
@@ -79,7 +72,6 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
                                 </Text>
                             </View>
                         )}
-
                         {matchedKeywords.jobs.length > 0 && (
                             <View className="flex-row items-start">
                                 <Ionicons name="briefcase-outline" size={16} color="#3b82f6" />
@@ -88,7 +80,6 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
                                 </Text>
                             </View>
                         )}
-
                         {matchedKeywords.conditions.length > 0 && (
                             <View className="flex-row items-start">
                                 <Ionicons name="time-outline" size={16} color="#3b82f6" />
@@ -109,5 +100,4 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
         </TouchableOpacity>
     );
 };
-
 export default CompanyCard;

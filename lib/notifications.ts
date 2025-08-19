@@ -3,18 +3,14 @@ import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { api } from './api';
-
 // Notification handler is now managed in NotificationContext.tsx to avoid conflicts
-
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
   let token: string | null = null;
-
   // Check if we're on a physical device
   if (!Device.isDevice) {
-    console.log('Must use physical device for Push Notifications');
+    // Must use physical device for Push Notifications
     return null;
   }
-
   // Check and request permissions
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
@@ -25,19 +21,17 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
   }
   
   if (finalStatus !== 'granted') {
-    console.log('Failed to get push token for push notification!');
+    // Failed to get push token for push notification
     return null;
   }
-
   try {
     // Get the token
     const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
     token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-    console.log('Push token:', token);
+    // Push token received
   } catch (error) {
-    console.log('Error getting push token:', error);
+    // Error getting push token
   }
-
   // Android specific configuration
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
@@ -47,49 +41,42 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
       lightColor: '#FF231F7C',
     });
   }
-
   return token;
 }
-
 export async function savePushToken(userId: string, token: string): Promise<boolean> {
   try {
     const response = await api('PUT', '/api/profiles/push-token', { token });
     
     if (!response.success) {
-      console.error('Error saving push token:', response.error);
+      // Error saving push token
       return false;
     }
-
     return true;
   } catch (error) {
-    console.error('Error saving push token:', error);
+    // Error saving push token
     return false;
   }
 }
-
 export async function removePushToken(userId: string): Promise<boolean> {
   try {
     const response = await api('DELETE', '/api/profiles/push-token');
     
     if (!response.success) {
-      console.error('Error removing push token:', response.error);
+      // Error removing push token
       return false;
     }
-
     return true;
   } catch (error) {
-    console.error('Error removing push token:', error);
+    // Error removing push token
     return false;
   }
 }
-
 // Notification response handler (when user taps on notification)
 export function addNotificationResponseReceivedListener(
   listener: (response: Notifications.NotificationResponse) => void
 ) {
   return Notifications.addNotificationResponseReceivedListener(listener);
 }
-
 // Notification received handler (when app receives notification)
 export function addNotificationReceivedListener(
   listener: (notification: Notifications.Notification) => void

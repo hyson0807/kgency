@@ -1,6 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
-
 export const postingDetailTranslations: TranslationData = {
     // Posting Detail 페이지
     'posting_detail.title': {
@@ -87,7 +85,6 @@ export const postingDetailTranslations: TranslationData = {
         ha: 'Kwanakin Aiki',
         mn: 'Ажлын өдрүүд'
     },
-
     'posting_detail.work_hours': {
         en: 'Working Hours',
         ja: '勤務時間',

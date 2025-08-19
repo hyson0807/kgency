@@ -3,14 +3,12 @@ import React, { useState } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TimeSlotGrid } from './TimeSlotGrid'
-
 interface TimeSlot {
     date: string
     startTime: string
     endTime: string
     interviewType: '대면' | '화상' | '전화'
 }
-
 interface InterviewSlotsTabProps {
     selectedDate: string
     formatDateHeader: (dateString: string) => string
@@ -25,7 +23,6 @@ interface InterviewSlotsTabProps {
     dateTimeMap: Record<string, TimeSlot[]>
     allBookedSlots: Record<string, string[]>
 }
-
 export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
     selectedDate,
     formatDateHeader,
@@ -55,7 +52,6 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                     <Ionicons name="refresh" size={20} color="#3b82f6" />
                 </TouchableOpacity>
             </View>
-
             {selectedDate && (
                 <View>
                     {/* 예약된 시간이 있으면 안내 메시지 */}
@@ -66,35 +62,27 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                             </Text>
                         </View>
                     )}
-
                     <View className="bg-white rounded-xl p-4">
-
-
                         <TimeSlotGrid
                             timeSlots={timeSlots}
                             selectedTimes={selectedTimes}
                             bookedSlots={bookedSlots}
                             onTimeToggle={onTimeToggle}
                         />
-
                         {/* 모든 날짜별 선택된 시간대 종합 요약 */}
                         {Object.keys(dateTimeMap).length > 0 && (() => {
                             const now = new Date()
                             const allValidSlots: Array<{ date: string, time: string, isBooked: boolean }> = []
-
                             // 모든 날짜의 시간대를 수집하고 현재 시간 이후만 필터링
                             Object.entries(dateTimeMap).forEach(([date, slots]) => {
                                 const dateObj = new Date(date)
                                 const isToday = dateObj.toDateString() === now.toDateString()
-
                                 slots.forEach(slot => {
                                     const [hour, minute] = slot.startTime.split(':')
                                     const slotDateTime = new Date(date)
                                     slotDateTime.setHours(parseInt(hour), parseInt(minute), 0, 0)
-
                                     // 오늘인 경우 현재 시간 이후만, 미래 날짜는 모두 포함
                                     const isValidTime = isToday ? slotDateTime >= now : dateObj > now
-
                                     if (isValidTime) {
                                         const isBooked = allBookedSlots[date]?.includes(slot.startTime) || false
                                         allValidSlots.push({
@@ -105,7 +93,6 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                     }
                                 })
                             })
-
                             // 날짜별, 시간별로 정렬
                             allValidSlots.sort((a, b) => {
                                 if (a.date !== b.date) {
@@ -115,9 +102,7 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                 const [bHour, bMin] = b.time.split(':').map(Number)
                                 return (aHour * 60 + aMin) - (bHour * 60 + bMin)
                             })
-
                             if (allValidSlots.length === 0) return null
-
                             return (
                                 <View className="mt-6 bg-green-50 rounded-lg border border-green-200">
                                     {/* 접기/펼치기 헤더 */}
@@ -137,7 +122,6 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                             color="#16a34a"
                                         />
                                     </TouchableOpacity>
-
                                     {/* 접을 수 있는 내용 */}
                                     {isSummaryExpanded && (
                                         <View className="px-4 pb-4">
@@ -173,7 +157,6 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                                     </View>
                                                 </View>
                                             ))}
-
                                             <View className="mt-2 pt-2 border-t border-green-200">
                                                 <Text className="text-xs text-green-600 text-center">
                                                     💡 현재 시간 이후의 모든 면접 가능 시간대입니다
@@ -184,7 +167,6 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                 </View>
                             )
                         })()}
-
                         {/* 저장 버튼 */}
                         <TouchableOpacity
                             onPress={onSaveForDate}
@@ -200,8 +182,6 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                     </View>
                 </View>
             )}
-
-
         </View>
     )
 }

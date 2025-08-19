@@ -10,7 +10,6 @@ import { useProfile } from '@/hooks/useProfile';
 import { useUserKeywords } from '@/hooks/useUserKeywords';
 import { useModal } from '@/hooks/useModal';
 import LoadingScreen from '@/components/common/LoadingScreen';
-
 const ProfilePage = () => {
   const { t } = useTranslation();
   const { profile } = useProfile();
@@ -24,14 +23,12 @@ const ProfilePage = () => {
     nextStep,
     previousStep 
   } = useUserInfoStore();
-
   // 프로필 정보 로드
   useEffect(() => {
     if (profile) {
       updateProfileInfo({
         name: profile.name || ''
       });
-
       if (profile.user_info) {
         updateProfileInfo({
           age: profile.user_info.age?.toString() || '',
@@ -42,7 +39,6 @@ const ProfilePage = () => {
       }
     }
   }, [profile]);
-
   const handleNext = () => {
     // 필수 입력 확인
     if (!formData.name || !formData.age || !formData.gender || !formData.visa || !formData.koreanLevel) {
@@ -52,7 +48,6 @@ const ProfilePage = () => {
       );
       return;
     }
-
     // 나이 유효성 검사
     const ageNum = parseInt(formData.age);
     if (isNaN(ageNum) || ageNum < 1 || ageNum > 100) {
@@ -62,11 +57,9 @@ const ProfilePage = () => {
       );
       return;
     }
-
     nextStep();
     router.push('/(pages)/(user)/(user-information)/others');
   };
-
   const handleBack = () => {
     // onboarding이 완료된 사용자만 뒤로 갈 수 있음
     if (profile?.onboarding_completed) {
@@ -76,12 +69,9 @@ const ProfilePage = () => {
       router.back();
     }
   };
-
   // 현재 스텝 계산 (onboarding 여부에 따라)
   const displayStep = profile?.onboarding_completed ? '2/3' : '1/3';
-
   if (loading) return <LoadingScreen />;
-
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1">
@@ -98,7 +88,6 @@ const ProfilePage = () => {
             <Text className="text-sm text-gray-500">{displayStep}</Text>
           </View>
         </View>
-
         <ScrollView
           className="flex-1 bg-gray-50"
           showsVerticalScrollIndicator={false}
@@ -122,7 +111,6 @@ const ProfilePage = () => {
             keywords={keywords}
           />
         </ScrollView>
-
         {/* 버튼 영역 */}
         <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 pb-8">
           <TouchableOpacity
@@ -139,5 +127,4 @@ const ProfilePage = () => {
     </SafeAreaView>
   );
 };
-
 export default ProfilePage;

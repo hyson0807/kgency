@@ -2,8 +2,6 @@ import {Text, TouchableOpacity, View} from "react-native";
 import Back from "@/components/back";
 import {Ionicons} from "@expo/vector-icons";
 import React from "react";
-
-
 interface HeaderProps {
     language: string;
     handleTranslate: () => Promise<void>;
@@ -11,14 +9,12 @@ interface HeaderProps {
     isTranslating: boolean;
     t: (key: string, defaultValue: string) => string;
 }
-
 export const Header = ({
     language,
     handleTranslate,
     isTranslated,
     isTranslating,
     t
-
 }: HeaderProps) => (
     <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
         <View className="flex-row items-center">
@@ -47,5 +43,4 @@ export const Header = ({
         )}
     </View>
 )
-
 export default Header;

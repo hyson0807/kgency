@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const commonTranslations: TranslationData = {
     // 버튼/액션
     'button.back': {
@@ -171,7 +170,6 @@ export const commonTranslations: TranslationData = {
         ha: 'Sanarwa',
         mn: 'Мэдэгдэл'
     },
-
     // JobPreferencesSelector
     'job_selector.title': {
         en: 'Desired Jobs',
@@ -187,7 +185,6 @@ export const commonTranslations: TranslationData = {
         ha: 'Aikace-aikacen da ake So',
         mn: 'Хүссэн ажлууд'
     },
-
     // WorkConditionsSelector
     'work_conditions_selector.title': {
         en: 'Desired Benefits',

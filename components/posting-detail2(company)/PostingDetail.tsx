@@ -2,13 +2,11 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
-
 interface Keyword {
     id: number;
     keyword: string;
     category: string;
 }
-
 interface Keywords {
     conditions: Keyword[];
     countries: Keyword[];
@@ -17,13 +15,11 @@ interface Keywords {
     age: Keyword[];
     visa: Keyword[];
 }
-
 interface PostingDetailProps {
     keywords: Keywords;
     postingId: string;
     posting: any;
 }
-
 export const PostingDetail = ({
                                   keywords,
                                   postingId,
@@ -46,11 +42,9 @@ export const PostingDetail = ({
                     </View>
                 </View>
             </View>
-
             {/* 근무 조건 */}
             <View className="p-6 border-b border-gray-100">
                 <Text className="text-lg font-semibold mb-4">근무 조건</Text>
-
                 {/* 가게 주소 */}
                 {posting?.job_address && (
                     <View className="flex-row items-center mb-3">
@@ -61,7 +55,6 @@ export const PostingDetail = ({
                         </View>
                     </View>
                 )}
-
                 {/* 근무일 */}
                 {posting?.working_days && posting.working_days.length > 0 && (
                     <View className="flex-row items-center mb-3">
@@ -75,7 +68,6 @@ export const PostingDetail = ({
                         </View>
                     </View>
                 )}
-
                 {/* 근무시간 */}
                 {posting?.working_hours && (
                     <View className="flex-row items-center mb-3">
@@ -89,7 +81,6 @@ export const PostingDetail = ({
                         </View>
                     </View>
                 )}
-
                 {/* 급여 */}
                 {posting?.salary_range && (
                     <View className="flex-row items-center mb-3">
@@ -110,7 +101,6 @@ export const PostingDetail = ({
                         </View>
                     </View>
                 )}
-
                 {/* 급여일 */}
                 {posting?.pay_day && (
                     <View className="flex-row items-center mb-3">
@@ -124,7 +114,6 @@ export const PostingDetail = ({
                         </View>
                     </View>
                 )}
-
                 {/* 모집인원 */}
                 {posting?.hiring_count && (
                     <View className="flex-row items-center">
@@ -136,7 +125,6 @@ export const PostingDetail = ({
                     </View>
                 )}
             </View>
-
             {/* 복지/혜택 */}
             {posting?.benefits && posting.benefits.length > 0 && (
                 <View className="p-6 border-b border-gray-100">
@@ -150,7 +138,6 @@ export const PostingDetail = ({
                     </View>
                 </View>
             )}
-
             {/* 상세 설명 */}
             {posting?.description && (
                 <View className="p-6 border-b border-gray-100">
@@ -158,7 +145,6 @@ export const PostingDetail = ({
                     <Text className="text-gray-700 leading-6">{posting.description}</Text>
                 </View>
             )}
-
             {/* 회사의 강점 */}
             {keywords.conditions && keywords.conditions.length > 0 && (
                 <View className="p-6 border-b border-gray-100">
@@ -172,11 +158,9 @@ export const PostingDetail = ({
                     </View>
                 </View>
             )}
-
             {/* 채용 분야 */}
             <View className="p-6">
                 <Text className="text-lg font-semibold mb-4">채용 분야</Text>
-
                 {keywords.countries && keywords.countries.length > 0 && (
                     <View className="mb-4">
                         <Text className="text-gray-600 font-medium mb-2">대상 국가</Text>
@@ -189,7 +173,6 @@ export const PostingDetail = ({
                         </View>
                     </View>
                 )}
-
                 {keywords.jobs && keywords.jobs.length > 0 && (
                     <View className="mb-4">
                         <Text className="text-gray-600 font-medium mb-2">모집 직종</Text>
@@ -202,7 +185,6 @@ export const PostingDetail = ({
                         </View>
                     </View>
                 )}
-
                 {keywords.gender && keywords.gender.length > 0 && (
                     <View className="mb-4">
                         <Text className="text-gray-600 font-medium mb-2">모집 성별</Text>
@@ -215,7 +197,6 @@ export const PostingDetail = ({
                         </View>
                     </View>
                 )}
-
                 {keywords.age && keywords.age.length > 0 && (
                     <View className="mb-4">
                         <Text className="text-gray-600 font-medium mb-2">모집 나이대</Text>
@@ -228,7 +209,6 @@ export const PostingDetail = ({
                         </View>
                     </View>
                 )}
-
                 {keywords.visa && keywords.visa.length > 0 && (
                     <View className="mb-4">
                         <Text className="text-gray-600 font-medium mb-2">지원 가능한 비자</Text>
@@ -242,7 +222,6 @@ export const PostingDetail = ({
                     </View>
                 )}
             </View>
-
             {/* 수정/삭제 버튼 */}
             <View className="p-6">
                 <TouchableOpacity

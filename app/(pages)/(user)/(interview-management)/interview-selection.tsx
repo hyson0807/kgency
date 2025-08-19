@@ -8,7 +8,6 @@ import { api } from '@/lib/api'
 import Back from '@/components/back'
 import { useModal } from '@/hooks/useModal'
 import { groupByDate, formatTime24 } from '@/lib/dateUtils'
-
 interface TimeSlot {
     id: string
     start_time: string
@@ -17,7 +16,6 @@ interface TimeSlot {
     interview_type: string
     is_available: boolean
 }
-
 export default function InterviewSelection() {
     const params = useLocalSearchParams()
     const {
@@ -28,25 +26,20 @@ export default function InterviewSelection() {
         jobTitle,
         proposalLocation
     } = params
-
     const { showModal, ModalComponent } = useModal()
     const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
     const [selectedSlotId, setSelectedSlotId] = useState<string>('')
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [specialNotes, setSpecialNotes] = useState<string>('')
-
     useEffect(() => {
         fetchAvailableSlots()
     }, [])
-
     const fetchAvailableSlots = async () => {
         try {
             setLoading(true)
             const response = await api('GET', `/api/interview-proposals/user/${applicationId}`)
-
             if (response?.success && response.data?.availableSlots) {
-                console.log('Raw availableSlots from server:', response.data.availableSlots)
                 
                 // 현재 시간 이후의 슬롯만 필터링
                 const now = new Date()
@@ -63,13 +56,11 @@ export default function InterviewSelection() {
                 }
             }
         } catch (error) {
-            console.error('Failed to fetch available slots:', error)
             showModal('오류', '면접 시간대를 불러오는데 실패했습니다.')
         } finally {
             setLoading(false)
         }
     }
-
     const formatDateTime = (dateTimeString: string) => {
         const date = new Date(dateTimeString)
         const month = date.getMonth() + 1
@@ -77,48 +68,39 @@ export default function InterviewSelection() {
         const weekDay = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
         const hours = date.getHours()
         const minutes = date.getMinutes()
-
         return {
             date: `${month}월 ${day}일 (${weekDay})`,
             time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
         }
     }
-
     const groupSlotsByDate = (slots: TimeSlot[]) => {
         return groupByDate(slots, (slot) => slot.start_time)
     }
-
     const handleSelectSlot = (slotId: string) => {
         setSelectedSlotId(slotId)
     }
-
     const handleSubmit = async () => {
         if (!selectedSlotId) {
             showModal('알림', '면접 시간을 선택해주세요.')
             return
         }
-
         setSubmitting(true)
         try {
             const response = await api('POST', '/api/interview-schedules/user', {
                 proposalId: proposalId as string,
                 interviewSlotId: selectedSlotId
             })
-
             if (response?.success) {
                 showModal('성공', '면접 일정이 확정되었습니다.', 'info')
                 router.back()
             }
         } catch (error) {
-            console.error('Failed to submit interview schedule:', error)
             showModal('오류', '면접 일정 선택에 실패했습니다.')
         } finally {
             setSubmitting(false)
         }
     }
-
     const groupedSlots = groupSlotsByDate(availableSlots)
-
     if (loading) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -128,7 +110,6 @@ export default function InterviewSelection() {
             </SafeAreaView>
         )
     }
-
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
             <View className="bg-white border-b border-gray-200">
@@ -137,7 +118,6 @@ export default function InterviewSelection() {
                     <Text className="text-lg font-bold ml-4">면접 시간 선택</Text>
                 </View>
             </View>
-
             <ScrollView className="flex-1">
                 {/* 회사 정보 */}
                 <View className="bg-white p-4 mb-2">
@@ -146,7 +126,6 @@ export default function InterviewSelection() {
                     <Text className="text-sm text-gray-600 mt-1">직무</Text>
                     <Text className="text-base">{jobTitle}</Text>
                 </View>
-
                 {/* 면접 장소 (제안된 장소) */}
                 {proposalLocation && (
                     <View className="bg-white p-4 mb-2">
@@ -157,7 +136,6 @@ export default function InterviewSelection() {
                         <Text className="text-base mt-1">{proposalLocation}</Text>
                     </View>
                 )}
-
                 {/* 특이사항 */}
                 {specialNotes && (
                     <View className="bg-yellow-50 p-4 mb-2 border border-yellow-200">
@@ -168,11 +146,9 @@ export default function InterviewSelection() {
                         <Text className="text-base text-yellow-800 mt-2">{specialNotes}</Text>
                     </View>
                 )}
-
                 {/* 시간대 선택 */}
                 <View className="bg-white p-4">
                     <Text className="text-base font-semibold mb-4">면접 가능 시간대를 선택해주세요</Text>
-
                     {Object.keys(groupedSlots).length === 0 ? (
                         <View className="py-8 items-center">
                             <Text className="text-gray-500">선택 가능한 시간대가 없습니다.</Text>
@@ -180,18 +156,15 @@ export default function InterviewSelection() {
                     ) : (
                         Object.entries(groupedSlots).map(([dateKey, slots]) => {
                             const { date } = formatDateTime(slots[0].start_time)
-
                             return (
                                 <View key={dateKey} className="mb-6">
                                     <Text className="text-sm font-semibold text-gray-700 mb-3">
                                         {date}
                                     </Text>
-
                                     {slots.map((slot) => {
                                         const startTime = formatTime24(slot.start_time)
                                         const endTime = formatTime24(slot.end_time)
                                         const isSelected = selectedSlotId === slot.id
-
                                         return (
                                             <TouchableOpacity
                                                 key={slot.id}
@@ -209,7 +182,6 @@ export default function InterviewSelection() {
                                                         }`}>
                                                             {startTime} - {endTime}
                                                         </Text>
-
                                                         {/* 면접 유형 */}
                                                         <View className="flex-row items-center mt-2">
                                                             <Ionicons
@@ -227,7 +199,6 @@ export default function InterviewSelection() {
                                                                 {slot.interview_type} 면접
                                                             </Text>
                                                         </View>
-
                                                         {/* 개별 장소 (slots의 location) */}
                                                         {slot.location && (
                                                             <View className="flex-row items-center mt-1">
@@ -242,7 +213,6 @@ export default function InterviewSelection() {
                                                             </View>
                                                         )}
                                                     </View>
-
                                                     <View className={`w-6 h-6 rounded-full border-2 ${
                                                         isSelected
                                                             ? 'border-blue-500 bg-blue-500'
@@ -267,7 +237,6 @@ export default function InterviewSelection() {
                     )}
                 </View>
             </ScrollView>
-
             {/* 하단 버튼 */}
             <View className="bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
@@ -284,7 +253,6 @@ export default function InterviewSelection() {
                     </Text>
                 </TouchableOpacity>
             </View>
-
             <ModalComponent />
         </SafeAreaView>
     )

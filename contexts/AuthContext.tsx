@@ -6,19 +6,16 @@ import {jwtDecode} from "jwt-decode";
 import {router} from "expo-router";
 import { registerForPushNotificationsAsync, savePushToken, removePushToken } from '@/lib/notifications';
 import { updateTokenCache } from '@/lib/api';
-
 // 타입 정의
 interface User {
     userId: string;
     phone: string;
     userType: 'user' | 'company';
 }
-
 interface LoginResult {
     success: boolean;
     error?: string;
 }
-
 interface AuthContextType {
     // 상태
     user: User | null;
@@ -26,21 +23,17 @@ interface AuthContextType {
     isAuthenticated: boolean;
     onboardingCompleted: boolean;
     authToken: string | null;
-
     // 함수
     login: (token: string, userData: User, onboardingStatus: any) => Promise<LoginResult>;
     logout: (skipPushTokenRemoval?: boolean) => Promise<void>;
     checkAuthState: () => Promise<void>;
-
     // 유틸리티
     userType: 'user' | 'company' | null;
     isJobSeeker: boolean;
     isEmployer: boolean;
 }
-
 // Context 생성
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 // Hook
 export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
@@ -49,12 +42,10 @@ export const useAuth = (): AuthContextType => {
     }
     return context;
 };
-
 // Provider Props 타입
 interface AuthProviderProps {
     children: ReactNode;
 }
-
 // AuthProvider 컴포넌트
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -62,30 +53,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [onboardingCompleted, setOnboardingCompleted] = useState<boolean>(false);
     const [authToken, setAuthToken] = useState<string | null>(null);
-
     // 앱 시작 시 자동으로 세션 확인
     useEffect(() => {
         checkAuthState();
     }, []);
-
     // 세션 확인 함수
     const checkAuthState = async (): Promise<void> => {
         try {
             const token = await AsyncStorage.getItem('authToken');
             const userData = await AsyncStorage.getItem('userData');
             const onboardingStatus = await AsyncStorage.getItem('onboardingStatus');
-
-
             if (token) {
                 const decoded = jwtDecode(token);
                 const isExpired = decoded.exp! * 1000 < Date.now();
-
                 if (!isExpired && userData) {
                     setUser(JSON.parse(userData));
                     setIsAuthenticated(true);
                     setAuthToken(token); // 메모리에 토큰 캐시
                     updateTokenCache(token); // api.ts 토큰 캐시도 업데이트
-
                     // 온보딩 상태도 복원
                     if (onboardingStatus) {
                         const status = JSON.parse(onboardingStatus);
@@ -99,7 +84,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setIsLoading(false);
         }
     };
-
     // 로그인 함수
     const login = async (token: string, userData: User, onboardingStatus: any): Promise<LoginResult> => {
         try {
@@ -108,21 +92,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             await AsyncStorage.removeItem('userData');
             await AsyncStorage.removeItem('onboardingStatus');
             await AsyncStorage.removeItem('userProfile'); // 혹시 남아있을 경우 대비
-
             // ✅ 새로운 로그인 데이터 저장
             await AsyncStorage.setItem('authToken', token);
             await AsyncStorage.setItem('userData', JSON.stringify(userData));
             await AsyncStorage.setItem('onboardingStatus', JSON.stringify(onboardingStatus));
-
             // 상태 반영
             setUser(userData);
             setIsAuthenticated(true);
             setOnboardingCompleted(onboardingStatus.completed);
             setAuthToken(token); // 메모리에 토큰 캐시
             updateTokenCache(token); // api.ts 토큰 캐시도 업데이트
-
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
             return { success: true };
         } catch (error) {
             return {
@@ -131,7 +111,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             };
         }
     };
-
     // 로그아웃 함수
     const logout = async (skipPushTokenRemoval = false): Promise<void> => {
         // Remove push token before logout (unless explicitly skipped)
@@ -140,7 +119,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 await removePushToken(user.userId);
             } catch (error) {
                 // Ignore push token removal errors during logout
-                console.log('Push token removal skipped:', error);
+                // Push token removal skipped
             }
         }
         
@@ -149,16 +128,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await AsyncStorage.removeItem('userData');
         await AsyncStorage.removeItem('userProfile');
         delete axios.defaults.headers.common['Authorization'];
-
         setUser(null);
         setIsAuthenticated(false);
         setAuthToken(null); // 메모리 캐시도 클리어
         updateTokenCache(null); // api.ts 토큰 캐시도 클리어
-
         router.replace('/start');
-        console.log('로그아웃 완료');
+        // 로그아웃 완료
     };
-
     // 인증 정보 초기화
     const clearAuth = async (): Promise<void> => {
         await AsyncStorage.removeItem('authToken');
@@ -170,11 +146,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthToken(null); // 메모리 캐시도 클리어
         updateTokenCache(null); // api.ts 토큰 캐시도 클리어
     };
-
-
     // Memoize user object to prevent unnecessary re-renders
     const memoizedUser = useMemo(() => user, [user?.userId, user?.phone, user?.userType]);
-
     // Context value
     const value: AuthContextType = useMemo(() => ({
         // 상태
@@ -183,18 +156,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isAuthenticated,
         onboardingCompleted,
         authToken,
-
         // 함수
         login,
         logout,
         checkAuthState,
-
         // 유틸리티
         userType: memoizedUser?.userType || null,
         isJobSeeker: memoizedUser?.userType === 'user',
         isEmployer: memoizedUser?.userType === 'company',
     }), [memoizedUser, isLoading, isAuthenticated, onboardingCompleted, authToken]);
-
     return (
         <AuthContext.Provider value={value}>
             {children}

@@ -12,7 +12,6 @@ import { SuitabilityResult } from '@/lib/suitability/types'
 import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
 import { useTabBarVisibility } from '@/hooks/useTabBarVisibility';
 import { useTabBar } from '@/contexts/TabBarContext';
-
 interface UserKeyword {
     keyword: {
         id: number
@@ -20,7 +19,6 @@ interface UserKeyword {
         category: string
     }
 }
-
 interface JobSeeker {
     id: string
     name: string
@@ -35,12 +33,10 @@ interface JobSeeker {
     }
     user_keywords?: UserKeyword[]
 }
-
 interface MatchedKeywordWithCategory {
     keyword: string
     category: string
 }
-
 interface MatchedJobSeeker {
     user: JobSeeker
     matchedCount: number
@@ -48,13 +44,11 @@ interface MatchedJobSeeker {
     matchedKeywordsWithCategory?: MatchedKeywordWithCategory[]
     suitability?: SuitabilityResult
 }
-
 interface ApiResponse<T> {
     success: boolean
     data?: T
     error?: string
 }
-
 const Home2 = () => {
     const { user } = useAuth()
     const { isTabBarVisible, handleScroll } = useTabBarVisibility()
@@ -62,13 +56,11 @@ const Home2 = () => {
     const [matchedJobSeekers, setMatchedJobSeekers] = useState<MatchedJobSeeker[]>([])
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
-
     useEffect(() => {
         if (user) {
             fetchMatchedJobSeekers()
         }
     }, [user])
-
     // 홈화면 진입 시 알림 권한 요청
     useEffect(() => {
         const requestNotificationPermission = async () => {
@@ -79,14 +71,11 @@ const Home2 = () => {
                         await savePushToken(user.userId, pushToken);
                     }
                 } catch (error) {
-                    console.log('알림 권한 설정 중 오류:', error);
                 }
             }
         };
-
         requestNotificationPermission();
     }, [user?.userId]);
-
     // 매칭된 구직자 목록 가져오기 (서버에서 적합도 계산)
     const fetchMatchedJobSeekers = async () => {
         if (!user) return
@@ -99,18 +88,15 @@ const Home2 = () => {
                 setMatchedJobSeekers(response.data)
             }
         } catch (error) {
-            console.error('매칭된 구직자 조회 실패:', error)
         } finally {
             setLoading(false)
         }
     }
-
     const onRefresh = useCallback(async () => {
         setRefreshing(true)
         await fetchMatchedJobSeekers()
         setRefreshing(false)
     }, [user])
-
     const handleJobSeekerPress = (jobSeeker: JobSeeker) => {
         router.push({
             pathname: '/(pages)/(company)/job-seeker-detail',
@@ -119,19 +105,15 @@ const Home2 = () => {
             }
         })
     }
-
-
     if (loading) {
         return (
             <LoadingScreen />
         )
     }
-
     return (
         <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
             <Header />
-
             <FlatList
                 data={matchedJobSeekers}
                 keyExtractor={(item) => item.user.id}
@@ -169,5 +151,4 @@ const Home2 = () => {
         </View>
     )
 }
-
 export default Home2

@@ -1,13 +1,11 @@
 import React from "react";
 import {Text, TextInput, View} from "react-native";
 import {Dropdown} from "react-native-element-dropdown";
-
 interface Keyword {
     id: number;
     keyword: string;
     category: string;
 }
-
 interface PersonalInformationProps {
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
     name: string ,
@@ -20,9 +18,6 @@ interface PersonalInformationProps {
     setVisa: (visa: string) => void,
     keywords?: Keyword[];
 }
-
-
-
 export const PersonalInformation = ({
     t,
     name,
@@ -35,7 +30,6 @@ export const PersonalInformation = ({
     setVisa,
     keywords = []
 }: PersonalInformationProps) => {
-
     // DB에서 카테고리별 키워드 필터링
     const genderKeywords = keywords.filter(k => k.category === '성별' && k.keyword !== '상관없음')
     const anyGenderKeyword = keywords.find(k => k.category === '성별' && k.keyword === '상관없음')
@@ -67,9 +61,7 @@ export const PersonalInformation = ({
                 value: keyword.keyword
             }))
     ];
-
     return (
-
     <View className="mb-6 p-6">
         <Text className="text-lg font-bold mb-4">{t('apply.basic_info', '기본 정보')}</Text>
         <View className="mb-4">
@@ -113,7 +105,6 @@ export const PersonalInformation = ({
                 />
             </View>
         </View>
-
         <View className="mb-4">
             <Text className="text-gray-700 mb-2">{t('apply.visa_type', '비자 종류')}</Text>
             <Dropdown
@@ -135,6 +126,5 @@ export const PersonalInformation = ({
             />
         </View>
     </View>
-
     )
 }

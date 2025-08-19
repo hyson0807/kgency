@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const infoTranslations: TranslationData = {
     // Info 페이지
     'info.title': {

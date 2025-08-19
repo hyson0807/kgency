@@ -10,7 +10,6 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import {Info} from "@/components/job-seeker-detail/Info";
 import {UserKeywords} from "@/components/job-seeker-detail/UserKeywords";
 import { api } from '@/lib/api';
-
 interface UserInfo {
     age?: number
     gender?: string
@@ -22,7 +21,6 @@ interface UserInfo {
     preferred_days?: string[]
     preferred_times?: string[]
 }
-
 interface UserKeyword {
     keyword_id: number
     keyword: {
@@ -31,7 +29,6 @@ interface UserKeyword {
         category: string
     }
 }
-
 interface JobSeekerDetail {
     id: string
     name: string
@@ -41,7 +38,6 @@ interface JobSeekerDetail {
     user_info?: UserInfo
     user_keywords?: UserKeyword[]
 }
-
 interface GroupedKeywords {
     location: string[]
     moveable: boolean
@@ -54,12 +50,10 @@ interface GroupedKeywords {
     workDays?: string[]
     koreanLevel?: string[]
 }
-
 export default function JobSeekerDetail() {
     const params = useLocalSearchParams()
     const { userId, hideInterviewButton } = params
     const { showModal, ModalComponent } = useModal()
-
     const [jobSeeker, setJobSeeker] = useState<JobSeekerDetail | null>(null)
     const [loading, setLoading] = useState(true)
     const [groupedKeywords, setGroupedKeywords] = useState<GroupedKeywords>({
@@ -74,15 +68,11 @@ export default function JobSeekerDetail() {
         workDays: [],
         koreanLevel: []
     })
-
-
     useEffect(() => {
         if (userId) {
             fetchJobSeekerDetail()
         }
     }, [userId])
-
-
     const fetchJobSeekerDetail = async () => {
         try {
             const response = await api('GET', `/api/users/${userId}/details`);
@@ -90,7 +80,6 @@ export default function JobSeekerDetail() {
             if (!response.success) {
                 throw new Error(response.error);
             }
-
             const { profile, userInfo, keywords } = response.data;
             
             // 데이터 구조 재구성
@@ -104,7 +93,6 @@ export default function JobSeekerDetail() {
             };
             
             setJobSeeker(jobSeekerData);
-
             // 키워드 분류
             if (keywords && keywords.length > 0) {
                 const grouped: GroupedKeywords = {
@@ -119,7 +107,6 @@ export default function JobSeekerDetail() {
                     workDays: [],
                     koreanLevel: []
                 }
-
                 keywords.forEach((keyword: any) => {
                     switch (keyword.category) {
                         case '지역':
@@ -145,25 +132,19 @@ export default function JobSeekerDetail() {
                             break
                     }
                 })
-
                     setGroupedKeywords(grouped)
                 }
         } catch (error) {
-            console.error('구직자 정보 조회 실패:', error)
             showModal('오류', '구직자 정보를 불러오는데 실패했습니다.', 'warning')
         } finally {
             setLoading(false)
         }
     }
-
-
-
     if (loading) {
         return (
             <LoadingScreen />
         )
     }
-
     if (!jobSeeker) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -176,7 +157,6 @@ export default function JobSeekerDetail() {
             </SafeAreaView>
         )
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
@@ -184,7 +164,6 @@ export default function JobSeekerDetail() {
                 <Back />
                 <Text className="text-lg font-bold ml-4">구직자 상세 정보</Text>
             </View>
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -192,12 +171,10 @@ export default function JobSeekerDetail() {
             >
                 {/* 기본 정보 */}
                 <Info jobSeeker={jobSeeker} />
-
                 <UserKeywords groupedKeywords={groupedKeywords} />
                 
                 
             </ScrollView>
-
             {/* 하단 버튼 - hideInterviewButton이 'true'가 아닐 때만 표시 */}
             {hideInterviewButton !== 'true' && (
                 <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
@@ -219,8 +196,6 @@ export default function JobSeekerDetail() {
                     </TouchableOpacity>
                 </View>
             )}
-
-
             <ModalComponent />
         </SafeAreaView>
     )

@@ -2,8 +2,6 @@ import {router} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
 import {TouchableOpacity} from "react-native";
 import React from "react";
-
-
 export const FloatingButton = () => {
     return (
         <TouchableOpacity

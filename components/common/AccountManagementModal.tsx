@@ -2,14 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from '@/contexts/TranslationContext';
-
 interface AccountManagementModalProps {
   visible: boolean;
   onClose: () => void;
   onLogout: () => void;
   onDeleteAccount: () => void;
 }
-
 export default function AccountManagementModal({
   visible,
   onClose,
@@ -17,7 +15,6 @@ export default function AccountManagementModal({
   onDeleteAccount,
 }: AccountManagementModalProps) {
   const { t } = useTranslation();
-
   return (
     <Modal
       visible={visible}
@@ -36,7 +33,6 @@ export default function AccountManagementModal({
               <MaterialIcons name="close" size={24} color="#6B7280" />
             </TouchableOpacity>
           </View>
-
           {/* Options */}
           <View className="space-y-4 gap-2">
             {/* Logout */}
@@ -49,7 +45,6 @@ export default function AccountManagementModal({
                 {t('settings.logout', '로그아웃')}
               </Text>
             </TouchableOpacity>
-
             {/* Delete Account */}
             <TouchableOpacity
               onPress={onDeleteAccount}

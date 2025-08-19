@@ -2,7 +2,6 @@
 import { View, Text, Modal, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
-
 interface CustomModalProps {
     visible: boolean;
     onClose: () => void;
@@ -15,7 +14,6 @@ interface CustomModalProps {
     showCancel?: boolean;
     icon?: string;
 }
-
 const CustomModal: React.FC<CustomModalProps> = ({
                                                      visible,
                                                      onClose,
@@ -50,9 +48,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                 };
         }
     };
-
     const iconConfig = getIconConfig();
-
     return (
         <Modal
             animationType="fade"
@@ -75,12 +71,10 @@ const CustomModal: React.FC<CustomModalProps> = ({
                             {title}
                         </Text>
                     </View>
-
                     {/* 메시지 */}
                     <Text className="text-gray-600 text-center mb-6">
                         {message}
                     </Text>
-
                     {/* 버튼들 */}
                     <View className={showCancel ? "flex-row gap-3" : ""}>
                         {showCancel && (
@@ -93,7 +87,6 @@ const CustomModal: React.FC<CustomModalProps> = ({
                                 </Text>
                             </TouchableOpacity>
                         )}
-
                         <TouchableOpacity
                             onPress={() => {
                                 if (onConfirm) {
@@ -116,5 +109,4 @@ const CustomModal: React.FC<CustomModalProps> = ({
         </Modal>
     );
 };
-
 export default CustomModal;

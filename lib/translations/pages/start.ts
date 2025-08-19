@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const startTranslations: TranslationData = {
     'start.title': {
         en: 'Looking for a job?',

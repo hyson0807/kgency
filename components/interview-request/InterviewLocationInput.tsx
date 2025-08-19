@@ -1,12 +1,10 @@
 import React from 'react'
 import { View, Text, TextInput } from 'react-native'
-
 interface InterviewLocationInputProps {
     value: string
     onChangeText: (text: string) => void
     placeholder?: string
 }
-
 export default function InterviewLocationInput({ 
     value, 
     onChangeText, 

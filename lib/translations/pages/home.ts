@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const homeTranslations : TranslationData = {
     // 홈 페이지
     'home.title': {

@@ -2,26 +2,20 @@ import {Text, View} from "react-native";
 import {Dropdown} from "react-native-element-dropdown";
 import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
-
-
 interface Keyword {
     id: number;
     keyword: string;
     category: string;
 }
-
-
 interface CountryProps {
     keywords: Keyword[],
     selectedCountry: number | null,
     setSelectedCountry: (countryId: number | null) => void,
 }
-
 export const Country = ({
     keywords,
     selectedCountry,
     setSelectedCountry,
-
                         }: CountryProps) => {
     const {t, translateDB} = useTranslation();
     const countryKeywords = keywords.filter(k => k.category.trim() === '국가')
@@ -43,7 +37,6 @@ export const Country = ({
                 value: country.id
             }))
     ];
-
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
             <Text className="text-lg font-semibold mb-4 text-gray-900">{t('info.country', '국가')}</Text>

@@ -1,7 +1,6 @@
 import {Text, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import React from "react";
-
 interface GroupedKeywords {
     location: string[]
     moveable: boolean
@@ -14,21 +13,17 @@ interface GroupedKeywords {
     workDays?: string[]
     koreanLevel?: string[]
 }
-
 interface UserKeywordsProps {
     groupedKeywords: GroupedKeywords,
 }
-
 export const UserKeywords = ({
     groupedKeywords,
                              }: UserKeywordsProps) => {
     return (
         <View className="flex-1">
-
             {/* 희망 근무지역 */}
             <View className="p-6 border-b border-gray-100">
                 <Text className="text-lg font-semibold mb-4">희망 근무지역</Text>
-
                 {groupedKeywords.location.length > 0 ? (
                     <View className="space-y-2">
                         <View className="flex-row flex-wrap gap-2">
@@ -38,7 +33,6 @@ export const UserKeywords = ({
                                 </View>
                             ))}
                         </View>
-
                         {groupedKeywords.moveable && (
                             <View className="flex-row items-center mt-2">
                                 <Ionicons name="checkmark-circle" size={20} color="#16a34a" />
@@ -50,7 +44,6 @@ export const UserKeywords = ({
                     <Text className="text-gray-500">등록된 지역이 없습니다</Text>
                 )}
             </View>
-
             {/* 국가 */}
             {groupedKeywords.country.length > 0 && (
                 <View className="p-6 border-b border-gray-100">
@@ -64,7 +57,6 @@ export const UserKeywords = ({
                     </View>
                 </View>
             )}
-
             {/* 희망 직종 */}
             {groupedKeywords.jobs.length > 0 && (
                 <View className="p-6 border-b border-gray-100">
@@ -78,8 +70,6 @@ export const UserKeywords = ({
                     </View>
                 </View>
             )}
-
-
             {/* 한국어 수준 */}
             {groupedKeywords.koreanLevel && groupedKeywords.koreanLevel.length > 0 && (
                 <View className="p-6 border-b border-gray-100">
@@ -93,7 +83,6 @@ export const UserKeywords = ({
                     </View>
                 </View>
             )}
-
             {/* 원하는 혜택 */}
             {groupedKeywords.conditions.length > 0 && (
                 <View className="p-6">

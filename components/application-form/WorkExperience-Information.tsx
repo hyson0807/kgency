@@ -1,6 +1,5 @@
 import React from 'react'
 import {Text, TextInput, TouchableOpacity, View} from "react-native";
-
 interface WorkExperienceInformationProps {
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
     formData: {
@@ -24,7 +23,6 @@ interface WorkExperienceInformationProps {
         setExperienceContent: (value: string) => void;
     };
 }
-
 export const WorkExperienceInformation = ({
     t,
     formData,
@@ -39,7 +37,6 @@ export const WorkExperienceInformation = ({
         experience,
         experienceContent
     } = formData;
-
     const {
         setHowLong,
         toggleDay,
@@ -51,7 +48,6 @@ export const WorkExperienceInformation = ({
         setExperience,
         setExperienceContent
     } = handlers;
-
     const workPeriodOptions = [
         { label: t('apply.period_1month', '1개월'), value: '1개월' },
         { label: t('apply.period_3months', '3개월'), value: '3개월' },
@@ -84,11 +80,9 @@ export const WorkExperienceInformation = ({
         { label: t('apply.time_evening', '저녁'), value: '저녁' },
         { label: t('apply.time_dawn', '새벽'), value: '새벽' }
     ]
-
     return (
         <View className="mb-6 gap-4 p-6">
             <Text className="text-lg font-bold mb-4">{t('apply.career_info', '경력 및 근무 정보')}</Text>
-
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">{t('apply.desired_period', '희망 근무 기간')}</Text>
                 <View className="flex-row gap-2 flex-wrap">
@@ -109,7 +103,6 @@ export const WorkExperienceInformation = ({
                     ))}
                 </View>
             </View>
-
             {/* 희망 근무 요일 */}
             <View className="mb-4">
                 <View className="flex-row items-center justify-start gap-4 mb-2">
@@ -154,7 +147,6 @@ export const WorkExperienceInformation = ({
                     ))}
                 </View>
             </View>
-
             {/* 희망 시간대 */}
             <View className="mb-4">
                 <View className="flex-row items-center justify-start gap-4 mb-2">
@@ -199,7 +191,6 @@ export const WorkExperienceInformation = ({
                     ))}
                 </View>
             </View>
-
             {/* 관련 경력 */}
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">{t('apply.related_experience', '관련 경력')}</Text>
@@ -221,7 +212,6 @@ export const WorkExperienceInformation = ({
                     ))}
                 </View>
             </View>
-
             {/* 경력 내용 */}
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">{t('apply.experience_detail', '경력 내용')}</Text>

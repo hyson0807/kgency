@@ -3,16 +3,13 @@ import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import Back from '@/components/back'
-
 export default function ViewMyResume() {
     const params = useLocalSearchParams()
     const { applicationId, companyName, jobTitle, resume, appliedAt } = params
-
     const formatDate = (dateString: string | string[]) => {
         const date = new Date(Array.isArray(dateString) ? dateString[0] : dateString)
         return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
@@ -20,7 +17,6 @@ export default function ViewMyResume() {
                 <Back />
                 <Text className="text-lg font-bold ml-4">제출한 이력서</Text>
             </View>
-
             {/* 공고 정보 */}
             <View className="bg-blue-50 mx-4 mt-4 p-4 rounded-xl">
                 <View>
@@ -36,7 +32,6 @@ export default function ViewMyResume() {
                     </Text>
                 </View>
             </View>
-
             {/* 이력서 내용 */}
             <ScrollView className="flex-1 px-4 py-4">
                 <View className="bg-gray-50 p-6 rounded-xl">
@@ -44,10 +39,7 @@ export default function ViewMyResume() {
                         {Array.isArray(resume) ? resume[0] : resume}
                     </Text>
                 </View>
-
-
             </ScrollView>
-
             {/* 하단 버튼 */}
             <View className="px-4 pb-4">
                 <TouchableOpacity

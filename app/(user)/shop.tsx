@@ -6,27 +6,22 @@ import type { AndroidPurchaseData, IOSPurchaseData, PurchaseVerificationRequest 
 // IAP 라이브러리는 development build에서만 동작
 let RNIap: any = null;
 let isIAPAvailable = false;
-
 try {
   const iap = require('react-native-iap');
   RNIap = iap.default || iap;
   // IAP가 제대로 로드되었는지 확인
   if (RNIap && typeof RNIap.initConnection === 'function') {
     isIAPAvailable = true;
-    console.log('react-native-iap loaded successfully');
   } else {
-    console.log('react-native-iap loaded but initConnection not available');
     RNIap = null;
   }
 } catch (error) {
-  console.log('react-native-iap not available in current environment:', error);
   RNIap = null;
 }
 import { api } from '@/lib/api';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useModal } from '@/hooks/useModal';
-
 interface TokenPackage {
   id: string;
   tokens: number;
@@ -34,7 +29,6 @@ interface TokenPackage {
   originalPrice?: number;
   isPopular?: boolean;
 }
-
 const Shop = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -43,7 +37,6 @@ const Shop = () => {
   const [purchasing, setPurchasing] = useState(false);
   const [loading, setLoading] = useState(true);
   const { showModal, ModalComponent } = useModal();
-
   const tokenPackages: TokenPackage[] = [
     {
       id: Platform.OS === 'android' ? 'token_5_pack_android' : 'token_5_pack',
@@ -52,7 +45,6 @@ const Shop = () => {
       isPopular: true
     }
   ];
-
   useEffect(() => {
     initIAP();
     fetchTokenBalance();
@@ -62,71 +54,52 @@ const Shop = () => {
         try {
           RNIap.endConnection();
         } catch (error) {
-          console.log('Error closing IAP connection:', error);
         }
       }
     };
   }, []);
-
   const initIAP = async () => {
     setLoading(true);
     
     try {
       if (!isIAPAvailable) {
-        console.log('IAP not available - running in Expo Go or IAP not properly installed');
         return;
       }
       
-      console.log('Initializing IAP connection...');
       await RNIap.initConnection();
       
       // 앱 시작 시 미소비 구매 확인 및 처리 (Android용)
       if (Platform.OS === 'android') {
         try {
-          console.log('Checking for unconsumed purchases...');
           const purchases = await RNIap.getAvailablePurchases();
           
           if (purchases && purchases.length > 0) {
-            console.log(`Found ${purchases.length} unconsumed purchases`);
             
             for (const purchase of purchases) {
               if ((purchase.productId === 'token_5_pack' || purchase.productId === 'token_5_pack_android') && purchase.purchaseToken) {
-                console.log('Consuming previous purchase:', purchase.productId);
                 try {
                   await RNIap.consumePurchaseAndroid({
                     purchaseToken: purchase.purchaseToken,
                     developerPayload: ''
                   });
-                  console.log('Previous purchase consumed successfully');
                 } catch (consumeError) {
-                  console.log('Error consuming previous purchase:', consumeError);
                 }
               }
             }
           }
         } catch (error) {
-          console.log('Error checking available purchases:', error);
         }
       }
       
-      console.log('Getting products...');
       const productId = Platform.OS === 'android' ? 'token_5_pack_android' : 'token_5_pack';
       const products = await RNIap.getProducts({ skus: [productId] });
-      console.log('Raw IAP products response:', products);
       setProducts(products);
       
       if (products && products.length > 0) {
-        console.log('IAP Products loaded successfully:', products);
       } else {
-        console.log('No IAP products found - this could be because:');
-        console.log('1. Running on iOS Simulator (IAP not supported)');
-        console.log('2. Product not submitted/approved in App Store Connect');
-        console.log('3. Not signed in to sandbox account on real device');
-        console.log('4. Bundle identifier mismatch');
       }
       
     } catch (error) {
-      console.error('IAP initialization failed:', error);
       
       // 개발 환경에서는 에러 메시지를 표시하지 않음
       if (!__DEV__) {
@@ -140,38 +113,30 @@ const Shop = () => {
       setLoading(false);
     }
   };
-
   const fetchTokenBalance = async () => {
     if (!user) {
-      console.log('No user logged in, skipping token balance fetch');
       return;
     }
     
     try {
-      console.log('Fetching token balance for user:', user.userId);
       const response = await api('GET', '/api/purchase/tokens/balance');
-      console.log('Token balance response:', response);
       
       if (response?.success) {
         setUserTokens(response.balance || 0);
       } else {
-        console.log('Token balance fetch unsuccessful:', response);
         // 기본값 0으로 설정
         setUserTokens(0);
       }
     } catch (error: any) {
-      console.error('Failed to fetch token balance:', error);
       
       // Network error인 경우 사용자에게 알림
       if (error?.message?.includes('Network Error') && __DEV__) {
-        console.log('Network error - server might not be running');
       }
       
       // 기본값 0으로 설정
       setUserTokens(0);
     }
   };
-
   const handlePurchase = async (packageItem: TokenPackage) => {
     if (purchasing) return;
     
@@ -189,7 +154,6 @@ const Shop = () => {
       '취소'
     );
   };
-
   const processPurchase = async (packageItem: TokenPackage) => {
     if (purchasing) return;
     
@@ -205,12 +169,10 @@ const Shop = () => {
         return;
       }
       
-      console.log('Starting purchase for:', packageItem.id);
       
       let purchase: any;
       
       // iOS와 Android 통합 처리 - 동일한 방식 사용
-      console.log(`${Platform.OS} purchase starting...`);
       
       if (Platform.OS === 'android') {
         // Android: skus 배열로 전달
@@ -224,8 +186,6 @@ const Shop = () => {
         });
       }
       
-      console.log(`${Platform.OS} purchase completed:`, purchase);
-
       if (!purchase) {
         throw new Error('Purchase object not received');
       }
@@ -241,7 +201,6 @@ const Shop = () => {
         '5개의 토큰이 지급되었습니다!',
         'info'
       );
-
     } catch (error: any) {
       // 사용자가 취소한 경우 - iOS와 Android 공통 처리
       const isUserCancellation = 
@@ -257,14 +216,11 @@ const Shop = () => {
           error.message.includes('already owned') ||
           error.message.includes('SKErrorDomain error 2') // iOS 취소 에러
         ));
-
       if (isUserCancellation) {
-        console.log('User cancelled the purchase (no error shown):', error.code || error.message);
         return; // 에러 메시지를 표시하지 않음
       }
       
       // 취소가 아닌 실제 에러인 경우만 에러 로그 출력
-      console.error('Purchase failed (real error):', error);
       
       let errorMessage = '결제 처리 중 오류가 발생했습니다.';
       
@@ -290,15 +246,11 @@ const Shop = () => {
       setPurchasing(false);
     }
   };
-
   const verifyPurchaseWithServer = async (purchase: AndroidPurchaseData | IOSPurchaseData) => {
     const platform = Platform.OS as 'ios' | 'android';
     const payload: PurchaseVerificationRequest = { platform };
     
     // Android 구매 객체 디버깅
-    console.log('=== Purchase Object Debug ===');
-    console.log('Full purchase object:', JSON.stringify(purchase, null, 2));
-    console.log('Purchase keys:', Object.keys(purchase));
     
     // 플랫폼별 데이터 설정 (타입 안전성 강화)
     if (platform === 'ios') {
@@ -310,30 +262,19 @@ const Shop = () => {
       const androidToken = androidPurchase.purchaseToken;
       
       if (!androidToken) {
-        console.error('Android purchase token not found in:', purchase);
-        console.error('Available keys:', Object.keys(purchase));
         // 토큰이 없으면 에러 발생
         throw new Error('구매 토큰을 찾을 수 없습니다. 구매 정보가 올바르지 않습니다.');
       }
       
       payload.purchaseToken = androidToken;
     }
-
-    console.log('Verifying purchase with server:');
-    console.log('Platform:', platform);
-    console.log('Purchase object keys:', Object.keys(purchase));
-    console.log('Purchase token:', payload.purchaseToken ? 'Present' : payload.receiptData ? 'Receipt Present' : 'Missing');
-    console.log('Payload being sent:', JSON.stringify(payload, null, 2));
     
     const response = await api('POST', '/api/purchase/verify', payload);
     
-    console.log('Server response:', JSON.stringify(response, null, 2));
     
     if (!response.success) {
       throw new Error('Purchase verification failed: ' + response.error);
     }
-
-    console.log('Purchase verified successfully:', response);
     
     // 구매 완료 처리
     if (isIAPAvailable && RNIap && typeof RNIap.finishTransaction === 'function') {
@@ -348,15 +289,12 @@ const Shop = () => {
               purchaseToken: androidPurchase.purchaseToken,
               developerPayload: ''
             });
-            console.log('Purchase consumed successfully');
           } catch (error) {
-            console.log('Error consuming purchase:', error);
           }
         }
       }
     }
   };
-
   return (
     <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
       <ScrollView className="flex-1">
@@ -364,7 +302,6 @@ const Shop = () => {
           <Text className="text-2xl font-bold text-gray-900 mb-2">상점</Text>
           <Text className="text-gray-600">토큰을 구매하여 더 많은 기능을 이용해보세요</Text>
         </View>
-
         <View className="bg-white mx-4 mt-6 rounded-xl shadow-sm border border-gray-200 p-6">
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-lg font-semibold text-gray-900">내 토큰</Text>
@@ -393,7 +330,6 @@ const Shop = () => {
             <Ionicons name="chevron-forward" size={20} color="#6B7280" />
           </TouchableOpacity>
         </View>
-
         {/* 개발 환경 안내 */}
         {!isIAPAvailable && __DEV__ && (
           <View className="bg-orange-50 mx-4 rounded-xl shadow-sm border border-orange-200 p-4 mb-4">
@@ -412,7 +348,6 @@ const Shop = () => {
             </View>
           </View>
         )}
-
         <View className="px-4 mt-8 mb-6">
           <Text className="text-lg font-semibold text-gray-900 mb-4">토큰 패키지</Text>
           
@@ -444,7 +379,6 @@ const Shop = () => {
                   </View>
                 </View>
               </View>
-
               <View className="flex-row items-center justify-between mb-4">
                 <View>
                   {packageItem.originalPrice && (
@@ -472,7 +406,6 @@ const Shop = () => {
                   </View>
                 )}
               </View>
-
               <TouchableOpacity
                 className={`py-4 rounded-xl ${
                   purchasing || loading ? 'bg-gray-400' : !isIAPAvailable ? 'bg-orange-500' : 'bg-blue-600'
@@ -487,7 +420,6 @@ const Shop = () => {
             </View>
           ))}
         </View>
-
         <View className="bg-white mx-4 rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <Text className="text-lg font-semibold text-gray-900 mb-3">토큰 사용 안내</Text>
           <View className="space-y-2">
@@ -510,5 +442,4 @@ const Shop = () => {
     </View>
   );
 };
-
 export default Shop;

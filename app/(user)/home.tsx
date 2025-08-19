@@ -13,7 +13,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
 import { useTabBarVisibility } from '@/hooks/useTabBarVisibility';
 import { useTabBar } from '@/contexts/TabBarContext';
-
 // 타입은 hooks/useMatchedJobPostings에서 import
 interface JobPosting {
     id: string
@@ -39,13 +38,11 @@ interface JobPosting {
         }
     }[]
 }
-
 interface MatchedKeyword {
     id: number
     keyword: string
     category: string
 }
-
 // MatchedPosting 인터페이스에 suitability 추가
 interface MatchedPosting {
     posting: JobPosting
@@ -64,13 +61,11 @@ interface MatchedPosting {
     }
     suitability: SuitabilityResult // 추가
 }
-
 const Home = () => {
     const { t } = useTranslation()
     const { user } = useAuth()
     const { isTabBarVisible, handleScroll } = useTabBarVisibility()
     const { tabBarHeight } = useTabBar()
-
     // 커스텀 훅에서 모든 데이터와 함수 가져오기
     const {
         matchedPostings,
@@ -79,7 +74,6 @@ const Home = () => {
         appliedPostings,
         onRefresh
     } = useMatchedJobPostings()
-
     // 홈화면 진입 시 알림 권한 요청
     useEffect(() => {
         const requestNotificationPermission = async () => {
@@ -90,21 +84,16 @@ const Home = () => {
                         await savePushToken(user.userId, pushToken);
                     }
                 } catch (error) {
-                    console.log('알림 권한 설정 중 오류:', error);
+                    // 알림 권한 설정 중 오류
                 }
             }
         };
-
         requestNotificationPermission();
     }, [user?.userId]);
-
-
-
     const renderPosting = ({ item }: { item: MatchedPosting }) => {
         const { posting, matchedCount, matchedKeywords, suitability } = item
         const hasApplied = appliedPostings.includes(posting.id)
         const hasMatches = matchedCount > 0
-
         return (
             <JobPostingCard
                 posting={posting}
@@ -115,18 +104,14 @@ const Home = () => {
             />
         )
     }
-
-
     if (loading) {
         return (
             <LoadingScreen />
         )
     }
-
     return (
         <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             <Header/>
-
             <FlatList
                 data={matchedPostings}
                 keyExtractor={(item) => item.posting.id}
@@ -169,5 +154,4 @@ const Home = () => {
         </View>
     )
 }
-
 export default Home

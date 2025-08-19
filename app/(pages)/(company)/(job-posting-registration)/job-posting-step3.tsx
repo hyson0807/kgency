@@ -11,7 +11,6 @@ import WorkConditionsSelector from '@/components/WorkConditionsSelector'
 import { BaseKeywordSelector } from '@/components/common/BaseKeywordSelector';
 import { useKeywordSelection } from '@/hooks/useKeywordSelection';
 import { useJobPostingStore } from '@/stores/jobPostingStore'
-
 // Step 3: 인재 선호 정보 입력 및 최종 저장 페이지
 const JobPostingStep3 = () => {
     const { keywords, loading: keywordsLoading } = useUserKeywords()
@@ -34,7 +33,6 @@ const JobPostingStep3 = () => {
     
     const [loading, setLoading] = useState(false)
     const { showModal, ModalComponent, hideModal } = useModal()
-
     // 카테고리별 키워드 필터링
     const countryKeywords = keywords.filter(k => k.category === '국가' && k.keyword !== '상관없음')
     const anyCountryKeyword = keywords.find(k => k.category === '국가' && k.keyword === '상관없음')
@@ -49,32 +47,26 @@ const JobPostingStep3 = () => {
     const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준' && k.keyword !== '상관없음')
     const anyKoreanLevelKeyword = keywords.find(k => k.category === '한국어수준' && k.keyword === '상관없음')
     const workDayKeywords = keywords.filter(k => k.category === '근무요일')
-
     // 커스텀 훅을 사용한 키워드 선택 로직 (기존 핸들러들을 대체)
     const { handleToggle: toggleJob } = useKeywordSelection({
         keywords: jobKeywords,
         selectedIds: step3Data.selectedJobs,
         onSelectionChange: setSelectedJobs
     })
-
     const { handleToggle: toggleCondition } = useKeywordSelection({
         keywords: conditionKeywords,
         selectedIds: step3Data.selectedConditions,
         onSelectionChange: setSelectedConditions
     })
-
     // 직종 및 근무조건 토글은 위의 useKeywordSelection 훅에서 처리됨
-
     // 편집 모드일 때 기존 데이터 로드
     useEffect(() => {
         if (step1Data.isEditMode && step1Data.jobPostingId && keywords.length > 0) {
             loadJobPostingStep3Data()
         }
     }, [step1Data.isEditMode, step1Data.jobPostingId, keywords])
-
     const loadJobPostingStep3Data = async () => {
         if (!step1Data.jobPostingId) return
-
         try {
             // 공고 키워드 조회
             const keywordResponse = await api('GET', `/api/job-posting-keyword/${step1Data.jobPostingId}`)
@@ -140,10 +132,8 @@ const JobPostingStep3 = () => {
                 setSelectedKoreanLevels(koreanLevels)
             }
         } catch (error) {
-            console.error('Step3 데이터 로드 실패:', error)
         }
     }
-
     // 최종 저장 및 완료
     const handleSubmit = async () => {
         // 유효성 검사 - 국가는 비어있어도 됨 (자동으로 상관없음 추가)
@@ -151,11 +141,9 @@ const JobPostingStep3 = () => {
             showModal('알림', '필수 정보를 모두 선택해주세요. (모집 직종)')
             return
         }
-
         setLoading(true)
         try {
             // Zustand에서 모든 단계의 데이터를 가져옴
-
             // 공고 저장/업데이트
             const jobPostingData = {
                 title: step1Data.jobTitle,
@@ -175,10 +163,8 @@ const JobPostingStep3 = () => {
                 special_notes: step1Data.specialNotes,
                 is_active: step3Data.isPostingActive
             }
-
             let savedPostingId = step1Data.jobPostingId
             let postingResponse: any
-
             if (step1Data.isEditMode && step1Data.jobPostingId) {
                 // 기존 공고 업데이트
                 postingResponse = await api('PUT', `/api/job-postings/${step1Data.jobPostingId}`, jobPostingData)
@@ -189,11 +175,9 @@ const JobPostingStep3 = () => {
                     savedPostingId = postingResponse.data.id
                 }
             }
-
             if (!postingResponse.success) {
                 throw new Error(postingResponse.message || '공고 저장에 실패했습니다.')
             }
-
             // 키워드 업데이트
             if (savedPostingId) {
                 const selectedWorkDayKeywordIds = step2Data.workingDays
@@ -202,7 +186,6 @@ const JobPostingStep3 = () => {
                         return keyword?.id
                     })
                     .filter((id: number | undefined): id is number => id !== undefined) || []
-
                 // 선택되지 않은 카테고리에 상관없음 추가
                 const countriesToSave = step3Data.selectedCountries.length === 0 && anyCountryKeyword
                     ? [anyCountryKeyword.id]
@@ -223,7 +206,6 @@ const JobPostingStep3 = () => {
                 const koreanLevelsToSave = step3Data.selectedKoreanLevels.length === 0 && anyKoreanLevelKeyword
                     ? [anyKoreanLevelKeyword.id]
                     : step3Data.selectedKoreanLevels
-
                 // 모든 선택된 키워드 통합
                 const allSelectedKeywords = [
                     ...countriesToSave,
@@ -236,20 +218,16 @@ const JobPostingStep3 = () => {
                     ...koreanLevelsToSave,
                     ...selectedWorkDayKeywordIds
                 ].filter(Boolean)
-
                 // 키워드 업데이트 API 호출
                 const keywordResponse = await api('POST', `/api/job-posting-keyword/${savedPostingId}`, {
                     keywordIds: allSelectedKeywords
                 })
-
                 if (!keywordResponse.success) {
                     throw new Error(keywordResponse.message || '키워드 저장에 실패했습니다.')
                 }
             }
-
             // 저장된 데이터 정리
             resetAllData()
-
             showModal(
                 '"정해둔 시간에만 면접신청이 들어옵니다"',
                 '적합도 90% 이상 인재들이 사장님의 일정에 맞춰 신청합니다. 시간을 미리 선택해주세요',
@@ -259,15 +237,12 @@ const JobPostingStep3 = () => {
                     router.replace('/(company)/interview-calendar?tab=slots')
                 }
             )
-
         } catch (error) {
-            console.error('저장 실패:', error)
             showModal('오류', '저장 중 문제가 발생했습니다.', 'warning')
         } finally {
             setLoading(false)
         }
     }
-
     if (keywordsLoading) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -277,7 +252,6 @@ const JobPostingStep3 = () => {
             </SafeAreaView>
         )
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
@@ -287,7 +261,6 @@ const JobPostingStep3 = () => {
                     {step1Data.isEditMode ? '채용 공고 수정' : '채용 공고 등록'} (3/3)
                 </Text>
             </View>
-
             {/* 진행 상황 인디케이터 */}
             <View className="flex-row items-center px-6 py-4 bg-gray-50">
                 <View className="flex-1 flex-row items-center">
@@ -304,7 +277,6 @@ const JobPostingStep3 = () => {
                     </View>
                 </View>
             </View>
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -315,7 +287,6 @@ const JobPostingStep3 = () => {
                         <Text className="text-xl font-bold mb-2">원하는 인재상을 선택해주세요</Text>
                         <Text className="text-gray-600 mb-6">공고에 적합한 인재를 찾아드리겠습니다.</Text>
                     </View>
-
                     {/* 6. 직종 선택 (필수) */}
                     <JobPreferencesSelector
                         jobs={jobKeywords}
@@ -323,7 +294,6 @@ const JobPostingStep3 = () => {
                         onToggle={toggleJob}
                         title="모집 직종 *"
                     />
-
                     {/* 1. 선호 국가 선택 (필수) */}
                     <BaseKeywordSelector
                         title="선호 국가"
@@ -336,7 +306,6 @@ const JobPostingStep3 = () => {
                         enableSearch={true}
                         required={false}
                     />
-
                     {/* 2. 선호 나이대 */}
                     <BaseKeywordSelector
                         title="선호 나이대"
@@ -348,7 +317,6 @@ const JobPostingStep3 = () => {
                         showNoPreferenceOption={false}
                         enableSearch={true}
                     />
-
                     {/* 3. 선호 성별 */}
                     <BaseKeywordSelector
                         title="선호 성별"
@@ -360,7 +328,6 @@ const JobPostingStep3 = () => {
                         showNoPreferenceOption={false}
                         enableSearch={false}
                     />
-
                     {/* 4. 선호 비자 */}
                     <BaseKeywordSelector
                         title="선호 비자"
@@ -372,7 +339,6 @@ const JobPostingStep3 = () => {
                         showNoPreferenceOption={false}
                         enableSearch={true}
                     />
-
                     {/* 5. 선호 한국어 수준 */}
                     <BaseKeywordSelector
                         title="선호 한국어 수준"
@@ -384,9 +350,6 @@ const JobPostingStep3 = () => {
                         showNoPreferenceOption={false}
                         enableSearch={true}
                     />
-
-
-
                     {/* 7. 근무조건 선택 */}
                     <WorkConditionsSelector
                         conditions={conditionKeywords}
@@ -394,7 +357,6 @@ const JobPostingStep3 = () => {
                         onToggle={toggleCondition}
                         title="제공 조건"
                     />
-
                     {/* 8. 공고 상태 (필수 항목 완료 후 표시) */}
                     {step3Data.selectedJobs.length > 0 && (
                         <View className="p-6">
@@ -414,7 +376,6 @@ const JobPostingStep3 = () => {
                     )}
                 </View>
             </ScrollView>
-
             {/* 하단 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
@@ -429,10 +390,8 @@ const JobPostingStep3 = () => {
                     </Text>
                 </TouchableOpacity>
             </View>
-
             <ModalComponent/>
         </SafeAreaView>
     )
 }
-
 export default JobPostingStep3

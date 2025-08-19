@@ -3,11 +3,9 @@ import { router } from 'expo-router';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserInfoStore } from '@/stores/userInfoStore';
 import LoadingScreen from '@/components/common/LoadingScreen';
-
 const Info = () => {
     const { profile, loading } = useProfile();
     const { resetForm, setCurrentStep } = useUserInfoStore();
-
     useEffect(() => {
         if (!loading && profile) {
             // 폼 초기화 및 적절한 페이지로 리다이렉트
@@ -24,9 +22,7 @@ const Info = () => {
             }
         }
     }, [profile, loading]);
-
     // 로딩 중이거나 리다이렉트 대기 중
     return <LoadingScreen />;
 };
-
 export default Info;

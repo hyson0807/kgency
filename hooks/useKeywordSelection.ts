@@ -1,17 +1,14 @@
 import { useCallback } from 'react'
-
 interface Keyword {
     id: number
     keyword: string
     category: string
 }
-
 interface UseKeywordSelectionProps {
     keywords: Keyword[]
     selectedIds: number[]
     onSelectionChange: (newIds: number[]) => void
 }
-
 export const useKeywordSelection = ({
     keywords,
     selectedIds,
@@ -22,7 +19,6 @@ export const useKeywordSelection = ({
         const allIds = keywords.map(k => k.id)
         onSelectionChange(allIds)
     }, [keywords, onSelectionChange])
-
     // 개별 선택 핸들러
     const handleSelect = useCallback((item: any) => {
         if (item.value === 'all') {
@@ -33,17 +29,14 @@ export const useKeywordSelection = ({
             }
         }
     }, [selectedIds, onSelectionChange, handleSelectAll])
-
     // 개별 제거 핸들러
     const handleRemove = useCallback((id: number) => {
         onSelectionChange(selectedIds.filter(selectedId => selectedId !== id))
     }, [selectedIds, onSelectionChange])
-
     // 전체 제거 핸들러
     const handleRemoveAll = useCallback(() => {
         onSelectionChange([])
     }, [onSelectionChange])
-
     // 토글 핸들러 (기존 toggleJob, toggleCondition 로직)
     const handleToggle = useCallback((id: number) => {
         const newIds = selectedIds.includes(id)
@@ -51,7 +44,6 @@ export const useKeywordSelection = ({
             : [...selectedIds, id]
         onSelectionChange(newIds)
     }, [selectedIds, onSelectionChange])
-
     return {
         handleSelect,
         handleRemove,

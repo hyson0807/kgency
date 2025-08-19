@@ -12,5 +12,4 @@ export const languages = [
     { code: 'ha', name: 'Hausa', flag: '🇳🇬' },
     { code: 'mn', name: 'Монгол', flag: '🇲🇳' }
 ] as const;
-
 export type LanguageCode = typeof languages[number]['code'];

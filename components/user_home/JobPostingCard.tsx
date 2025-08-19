@@ -5,14 +5,12 @@ import {useTranslation} from "@/contexts/TranslationContext";
 import { SuitabilityResult } from '@/lib/suitability';
 import {router} from "expo-router";
 import { sortMatchedKeywords } from '@/lib/utils/keywordUtils';
-
 interface Company {
     id: string;
     name: string;
     address?: string;
     description?: string;
 }
-
 interface JobPosting {
     id: string;
     title: string;
@@ -32,13 +30,11 @@ interface JobPosting {
         }
     }[];
 }
-
 interface MatchedKeyword {
     id: number;
     keyword: string;
     category: string;
 }
-
 interface MatchedKeywords {
     countries: MatchedKeyword[];
     jobs: MatchedKeyword[];
@@ -51,7 +47,6 @@ interface MatchedKeywords {
     koreanLevel: MatchedKeyword[];
     workDay: MatchedKeyword[];
 }
-
 interface JobPostingCardProps {
     posting: JobPosting;
     hasApplied: boolean;
@@ -59,7 +54,6 @@ interface JobPostingCardProps {
     matchedKeywords: MatchedKeywords;
     suitability: SuitabilityResult; // 추가
 }
-
 export const JobPostingCard = ({
                                    posting,
                                    hasApplied,
@@ -69,16 +63,13 @@ export const JobPostingCard = ({
                                }: JobPostingCardProps) => {
     const {t, translateDB} = useTranslation();
     const [isNavigating, setIsNavigating] = useState(false);
-
     const handlePostingPress = (posting: JobPosting) => {
         // 이미 navigation이 진행 중이면 무시
         if (isNavigating) {
             return;
         }
-
         // navigation 시작 - 버튼 비활성화
         setIsNavigating(true);
-
         router.push({
             pathname: '/(pages)/(user)/posting-detail',
             params: {
@@ -88,13 +79,11 @@ export const JobPostingCard = ({
                 suitability: suitability?.level || 'low',
             }
         });
-
         // 1.5초 후 버튼 재활성화 (navigation이 완료될 시간 제공)
         setTimeout(() => {
             setIsNavigating(false);
         }, 1500);
     }
-
     // 적합도 레벨에 따른 색상 설정
     const getSuitabilityColor = () => {
         if (!suitability) {
@@ -114,9 +103,7 @@ export const JobPostingCard = ({
                 return { bg: 'bg-gray-400', text: 'text-white' };
         }
     };
-
     const suitabilityColors = getSuitabilityColor();
-
     return (
         <TouchableOpacity
             onPress={() => handlePostingPress(posting)}
@@ -137,7 +124,6 @@ export const JobPostingCard = ({
                         </View>
                     )}
                 </View>
-
                 {/* 적합도 뱃지 */}
                 <View className={`${suitabilityColors.bg} px-3 py-1 rounded-full`}>
                     <Text className={`${suitabilityColors.text} text-sm font-bold`}>
@@ -145,7 +131,6 @@ export const JobPostingCard = ({
                     </Text>
                 </View>
             </View>
-
             {/* 회사 정보 */}
             <View className="mb-2">
                 <Text className="text-sm text-gray-600">{posting.company.name}</Text>
@@ -153,7 +138,6 @@ export const JobPostingCard = ({
                     {translateDB('job_postings', 'title', posting.id, posting.title)}
                 </Text>
             </View>
-
             {/* 적합도 프로그레스바 */}
             <View className="mb-3">
                 <View className="flex-row justify-between items-center mb-1">
@@ -174,7 +158,6 @@ export const JobPostingCard = ({
                     />
                 </View>
             </View>
-
             {/* 즉시 면접 가능 표시 */}
             {suitability?.level === 'perfect' && (
                 <View className="bg-green-50 border border-green-200 rounded-lg p-2 mb-3">
@@ -186,7 +169,6 @@ export const JobPostingCard = ({
                     </View>
                 </View>
             )}
-
             {/* 공고 정보 */}
             <View className="mb-3">
                 {posting.salary_range && (
@@ -208,14 +190,12 @@ export const JobPostingCard = ({
                     </View>
                 )}
             </View>
-
             {/* 매칭된 키워드 */}
             {hasMatches ? (
                 <View className="border-t border-gray-100 pt-3">
                     <Text className="text-sm text-gray-700 font-semibold mb-2">
                         {t('suitability.company_keyword_match', '해당 회사는 고객님이랑 동일한 키워드를 선택했습니다')}
                     </Text>
-
                     <View className="flex-row flex-wrap gap-2">
                         {(() => {
                             const allKeywords = sortMatchedKeywords([
@@ -231,11 +211,6 @@ export const JobPostingCard = ({
                                 ...matchedKeywords.workDay,
                             ]);
                             
-                            // 디버깅: 실제 표시되는 키워드들 확인
-                            console.log(`===== 공고 ${posting.id} 매칭된 키워드 표시 =====`);
-                            console.log('지역 키워드:', matchedKeywords.location);
-                            console.log('지역이동 키워드:', matchedKeywords.moveable);
-                            console.log('모든 키워드:', allKeywords);
                             
                             return allKeywords;
                         })().map((keyword, index) => (
@@ -250,7 +225,6 @@ export const JobPostingCard = ({
                             </View>
                         ))}
                     </View>
-
                     {/* 보너스 포인트 표시 */}
                     {suitability?.details?.bonusPoints > 0 && (
                         <View className="mt-2 flex-row items-center">
@@ -262,7 +236,6 @@ export const JobPostingCard = ({
                             </Text>
                         </View>
                     )}
-
                     {matchedKeywords.countries.length > 0 && (
                         <View className="bg-blue-50 px-3 py-2 rounded-lg mt-3">
                             <Text className="text-blue-700 text-sm font-medium">

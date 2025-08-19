@@ -2,11 +2,9 @@ import {View, Text, TouchableOpacity} from 'react-native'
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {router} from "expo-router";
-
 interface BackProps {
     onPress?: () => void;
 }
-
 const Back: React.FC<BackProps> = ({ onPress }) => {
     return (
         <TouchableOpacity

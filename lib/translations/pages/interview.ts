@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const interviewTranslations: TranslationData = {
     'interview.select_time': {
         en: 'Please select an interview time.',

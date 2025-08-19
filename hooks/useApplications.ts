@@ -1,17 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
-
 interface userType {
     userId: string;
     phone: string;
     userType: 'user' | 'company';
 }
-
 interface useApplicationsProps {
     user: userType | null;
     activeFilter: 'all' | 'user_initiated' | 'company_invited' | 'user_instant_interview';
 }
-
 interface InterviewProposal {
     id: string
     application_id: string
@@ -24,7 +21,6 @@ interface InterviewProposal {
         name: string
     }
 }
-
 interface Application {
     id: string
     applied_at: string
@@ -49,7 +45,6 @@ interface Application {
     // 면접 제안 정보 추가
     interviewProposal?: InterviewProposal | null
 }
-
 interface UseApplicationsReturn {
     applications: Application[];
     loading: boolean;
@@ -57,25 +52,21 @@ interface UseApplicationsReturn {
     refreshing: boolean;
     onRefresh: () => Promise<void>;
 }
-
 export const useApplications = ({ user, activeFilter }: useApplicationsProps): UseApplicationsReturn => {
     const [applications, setApplications] = useState<Application[]>([])
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-
     // 각 지원에 대한 면접 상태를 확인하는 함수 - 최적화된 버전
     const checkInterviewStatuses = async (applications: Application[]): Promise<Application[]> => {
         if (applications.length === 0) {
             return applications;
         }
-
         try {
             // 단일 API 호출로 모든 면접 정보 조회
             const applicationIds = applications.map(app => app.id);
             const response = await api('POST', '/api/interview-proposals/bulk-check', {
                 applicationIds
             });
-
             if (response?.success && response.data) {
                 // 결과 매핑 - 서버에서 { [applicationId]: proposal } 형태로 반환
                 return applications.map(app => ({
@@ -85,13 +76,13 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
             }
             
             // 서버 에러인 경우 면접 정보 없이 반환
-            console.error('Bulk interview status check failed');
+            // Bulk interview status check failed
             return applications.map(app => ({
                 ...app,
                 interviewProposal: null
             }));
         } catch (error) {
-            console.error('Interview status check error:', error);
+            // Interview status check error
             // 에러 발생 시에도 앱이 작동하도록 면접 정보 없이 반환
             return applications.map(app => ({
                 ...app,
@@ -99,27 +90,21 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
             }));
         }
     }
-
     const fetchApplications = useCallback(async () => {
         if (!user) {
             setLoading(false)
             return
         }
-
         try {
             // API 엔드포인트 호출
             const response = await api('GET', `/api/applications/user/${user.userId}`)
-
-
             // response 자체가 이미 { success: true, data: [...] } 형태
             if (!response.success) {
-                console.error('데이터 조회 실패:', response)
+                // 데이터 조회 실패
                 setApplications([])
                 return
             }
-
             let filteredData = response.data || []
-
             // 클라이언트 사이드 필터링 - type 기반
             if (activeFilter === 'user_initiated') {
                 filteredData = filteredData.filter((app: Application) => app.type === 'user_initiated')
@@ -128,29 +113,24 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
             } else if (activeFilter === 'user_instant_interview') {
                 filteredData = filteredData.filter((app: Application) => app.type === 'user_instant_interview')
             }
-
             // 면접 상태 확인
             const applicationsWithInterview = await checkInterviewStatuses(filteredData)
-
             setApplications(applicationsWithInterview)
         } catch (error) {
-            console.error('지원 내역 조회 실패:', error)
+            // 지원 내역 조회 실패
             setApplications([])
         } finally {
             setLoading(false)
         }
     }, [user?.userId, activeFilter])
-
     const onRefresh = useCallback(async () => {
         setRefreshing(true)
         await fetchApplications()
         setRefreshing(false)
     }, [fetchApplications])
-
     useEffect(() => {
         fetchApplications()
     }, [fetchApplications]);
-
     return {
         applications,
         loading,

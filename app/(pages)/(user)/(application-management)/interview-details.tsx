@@ -8,24 +8,20 @@ import Back from '@/components/back'
 import { Ionicons } from '@expo/vector-icons'
 import { api } from '@/lib/api'
 import { formatKoreanDate, formatTime24 } from '@/lib/dateUtils'
-
 interface InterviewDetails {
     id: string
     interview_location: string
     interview_time_slots: any  // 임시로 any 타입 사용
     job_postings: any  // 임시로 any 타입 사용
 }
-
 export default function InterviewDetails() {
     const { applicationId } = useLocalSearchParams()
     const { t } = useTranslation()
     const [interview, setInterview] = useState<InterviewDetails | null>(null)
     const [loading, setLoading] = useState(true)
-
     useEffect(() => {
         loadInterviewDetails()
     }, [])
-
     const loadInterviewDetails = async () => {
         try {
             const response = await api('GET', `/api/interview-proposals/confirmed/${applicationId}`);
@@ -34,22 +30,17 @@ export default function InterviewDetails() {
                 throw new Error(response.error);
             }
             
-            console.log('User interview details raw data:', response.data)
             setInterview(response.data)
         } catch (error) {
-            console.error('Error loading interview details:', error)
         } finally {
             setLoading(false)
         }
     }
-
-
     const addToCalendar = () => {
         // 캘린더 추가 기능은 나중에 구현
         // 일단 alert로 대체
         alert('캘린더에 추가하기 기능은 추후 제공될 예정입니다.')
     }
-
     if (loading) {
         return (
             <SafeAreaView className="flex-1 bg-white justify-center items-center">
@@ -57,7 +48,6 @@ export default function InterviewDetails() {
             </SafeAreaView>
         )
     }
-
     if (!interview) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -71,14 +61,12 @@ export default function InterviewDetails() {
             </SafeAreaView>
         )
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             <View className="flex-row items-center p-4 border-b border-gray-200">
                 <Back />
                 <Text className="text-lg font-bold ml-4">면접 정보</Text>
             </View>
-
             <ScrollView className="flex-1">
                 {/* 상태 표시 */}
                 <View className="bg-green-50 p-4 mx-4 mt-4 rounded-xl">
@@ -91,7 +79,6 @@ export default function InterviewDetails() {
                         </Text>
                     </View>
                 </View>
-
                 {/* 회사 정보 */}
                 <View className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl">
                     <Text className="text-sm text-gray-600 mb-1">회사</Text>
@@ -102,7 +89,6 @@ export default function InterviewDetails() {
                         {interview.job_postings.title}
                     </Text>
                 </View>
-
                 {/* 면접 일시 */}
                 <View className="p-4 mx-4 mt-4 bg-blue-50 rounded-xl">
                     <View className="flex-row items-center mb-2">
@@ -116,7 +102,6 @@ export default function InterviewDetails() {
                         {formatTime24(interview.interview_time_slots.start_time)} - {formatTime24(interview.interview_time_slots.end_time)}
                     </Text>
                 </View>
-
                 {/* 면접 장소 */}
                 <View className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl">
                     <View className="flex-row items-center mb-2">
@@ -127,7 +112,6 @@ export default function InterviewDetails() {
                         {interview.interview_location}
                     </Text>
                 </View>
-
                 {/* 연락처 */}
                 <View className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl">
                     <View className="flex-row items-center mb-2">
@@ -138,7 +122,6 @@ export default function InterviewDetails() {
                         {interview.job_postings.company.phone_number}
                     </Text>
                 </View>
-
                 {/* 주의사항 */}
                 <View className="p-4 mx-4 mt-4 mb-4 bg-yellow-50 rounded-xl">
                     <View className="flex-row items-start">
@@ -155,7 +138,6 @@ export default function InterviewDetails() {
                         </View>
                     </View>
                 </View>
-
                 {/* 캘린더 추가 버튼 */}
                 <View className="px-4 mb-8">
                     <TouchableOpacity

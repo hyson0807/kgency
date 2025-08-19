@@ -16,10 +16,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '@/lib/api';
-
 const CompanyLogin = () => {
     const { login } = useAuth();
-
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
@@ -32,7 +30,6 @@ const CompanyLogin = () => {
     const [modalMessage, setModalMessage] = useState('');
     const [modalType, setModalType] = useState<'info' | 'warning'>('info');
     const [showUserLoginButton, setShowUserLoginButton] = useState(false);
-
     const otpInputRef = useRef<TextInput>(null);
     const hasAttemptedRef = useRef(false);
     
@@ -55,7 +52,6 @@ const CompanyLogin = () => {
     const hideModal = () => {
         setModalVisible(false);
     };
-
     // 타이머 감소
     useEffect(() => {
         if (resendTimer > 0) {
@@ -63,24 +59,20 @@ const CompanyLogin = () => {
             return () => clearTimeout(timer);
         }
     }, [resendTimer]);
-
     // 숫자만 남기기
     const sanitizePhoneNumber = (value: string): string => {
         return value.replace(/\D/g, '');
     };
-
     const handlePhoneChange = (text: string) => {
         const formatted = sanitizePhoneNumber(text);
         setPhone(formatted);
     };
-
     // 국제 포맷
     const formatPhone = (rawPhone: string): string => {
         const cleaned = sanitizePhoneNumber(rawPhone);
         if (cleaned.length < 10) return '';
         return `+82${cleaned.slice(1)}`;
     };
-
     const sendOtp = async () => {
         const cleanPhone = sanitizePhoneNumber(phone);
         if (!cleanPhone) {
@@ -95,12 +87,10 @@ const CompanyLogin = () => {
             setTimeout(() => otpInputRef.current?.focus(), 100);
             return;
         }
-
         setLoading(true);
         try {
             const formattedPhone = formatPhone(phone);
             const response = await api('POST', '/api/auth/send-otp', { phone: formattedPhone });
-
             if (response.success) {
                 setInputOtp(true);
                 setResendTimer(180);
@@ -109,19 +99,16 @@ const CompanyLogin = () => {
                 showModal('전송 실패', response.error || '인증번호 전송에 실패했습니다', 'warning');
             }
         } catch (error) {
-            console.error(error);
             showModal('오류', '네트워크 연결을 확인해주세요', 'warning');
         } finally {
             setLoading(false);
         }
     };
-
     const verifyOtp = async () => {
         if (!otp || otp.length !== 6) {
             showModal('알림', '6자리 인증번호를 입력해주세요');
             return;
         }
-
         setLoading(true);
         try {
             const cleanPhone = sanitizePhoneNumber(phone);
@@ -137,10 +124,8 @@ const CompanyLogin = () => {
                     userType: 'company',
                     isDemoAccount: isDemoAccount // 데모 계정 플래그 추가
                 });
-
                 // 성공한 경우
                 const result = await login(response.token, response.user, response.onboardingStatus);
-
                 if (result.success) {
                     if (response.onboardingStatus.completed) {
                         router.replace('/(company)/home2');
@@ -155,7 +140,6 @@ const CompanyLogin = () => {
                 }
                 
             } catch (apiError: any) {
-
                 // 인증 시도 플래그 즉시 리셋
                 hasAttemptedRef.current = false;
                 setOtp('');
@@ -177,7 +161,6 @@ const CompanyLogin = () => {
             setLoading(false);
         }
     };
-
     // 자동 인증 트리거
     useEffect(() => {
         if (otp.length === 6 && inputOtp && !loading && !hasAttemptedRef.current) {
@@ -187,14 +170,12 @@ const CompanyLogin = () => {
             hasAttemptedRef.current = false;
         }
     }, [otp, loading, inputOtp]);
-
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
                 <View className="px-6 pt-2 pb-4">
                     <Back />
                 </View>
-
                 <View className="flex-1 px-6">
                     {/* 헤더 */}
                     <View className="mt-8 mb-12">
@@ -206,7 +187,6 @@ const CompanyLogin = () => {
                         </View>
                         <Text className="text-base text-gray-600">구인자용 로그인 페이지입니다</Text>
                     </View>
-
                     {/* 전화번호 입력 */}
                     <View className="mb-8">
                         <Text className="text-sm font-medium text-gray-700 mb-3">회사 전화번호</Text>
@@ -242,7 +222,6 @@ const CompanyLogin = () => {
                             * 회사 대표번호 또는 담당자 휴대폰 번호를 입력하세요
                         </Text>
                     </View>
-
                     {/* OTP 입력 */}
                     {inputOtp && (
                         <View className="mb-8">
@@ -287,7 +266,6 @@ const CompanyLogin = () => {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-
                             {resendTimer === 0 && (
                                 <TouchableOpacity
                                     onPress={() => {
@@ -299,7 +277,6 @@ const CompanyLogin = () => {
                                     <Text className="text-blue-500 text-center">인증번호 재전송</Text>
                                 </TouchableOpacity>
                             )}
-
                             <View className="mt-6 bg-blue-50 p-4 rounded-xl flex-row items-start">
                                 <Ionicons name="information-circle" size={20} color="#3b82f6" />
                                 <Text className="text-sm text-blue-700 ml-2 flex-1">
@@ -308,7 +285,6 @@ const CompanyLogin = () => {
                             </View>
                         </View>
                     )}
-
                     {/* 테스트 계정 */}
                     {__DEV__ && (
                         <View className="mt-auto mb-8">
@@ -328,7 +304,6 @@ const CompanyLogin = () => {
                     )}
                 </View>
             </KeyboardAvoidingView>
-
             {/* 커스텀 모달 */}
             <Modal
                 animationType="fade"
@@ -351,12 +326,10 @@ const CompanyLogin = () => {
                                 {modalTitle}
                             </Text>
                         </View>
-
                         {/* 메시지 */}
                         <Text className="text-gray-600 text-center mb-6">
                             {modalMessage}
                         </Text>
-
                         {/* 버튼들 */}
                         {showUserLoginButton ? (
                             <View className="space-y-3">
@@ -398,12 +371,10 @@ const CompanyLogin = () => {
         </SafeAreaView>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white'
     }
 });
-
 export default CompanyLogin;

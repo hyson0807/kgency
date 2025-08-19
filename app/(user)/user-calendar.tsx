@@ -12,11 +12,9 @@ import { vi } from 'date-fns/locale/vi'
 import { hi } from 'date-fns/locale/hi'
 import { ar } from 'date-fns/locale/ar'
 import { tr } from 'date-fns/locale/tr'
-
 // Components
 import Back from '@/components/back'
 import { UserInterviewCard } from '@/components/interview-calendar-user/UserInterviewCard'
-
 // Hooks & Utils
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
@@ -24,7 +22,6 @@ import { useModal } from '@/hooks/useModal'
 import { useTranslation } from '@/contexts/TranslationContext'
 import { getCalendarConfig } from '@/lib/translations/locales'
 import { groupByDate } from '@/lib/dateUtils'
-
 // Date-fns locale mapping
 const dateFnsLocaleMap: Record<string, any> = {
     ko: ko,
@@ -41,7 +38,6 @@ const dateFnsLocaleMap: Record<string, any> = {
     ha: enUS, // fallback to English
     mn: enUS  // fallback to English
 }
-
 // Types
 interface InterviewSchedule {
     id: string
@@ -73,33 +69,28 @@ interface InterviewSchedule {
         }
     }
 }
-
 export default function UserInterviewCalendar() {
     const { user } = useAuth()
     const { showModal, ModalComponent } = useModal()
     const { t, language } = useTranslation()
-
     // State
     const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
     const [currentMonth, setCurrentMonth] = useState(format(new Date(), 'yyyy-MM'))
     const [groupedSchedules, setGroupedSchedules] = useState<Record<string, InterviewSchedule[]>>({})
     const [selectedDateSchedules, setSelectedDateSchedules] = useState<InterviewSchedule[]>([])
     const [loading, setLoading] = useState(true)
-
     // 사용자 언어 설정에 따른 동적 캘린더 언어 변경
     useEffect(() => {
         const config = getCalendarConfig(language)
         LocaleConfig.locales[language] = config
         LocaleConfig.defaultLocale = language
     }, [language])
-
     // Effects
     useEffect(() => {
         if (user?.userId) {
             fetchMonthSchedules(currentMonth)
         }
     }, [user?.userId, currentMonth])
-
     // 페이지 포커스 시 데이터 새로고침 (면접 시간 선택 후 돌아올 때 상태 업데이트)
     useFocusEffect(
         useCallback(() => {
@@ -108,20 +99,16 @@ export default function UserInterviewCalendar() {
             }
         }, [user?.userId, currentMonth])
     )
-
     useEffect(() => {
         const daySchedules = groupedSchedules[selectedDate] || []
         setSelectedDateSchedules(daySchedules)
     }, [selectedDate, groupedSchedules])
-
     // API Functions
     const fetchMonthSchedules = async (month: string) => {
         try {
             setLoading(true)
             const response = await api('GET', `/api/interview-schedules/user/calendar?userId=${user?.userId}&month=${month}`)
-
             if (response?.success) {
-                console.log('Raw user schedules from server:', response.data)
                 
                 // 서버에서 받은 스케줄 배열이 있다면 클라이언트에서 직접 그룹화
                 if (response.data.schedules && Array.isArray(response.data.schedules)) {
@@ -129,7 +116,6 @@ export default function UserInterviewCalendar() {
                         response.data.schedules as InterviewSchedule[], 
                         (schedule: InterviewSchedule) => schedule.interview_slot.start_time
                     )
-                    console.log('User page - client grouped schedules:', clientGroupedSchedules)
                     setGroupedSchedules(clientGroupedSchedules as Record<string, InterviewSchedule[]>)
                 } else {
                     // fallback: 서버에서 이미 그룹화된 데이터 사용
@@ -137,40 +123,33 @@ export default function UserInterviewCalendar() {
                 }
             }
         } catch (error) {
-            console.error('Failed to fetch schedules:', error)
             showModal(t('common.error', '오류'), t('calendar.load_error', '면접 일정을 불러오는데 실패했습니다.'))
         } finally {
             setLoading(false)
         }
     }
-
     // Event Handlers
     const handleDayPress = (day: any) => {
         setSelectedDate(day.dateString)
     }
-
     const handleMonthChange = (month: any) => {
         setCurrentMonth(month.dateString.slice(0, 7))
     }
-
     const handleAddToCalendar = (schedule: InterviewSchedule) => {
         // 캘린더 앱에 일정 추가 (선택사항)
         const startTime = new Date(schedule.interview_slot.start_time)
         const endTime = new Date(schedule.interview_slot.end_time)
         const title = `${schedule.interview_slot.company.name} 면접`
         const location = schedule.proposal.location || schedule.interview_slot.company.address || ''
-
         // 캘린더 URL 스킴 사용 (iOS/Android 모두 지원)
         const eventUrl = `calshow:${startTime.getTime() / 1000}`
         Linking.openURL(eventUrl).catch(() => {
             showModal(t('common.notification', '알림'), t('calendar.open_error', '캘린더 앱을 열 수 없습니다.'))
         })
     }
-
     // Render Functions
     const getMarkedDates = () => {
         const marked: any = {}
-
         Object.keys(groupedSchedules).forEach(date => {
             marked[date] = {
                 marked: true,
@@ -183,16 +162,13 @@ export default function UserInterviewCalendar() {
                 }
             }
         })
-
         marked[selectedDate] = {
             ...marked[selectedDate],
             selected: true,
             selectedColor: '#3b82f6'
         }
-
         return marked
     }
-
     const formatDateHeader = (dateString: string) => {
         const date = new Date(dateString)
         const currentLocale = dateFnsLocaleMap[language] || ko
@@ -217,7 +193,6 @@ export default function UserInterviewCalendar() {
         const pattern = formatPatterns[language] || formatPatterns.ko
         return format(date, pattern, { locale: currentLocale })
     }
-
     if (loading) {
         return (
             <View className="flex-1 bg-white" style={{paddingTop: 44}}>
@@ -227,7 +202,6 @@ export default function UserInterviewCalendar() {
             </View>
         )
     }
-
     return (
         <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
@@ -237,7 +211,6 @@ export default function UserInterviewCalendar() {
                     <Text className="text-lg font-bold ml-4">{t('calendar.my_interview_schedule', '내 면접 일정')}</Text>
                 </View>
             </View>
-
             <ScrollView className="flex-1">
                 {/* 캘린더 */}
                 <View className="bg-white">
@@ -263,7 +236,6 @@ export default function UserInterviewCalendar() {
                         }}
                     />
                 </View>
-
                 {/* 선택된 날짜의 면접 일정 */}
                 <View className="mt-4 px-4">
                     <View className="flex-row items-center justify-between mb-3">
@@ -276,7 +248,6 @@ export default function UserInterviewCalendar() {
                             </Text>
                         </View>
                     </View>
-
                     {selectedDateSchedules.length === 0 ? (
                         <View className="bg-white rounded-xl p-8 items-center">
                             <Ionicons name="calendar-outline" size={60} color="#cbd5e0" />
@@ -297,7 +268,6 @@ export default function UserInterviewCalendar() {
                     )}
                 </View>
             </ScrollView>
-
             <ModalComponent />
         </View>
     )

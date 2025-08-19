@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
-
 interface SalaryInfoFormProps {
     salaryType: string
     setSalaryType: (value: string) => void
@@ -13,7 +12,6 @@ interface SalaryInfoFormProps {
     payDayNegotiable: boolean
     setPayDayNegotiable: (value: boolean) => void
 }
-
 export const SalaryInfoForm: React.FC<SalaryInfoFormProps> = ({
     salaryType,
     setSalaryType,
@@ -32,7 +30,6 @@ export const SalaryInfoForm: React.FC<SalaryInfoFormProps> = ({
         { label: '월급', value: '월급' },
         { label: '연봉', value: '연봉' }
     ]
-
     return (
         <>
             <View className="mb-4">
@@ -80,7 +77,6 @@ export const SalaryInfoForm: React.FC<SalaryInfoFormProps> = ({
                     onChangeText={setSalaryRange}
                 />
             </View>
-
         </>
     )
 }

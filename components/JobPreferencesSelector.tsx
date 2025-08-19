@@ -7,14 +7,12 @@ interface Keyword {
     keyword: string;
     category: string;
 }
-
 interface JobPreferencesSelectorProps {
     jobs: Keyword[];
     selectedJobs: number[];
     onToggle: (jobId: number) => void;
     title?: string;
 }
-
 const JobPreferencesSelector: React.FC<JobPreferencesSelectorProps> = ({
                            jobs,
                            selectedJobs,
@@ -41,5 +39,4 @@ const JobPreferencesSelector: React.FC<JobPreferencesSelectorProps> = ({
         </View>
     )
 }
-
 export default JobPreferencesSelector

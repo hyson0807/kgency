@@ -1,5 +1,4 @@
 import { LocaleConfig } from 'react-native-calendars'
-
 // 한국어 캘린더 설정
 export const setupCalendarLocale = () => {
     LocaleConfig.locales['ko'] = {

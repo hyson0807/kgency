@@ -3,7 +3,6 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { SuitabilityResult } from '@/lib/suitability/types';
 import { sortMatchedKeywords } from '@/lib/utils/keywordUtils';
-
 interface UserKeyword {
     keyword: {
         id: number;
@@ -11,7 +10,6 @@ interface UserKeyword {
         category: string;
     };
 }
-
 interface JobSeeker {
     id: string;
     name: string;
@@ -26,12 +24,10 @@ interface JobSeeker {
     };
     user_keywords?: UserKeyword[];
 }
-
 interface MatchedKeywordWithCategory {
     keyword: string;
     category: string;
 }
-
 interface MatchedJobSeeker {
     user: JobSeeker;
     matchedCount: number;
@@ -39,12 +35,10 @@ interface MatchedJobSeeker {
     matchedKeywordsWithCategory?: MatchedKeywordWithCategory[]; // 카테고리 정보를 포함한 키워드
     suitability?: SuitabilityResult;
 }
-
 interface UserCardProps {
     item: MatchedJobSeeker;
     onPress: (jobSeeker: JobSeeker) => void;
 }
-
 /* 클래스명을 위한 주석 - Tailwind 빌드시 포함되도록
  * bg-purple-500 bg-blue-500 bg-green-500 bg-yellow-500 bg-gray-400
  * bg-purple-100 text-purple-700 bg-orange-100 text-orange-700
@@ -54,7 +48,6 @@ interface UserCardProps {
  * bg-cyan-100 text-cyan-700 bg-lime-100 text-lime-700
  * bg-gray-100 text-gray-700
  */
-
 export const UserCard = ({ item, onPress }: UserCardProps) => {
     const { user: jobSeeker, matchedCount, matchedKeywords, matchedKeywordsWithCategory, suitability } = item;
     const hasMatches = matchedCount > 0;
@@ -79,7 +72,6 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
     };
     
     const suitabilityInfo = suitability ? getSuitabilityInfo(suitability.level) : null;
-
     // 카테고리별 색상 설정
     const getCategoryColor = (category: string) => {
         switch (category) {
@@ -107,7 +99,6 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                 return 'bg-gray-100 text-gray-700';
         }
     };
-
     // matchedKeywordsWithCategory가 없는 경우를 대비한 처리
     // 기존 matchedKeywords 배열에서 카테고리 정보 추출 시도
     const getKeywordsWithCategory = () => {
@@ -131,14 +122,12 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                 category: ''
             }));
         }
-
         // "상관없음"을 "기타"로 변환
         return keywordsWithCategory.map(item => ({
             ...item,
             keyword: item.keyword === '상관없음' ? '기타' : item.keyword
         }));
     };
-
     const keywordsWithCategory = getKeywordsWithCategory();
     
     const handlePress = () => {
@@ -146,18 +135,14 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
         if (isNavigating) {
             return;
         }
-
         // navigation 시작 - 버튼 비활성화
         setIsNavigating(true);
-
         onPress(jobSeeker);
-
         // 1.5초 후 버튼 재활성화 (navigation이 완료될 시간 제공)
         setTimeout(() => {
             setIsNavigating(false);
         }, 1500);
     };
-
     return (
         <TouchableOpacity
             onPress={handlePress}
@@ -180,20 +165,17 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                     </View>
                 </View>
             )}
-
             {/* 기본 정보 */}
             <View className="flex-row mb-3 gap-3">
                 <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
                     <Text className="text-2xl font-bold">{item.user.name?.charAt(0) || '?'}</Text>
                 </View>
-
                 <View className="flex-1">
                     <Text className={`text-lg font-bold text-gray-800 ${
                         suitability && suitabilityInfo ? 'pr-40' : 'pr-4'
                     }`} numberOfLines={1} ellipsizeMode="tail">
                         {jobSeeker.name || '이름 미등록'}
                     </Text>
-
                     <View className="flex-row flex-wrap gap-3 mt-2">
                         {jobSeeker.user_info?.age && (
                             <View className="flex-row items-center">
@@ -203,13 +185,11 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                                 </Text>
                             </View>
                         )}
-
                         {jobSeeker.user_info?.gender && (
                             <Text className="text-sm text-gray-600">
                                 {jobSeeker.user_info.gender === '상관없음' ? '기타' : jobSeeker.user_info.gender}
                             </Text>
                         )}
-
                         {jobSeeker.user_info?.visa && (
                             <View className="flex-row items-center">
                                 <Ionicons name="document-text-outline" size={14} color="#6b7280" />
@@ -218,7 +198,6 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                                 </Text>
                             </View>
                         )}
-
                         {jobSeeker.user_info?.korean_level && (
                             <View className="flex-row items-center">
                                 <Ionicons name="language-outline" size={14} color="#6b7280" />
@@ -230,7 +209,6 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                     </View>
                 </View>
             </View>
-
             {/* 키워드 표시 */}
             <View className="border-t border-gray-100 pt-3">
                 {hasMatches ? (
@@ -245,7 +223,6 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
                                 </Text>
                             )}
                         </View>
-
                         <View className="flex-row flex-wrap gap-2">
                             {sortMatchedKeywords(keywordsWithCategory).map((item, index) => (
                                 <View

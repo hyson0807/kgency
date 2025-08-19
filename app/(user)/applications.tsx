@@ -8,12 +8,10 @@ import {Empty} from "@/components/submitted-applications/Empty";
 import {ApplicationItem} from "@/components/submitted-applications/ApplicationItem";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import {useApplications} from "@/hooks/useApplications";
-
 const Applications = () => {
     const { user } = useAuth()
     const [activeFilter, setActiveFilter] = useState<'all' | 'user_initiated' | 'company_invited' | 'user_instant_interview'>('all')
     const { t } = useTranslation()
-
     //fetching applications
     const {
         applications,
@@ -22,7 +20,6 @@ const Applications = () => {
         onRefresh,
         fetchApplications
     } = useApplications({ user, activeFilter })
-
     // 페이지 포커스 시 데이터 새로고침 (면접 선택 후 돌아올 때 상태 업데이트)
     useFocusEffect(
         useCallback(() => {
@@ -31,10 +28,7 @@ const Applications = () => {
             }
         }, [user, fetchApplications])
     )
-
-
     if (loading) return <LoadingScreen />
-
     return (
         <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
@@ -52,7 +46,6 @@ const Applications = () => {
                 {/* 필터 탭 */}
                 <Tap setActiveFilter={setActiveFilter} activeFilter={activeFilter} t={t} />
             </View>
-
             {/* 지원 내역 리스트 */}
             <FlatList
                 data={applications}
@@ -75,5 +68,4 @@ const Applications = () => {
         </View>
     )
 }
-
 export default Applications

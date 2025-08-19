@@ -2,12 +2,10 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { sortWorkDayKeywords } from '@/lib/utils/keywordUtils';
-
 interface Keyword {
     id: number;
     keyword: string;
 }
-
 interface Keywords {
     conditions: Keyword[];
     countries: Keyword[];
@@ -18,21 +16,15 @@ interface Keywords {
     koreanLevel: Keyword[];
     workDay: Keyword[];
 }
-
 interface HiringFieldsProps {
     keywords: Keywords;
     translateDB: (table: string, column: string, id: string, defaultValue: string) => string;
 }
-
 const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
     const { t } = useTranslation();
-
     if (!keywords) return null;
-
     return (
-
     <View className="flex-1">
-
         <View className="p-6 web:p-4 border-b border-gray-100">
             <Text className="text-lg font-semibold mb-4">{t('posting_detail.company_benefits', '회사의 강점!')}</Text>
             {keywords.conditions.length > 0 && (
@@ -49,10 +41,8 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                 </View>
             )}
         </View>
-
         <View className="p-6 web:p-4">
             <Text className="text-lg font-semibold mb-4">{t('posting_detail.hiring_fields', '채용 분야')}</Text>
-
             {keywords.countries.length > 0 && (
                 <View className="mb-4">
                     <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_countries', '대상 국가')}</Text>
@@ -67,7 +57,6 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                     </View>
                 </View>
             )}
-
             {keywords.jobs.length > 0 && (
                 <View className="mb-4">
                     <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.job_positions', '모집 직종')}</Text>
@@ -82,7 +71,6 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                     </View>
                 </View>
             )}
-
             {keywords.gender.length > 0 && (
                 <View className="mb-4">
                     <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_gender', '모집 성별')}</Text>
@@ -97,7 +85,6 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                     </View>
                 </View>
             )}
-
             {keywords.koreanLevel.length > 0 && (
                 <View className="mb-4">
                     <Text className="text-gray-600 font-medium mb-2">한국어 수준</Text>
@@ -112,7 +99,6 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                     </View>
                 </View>
             )}
-
             {keywords.age.length > 0 && (
                 <View className="mb-4">
                     <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.target_age', '모집 나이대')}</Text>
@@ -127,7 +113,6 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                     </View>
                 </View>
             )}
-
             {keywords.visa.length > 0 && (
                 <View className="mb-4">
                     <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.available_visa', '지원 가능한 비자')}</Text>
@@ -142,7 +127,6 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
                     </View>
                 </View>
             )}
-
             {keywords.workDay.length > 0 && (
                 <View className="mb-4">
                     <Text className="text-gray-600 font-medium mb-2">{t('posting_detail.work_days', '근무 요일')}</Text>
@@ -161,5 +145,4 @@ const HiringFields = ({ keywords, translateDB }: HiringFieldsProps) => {
     </View>
     );
 };
-
 export default HiringFields;

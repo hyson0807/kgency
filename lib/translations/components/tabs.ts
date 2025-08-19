@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const tabTranslations: TranslationData = {
     'tab.home': {
         en: 'Home',
@@ -71,7 +70,6 @@ export const tabTranslations: TranslationData = {
         ha: 'Saiti',
         mn: 'Тохиргоо'
     },
-
     'tab.inbox': {
         en: 'Messages',
         ja: 'メッセージ',

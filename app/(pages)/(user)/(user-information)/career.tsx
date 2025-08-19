@@ -9,7 +9,6 @@ import { CareerInformation } from '@/components/user_keyword(info)/CareerInforma
 import { useUserInfoStore } from '@/stores/userInfoStore';
 import { useProfile } from '@/hooks/useProfile';
 import LoadingScreen from '@/components/common/LoadingScreen';
-
 const CareerPage = () => {
   const { t } = useTranslation();
   const { profile } = useProfile();
@@ -19,7 +18,6 @@ const CareerPage = () => {
     updateField,
     nextStep 
   } = useUserInfoStore();
-
   // 프로필 정보에서 경력 정보 로드
   useEffect(() => {
     if (profile?.user_info) {
@@ -32,26 +30,22 @@ const CareerPage = () => {
       });
     }
   }, [profile]);
-
   const toggleDay = (day: string) => {
     const newDays = formData.selectedDays.includes(day)
       ? formData.selectedDays.filter(d => d !== day)
       : [...formData.selectedDays, day];
     updateField('selectedDays', newDays);
   };
-
   const toggleTime = (time: string) => {
     const newTimes = formData.selectedTimes.includes(time)
       ? formData.selectedTimes.filter(t => t !== time)
       : [...formData.selectedTimes, time];
     updateField('selectedTimes', newTimes);
   };
-
   const handleNext = () => {
     nextStep();
     router.push('/(pages)/(user)/(user-information)/profile');
   };
-
   const handleSkip = () => {
     // 경력 정보를 비우고 다음 단계로
     updateCareerInfo({
@@ -64,9 +58,7 @@ const CareerPage = () => {
     nextStep();
     router.push('/(pages)/(user)/(user-information)/profile');
   };
-
   if (!profile) return <LoadingScreen />;
-
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1">
@@ -81,7 +73,6 @@ const CareerPage = () => {
             <Text className="text-sm text-gray-500">1/3</Text>
           </View>
         </View>
-
         <KeyboardAwareScrollView
           className="flex-1 bg-gray-50"
           showsVerticalScrollIndicator={false}
@@ -112,7 +103,6 @@ const CareerPage = () => {
             }}
           />
         </KeyboardAwareScrollView>
-
         {/* 버튼 영역 - flex 사용 */}
         <View className="bg-white border-t border-gray-200 px-4 py-4 pb-8">
           <View className="flex-row gap-3">
@@ -138,5 +128,4 @@ const CareerPage = () => {
     </SafeAreaView>
   );
 };
-
 export default CareerPage;

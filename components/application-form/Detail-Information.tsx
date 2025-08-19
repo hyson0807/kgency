@@ -1,7 +1,5 @@
 import React from 'react'
 import {Text, TextInput, TouchableOpacity, View} from "react-native";
-
-
 interface DetailInformationProps {
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
     formData: {
@@ -31,13 +29,10 @@ interface DetailInformationProps {
         setQuestion: (value: string) => void;
     };
 }
-
-
 export const DetailInfromation = ({
     t,
     formData,
     handlers
-
 }: DetailInformationProps) => {
     const {
         howLong,
@@ -51,7 +46,6 @@ export const DetailInfromation = ({
         topic,
         question
     } = formData;
-
     const {
         setHowLong,
         toggleDay,
@@ -66,7 +60,6 @@ export const DetailInfromation = ({
         setTopic,
         setQuestion
     } = handlers;
-
     const workPeriodOptions = [
         { label: t('apply.period_1month', '1개월'), value: '1개월' },
         { label: t('apply.period_3months', '3개월'), value: '3개월' },
@@ -106,11 +99,9 @@ export const DetailInfromation = ({
         { label: t('apply.time_evening', '저녁'), value: '저녁' },
         { label: t('apply.time_dawn', '새벽'), value: '새벽' }
     ]
-
     return (
         <View className="mb-6 gap-4 p-6">
             <Text className="text-lg font-bold mb-4">{t('apply.career_info', '경력 및 정보')}</Text>
-
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">{t('apply.desired_period', '희망 근무 기간')}</Text>
                 <View className="flex-row gap-2 flex-wrap">
@@ -131,7 +122,6 @@ export const DetailInfromation = ({
                     ))}
                 </View>
             </View>
-
             {/* 희망 근무 요일 */}
             <View className="mb-4">
                 <View className="flex-row items-center justify-start gap-4 mb-2">
@@ -176,7 +166,6 @@ export const DetailInfromation = ({
                     ))}
                 </View>
             </View>
-
             {/* 희망 시간대 */}
             <View className="mb-4">
                 <View className="flex-row items-center justify-start gap-4 mb-2">
@@ -221,7 +210,6 @@ export const DetailInfromation = ({
                     ))}
                 </View>
             </View>
-
             {/* 관련 경력 */}
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">{t('apply.related_experience', '관련 경력')}</Text>
@@ -243,7 +231,6 @@ export const DetailInfromation = ({
                     ))}
                 </View>
             </View>
-
             {/* 경력 내용 */}
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">{t('apply.experience_detail', '경력 내용')}</Text>
@@ -256,7 +243,6 @@ export const DetailInfromation = ({
                     textAlignVertical="top"
                 />
             </View>
-
             {/* 한국어 실력 */}
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">{t('apply.korean_level', '한국어 실력')}</Text>
@@ -278,7 +264,6 @@ export const DetailInfromation = ({
                     ))}
                 </View>
             </View>
-
             {/* 토픽 급수 */}
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">{t('apply.topik_level', '토픽 급수')}</Text>
@@ -300,7 +285,6 @@ export const DetailInfromation = ({
                     ))}
                 </View>
             </View>
-
             {/* 경력 내용 */}
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">{t('apply.questions', '사장님께 물어보고 싶은 내용')}</Text>

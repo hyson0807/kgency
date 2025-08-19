@@ -8,19 +8,16 @@ import Back from '@/components/back'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import { LocationSelector } from "@/components/company_keyword(keywords)/Location"
 import { useCompanyKeywordsStore } from '@/stores/companyKeywordsStore'
-
 interface Keyword {
     id: number;
     keyword: string;
     category: string;
 }
-
 const KeywordsStep1 = () => {
     const { user } = useAuth()
     const [keywords, setKeywords] = useState<Keyword[]>([])
     const [loading, setLoading] = useState(true)
     const [dataInitialized, setDataInitialized] = useState(false)
-
     // Zustand store 사용
     const step1Data = useCompanyKeywordsStore(state => state.step1)
     const {
@@ -29,7 +26,6 @@ const KeywordsStep1 = () => {
         resetAllData,
         setInitialData
     } = useCompanyKeywordsStore()
-
     // 카테고리별 키워드 필터링
     const locationOptions = keywords
         .filter(k => k.category === '지역')
@@ -37,9 +33,7 @@ const KeywordsStep1 = () => {
             label: location.keyword,
             value: location.id
         }))
-
     const jobKeywords = keywords.filter(k => k.category === '직종')
-
     useEffect(() => {
         // 첫 마운트 시에만 초기화 및 데이터 로드
         if (!dataInitialized) {
@@ -47,7 +41,6 @@ const KeywordsStep1 = () => {
             fetchInitialData()
         }
     }, [user])
-
     // 초기 데이터 로드 (키워드 + 회사 키워드)
     const fetchInitialData = async () => {
         try {
@@ -56,10 +49,8 @@ const KeywordsStep1 = () => {
             if (!keywordsResponse.success) {
                 throw new Error(keywordsResponse.error)
             }
-
             const allKeywords = keywordsResponse.data || []
             setKeywords(allKeywords)
-
             // 회사의 기존 키워드 가져오기
             if (user) {
                 const companyKeywordsResponse = await api('GET', '/api/company-keyword')
@@ -72,12 +63,10 @@ const KeywordsStep1 = () => {
             
             setDataInitialized(true)
         } catch (error) {
-            console.error('초기 데이터 로드 실패:', error)
         } finally {
             setLoading(false)
         }
     }
-
     const handleNext = () => {
         // 지역 선택 확인
         if (!step1Data.location) {
@@ -88,7 +77,6 @@ const KeywordsStep1 = () => {
             )
             return
         }
-
         // 직종 선택 확인 (최소 1개 이상)
         if (step1Data.jobs.length === 0) {
             Alert.alert(
@@ -98,10 +86,8 @@ const KeywordsStep1 = () => {
             )
             return
         }
-
         router.push('/keywords-step2')
     }
-
     if (loading) {
         return (
             <SafeAreaView className="flex-1 bg-white justify-center items-center">
@@ -109,14 +95,12 @@ const KeywordsStep1 = () => {
             </SafeAreaView>
         )
     }
-
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
             <View className="flex-row items-center p-4 border-b border-gray-200 bg-white">
                 <Back />
                 <Text className="text-lg font-bold ml-4">회사 정보 설정 (1/3)</Text>
             </View>
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -133,7 +117,6 @@ const KeywordsStep1 = () => {
                         setSelectedLocation={setLocation} 
                     />
                 </View>
-
                 {/* 직종 선택 - 필수 */}
                 <View>
                     <View className="px-4 mb-2">
@@ -147,7 +130,6 @@ const KeywordsStep1 = () => {
                     />
                 </View>
             </ScrollView>
-
             {/* 다음 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 pb-8">
                 <TouchableOpacity
@@ -170,5 +152,4 @@ const KeywordsStep1 = () => {
         </SafeAreaView>
     )
 }
-
 export default KeywordsStep1

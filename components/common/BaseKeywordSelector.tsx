@@ -3,13 +3,11 @@ import React from 'react'
 import { Dropdown } from 'react-native-element-dropdown'
 import { Ionicons } from '@expo/vector-icons'
 import { useKeywordSelection } from '@/hooks/useKeywordSelection'
-
 interface Keyword {
     id: number
     keyword: string
     category: string
 }
-
 interface BaseKeywordSelectorProps {
     title: string
     placeholder: string
@@ -21,7 +19,6 @@ interface BaseKeywordSelectorProps {
     enableSearch?: boolean
     required?: boolean
 }
-
 export const BaseKeywordSelector: React.FC<BaseKeywordSelectorProps> = ({
     title,
     placeholder,
@@ -43,7 +40,6 @@ export const BaseKeywordSelector: React.FC<BaseKeywordSelectorProps> = ({
         selectedIds,
         onSelectionChange
     })
-
     const isAllSelected = selectedIds.length === keywords.length
     
     // 상관없음 키워드 찾기
@@ -70,7 +66,6 @@ export const BaseKeywordSelector: React.FC<BaseKeywordSelectorProps> = ({
         : availableItemsCount === 0
         ? "선택 가능한 항목 없음"
         : `${placeholder} (${availableItemsCount}개 남음)`
-
     return (
         <View className="bg-white mx-4 mb-4 p-4 rounded-2xl shadow-sm">
             <Text className="text-base font-semibold mb-3">
@@ -98,7 +93,6 @@ export const BaseKeywordSelector: React.FC<BaseKeywordSelectorProps> = ({
                 value={null}
                 onChange={handleSelect}
             />
-
             <View className="flex-row flex-wrap mt-3">
                 {selectedKeywords.length === 0 ? (
                     <Text className="text-gray-400 text-sm">{emptyText}</Text>

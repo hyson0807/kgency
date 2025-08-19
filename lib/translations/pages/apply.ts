@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const applyTranslations: TranslationData = {
     // Apply 페이지
     'apply.title': {
@@ -479,7 +478,6 @@ export const applyTranslations: TranslationData = {
         ha: 'Wani',
         mn: 'Бусад'
     },
-
 // 근무 기간
     'apply.period_1month': {
         en: '1 month',
@@ -551,7 +549,6 @@ export const applyTranslations: TranslationData = {
         ha: 'Dogon lokaci',
         mn: 'Урт хугацаа'
     },
-
 // 경력
     'apply.exp_none': {
         en: 'No experience',
@@ -623,7 +620,6 @@ export const applyTranslations: TranslationData = {
         ha: 'Shekaru 3+',
         mn: '3+ жил'
     },
-
 // 한국어 레벨
     'apply.korean_beginner': {
         en: 'Beginner',
@@ -667,7 +663,6 @@ export const applyTranslations: TranslationData = {
         ha: 'Babba',
         mn: 'Дээд шат'
     },
-
 // TOPIK 레벨
     'apply.topik_1': {
         en: 'Level 1',
@@ -965,7 +960,6 @@ export const applyTranslations: TranslationData = {
         ha: 'Lahadi',
         mn: 'Ням'
     },
-
 // 시간대 번역
     'apply.time_morning': {
         en: 'Morning',

@@ -3,7 +3,6 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { InterviewScheduleCard } from './InterviewScheduleCard'
-
 interface InterviewSchedule {
     id: string
     interview_slot: {
@@ -33,14 +32,12 @@ interface InterviewSchedule {
         }
     }
 }
-
 interface InterviewScheduleTabProps {
     selectedDate: string
     selectedDateSchedules: InterviewSchedule[]
     formatDateHeader: (dateString: string) => string
     onCancelInterview: (scheduleId: string) => void
 }
-
 export const InterviewScheduleTab: React.FC<InterviewScheduleTabProps> = ({
     selectedDate,
     selectedDateSchedules,
@@ -59,7 +56,6 @@ export const InterviewScheduleTab: React.FC<InterviewScheduleTabProps> = ({
                     </Text>
                 </View>
             </View>
-
             {selectedDateSchedules.length === 0 ? (
                 <View className="bg-white rounded-xl p-8 items-center">
                     <Ionicons name="calendar-outline" size={60} color="#cbd5e0" />

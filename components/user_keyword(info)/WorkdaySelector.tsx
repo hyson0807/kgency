@@ -1,23 +1,17 @@
 import {Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
-
 interface WorkdaySelectorProps {
     workDayKeywords: { id: number, keyword: string }[];
     selectedWorkDays: number[];
     toggleWorkDay: (id: number) => void;
 }
-
 export const WorkdaySelector = ({
     workDayKeywords,
     selectedWorkDays,
     toggleWorkDay,
                                 }: WorkdaySelectorProps) => {
-
-
     const {t, translateDB} = useTranslation();
-
-
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
             <Text className="text-lg font-semibold mb-4 text-gray-900">

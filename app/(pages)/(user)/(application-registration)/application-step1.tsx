@@ -11,7 +11,6 @@ import { useApplicationFormStore } from '@/stores/applicationFormStore'
 import { api } from '@/lib/api'
 import CustomModal from '@/components/CustomModal'
 import { useUserKeywords } from '@/hooks/useUserKeywords'
-
 // Step 1: 기본 정보 입력 페이지
 export default function ApplicationStep1() {
     const params = useLocalSearchParams()
@@ -36,14 +35,12 @@ export default function ApplicationStep1() {
     const [showDraftModal, setShowDraftModal] = useState(false)
     const { showModal, ModalComponent } = useModal()
     const { t } = useTranslation()
-
     // 프로필 정보 로드
     useEffect(() => {
         if (profile) {
             loadFromProfile(profile)
         }
     }, [profile, loadFromProfile])
-
     // 중복 지원 확인
     useEffect(() => {
         const checkExistingApplication = async () => {
@@ -55,42 +52,33 @@ export default function ApplicationStep1() {
                         setHasApplied(response.isDuplicate)
                     }
                 } catch (error) {
-                    console.error('지원 내역 확인 실패:', error)
                 }
             }
         }
-
         checkExistingApplication()
     }, [profile?.id, jobPostingId])
-
     // 컴포넌트 마운트 시 기존 작성 데이터 확인
     useEffect(() => {
         checkExistingDraft()
     }, [])
-
     const checkExistingDraft = () => {
         if (!isDataEmpty()) {
             setShowDraftModal(true)
         }
     }
-
     const validateForm = () => {
         if (!step1Data.name.trim()) {
             showModal(t('alert.notification', '알림'), t('apply.name_required', '이름은 필수 입력 항목입니다.'))
             return false
         }
-
         if (step1Data.age && (parseInt(step1Data.age) < 0 || parseInt(step1Data.age) > 100)) {
             showModal(t('alert.notification', '알림'), t('apply.invalid_age', '올바른 나이를 입력해주세요.'))
             return false
         }
-
         return true
     }
-
     const handleNext = async () => {
         if (!validateForm()) return
-
         setLoading(true)
         try {
             // Step 2로 이동 (데이터는 이미 Zustand에 저장됨)
@@ -104,13 +92,11 @@ export default function ApplicationStep1() {
                 }
             })
         } catch (error) {
-            console.error('네비게이션 실패:', error)
             showModal('오류', '다음 단계로 이동 중 문제가 발생했습니다.', 'warning')
         } finally {
             setLoading(false)
         }
     }
-
     if (profileLoading || keywordsLoading) {
         return (
             <SafeAreaView className="flex-1 bg-white justify-center items-center">
@@ -118,7 +104,6 @@ export default function ApplicationStep1() {
             </SafeAreaView>
         )
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
@@ -143,7 +128,6 @@ export default function ApplicationStep1() {
                     {t('apply.title', '지원서 작성')} (1/3)
                 </Text>
             </View>
-
             {/* 진행 상황 인디케이터 */}
             <View className="flex-row items-center px-6 py-4 bg-gray-50">
                 <View className="flex-1 flex-row items-center">
@@ -160,7 +144,6 @@ export default function ApplicationStep1() {
                     </View>
                 </View>
             </View>
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -171,7 +154,6 @@ export default function ApplicationStep1() {
                         <Text className="text-xl font-bold mb-2">기본 정보를 입력해주세요</Text>
                         <Text className="text-gray-600 mb-6">지원자의 기본적인 정보를 작성해주세요.</Text>
                     </View>
-
                     {/* 지원 공고 정보 */}
                     <View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">
                         <Text className="text-sm text-gray-600">{t('apply.applying_to', '지원 공고')}</Text>
@@ -199,7 +181,6 @@ export default function ApplicationStep1() {
                     />
                 </View>
             </ScrollView>
-
             {/* 하단 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
@@ -214,7 +195,6 @@ export default function ApplicationStep1() {
                     </Text>
                 </TouchableOpacity>
             </View>
-
             <ModalComponent />
             
             {/* 기존 작성 데이터 모달 */}

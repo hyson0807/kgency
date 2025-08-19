@@ -7,7 +7,6 @@ import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-
 import Back from '@/components/back'
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
@@ -18,29 +17,24 @@ import JobPostingSelector from '@/components/interview-request/JobPostingSelecto
 import InterviewLocationInput from '@/components/interview-request/InterviewLocationInput'
 import InterviewSummary from '@/components/interview-request/InterviewSummary'
 import { setupCalendarLocale } from '@/components/interview-calendar/config/calendarLocale'
-
 // 한국어 캘린더 설정
 setupCalendarLocale()
-
 interface TimeSlot {
     date: string
     startTime: string
     endTime: string
     interviewType: '대면' | '화상' | '전화'
 }
-
 interface JobPosting {
     id: string
     title: string
     hasExistingApplication?: boolean
 }
-
 export default function InterviewRequest() {
     const { user } = useAuth()
     const { showModal, ModalComponent } = useModal()
     const params = useLocalSearchParams()
     const { userId: jobSeekerId } = params
-
     // State
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
@@ -56,19 +50,16 @@ export default function InterviewRequest() {
     const [dateTimeMap, setDateTimeMap] = useState<Record<string, TimeSlot[]>>({})
     const [bookedSlots, setBookedSlots] = useState<Record<string, string[]>>({})
     const [userSelectedTimesByDate, setUserSelectedTimesByDate] = useState<Record<string, { added: string[], removed: string[] }>>({})
-
     useEffect(() => {
         if (user?.userId && jobSeekerId) {
             fetchInitialData()
         }
     }, [user?.userId, jobSeekerId])
-
     useEffect(() => {
         if (user?.userId) {
             fetchSlots()
         }
     }, [user?.userId])
-
     const [previousSelectedDate, setPreviousSelectedDate] = useState<string>('')
     
     useEffect(() => {
@@ -95,7 +86,6 @@ export default function InterviewRequest() {
             setPreviousSelectedDate(selectedDate)
         }
     }, [selectedDate, dateTimeMap, userSelectedTimesByDate, previousSelectedDate])
-
     const fetchInitialData = async () => {
         try {
             setLoading(true)
@@ -108,7 +98,6 @@ export default function InterviewRequest() {
             } else {
                 throw new Error('공고 목록을 불러오는데 실패했습니다.')
             }
-
             // 구직자 이름 가져오기
             const userProfileResponse = await api('GET', `/api/profiles/user/${jobSeekerId}`)
             
@@ -117,54 +106,40 @@ export default function InterviewRequest() {
             } else {
                 throw new Error('구직자 정보를 불러오는데 실패했습니다.')
             }
-
         } catch (error) {
-            console.error('데이터 로딩 실패:', error)
-            console.error('Error details:', {
-                message: (error as any)?.message,
-                response: (error as any)?.response?.data,
-                status: (error as any)?.response?.status
-            })
+            // 에러 처리
             showModal('오류', '데이터를 불러오는데 실패했습니다.')
         } finally {
             setLoading(false)
         }
     }
-
     const fetchSlots = async () => {
         try {
             const result = await api('GET', '/api/company/interview-slots?companyId=' + user?.userId)
-
             if (result?.data && Array.isArray(result.data)) {
                 const groupedSlots: Record<string, TimeSlot[]> = {}
                 const bookedSlotsMap: Record<string, string[]> = {}
-
                 result.data.forEach((slot: any) => {
                     // 유틸리티 함수 사용하여 일관된 날짜/시간 처리
                     const date = getLocalDateString(slot.start_time)
                     const startTime = getLocalTimeString(slot.start_time)
                     const endTime = getLocalTimeString(slot.end_time)
-
                     const timeSlot: TimeSlot = {
                         date: date,
                         startTime: startTime,
                         endTime: endTime,
                         interviewType: slot.interview_type
                     }
-
                     if (!groupedSlots[date]) {
                         groupedSlots[date] = []
                         bookedSlotsMap[date] = []
                     }
-
                     groupedSlots[date].push(timeSlot)
-
                     // 예약된 슬롯이면 기록
                     if (slot.is_booked) {
                         bookedSlotsMap[date].push(startTime)
                     }
                 })
-
                 setDateTimeMap(groupedSlots)
                 setBookedSlots(bookedSlotsMap)
                 
@@ -181,10 +156,8 @@ export default function InterviewRequest() {
                 }
             }
         } catch (error) {
-            console.error('면접 시간대 조회 실패:', error)
         }
     }
-
     // 전체 선택된 시간대 개수 계산 함수
     const getTotalSelectedSlots = () => {
         const now = new Date()
@@ -234,24 +207,20 @@ export default function InterviewRequest() {
         
         return totalCount
     }
-
     const handleSendInterviewRequest = async () => {
         if (!selectedJobPostingId) {
             showModal('알림', '면접 제안할 공고를 선택해주세요.')
             return
         }
-
         const totalSelectedSlots = getTotalSelectedSlots()
         if (totalSelectedSlots === 0) {
             showModal('알림', '최소 1개의 면접 시간대를 선택해주세요.')
             return
         }
-
         if (!interviewLocation.trim()) {
             showModal('알림', '면접 장소를 입력해주세요.')
             return
         }
-
         setSubmitting(true)
         try {
             // 1. 선택된 시간대들을 저장
@@ -259,14 +228,11 @@ export default function InterviewRequest() {
             const mustIncludeBookedTimes = [...bookedTimesForDate]
             const newlySelectedTimes = selectedTimes.filter(time => !bookedTimesForDate.includes(time))
             const finalTimes = [...new Set([...mustIncludeBookedTimes, ...newlySelectedTimes])]
-
             const slots = finalTimes.map(time => {
                 const [hour, minute] = time.split(':')
                 const endHour = minute === '30' ? parseInt(hour) + 1 : parseInt(hour)
                 const endMinute = minute === '30' ? '00' : '30'
-
                 const existingSlot = dateTimeMap[selectedDate]?.find(s => s.startTime === time)
-
                 return {
                     date: selectedDate,
                     startTime: time,
@@ -274,23 +240,19 @@ export default function InterviewRequest() {
                     interviewType: existingSlot?.interviewType || interviewType
                 }
             })
-
             const slotsResponse = await api('POST', '/api/company/interview-slots', {
                 companyId: user?.userId,
                 date: selectedDate,
                 slots: slots
             })
-
             if (!slotsResponse?.success) {
                 throw new Error('시간대 저장에 실패했습니다.')
             }
-
             // 2. 먼저 초대형 지원서 생성
             const applicationResponse = await api('POST', '/api/applications/invitation', {
                 userId: jobSeekerId,
                 jobPostingId: selectedJobPostingId
             })
-
             if (!applicationResponse?.success) {
                 if (applicationResponse?.error?.includes('이미 지원한 공고')) {
                     showModal('알림', '해당 구직자는 이미 이 공고에 지원했습니다.')
@@ -298,41 +260,35 @@ export default function InterviewRequest() {
                 }
                 throw new Error('지원서 생성에 실패했습니다.')
             }
-
             // 3. 면접 제안 생성
             const response = await api('POST', '/api/interview-proposals/company', {
                 applicationId: applicationResponse.data.id,
                 companyId: user?.userId,
                 location: interviewLocation.trim()
             })
-
             if (response?.success) {
                 showModal('성공', '면접 시간대가 설정되고 면접 요청이 성공적으로 전송되었습니다.', 'info', () => {
                     router.back()
                 })
             }
         } catch (error) {
-            console.error('면접 요청 실패:', error)
             showModal('오류', '면접 요청에 실패했습니다.')
         } finally {
             setSubmitting(false)
         }
     }
-
     // 시간대 선택 관련 함수들
     const timeSlots = []
     for (let hour = 0; hour < 24; hour++) {
         timeSlots.push(`${hour.toString().padStart(2, '0')}:00`)
         timeSlots.push(`${hour.toString().padStart(2, '0')}:30`)
     }
-
     const handleTimeToggle = (time: string) => {
         // 예약된 시간은 선택 불가
         if (bookedSlots[selectedDate]?.includes(time)) {
             showModal('알림', '이미 예약된 시간대입니다.')
             return
         }
-
         let newSelectedTimes: string[]
         if (selectedTimes.includes(time)) {
             newSelectedTimes = selectedTimes.filter(t => t !== time)
@@ -365,25 +321,20 @@ export default function InterviewRequest() {
             }
         }))
     }
-
     const formatDateHeader = (dateString: string) => {
         const date = new Date(dateString)
         return format(date, 'M월 d일 (E)', { locale: ko })
     }
-
     // 캘린더에 표시할 marked dates 생성
     const getMarkedDates = () => {
         const marked: any = {}
-
         // 선택된 날짜 표시
         marked[selectedDate] = {
             selected: true,
             selectedColor: '#3b82f6'
         }
-
         return marked
     }
-
     if (loading) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -393,7 +344,6 @@ export default function InterviewRequest() {
             </SafeAreaView>
         )
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
@@ -401,27 +351,23 @@ export default function InterviewRequest() {
                 <Back />
                 <Text className="text-lg font-bold ml-4">면접 요청</Text>
             </View>
-
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 {/* 구직자 정보 */}
                 <View className="bg-gray-50 p-4 m-4 rounded-lg">
                     <Text className="text-sm text-gray-600 mb-1">면접 대상자</Text>
                     <Text className="text-lg font-semibold">{jobSeekerName}</Text>
                 </View>
-
                 {/* 공고 선택 */}
                 <JobPostingSelector
                     jobPostings={companyJobPostings}
                     selectedJobPostingId={selectedJobPostingId}
                     onSelectJobPosting={setSelectedJobPostingId}
                 />
-
                 {/* 면접 장소 입력 */}
                 <InterviewLocationInput
                     value={interviewLocation}
                     onChangeText={setInterviewLocation}
                 />
-
                 {/* 캘린더 */}
                 <View className="bg-white border-t border-gray-200">
                     <View className="p-4">
@@ -449,7 +395,6 @@ export default function InterviewRequest() {
                         }}
                     />
                 </View>
-
                 {/* 면접 유형 선택 */}
                 {/*<View className="px-4 mb-6">*/}
                 {/*    <Text className="text-base font-semibold mb-3">면접 유형</Text>*/}
@@ -473,7 +418,6 @@ export default function InterviewRequest() {
                 {/*        ))}*/}
                 {/*    </View>*/}
                 {/*</View>*/}
-
                 {/* 선택된 날짜의 시간대 선택 */}
                 <View className="p-4">
                     <Text className="text-base font-semibold mb-3">
@@ -497,7 +441,6 @@ export default function InterviewRequest() {
                     />
                 </View>
             </ScrollView>
-
             {/* 하단 버튼 */}
             <View className="border-t border-gray-200 p-4">
                 <TouchableOpacity
@@ -521,7 +464,6 @@ export default function InterviewRequest() {
                     </View>
                 </TouchableOpacity>
             </View>
-
             <ModalComponent />
         </SafeAreaView>
     )

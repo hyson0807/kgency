@@ -2,8 +2,6 @@ import {Ionicons} from "@expo/vector-icons";
 import {Text, TouchableOpacity, View} from "react-native";
 import {router} from "expo-router";
 import React from "react";
-
-
 export const Empty = () => {
     return (
         <View className="flex-1 justify-center items-center p-8">

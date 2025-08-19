@@ -3,15 +3,12 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '@/contexts/TranslationContext';
-
 interface TermsOfServiceProps {
   onClose: () => void;
 }
-
 const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-
   return (
     <View className="flex-1 bg-white" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       {/* 헤더 */}
@@ -21,7 +18,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
           <Ionicons name="close" size={24} color="#374151" />
         </TouchableOpacity>
       </View>
-
       <ScrollView className="flex-1 p-4">
         {/* 제1조 목적 */}
         <View className="mb-6">
@@ -30,7 +26,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             이 약관은 kgency(이하 "회사")가 제공하는 구인구직 매칭 서비스(이하 "서비스")의 이용조건 및 절차, 회사와 이용자 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
           </Text>
         </View>
-
         {/* 제2조 정의 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제2조 (정의)</Text>
@@ -49,7 +44,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제3조 약관의 게시와 개정 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제3조 (약관의 게시와 개정)</Text>
@@ -62,7 +56,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제4조 서비스의 제공 및 변경 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제4조 (서비스의 제공 및 변경)</Text>
@@ -87,7 +80,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제5조 회원가입 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제5조 (회원가입)</Text>
@@ -109,7 +101,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제6조 회원의 의무 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제6조 (회원의 의무)</Text>
@@ -134,7 +125,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제7조 서비스 이용의 제한 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제7조 (서비스 이용의 제한)</Text>
@@ -147,7 +137,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제8조 면책조항 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제8조 (면책조항)</Text>
@@ -166,7 +155,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제9조 분쟁해결 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제9조 (분쟁해결)</Text>
@@ -179,7 +167,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 부칙 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">부칙</Text>
@@ -187,7 +174,6 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             이 약관은 2024년 1월 1일부터 적용됩니다.
           </Text>
         </View>
-
         {/* 연락처 */}
         <View className="bg-gray-50 p-4 rounded-xl mt-4 mb-40">
           <Text className="text-sm font-medium text-gray-900 mb-2">문의사항</Text>
@@ -202,5 +188,4 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
     </View>
   );
 };
-
 export default TermsOfService;

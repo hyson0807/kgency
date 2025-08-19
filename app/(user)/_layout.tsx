@@ -8,7 +8,6 @@ import {useAuth} from "@/contexts/AuthContext";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform, Animated } from 'react-native';
 import { useTabBar } from '@/contexts/TabBarContext';
-
 const User_Layout = () => {
     const { t } = useTranslation();
     const {user} = useAuth();
@@ -17,8 +16,6 @@ const User_Layout = () => {
     
     const maxHeight = (Platform.OS === 'ios' ? 50 : 60) + insets.bottom;
     const maxPadding = insets.bottom + 10;
-
-
     return (
         <Tabs
             screenOptions={{
@@ -42,35 +39,27 @@ const User_Layout = () => {
                 },
             }}
         >
-
             <Tabs.Screen
                 name="home"
-
                 options={{
                     tabBarLabel: t('tab.home', '홈'),
                     tabBarIcon: ({size, color}) => <Ionicons name='home' size={size} color={color}/>
                 }}
             />
-
-
             <Tabs.Screen
                 name="applications"
                 options={{
                     tabBarLabel: t('tab.applications', '지원내역'),
-
                     tabBarIcon: ({size, color}) => <AntDesign name="copy1" size={size} color={color} />
                 }}
             />
-
             <Tabs.Screen
                 name="user-calendar"
                 options={{
                     tabBarLabel: t('tab.schedule', '일정'),
-
                     tabBarIcon: ({size, color}) => <Ionicons name="calendar" size={size} color={color} />
                 }}
             />
-
             <Tabs.Screen
                 name="shop"
                 options={{
@@ -78,7 +67,6 @@ const User_Layout = () => {
                     tabBarIcon: ({size, color}) => <Ionicons name="storefront" size={size} color={color} />
                 }}
             />
-
             <Tabs.Screen
                 name="settings"
                 options={{

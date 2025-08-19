@@ -1,18 +1,15 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import { Dropdown } from "react-native-element-dropdown"
-
 interface LocationOption {
     label: string
     value: number
 }
-
 interface WorkLocationFormProps {
     locationOptions: LocationOption[]
     selectedLocation: number | null
     setSelectedLocation: (value: number | null) => void
 }
-
 export const WorkLocationForm: React.FC<WorkLocationFormProps> = ({
     locationOptions,
     selectedLocation,

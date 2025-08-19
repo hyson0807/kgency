@@ -8,7 +8,6 @@ import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import { WorkExperienceInformation } from "@/components/application-form/WorkExperience-Information"
 import { useApplicationFormStore } from '@/stores/applicationFormStore'
-
 // Step 2: 경력 및 정보 입력 페이지
 export default function ApplicationStep2() {
     const params = useLocalSearchParams()
@@ -33,7 +32,6 @@ export default function ApplicationStep2() {
     const [loading, setLoading] = useState(false)
     const { showModal, ModalComponent } = useModal()
     const { t } = useTranslation()
-
     // 요일 선택 토글
     const toggleDay = (dayValue: string) => {
         if (step2Data.selectedDays.includes(dayValue)) {
@@ -42,7 +40,6 @@ export default function ApplicationStep2() {
             setSelectedDays([...step2Data.selectedDays, dayValue])
         }
     }
-
     // 시간대 선택 토글
     const toggleTime = (timeValue: string) => {
         if (step2Data.selectedTimes.includes(timeValue)) {
@@ -51,7 +48,6 @@ export default function ApplicationStep2() {
             setSelectedTimes([...step2Data.selectedTimes, timeValue])
         }
     }
-
     const handleNext = async () => {
         setLoading(true)
         try {
@@ -66,17 +62,14 @@ export default function ApplicationStep2() {
                 }
             })
         } catch (error) {
-            console.error('네비게이션 실패:', error)
             showModal('오류', '다음 단계로 이동 중 문제가 발생했습니다.', 'warning')
         } finally {
             setLoading(false)
         }
     }
-
     const handleBack = () => {
         router.back()
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
@@ -86,7 +79,6 @@ export default function ApplicationStep2() {
                     {t('apply.title', '지원서 작성')} (2/3)
                 </Text>
             </View>
-
             {/* 진행 상황 인디케이터 */}
             <View className="flex-row items-center px-6 py-4 bg-gray-50">
                 <View className="flex-1 flex-row items-center">
@@ -103,7 +95,6 @@ export default function ApplicationStep2() {
                     </View>
                 </View>
             </View>
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -114,7 +105,6 @@ export default function ApplicationStep2() {
                         <Text className="text-xl font-bold mb-2">경력 및 추가 정보를 입력해주세요</Text>
                         <Text className="text-gray-600 mb-6">더 나은 매칭을 위한 상세 정보를 작성해주세요.</Text>
                     </View>
-
                     {/* 지원 공고 정보 */}
                     <View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">
                         <Text className="text-sm text-gray-600">{t('apply.applying_to', '지원 공고')}</Text>
@@ -148,7 +138,6 @@ export default function ApplicationStep2() {
                     />
                 </View>
             </ScrollView>
-
             {/* 하단 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
@@ -163,7 +152,6 @@ export default function ApplicationStep2() {
                     </Text>
                 </TouchableOpacity>
             </View>
-
             <ModalComponent />
         </SafeAreaView>
     )

@@ -5,19 +5,16 @@ import { router } from 'expo-router';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-
 interface FAQItem {
     id: string;
     question: string;
     answer: string;
     category: string;
 }
-
 const FAQ = () => {
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
-
     const faqData: FAQItem[] = [
         {
             id: '1',
@@ -92,14 +89,11 @@ const FAQ = () => {
             answer: '설정 > 알림에서 K-Gency 알림이 허용되어 있는지 확인해주세요. iOS의 경우 집중모드나 방해금지 모드도 확인해보시기 바랍니다.'
         }
     ];
-
     const categories = Array.from(new Set(faqData.map(item => item.category)));
-
     const filteredFAQs = faqData.filter(item => 
         item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.answer.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
     const toggleExpanded = (id: string) => {
         setExpandedItems(prev => 
             prev.includes(id) 
@@ -107,7 +101,6 @@ const FAQ = () => {
                 : [...prev, id]
         );
     };
-
     const renderFAQItem = (item: FAQItem) => {
         const isExpanded = expandedItems.includes(item.id);
         
@@ -146,7 +139,6 @@ const FAQ = () => {
             </View>
         );
     };
-
     return (
         <SafeAreaView style={{ flex: 1 }} edges={['top']}>
             <LinearGradient colors={['#f8fafc', '#e2e8f0']} style={{ flex: 1 }}>
@@ -160,7 +152,6 @@ const FAQ = () => {
                     </TouchableOpacity>
                     <Text className="text-2xl font-bold text-gray-800">자주 묻는 질문</Text>
                 </View>
-
                 {/* Search Bar */}
                 <View className="mb-6">
                     <View className="bg-white rounded-xl p-4 shadow-sm flex-row items-center">
@@ -178,7 +169,6 @@ const FAQ = () => {
                         )}
                     </View>
                 </View>
-
                 {/* Category Filter */}
                 {searchQuery.length === 0 && (
                     <View className="mb-6">
@@ -197,7 +187,6 @@ const FAQ = () => {
                         </ScrollView>
                     </View>
                 )}
-
                 {/* FAQ Items */}
                 <View className="mb-6">
                     {searchQuery.length > 0 && (
@@ -229,7 +218,6 @@ const FAQ = () => {
                         )
                     )}
                 </View>
-
                 {/* Contact Section */}
                 <View className="bg-white rounded-2xl p-6 mb-6 shadow-sm">
                     <Text className="text-lg font-bold text-gray-800 mb-4">더 궁금한 사항이 있으신가요?</Text>
@@ -256,5 +244,4 @@ const FAQ = () => {
         </SafeAreaView>
     );
 };
-
 export default FAQ;

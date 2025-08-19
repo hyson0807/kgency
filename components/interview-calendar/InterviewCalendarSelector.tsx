@@ -10,10 +10,8 @@ import { TimeSlotSelector } from './TimeSlotSelector'
 import { InterviewSlotsSummary } from './InterviewSlotsSummary'
 import { setupCalendarLocale } from './config/calendarLocale'
 import { generateTimeSlots } from './utils'
-
 // 캘린더 로케일 설정
 setupCalendarLocale()
-
 export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps> = ({
     companyId,
     onConfirm
@@ -30,11 +28,9 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
     const [presetSlots, setPresetSlots] = useState<string[]>([])  // 미리 설정된 시간대
     
     const allTimeSlots = generateTimeSlots()
-
     useEffect(() => {
         fetchSlots()
     }, [companyId])
-
     useEffect(() => {
         // 선택된 날짜의 슬롯 필터링
         if (selectedDate && dateTimeMap[selectedDate]) {
@@ -55,55 +51,44 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
             setSelectedTimes([])
         }
     }, [selectedDate, dateTimeMap, bookedSlots])
-
     const fetchSlots = async () => {
         try {
             setLoading(true)
             const result = await api('GET', `/api/company/interview-slots?companyId=${companyId}`)
-
             if (result?.data && Array.isArray(result.data)) {
                 const groupedSlots: Record<string, TimeSlot[]> = {}
                 const bookedSlotsMap: Record<string, string[]> = {}
-
                 result.data.forEach((slot: any) => {
                     const startDateTime = new Date(slot.start_time)
                     const date = startDateTime.toISOString().split('T')[0]
                     const startTime = startDateTime.toTimeString().slice(0, 5)
-
                     const endDateTime = new Date(slot.end_time)
                     const endTime = endDateTime.toTimeString().slice(0, 5)
-
                     const timeSlot: TimeSlot = {
                         date: date,
                         startTime: startTime,
                         endTime: endTime,
                         interviewType: slot.interview_type
                     }
-
                     if (!groupedSlots[date]) {
                         groupedSlots[date] = []
                         bookedSlotsMap[date] = []
                     }
-
                     groupedSlots[date].push(timeSlot)
-
                     // 예약된 슬롯이면 기록
                     if (slot.is_booked) {
                         bookedSlotsMap[date].push(startTime)
                     }
                 })
-
                 setDateTimeMap(groupedSlots)
                 setBookedSlots(bookedSlotsMap)
             }
         } catch (error) {
-            console.error('Failed to fetch slots:', error)
             showModal('오류', '면접 시간대를 불러오는데 실패했습니다.')
         } finally {
             setLoading(false)
         }
     }
-
     const handleDayPress = (day: any) => {
         const today = new Date()
         const selectedDay = new Date(day.dateString)
@@ -119,7 +104,6 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
         
         setSelectedDate(day.dateString)
     }
-
     const handleTimeSelect = (time: string) => {
         // 미리 설정된 시간대는 선택 해제 불가
         if (presetSlots.includes(time)) {
@@ -134,19 +118,15 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
             setSelectedTimes([...selectedTimes, time])
         }
     }
-
     const handleConfirm = () => {
         if (!selectedDate || selectedTimes.length === 0) {
             showModal('알림', '날짜와 시간을 모두 선택해주세요.')
             return
         }
-
         onConfirm(selectedDate, selectedTimes.join(','), interviewType)
     }
-
     const getMarkedDates = () => {
         const marked: any = {}
-
         // 시간대가 있는 날짜 표시
         Object.keys(dateTimeMap).forEach(date => {
             const hasAvailable = dateTimeMap[date].some(slot => 
@@ -160,22 +140,18 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
                 }
             }
         })
-
         // 선택된 날짜 표시
         marked[selectedDate] = {
             ...marked[selectedDate],
             selected: true,
             selectedColor: '#3b82f6'
         }
-
         return marked
     }
-
     const formatDateHeader = (dateString: string) => {
         const date = new Date(dateString)
         return format(date, 'M월 d일 (E)', { locale: ko })
     }
-
     if (loading) {
         return (
             <View className="flex-1 justify-center items-center">
@@ -183,7 +159,6 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
             </View>
         )
     }
-
     return (
         <View className="flex-1">
             {/* 캘린더 */}
@@ -210,14 +185,11 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
                     }}
                 />
             </View>
-
             {/* 선택된 날짜의 시간대 */}
             <View className="p-4">
                 <Text className="text-lg font-bold mb-3">
                     {formatDateHeader(selectedDate)}
                 </Text>
-
-
                 {/* 시간 선택 */}
                 <TimeSlotSelector
                     timeSlots={allTimeSlots}
@@ -226,7 +198,6 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
                     presetSlots={presetSlots}
                     onTimeToggle={handleTimeSelect}
                 />
-
                 {/* 모든 날짜별 선택된 시간대 종합 요약 */}
                 {Object.keys(dateTimeMap).length > 0 && (
                     <InterviewSlotsSummary
@@ -234,8 +205,6 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
                         bookedSlots={bookedSlots}
                     />
                 )}
-
-
                 {/* 확인 버튼 */}
                 <TouchableOpacity
                     onPress={handleConfirm}
@@ -250,10 +219,7 @@ export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps>
                         면접 제안
                     </Text>
                 </TouchableOpacity>
-
-
             </View>
-
             <ModalComponent />
         </View>
     )

@@ -3,15 +3,12 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import {  useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '@/contexts/TranslationContext';
-
 interface PrivacyPolicyProps {
   onClose: () => void;
 }
-
 const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-
   return (
     <View className="flex-1 bg-white" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       {/* 헤더 */}
@@ -21,7 +18,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
           <Ionicons name="close" size={24} color="#374151" />
         </TouchableOpacity>
       </View>
-
       <ScrollView className="flex-1 p-4">
         {/* 개요 */}
         <View className="mb-6">
@@ -30,7 +26,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             kgency(이하 "회사")는 정보주체의 자유와 권리 보호를 위해 「개인정보 보호법」 및 관계 법령이 정한 바를 준수하여, 적법하게 개인정보를 처리하고 안전하게 관리하고 있습니다. 이에 「개인정보 보호법」 제30조에 따라 정보주체에게 개인정보 처리에 관한 절차 및 기준을 안내하고, 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립·공개합니다.
           </Text>
         </View>
-
         {/* 제1조 개인정보의 처리목적 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제1조 (개인정보의 처리목적)</Text>
@@ -49,7 +44,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제2조 개인정보의 처리 및 보유기간 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제2조 (개인정보의 처리 및 보유기간)</Text>
@@ -71,7 +65,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제3조 처리하는 개인정보 항목 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제3조 (처리하는 개인정보 항목)</Text>
@@ -102,7 +95,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </View>
           </View>
         </View>
-
         {/* 제4조 개인정보의 제3자 제공 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제4조 (개인정보의 제3자 제공)</Text>
@@ -121,7 +113,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제5조 개인정보처리의 위탁 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제5조 (개인정보처리의 위탁)</Text>
@@ -136,7 +127,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </View>
           </View>
         </View>
-
         {/* 제6조 정보주체의 권리·의무 및 행사방법 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제6조 (정보주체의 권리·의무 및 행사방법)</Text>
@@ -161,7 +151,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제7조 개인정보의 파기 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제7조 (개인정보의 파기)</Text>
@@ -180,7 +169,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제8조 개인정보의 안전성 확보조치 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제8조 (개인정보의 안전성 확보조치)</Text>
@@ -205,7 +193,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 제9조 개인정보보호책임자 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제9조 (개인정보보호책임자)</Text>
@@ -223,7 +210,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </View>
           </View>
         </View>
-
         {/* 제10조 권익침해 구제방법 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제10조 (권익침해 구제방법)</Text>
@@ -247,7 +233,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </View>
           </View>
         </View>
-
         {/* 제11조 개인정보 처리방침 변경 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">제11조 (개인정보 처리방침 변경)</Text>
@@ -257,7 +242,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             </Text>
           </View>
         </View>
-
         {/* 부칙 */}
         <View className="mb-6">
           <Text className="text-lg font-bold mb-3 text-gray-900">부칙</Text>
@@ -265,7 +249,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             이 개인정보처리방침은 2024년 1월 1일부터 적용됩니다.
           </Text>
         </View>
-
         {/* 연락처 */}
         <View className="bg-gray-50 p-4 rounded-xl mt-4 mb-40">
           <Text className="text-sm font-medium text-gray-900 mb-2">문의사항</Text>
@@ -283,5 +266,4 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
     </View>
   );
 };
-
 export default PrivacyPolicy;

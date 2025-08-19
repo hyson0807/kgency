@@ -3,14 +3,12 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "@/contexts/TranslationContext";
-
 // 타입 정의
 interface Keyword {
     id: number;
     keyword: string;
     category: string;
 }
-
 interface LocationSelectorProps {
     keywords: Keyword[];
     selectedLocations: number[];
@@ -18,7 +16,6 @@ interface LocationSelectorProps {
     onLocationChange: (locations: number[]) => void;
     onMoveableToggle: (moveableId: number | null) => void;
 }
-
 export const LocationSelector: React.FC<LocationSelectorProps> = ({
                                                                       keywords,
                                                                       selectedLocations,
@@ -28,29 +25,24 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
                                                                   }) => {
     // Hook으로 번역 함수 가져오기
     const { t, translateDB } = useTranslation();
-
     // 필터링된 키워드들
     const locationKeywords = keywords.filter(k => k.category === '지역');
     const moveableKeyword = keywords.find(k => k.category === '지역이동');
-
     // 드롭다운 옵션 생성
     const locationOptions = locationKeywords.map(location => ({
         label: translateDB('keyword', 'keyword', location.id.toString(), location.keyword),
         value: location.id,
     }));
-
     // 지역 추가
     const handleLocationAdd = (locationId: number) => {
         if (!selectedLocations.includes(locationId)) {
             onLocationChange([...selectedLocations, locationId]);
         }
     };
-
     // 지역 제거
     const handleLocationRemove = (locationId: number) => {
         onLocationChange(selectedLocations.filter(id => id !== locationId));
     };
-
     // 지역이동 가능 토글
     const handleMoveableToggle = () => {
         if (moveableKeyword) {
@@ -59,13 +51,11 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
             );
         }
     };
-
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
             <Text className="text-lg font-semibold mb-4 text-gray-900">
                 {t('info.desired_location', '희망 근무 지역')}
             </Text>
-
             <View>
                 {/* 지역 선택 드롭다운 */}
                 <Dropdown
@@ -106,7 +96,6 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
                     value={null}
                     onChange={item => handleLocationAdd(item.value)}
                 />
-
                 {/* 선택된 지역 태그들 */}
                 {selectedLocations.length > 0 && (
                     <SelectedLocationTags
@@ -115,7 +104,6 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
                         onRemove={handleLocationRemove}
                     />
                 )}
-
                 {/* 지역이동 가능 토글 */}
                 {moveableKeyword && (
                     <MoveableToggle
@@ -128,27 +116,23 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
         </View>
     );
 };
-
 // 선택된 지역 태그 컴포넌트
 interface SelectedLocationTagsProps {
     selectedLocations: number[];
     keywords: Keyword[];
     onRemove: (locationId: number) => void;
 }
-
 const SelectedLocationTags: React.FC<SelectedLocationTagsProps> = ({
                                                                        selectedLocations,
                                                                        keywords,
                                                                        onRemove,
                                                                    }) => {
     const { translateDB } = useTranslation();
-
     return (
         <View className="flex-row flex-wrap gap-2 mt-3">
             {selectedLocations.map(locationId => {
                 const location = keywords.find(k => k.id === locationId);
                 if (!location) return null;
-
                 return (
                     <View
                         key={locationId}
@@ -166,21 +150,18 @@ const SelectedLocationTags: React.FC<SelectedLocationTagsProps> = ({
         </View>
     );
 };
-
 // 지역이동 가능 토글 컴포넌트
 interface MoveableToggleProps {
     moveableKeyword: Keyword;
     isSelected: boolean;
     onToggle: () => void;
 }
-
 const MoveableToggle: React.FC<MoveableToggleProps> = ({
                                                            moveableKeyword,
                                                            isSelected,
                                                            onToggle,
                                                        }) => {
     const { translateDB } = useTranslation();
-
     return (
         <TouchableOpacity
             onPress={onToggle}

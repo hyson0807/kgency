@@ -1,26 +1,19 @@
 import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import React from "react";
-
 interface MoveableSelectorProps {
     moveableKeyword: { id: number, keyword: string, category: string } | undefined;
     selectedMoveable: number | null;
     toggleMoveable: () => void;
 }
-
 export const MoveableSelector = ({
     moveableKeyword,
     selectedMoveable,
     toggleMoveable,
-
                                  }: MoveableSelectorProps) => {
-
-
-
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
             <Text className="text-lg font-semibold mb-4 text-gray-900">지역이동 가능자 선호</Text>
-
             {/* 지역이동 가능 토글 */}
             {moveableKeyword && (
                 <TouchableOpacity

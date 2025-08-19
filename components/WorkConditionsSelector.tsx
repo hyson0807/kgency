@@ -7,14 +7,12 @@ interface Keyword {
     keyword: string;
     category: string;
 }
-
 interface WorkConditionsSelectorProps {
     conditions: Keyword[];
     selectedConditions: number[];
     onToggle: (conditionId: number) => void;
     title?: string;
 }
-
 const WorkConditionsSelector: React.FC<WorkConditionsSelectorProps> = ({
                conditions,
                selectedConditions,
@@ -41,5 +39,4 @@ const WorkConditionsSelector: React.FC<WorkConditionsSelectorProps> = ({
         </View>
     )
 }
-
 export default WorkConditionsSelector

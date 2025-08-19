@@ -3,7 +3,6 @@ import { View, Text, Modal, TouchableOpacity, ScrollView, ActivityIndicator, Lin
 import { Ionicons } from '@expo/vector-icons'
 import { api } from '@/lib/api'
 import { useTranslation } from '@/contexts/TranslationContext'
-
 interface JobPosting {
     id: string
     title: string
@@ -28,13 +27,11 @@ interface JobPosting {
         description?: string
     }
 }
-
 interface JobDetailModalProps {
     visible: boolean
     onClose: () => void
     jobPostingId: string
 }
-
 export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModalProps) => {
     const { t, language } = useTranslation()
     const [loading, setLoading] = useState(true)
@@ -55,7 +52,6 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
     } | null>(null)
     const [isTranslated, setIsTranslated] = useState(false)
     const [isTranslating, setIsTranslating] = useState(false)
-
     const dayTranslations: { [key: string]: { [lang: string]: string } } = {
         '월': {
             en: 'Mon', ja: '月', zh: '周一', vi: 'T2', hi: 'सोम', si: 'සඳුදා', ar: 'الإثنين', tr: 'Pzt', my: 'တနင်္လာ', ky: 'Дүйшөмбү', ha: 'Dudu', mn: 'Даваа'
@@ -79,20 +75,16 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
             en: 'Sun', ja: '日', zh: '周日', vi: 'CN', hi: 'रवि', si: 'ඉරිදා', ar: 'الأحد', tr: 'Paz', my: 'တနင်္ဂနွေ', ky: 'Жекшемби', ha: 'Lahadi', mn: 'Ням'
         }
     }
-
-
     useEffect(() => {
         if (visible && jobPostingId) {
             fetchJobDetails()
         }
     }, [visible, jobPostingId])
-
     useEffect(() => {
         // Reset translation when language changes
         setTranslatedData(null)
         setIsTranslated(false)
     }, [language])
-
     useEffect(() => {
         // Reset translation when modal closes
         if (!visible) {
@@ -100,25 +92,21 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
             setIsTranslated(false)
         }
     }, [visible])
-
     const fetchJobDetails = async () => {
         try {
             setLoading(true)
             const response = await api('GET', `/api/job-postings/${jobPostingId}`)
             setJobPosting(response.data)
         } catch (error) {
-            console.error('Error fetching job details:', error)
         } finally {
             setLoading(false)
         }
     }
-
     const handleCall = () => {
         if (jobPosting?.company?.phone_number) {
             Linking.openURL(`tel:${jobPosting.company.phone_number}`)
         }
     }
-
     const handleMap = () => {
         const address = jobPosting?.interview_location || jobPosting?.job_address || jobPosting?.company?.address
         if (address) {
@@ -126,22 +114,18 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
             Linking.openURL(`https://map.kakao.com/link/search/${encodedAddress}`)
         }
     }
-
     const handleTranslate = async () => {
         if (!jobPosting) return
-
         // Toggle if already translated
         if (isTranslated && translatedData) {
             setIsTranslated(false)
             return
         }
-
         // Show already translated data
         if (translatedData) {
             setIsTranslated(true)
             return
         }
-
         // Translate
         setIsTranslating(true)
         try {
@@ -149,7 +133,6 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
             const translatedDays = jobPosting.working_days?.map((day: string) =>
                 dayTranslations[day]?.[language] || day
             ) || []
-
             const textsToTranslate = [
                 { key: 'title', text: jobPosting.title },
                 { key: 'description', text: jobPosting.description || '' },
@@ -163,34 +146,28 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                 { key: 'company_description', text: jobPosting.company?.description || '' },
                 { key: 'special_notes', text: jobPosting.special_notes || '' }
             ].filter(item => item.text)
-
             const response = await api('POST', '/api/translate/translate-batch', {
                 texts: textsToTranslate,
                 targetLang: language
             })
-
             if (response.success) {
                 const translations = response.translations
                 const translatedResult: any = {
                     working_days: translatedDays // Add translated days
                 }
-
                 translations.forEach((item: any) => {
                     translatedResult[item.key] = item.translatedText
                 })
-
                 setTranslatedData(translatedResult)
                 setIsTranslated(true)
             } else {
                 throw new Error('Translation failed')
             }
         } catch (error) {
-            console.error('Translation error:', error)
         } finally {
             setIsTranslating(false)
         }
     }
-
     return (
         <Modal
             visible={visible}
@@ -229,7 +206,6 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                             </TouchableOpacity>
                         </View>
                     </View>
-
                     {loading ? (
                         <View className="p-10 items-center">
                             <ActivityIndicator size="large" color="#3b82f6" />
@@ -258,17 +234,14 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                                             </View>
                                         </View>
                                     )}
-
                                     {jobPosting && (
                                         <View className="mb-6">
                                             <Text className="text-lg font-bold mb-3">{t('job_detail.interview_location', '면접 장소')}</Text>
                                             <View className="bg-gray-50 rounded-xl p-4 space-y-3">
                                                 <InfoRow label={t('job_detail.location', '위치')} value={(isTranslated && translatedData?.interview_location ? translatedData.interview_location : jobPosting.interview_location) || (isTranslated && translatedData?.job_address ? translatedData.job_address : jobPosting.job_address) || (isTranslated && translatedData?.company_address ? translatedData.company_address : jobPosting.company?.address) || t('job_detail.contact_company', '회사 연락 요망')} />
-
                                             </View>
                                         </View>
                                     )}
-
                                     {/* Job Info */}
                                     <View className="mb-6">
                                         <Text className="text-lg font-bold mb-3">{t('job_detail.job_info', '채용 정보')}</Text>
@@ -309,7 +282,6 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                                             )}
                                         </View>
                                     </View>
-
                                     {/* Job Description */}
                                     {jobPosting.description && (
                                         <View className="mb-6">
@@ -321,7 +293,6 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                                             </View>
                                         </View>
                                     )}
-
                                     {/* Company Description */}
                                     {jobPosting.company?.description && (
                                         <View className="mb-6">
@@ -333,7 +304,6 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                                             </View>
                                         </View>
                                     )}
-
                                     {/* Special Notes */}
                                     {jobPosting.special_notes && (
                                         <View className="mb-6">
@@ -348,7 +318,6 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                                             </View>
                                         </View>
                                     )}
-
                                     {/* Action Buttons */}
                                     <View className="flex-row gap-3 mt-4">
                                         {jobPosting.company?.phone_number && (
@@ -360,7 +329,6 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
                                                 <Text className="text-green-600 text-base font-medium ml-2">{t('job_detail.make_call', '전화하기')}</Text>
                                             </TouchableOpacity>
                                         )}
-
                                         {(jobPosting.interview_location || jobPosting.job_address) && (
                                             <TouchableOpacity
                                                 onPress={handleMap}
@@ -384,7 +352,6 @@ export const JobDetailModal = ({ visible, onClose, jobPostingId }: JobDetailModa
         </Modal>
     )
 }
-
 const InfoRow = ({ label, value }: { label: string; value: string }) => (
     <View className="flex-row justify-between">
         <Text className="text-sm text-gray-600">{label}</Text>

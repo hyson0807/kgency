@@ -1,18 +1,14 @@
 import {Text, TouchableOpacity, View} from "react-native";
 import React from "react";
-
-
 interface props {
     koreanLevelKeywords: { id: number, keyword: string }[];
     selectedKoreanLevel: number | null;
     handleKoreanLevelSelect: (id: number) => void;
 }
-
 export const KoreanLevelSelector = ({
     koreanLevelKeywords,
     selectedKoreanLevel,
     handleKoreanLevelSelect,
-
                                     }: props) => {
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
@@ -43,7 +39,6 @@ export const KoreanLevelSelector = ({
                     </TouchableOpacity>
                 ))}
             </View>
-
             {selectedKoreanLevel === null && (
                 <Text className="text-sm text-gray-500 mt-3 text-center">
                     선택된 한국어 수준이 없습니다 (저장 시 '상관없음'으로 설정됩니다)

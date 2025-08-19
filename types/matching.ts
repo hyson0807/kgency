@@ -3,7 +3,6 @@ export interface KeywordInfo {
     id: number;
     keyword: string;
 }
-
 export interface MatchedKeywords {
     countries: KeywordInfo[];
     jobs: KeywordInfo[];

@@ -1,12 +1,9 @@
 // hooks/useModal.tsx
-
 import { useState } from 'react'
 import CustomModal from '@/components/CustomModal'
 import { useTranslation } from '@/contexts/TranslationContext'
-
 export const useModal = () => {
     const { t } = useTranslation()
-
     const [modalConfig, setModalConfig] = useState({
         visible: false,
         title: '',
@@ -17,7 +14,6 @@ export const useModal = () => {
         confirmText: '',
         cancelText: ''
     })
-
     const showModal = (
         title: string,
         message: string,
@@ -29,7 +25,6 @@ export const useModal = () => {
     ) => {
         const defaultConfirmText = t('button.confirm', '확인')
         const defaultCancelText = t('button.cancel', '취소')
-
         setModalConfig({
             visible: true,
             title,
@@ -41,11 +36,9 @@ export const useModal = () => {
             cancelText: cancelText || defaultCancelText
         })
     }
-
     const hideModal = () => {
         setModalConfig(prev => ({ ...prev, visible: false }))
     }
-
     const ModalComponent = () => (
         <CustomModal
             visible={modalConfig.visible}
@@ -64,7 +57,6 @@ export const useModal = () => {
             cancelText={modalConfig.cancelText}
         />
     )
-
     return {
         showModal,
         hideModal,

@@ -2,13 +2,11 @@ import {Text, TextInput, View} from "react-native";
 import {Dropdown} from "react-native-element-dropdown";
 import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
-
 interface Keyword {
     id: number;
     keyword: string;
     category: string;
 }
-
 interface ProfileProps {
     formData: {
         name: string,
@@ -26,18 +24,15 @@ interface ProfileProps {
     }
     keywords: Keyword[];
 }
-
 export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
     const { t } = useTranslation();
     const { name, age, gender, visa, koreanLevel } = formData;
     const { setName, setAge, setGender, setVisa, setKoreanLevel } = handler;
-
     // DB에서 카테고리별 키워드 필터링
     const genderKeywords = keywords.filter(k => k.category === '성별')
     
     const visaKeywords = keywords.filter(k => k.category === '비자')
     const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준')
-
     // 성별 옵션을 번역과 함께 생성
     const getGenderLabel = (keyword: string) => {
         switch (keyword) {
@@ -49,7 +44,6 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                 return keyword;
         }
     };
-
     // 드롭다운 옵션 생성 (상관없음 제외, 남성/여성만)
     const genderOptions = genderKeywords
         .filter(keyword => keyword.keyword !== '상관없음')
@@ -81,7 +75,6 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                 return keyword;
         }
     };
-
     const koreanLevelOptions = [
         // 한국어수준도 기타 옵션 숨김 - 상관없음 제외
         ...koreanLevelKeywords
@@ -95,11 +88,9 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                 value: keyword.keyword
             }))
     ];
-
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
             <Text className="text-lg font-semibold mb-4 text-gray-900">{t('info.profile_info', '프로필 정보')}</Text>
-
             {/* 이름 */}
             <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.name', '이름')} *</Text>
@@ -111,7 +102,6 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                     onChangeText={setName}
                 />
             </View>
-
             {/* 나이 */}
             <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.age', '나이')} *</Text>
@@ -125,7 +115,6 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                     maxLength={3}
                 />
             </View>
-
             {/* 성별 */}
             <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.gender', '성별')} *</Text>
@@ -155,7 +144,6 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                     }}
                 />
             </View>
-
             {/* 비자 */}
             <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.visa_type', '비자 종류')} *</Text>
@@ -185,7 +173,6 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                     }}
                 />
             </View>
-
             {/* 한국어 실력 */}
             <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.korean_level', '한국어 실력')} *</Text>

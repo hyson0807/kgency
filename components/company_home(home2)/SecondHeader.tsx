@@ -3,14 +3,11 @@ import {router} from "expo-router";
 import React from "react";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '@/contexts/TranslationContext';
-
-
 export const SecondHeader = () => {
     const { t } = useTranslation();
     
     return (
         <View className="bg-white p-4 mb-2">
-
             <View className="flex-row items-center justify-between mb-4">
                 <View>
                     <Text className="text-lg font-bold text-gray-800">구직자 목록</Text>
@@ -19,7 +16,6 @@ export const SecondHeader = () => {
                     {/*</Text>*/}
                 </View>
             </View>
-
             <LinearGradient
                 colors={['#10B981', '#34D399', '#6EE7B7']}
                 start={{ x: 0, y: 0 }}
@@ -44,7 +40,6 @@ export const SecondHeader = () => {
                 </View>
             </LinearGradient>
             
-
         </View>
     )
 }

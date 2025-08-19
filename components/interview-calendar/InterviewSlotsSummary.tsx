@@ -4,39 +4,31 @@ import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { TimeSlot } from './types'
-
 interface InterviewSlotsSummaryProps {
     dateTimeMap: Record<string, TimeSlot[]>
     bookedSlots: Record<string, string[]>
 }
-
 export const InterviewSlotsSummary: React.FC<InterviewSlotsSummaryProps> = ({
     dateTimeMap,
     bookedSlots
 }) => {
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
-
     const formatDateHeader = (dateString: string) => {
         const date = new Date(dateString)
         return format(date, 'M월 d일 (E)', { locale: ko })
     }
-
     const now = new Date()
     const allValidSlots: Array<{ date: string, time: string, isBooked: boolean }> = []
-
     // 모든 날짜의 시간대를 수집하고 현재 시간 이후만 필터링
     Object.entries(dateTimeMap).forEach(([date, slots]) => {
         const dateObj = new Date(date)
         const isToday = dateObj.toDateString() === now.toDateString()
-
         slots.forEach(slot => {
             const [hour, minute] = slot.startTime.split(':')
             const slotDateTime = new Date(date)
             slotDateTime.setHours(parseInt(hour), parseInt(minute), 0, 0)
-
             // 오늘인 경우 현재 시간 이후만, 미래 날짜는 모두 포함
             const isValidTime = isToday ? slotDateTime >= now : dateObj > now
-
             if (isValidTime) {
                 const isBooked = bookedSlots[date]?.includes(slot.startTime) || false
                 allValidSlots.push({
@@ -47,7 +39,6 @@ export const InterviewSlotsSummary: React.FC<InterviewSlotsSummaryProps> = ({
             }
         })
     })
-
     // 날짜별, 시간별로 정렬
     allValidSlots.sort((a, b) => {
         if (a.date !== b.date) {
@@ -57,9 +48,7 @@ export const InterviewSlotsSummary: React.FC<InterviewSlotsSummaryProps> = ({
         const [bHour, bMin] = b.time.split(':').map(Number)
         return (aHour * 60 + aMin) - (bHour * 60 + bMin)
     })
-
     if (allValidSlots.length === 0) return null
-
     return (
         <View className="mt-6 bg-green-50 rounded-lg border border-green-200">
             {/* 접기/펼치기 헤더 */}
@@ -79,7 +68,6 @@ export const InterviewSlotsSummary: React.FC<InterviewSlotsSummaryProps> = ({
                     color="#16a34a"
                 />
             </TouchableOpacity>
-
             {/* 접을 수 있는 내용 */}
             {isSummaryExpanded && (
                 <View className="px-4 pb-4">
@@ -115,7 +103,6 @@ export const InterviewSlotsSummary: React.FC<InterviewSlotsSummaryProps> = ({
                             </View>
                         </View>
                     ))}
-
                     <View className="mt-2 pt-2 border-t border-green-200">
                         <Text className="text-xs text-green-600 text-center">
                             💡 현재 시간 이후의 모든 면접 가능 시간대입니다

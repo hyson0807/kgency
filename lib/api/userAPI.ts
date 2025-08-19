@@ -1,5 +1,4 @@
 import { api } from '../api';
-
 export interface UserDetailsResponse {
     profile: {
         id: string;
@@ -29,7 +28,6 @@ export interface UserDetailsResponse {
         category: string;
     }>;
 }
-
 export const userAPI = {
     // 유저 상세 정보 조회 (profiles, user_info, keywords 통합)
     getUserDetails: async (userId: string): Promise<UserDetailsResponse> => {

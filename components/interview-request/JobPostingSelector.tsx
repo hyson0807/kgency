@@ -2,19 +2,16 @@ import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-
 interface JobPosting {
     id: string
     title: string
     hasExistingApplication?: boolean
 }
-
 interface JobPostingSelectorProps {
     jobPostings: JobPosting[]
     selectedJobPostingId: string
     onSelectJobPosting: (id: string) => void
 }
-
 export default function JobPostingSelector({ 
     jobPostings, 
     selectedJobPostingId, 

@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import openNaverMap from '@/lib/functions/openNaverMap'
 import { useModal } from '@/hooks/useModal';
-
 interface WorkLocationComponentProps {
     posting: {
         job_address?: string;
@@ -14,17 +13,13 @@ interface WorkLocationComponentProps {
     } | null;
     t: (key: string, defaultValue: string) => string;
 }
-
 const WorkLocationComponent = ({posting, isTranslated, translatedData, t}: WorkLocationComponentProps) => {
     const { showModal } = useModal();
-
     const address = isTranslated && translatedData?.job_address
         ? translatedData.job_address
         : posting.job_address;
-
     const handlePress = () => {
         if (!address) return;
-
         openNaverMap(address, {
             onError: () => {
                 showModal(
@@ -35,11 +30,9 @@ const WorkLocationComponent = ({posting, isTranslated, translatedData, t}: WorkL
             }
         });
     };
-
     if (!posting.job_address || posting.job_address.length === 0) {
         return null;
     }
-
     return (
         <TouchableOpacity
             onPress={handlePress}
@@ -69,5 +62,4 @@ const WorkLocationComponent = ({posting, isTranslated, translatedData, t}: WorkL
         </TouchableOpacity>
     );
 };
-
 export default WorkLocationComponent;

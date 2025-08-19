@@ -1,6 +1,5 @@
 import React from 'react'
 import {Text, TextInput, TouchableOpacity, View} from "react-native";
-
 interface CareerInformationProps {
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
     formData: {
@@ -20,7 +19,6 @@ interface CareerInformationProps {
         setExperienceContent: (value: string) => void;
     };
 }
-
 export const CareerInformation = ({
     t,
     formData,
@@ -33,7 +31,6 @@ export const CareerInformation = ({
         experience,
         experienceContent
     } = formData;
-
     const {
         setHowLong,
         toggleDay,
@@ -41,7 +38,6 @@ export const CareerInformation = ({
         setExperience,
         setExperienceContent
     } = handlers;
-
     const workPeriodOptions = [
         { label: t('apply.period_1month', '1개월'), value: '1개월' },
         { label: t('apply.period_3months', '3개월'), value: '3개월' },
@@ -49,7 +45,6 @@ export const CareerInformation = ({
         { label: t('apply.period_1year', '1년'), value: '1년' },
         { label: t('apply.period_long', '장기'), value: '장기' }
     ];
-
     const experienceOptions = [
         { label: t('apply.exp_none', '처음'), value: '처음' },
         { label: t('apply.exp_1month', '1개월'), value: '1개월' },
@@ -57,7 +52,6 @@ export const CareerInformation = ({
         { label: t('apply.exp_1year', '1년'), value: '1년' },
         { label: t('apply.exp_3years', '3년이상'), value: '3년이상' }
     ];
-
     const dayOptions = [
         { label: t('apply.day_mon', '월'), value: '월' },
         { label: t('apply.day_tue', '화'), value: '화' },
@@ -67,21 +61,15 @@ export const CareerInformation = ({
         { label: t('apply.day_sat', '토'), value: '토' },
         { label: t('apply.day_sun', '일'), value: '일' }
     ];
-
     const timeOptions = [
         { label: t('apply.time_morning', '오전'), value: '오전' },
         { label: t('apply.time_afternoon', '오후'), value: '오후' },
         { label: t('apply.time_evening', '저녁'), value: '저녁' },
         { label: t('apply.time_dawn', '새벽'), value: '새벽' }
     ];
-
     return (
         <View className="mx-4 mb-6 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
-
-
-
             <Text className="text-lg font-bold mb-2 text-gray-800">{t('info.career_boost_title', '당신의 경력을 작성하면, 채용확률이 15% 올라가요!')}</Text>
-
             {/* 선택사항 안내 */}
             <View className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
                 <Text className="text-blue-700 text-sm font-medium text-center mb-1">
@@ -91,7 +79,6 @@ export const CareerInformation = ({
                     {t('info.career_optional_desc', '작성하시면 채용확률이 높아지고, 지원서 작성 시 자동으로 입력됩니다')}
                 </Text>
             </View>
-
             {/* 희망 근무 기간 */}
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2 font-medium">{t('apply.desired_period', '희망 근무 기간')}</Text>
@@ -113,7 +100,6 @@ export const CareerInformation = ({
                     ))}
                 </View>
             </View>
-
             {/* 희망 근무 요일 */}
             <View className="mb-4">
                 <View className="flex-row items-center justify-start gap-4 mb-2">
@@ -158,7 +144,6 @@ export const CareerInformation = ({
                     ))}
                 </View>
             </View>
-
             {/* 희망 시간대 */}
             <View className="mb-4">
                 <View className="flex-row items-center justify-start gap-4 mb-2">
@@ -203,7 +188,6 @@ export const CareerInformation = ({
                     ))}
                 </View>
             </View>
-
             {/* 관련 경력 */}
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2 font-medium">{t('apply.related_experience', '관련 경력')}</Text>
@@ -225,7 +209,6 @@ export const CareerInformation = ({
                     ))}
                 </View>
             </View>
-
             {/* 경력 내용 */}
             <View className="mb-2">
                 <Text className="text-gray-700 mb-2 font-medium">{t('apply.experience_detail', '경력 내용')}</Text>

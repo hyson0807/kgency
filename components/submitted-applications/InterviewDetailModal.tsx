@@ -2,7 +2,6 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, Modal } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-
 interface InterviewDetails {
     companyName: string
     jobTitle: string
@@ -10,20 +9,16 @@ interface InterviewDetails {
     dateTime?: string
     interviewType?: string
 }
-
 interface InterviewDetailModalProps {
     visible: boolean
     onClose: () => void
     details: InterviewDetails | null
     t: (key: string, defaultText: string) => string
 }
-
 export const InterviewDetailModal = ({ visible, onClose, details, t }: InterviewDetailModalProps) => {
     if (!details) return null
-
     const formatDateTime = (dateTimeString?: string) => {
         if (!dateTimeString) return '-'
-
         const date = new Date(dateTimeString)
         const year = date.getFullYear()
         const month = date.getMonth() + 1
@@ -31,10 +26,8 @@ export const InterviewDetailModal = ({ visible, onClose, details, t }: Interview
         const weekDay = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
         const hours = date.getHours()
         const minutes = date.getMinutes()
-
         return `${year}년 ${month}월 ${day}일 (${weekDay}) ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
     }
-
     return (
         <Modal
             visible={visible}
@@ -53,7 +46,6 @@ export const InterviewDetailModal = ({ visible, onClose, details, t }: Interview
                             <Ionicons name="close" size={24} color="#6b7280" />
                         </TouchableOpacity>
                     </View>
-
                     {/* 내용 */}
                     <View className="p-4 pb-8">
                         {/* 회사 정보 */}
@@ -65,7 +57,6 @@ export const InterviewDetailModal = ({ visible, onClose, details, t }: Interview
                                 {details.companyName}
                             </Text>
                         </View>
-
                         {/* 직무 */}
                         <View className="mb-4">
                             <Text className="text-sm text-gray-600 mb-1">
@@ -75,7 +66,6 @@ export const InterviewDetailModal = ({ visible, onClose, details, t }: Interview
                                 {details.jobTitle}
                             </Text>
                         </View>
-
                         {/* 면접 일시 */}
                         <View className="mb-4">
                             <View className="flex-row items-center mb-1">
@@ -88,7 +78,6 @@ export const InterviewDetailModal = ({ visible, onClose, details, t }: Interview
                                 {formatDateTime(details.dateTime)}
                             </Text>
                         </View>
-
                         {/* 면접 장소 */}
                         <View className="mb-4">
                             <View className="flex-row items-center mb-1">
@@ -101,7 +90,6 @@ export const InterviewDetailModal = ({ visible, onClose, details, t }: Interview
                                 {details.location || '-'}
                             </Text>
                         </View>
-
                         {/* 면접 유형 */}
                         {details.interviewType && (
                             <View className="mb-4">
@@ -126,7 +114,6 @@ export const InterviewDetailModal = ({ visible, onClose, details, t }: Interview
                                 </Text>
                             </View>
                         )}
-
                         {/* 안내 메시지 */}
                         <View className="bg-blue-50 p-3 rounded-lg mt-4">
                             <Text className="text-sm text-blue-800">

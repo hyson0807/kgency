@@ -1,6 +1,5 @@
 // /lib/translations/types.ts
 export type Language = 'en' | 'ja' | 'zh' | 'vi' | 'hi' | 'si' | 'ar' | 'tr' | 'my' | 'ky' | 'ha' | 'mn';
-
 export interface TranslationEntry {
     en: string;
     ja: string;
@@ -15,7 +14,6 @@ export interface TranslationEntry {
     ha: string;
     mn: string;
 }
-
 export interface TranslationData {
     [key: string]: TranslationEntry;
 }

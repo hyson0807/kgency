@@ -10,7 +10,6 @@ import { WorkLocationForm } from '@/components/register_jobPosting(info2)/WorkLo
 import { WorkScheduleForm } from '@/components/register_jobPosting(info2)/WorkScheduleForm'
 import { SalaryInfoForm } from '@/components/register_jobPosting(info2)/SalaryInfoForm'
 import { useJobPostingStore } from '@/stores/jobPostingStore'
-
 // Step 2: 근무 정보 입력 페이지
 const JobPostingStep2 = () => {
     const { keywords, loading: keywordsLoading } = useUserKeywords()
@@ -33,7 +32,6 @@ const JobPostingStep2 = () => {
     
     const [loading, setLoading] = useState(false)
     const { showModal, ModalComponent } = useModal()
-
     // 지역 옵션
     const locationOptions = keywords
         .filter(k => k.category === '지역')
@@ -41,7 +39,6 @@ const JobPostingStep2 = () => {
             label: location.keyword,
             value: location.id
         }))
-
     // 요일 선택/해제 토글
     const toggleWorkingDay = (day: string) => {
         const currentDays = step2Data.workingDays
@@ -50,17 +47,14 @@ const JobPostingStep2 = () => {
             : [...currentDays, day]
         setWorkingDays(newDays)
     }
-
     // 편집 모드일 때 기존 데이터 로드
     useEffect(() => {
         if (step1Data.isEditMode && step1Data.jobPostingId && keywords.length > 0) {
             loadJobPostingStep2Data()
         }
     }, [step1Data.isEditMode, step1Data.jobPostingId, keywords])
-
     const loadJobPostingStep2Data = async () => {
         if (!step1Data.jobPostingId) return
-
         try {
             // 공고 기본 정보 조회
             const postingResponse = await api('GET', `/api/job-postings/${step1Data.jobPostingId}`)
@@ -79,7 +73,6 @@ const JobPostingStep2 = () => {
                 setPayDay(posting.pay_day || '')
                 setPayDayNegotiable(posting.pay_day_negotiable || false)
             }
-
             // 공고 키워드 조회 (지역 정보)
             const keywordResponse = await api('GET', `/api/job-posting-keyword/${step1Data.jobPostingId}`)
             
@@ -95,10 +88,8 @@ const JobPostingStep2 = () => {
                 }
             }
         } catch (error) {
-            console.error('Step2 데이터 로드 실패:', error)
         }
     }
-
     // Step 2 데이터 저장 및 다음 단계로 이동
     const handleNext = async () => {
         // 유효성 검사
@@ -111,19 +102,16 @@ const JobPostingStep2 = () => {
             showModal('알림', '근무일을 선택해 주세요')
             return
         }
-
         setLoading(true)
         try {
             // Step 3으로 이동 (데이터는 이미 Zustand에 저장됨)
             router.push('/job-posting-step3' as any)
         } catch (error) {
-            console.error('네비게이션 실패:', error)
             showModal('오류', '다음 단계로 이동 중 문제가 발생했습니다.', 'warning')
         } finally {
             setLoading(false)
         }
     }
-
     if (keywordsLoading) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -133,7 +121,6 @@ const JobPostingStep2 = () => {
             </SafeAreaView>
         )
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
@@ -143,7 +130,6 @@ const JobPostingStep2 = () => {
                     {step1Data.isEditMode ? '채용 공고 수정' : '채용 공고 등록'} (2/3)
                 </Text>
             </View>
-
             {/* 진행 상황 인디케이터 */}
             <View className="flex-row items-center px-6 py-4 bg-gray-50">
                 <View className="flex-1 flex-row items-center">
@@ -160,7 +146,6 @@ const JobPostingStep2 = () => {
                     </View>
                 </View>
             </View>
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -178,7 +163,6 @@ const JobPostingStep2 = () => {
                             selectedLocation={step2Data.selectedLocation}
                             setSelectedLocation={setSelectedLocation}
                         />
-
                         {step2Data.selectedLocation && (
                             <WorkScheduleForm
                                 workingHours={step2Data.workingHours}
@@ -192,7 +176,6 @@ const JobPostingStep2 = () => {
                                 setWorkingDaysNegotiable={setWorkingDaysNegotiable}
                             />
                         )}
-
                         {step2Data.selectedLocation && 
                          step2Data.workingHours.trim() && 
                          step2Data.workingDays.length > 0 && (
@@ -212,7 +195,6 @@ const JobPostingStep2 = () => {
                     </View>
                 </View>
             </ScrollView>
-
             {/* 하단 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
@@ -227,10 +209,8 @@ const JobPostingStep2 = () => {
                     </Text>
                 </TouchableOpacity>
             </View>
-
             <ModalComponent/>
         </SafeAreaView>
     )
 }
-
 export default JobPostingStep2

@@ -13,23 +13,19 @@ import PrivacyPolicy from '@/components/common/PrivacyPolicy';
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { removePushToken } from '@/lib/notifications';
-
 const Settings2 = () => {
     const { logout, user } = useAuth()
     const { profile } = useProfile()
     const { showModal, ModalComponent } = useModal()
     const { t } = useTranslation()
     const { notificationSettings, updateNotificationSettings } = useNotification()
-
     // 모달 상태
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
     const [accountModalVisible, setAccountModalVisible] = useState(false)
     const [termsModalVisible, setTermsModalVisible] = useState(false)
     const [privacyModalVisible, setPrivacyModalVisible] = useState(false)
-
     // 앱 정보
     const APP_VERSION = '1.0.0'
-
     // 알림 토글
     const toggleNotification = (key: keyof typeof notificationSettings) => {
         const newSettings = {
@@ -38,7 +34,6 @@ const Settings2 = () => {
         }
         updateNotificationSettings(newSettings)
     }
-
     // 로그아웃 처리
     const handleLogout = () => {
         showModal(
@@ -49,7 +44,6 @@ const Settings2 = () => {
             true
         )
     }
-
     // 회원 탈퇴 처리
     const handleDeleteAccount = async () => {
         try {
@@ -58,38 +52,31 @@ const Settings2 = () => {
                 try {
                     await removePushToken(user.userId);
                 } catch (error) {
-                    console.log('Push token removal failed:', error);
+                    // Push token removal failed
                     // Continue with account deletion even if push token removal fails
                 }
             }
             
             // 토큰은 api 함수에서 자동으로 처리됨!
             const result = await authAPI.deleteAccount();
-
             // 성공 시 처리
-            console.log('회원 탈퇴 완료:', result);
-
+            // 회원 탈퇴 완료
             // 로컬 데이터 삭제
             await AsyncStorage.clear();
-
             // 로그인 화면으로 이동
             logout(true); // Skip push token removal in logout
-
         } catch (error: any) {
-            console.error('회원 탈퇴 실패:', error);
+            // 회원 탈퇴 실패
             // 에러 메시지 표시
             showModal('오류', error.error || '회원 탈퇴 중 문제가 발생했습니다.', 'warning');
         }
     };
-
-
     // 외부 링크 열기
     const openLink = (url: string) => {
-        Linking.openURL(url).catch(err =>
-            console.error('링크 열기 실패:', err)
-        )
+        Linking.openURL(url).catch(err => {
+            // 링크 열기 실패 시 에러 처리
+        })
     }
-
     // 고객센터 연락처 표시
     const showCustomerService = () => {
         showModal(
@@ -98,14 +85,12 @@ const Settings2 = () => {
             'info'
         )
     }
-
     return (
         <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
             <View className="bg-white px-4 py-3 border-b border-gray-200">
                 <Text className="text-2xl font-bold">설정</Text>
             </View>
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -124,20 +109,18 @@ const Settings2 = () => {
                             </View>
                         </View>
                         <TouchableOpacity
-                            onPress={() => router.push('/(pages)/(company)/register')}
+                            onPress={() => router.push('/(pages)/(company)/(company-information)/register')}
                             className="bg-blue-100 px-3 py-1 rounded-lg"
                         >
                             <Text className="text-blue-600 text-sm font-medium">회사 정보 수정</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-
                 {/* 채용 관리 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                     <Text className="text-lg font-bold mb-4">채용 관리</Text>
-
                     <TouchableOpacity
-                        onPress={() => router.push('/(pages)/(company)/keywords')}
+                        onPress={() => router.push('/(pages)/(company)/(company-information)/keywords')}
                         className="flex-row items-center justify-between py-3"
                     >
                         <View className="flex-row items-center">
@@ -146,7 +129,6 @@ const Settings2 = () => {
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         onPress={() => router.push('/(company)/myJobPostings')}
                         className="flex-row items-center justify-between py-3"
@@ -158,11 +140,9 @@ const Settings2 = () => {
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
                 </View>
-
                 {/* 알림 설정 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                     <Text className="text-lg font-bold mb-4">{t('settings.notification_settings', '알림 설정')}</Text>
-
                     <View className="space-y-4">
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
@@ -204,12 +184,9 @@ const Settings2 = () => {
                         </View>
                     </View>
                 </View>
-
-
                 {/* 정보 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                     <Text className="text-lg font-bold mb-4">정보</Text>
-
                     <TouchableOpacity
                         onPress={() => setTermsModalVisible(true)}
                         className="flex-row items-center justify-between py-3"
@@ -220,7 +197,6 @@ const Settings2 = () => {
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         onPress={() => setPrivacyModalVisible(true)}
                         className="flex-row items-center justify-between py-3"
@@ -231,7 +207,6 @@ const Settings2 = () => {
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         onPress={showCustomerService}
                         className="flex-row items-center justify-between py-3"
@@ -242,8 +217,6 @@ const Settings2 = () => {
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
-
-
                     <View className="flex-row items-center justify-between py-3">
                         <View className="flex-row items-center">
                             <Ionicons name="information-circle-outline" size={20} color="#6b7280" />
@@ -252,7 +225,6 @@ const Settings2 = () => {
                         <Text className="text-gray-600">{APP_VERSION}</Text>
                     </View>
                 </View>
-
                 {/* 계정 관리 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                     <TouchableOpacity
@@ -267,7 +239,6 @@ const Settings2 = () => {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-
             {/* 계정 관리 모달 */}
             <AccountManagementModal
                 visible={accountModalVisible}
@@ -281,7 +252,6 @@ const Settings2 = () => {
                     setDeleteAccountModalVisible(true);
                 }}
             />
-
             {/* 회원 탈퇴 확인 모달 */}
             <Modal
                 animationType="slide"
@@ -297,15 +267,12 @@ const Settings2 = () => {
                             </View>
                             <Text className="text-xl font-bold text-gray-900">정말 탈퇴하시겠습니까?</Text>
                         </View>
-
                         <Text className="text-gray-600 text-center mb-4">
                             회원 탈퇴 시 모든 데이터가 삭제되며{'\n'}복구할 수 없습니다.
                         </Text>
-
                         <Text className="text-red-600 text-sm text-center mb-6 font-medium">
                             ⚠️ 등록한 모든 채용공고와 지원자 정보가 삭제됩니다
                         </Text>
-
                         <View className="flex-row gap-3">
                             <TouchableOpacity
                                 onPress={() => setDeleteAccountModalVisible(false)}
@@ -313,7 +280,6 @@ const Settings2 = () => {
                             >
                                 <Text className="text-center text-gray-700 font-medium">취소</Text>
                             </TouchableOpacity>
-
                             <TouchableOpacity
                                 onPress={() => {
                                     setDeleteAccountModalVisible(false)
@@ -327,7 +293,6 @@ const Settings2 = () => {
                     </View>
                 </View>
             </Modal>
-
             {/* 이용약관 모달 */}
             <Modal
                 animationType="slide"
@@ -337,7 +302,6 @@ const Settings2 = () => {
             >
                 <TermsOfService onClose={() => setTermsModalVisible(false)} />
             </Modal>
-
             {/* 개인정보처리방침 모달 */}
             <Modal
                 animationType="slide"
@@ -347,11 +311,9 @@ const Settings2 = () => {
             >
                 <PrivacyPolicy onClose={() => setPrivacyModalVisible(false)} />
             </Modal>
-
             {/* useModal로 생성되는 모달 */}
             <ModalComponent />
         </View>
     )
 }
-
 export default Settings2

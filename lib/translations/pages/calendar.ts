@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const calendarTranslations: TranslationData = {
     'calendar.day_names': {
         en: 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',

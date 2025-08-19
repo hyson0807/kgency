@@ -3,14 +3,12 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-
 interface TimeSlot {
     date: string
     startTime: string
     endTime: string
     interviewType: '대면' | '화상' | '전화'
 }
-
 interface InterviewSummaryProps {
     dateTimeMap: Record<string, TimeSlot[]>
     bookedSlots: Record<string, string[]>
@@ -18,7 +16,6 @@ interface InterviewSummaryProps {
     selectedTimes: string[]
     selectedDate: string
 }
-
 export default function InterviewSummary({
     dateTimeMap,
     bookedSlots,
@@ -27,12 +24,10 @@ export default function InterviewSummary({
     selectedDate
 }: InterviewSummaryProps) {
     const [isExpanded, setIsExpanded] = useState(false)
-
     const formatDateHeader = (dateString: string) => {
         const date = new Date(dateString)
         return format(date, 'M월 d일 (E)', { locale: ko })
     }
-
     const getAllValidSlots = () => {
         const now = new Date()
         const allValidSlots: { date: string, time: string, isBooked: boolean }[] = []
@@ -127,7 +122,6 @@ export default function InterviewSummary({
         
         return allValidSlots
     }
-
     const allValidSlots = getAllValidSlots()
     
     if (allValidSlots.length === 0) return null

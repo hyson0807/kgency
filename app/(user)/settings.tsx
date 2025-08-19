@@ -14,7 +14,6 @@ import TermsOfService from '@/components/common/TermsOfService';
 import PrivacyPolicy from '@/components/common/PrivacyPolicy';
 import { languages } from '@/lib/constants/languages';
 import { removePushToken } from '@/lib/notifications';
-
 const Settings = () => {
     const { logout, user,checkAuthState } = useAuth()
     const { profile, updateProfile } = useProfile()
@@ -22,33 +21,25 @@ const Settings = () => {
     const [isJobSeekingActive, setIsJobSeekingActive] = useState(false)
     const { t, language, changeLanguage } = useTranslation()
     const { notificationSettings, updateNotificationSettings } = useNotification()
-
     const [selectedLanguage, setSelectedLanguage] = useState(language)
     const [pendingLanguageChange, setPendingLanguageChange] = useState<string | null>(null)
-
     // 모달 상태
     const [languageModalVisible, setLanguageModalVisible] = useState(false)
     const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false)
     const [accountModalVisible, setAccountModalVisible] = useState(false)
     const [termsModalVisible, setTermsModalVisible] = useState(false)
     const [privacyModalVisible, setPrivacyModalVisible] = useState(false)
-
-
-
     // 앱 정보
     const APP_VERSION = '1.0.0'
-
     // 초기 설정 로드
     useEffect(() => {
         checkAuthState()
         setIsJobSeekingActive(profile?.job_seeking_active || true)
     }, [profile])
-
     // 언어 변경 시 selectedLanguage 동기화
     useEffect(() => {
         setSelectedLanguage(language)
     }, [language])
-
     // 언어 변경 완료 후 모달 표시
     useEffect(() => {
         if (pendingLanguageChange && language === pendingLanguageChange) {
@@ -60,7 +51,6 @@ const Settings = () => {
             setPendingLanguageChange(null)
         }
     }, [language, pendingLanguageChange, t, showModal])
-
     // 알림 토글
     const toggleNotification = (key: keyof typeof notificationSettings) => {
         const newSettings = {
@@ -69,7 +59,6 @@ const Settings = () => {
         }
         updateNotificationSettings(newSettings)
     }
-
     // 로그아웃 처리
     const handleLogout = () => {
         showModal(
@@ -80,29 +69,23 @@ const Settings = () => {
             true
         )
     }
-
     // 회원 탈퇴 처리
     const handleDeleteAccount = async () => {
         if (!user) return
-
         try {
             // Push token 먼저 제거 (회원 탈퇴 전에)
             if (user.userId) {
                 try {
                     await removePushToken(user.userId);
                 } catch (error) {
-                    console.log('Push token removal failed:', error);
                     // Continue with account deletion even if push token removal fails
                 }
             }
-
             // 서버 API 호출 (토큰은 자동으로 처리됨)
             const result = await authAPI.deleteAccount();
-
             if (result.success) {
                 // 로컬 데이터 삭제
                 await AsyncStorage.clear();
-
                 showModal(
                     t('settings.delete_complete', '회원 탈퇴 완료'),
                     t('settings.thank_you', '그동안 이용해주셔서 감사합니다.'),
@@ -113,8 +96,6 @@ const Settings = () => {
                 throw new Error(result.error || '회원 탈퇴 처리 중 문제가 발생했습니다.')
             }
         } catch (error: any) {
-            console.error('회원 탈퇴 실패:', error);
-
             // 토큰이 없거나 만료된 경우
             if (error.response?.status === 401) {
                 showModal(
@@ -131,7 +112,6 @@ const Settings = () => {
             }
         }
     }
-
     // 언어 변경
     const handleLanguageChange = async (lang: string) => {
         try {
@@ -140,7 +120,6 @@ const Settings = () => {
             setSelectedLanguage(lang) // 선택된 언어 상태 업데이트
             setLanguageModalVisible(false)
         } catch (error) {
-            console.error('언어 설정 저장 실패:', error)
             setPendingLanguageChange(null) // 실패 시 초기화
             showModal(
                 t('settings.error', '오류'),
@@ -149,7 +128,6 @@ const Settings = () => {
             )
         }
     }
-
     // 고객센터 처리
     const handleCustomerService = () => {
         showModal(
@@ -158,7 +136,6 @@ const Settings = () => {
             'info'
         )
     }
-
     const newStatus = !isJobSeekingActive
     const activeButton = async () => {
         const res = await updateProfile({
@@ -168,16 +145,13 @@ const Settings = () => {
         })
         if(!res) showModal(t('settings.error', '알림'), t('settings.activation_failed', '공고 활성화 실패'), 'warning')
         setIsJobSeekingActive(newStatus)
-
     }
-
     return (
         <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
             <View className="bg-white px-4 py-3 border-b border-gray-200">
                 <Text className="text-2xl font-bold">{t('settings.title', '설정')}</Text>
             </View>
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -225,11 +199,9 @@ const Settings = () => {
                     </TouchableOpacity>
                 </View>
                 </View>
-
                 {/* 알림 설정 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                     <Text className="text-lg font-bold mb-4">{t('settings.notification_settings', '알림 설정')}</Text>
-
                     <View className="space-y-4">
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
@@ -297,11 +269,9 @@ const Settings = () => {
                         </View>
                     </View>
                 </View>
-
                 {/* 앱 설정 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                     <Text className="text-lg font-bold mb-4">{t('settings.app_settings', '앱 설정')}</Text>
-
                     <TouchableOpacity
                         onPress={() => setLanguageModalVisible(true)}
                         className="flex-row items-center justify-between py-3"
@@ -318,12 +288,9 @@ const Settings = () => {
                         </View>
                     </TouchableOpacity>
                 </View>
-
-
                 {/* 정보 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                     <Text className="text-lg font-bold mb-4">{t('settings.information', '정보')}</Text>
-
                     <TouchableOpacity
                         onPress={() => setTermsModalVisible(true)}
                         className="flex-row items-center justify-between py-3"
@@ -334,7 +301,6 @@ const Settings = () => {
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         onPress={() => setPrivacyModalVisible(true)}
                         className="flex-row items-center justify-between py-3"
@@ -345,7 +311,6 @@ const Settings = () => {
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         onPress={handleCustomerService}
                         className="flex-row items-center justify-between py-3"
@@ -356,7 +321,6 @@ const Settings = () => {
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                     </TouchableOpacity>
-
                     <View className="flex-row items-center justify-between py-3">
                         <View className="flex-row items-center">
                             <Ionicons name="information-circle-outline" size={20} color="#6b7280" />
@@ -365,7 +329,6 @@ const Settings = () => {
                         <Text className="text-gray-600">{APP_VERSION}</Text>
                     </View>
                 </View>
-
                 {/* 계정 관리 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                     <TouchableOpacity
@@ -380,7 +343,6 @@ const Settings = () => {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-
             {/* 언어 선택 모달 */}
             <Modal
                 animationType="slide"
@@ -398,7 +360,6 @@ const Settings = () => {
                                 <Ionicons name="close" size={24} color="#6b7280" />
                             </TouchableOpacity>
                         </View>
-
                         <ScrollView showsVerticalScrollIndicator={true} style={{ flexGrow: 0 }}>
                             {languages.map((lang) => (
                                 <TouchableOpacity
@@ -423,7 +384,6 @@ const Settings = () => {
                     </View>
                 </View>
             </Modal>
-
             {/* 계정 관리 모달 */}
             <AccountManagementModal
                 visible={accountModalVisible}
@@ -437,7 +397,6 @@ const Settings = () => {
                     setDeleteAccountModalVisible(true);
                 }}
             />
-
             {/* 회원 탈퇴 확인 모달 */}
             <Modal
                 animationType="slide"
@@ -453,11 +412,9 @@ const Settings = () => {
                             </View>
                             <Text className="text-xl font-bold text-gray-900">{t('settings.delete_confirm_title', '정말 탈퇴하시겠습니까?')}</Text>
                         </View>
-
                         <Text className="text-gray-600 text-center mb-6">
                             {t('settings.delete_warning', '회원 탈퇴 시 모든 데이터가 삭제되며\n복구할 수 없습니다.')}
                         </Text>
-
                         <View className="flex-row gap-3">
                             <TouchableOpacity
                                 onPress={() => setDeleteAccountModalVisible(false)}
@@ -465,7 +422,6 @@ const Settings = () => {
                             >
                                 <Text className="text-center text-gray-700 font-medium">{t('button.cancel', '취소')}</Text>
                             </TouchableOpacity>
-
                             <TouchableOpacity
                                 onPress={() => {
                                     setDeleteAccountModalVisible(false)
@@ -479,7 +435,6 @@ const Settings = () => {
                     </View>
                 </View>
             </Modal>
-
             {/* 이용약관 모달 */}
             <Modal
                 animationType="slide"
@@ -489,7 +444,6 @@ const Settings = () => {
             >
                 <TermsOfService onClose={() => setTermsModalVisible(false)} />
             </Modal>
-
             {/* 개인정보처리방침 모달 */}
             <Modal
                 animationType="slide"
@@ -499,11 +453,9 @@ const Settings = () => {
             >
                 <PrivacyPolicy onClose={() => setPrivacyModalVisible(false)} />
             </Modal>
-
             {/* useModal로 생성되는 모달 */}
             <ModalComponent />
         </View>
     )
 }
-
 export default Settings

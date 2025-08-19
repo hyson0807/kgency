@@ -3,10 +3,8 @@ import React from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useTranslation} from "@/contexts/TranslationContext";
 import {Header} from "@/components/common/Header";
-
 const LoadingScreen = () => {
     const {t} = useTranslation();
-
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
             <Header/>

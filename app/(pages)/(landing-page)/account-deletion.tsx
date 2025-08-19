@@ -7,7 +7,6 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useModal } from '@/hooks/useModal';
-
 const AccountDeletion = () => {
     const { t } = useTranslation();
     const { showModal, ModalComponent } = useModal();
@@ -17,7 +16,6 @@ const AccountDeletion = () => {
         additionalComments: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-
     const reasons = [
         { key: 'no_longer_need', label: '더 이상 서비스가 필요하지 않음' },
         { key: 'privacy_concerns', label: '개인정보 보호 우려' },
@@ -25,7 +23,6 @@ const AccountDeletion = () => {
         { key: 'technical_issues', label: '기술적 문제' },
         { key: 'other', label: '기타' }
     ];
-
     const sendDeletionEmail = async () => {
         const reasonLabels: { [key: string]: string } = {
             'no_longer_need': '더 이상 서비스가 필요하지 않음',
@@ -34,7 +31,6 @@ const AccountDeletion = () => {
             'technical_issues': '기술적 문제',
             'other': '기타'
         };
-
         const subject = 'K-Gency 계정 삭제 요청';
         const bodyText = 
             `계정 삭제 요청 정보:\n\n` +
@@ -43,7 +39,6 @@ const AccountDeletion = () => {
             `• 추가 의견: ${formData.additionalComments || '없음'}\n\n` +
             `요청 일시: ${new Date().toLocaleString('ko-KR')}\n\n` +
             `처리 부탁드립니다.`;
-
         const emailUrl = `mailto:welkit.answer@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
         
         try {
@@ -66,11 +61,9 @@ const AccountDeletion = () => {
                 return false;
             }
         } catch (error) {
-            console.error('Email sending error:', error);
             return false;
         }
     };
-
     const copyToClipboardAndShowModal = async () => {
         const reasonLabels: { [key: string]: string } = {
             'no_longer_need': '더 이상 서비스가 필요하지 않음',
@@ -79,7 +72,6 @@ const AccountDeletion = () => {
             'technical_issues': '기술적 문제',
             'other': '기타'
         };
-
         const emailContent = 
             `받는 사람: welkit.answer@gmail.com\n` +
             `제목: K-Gency 계정 삭제 요청\n\n` +
@@ -89,7 +81,6 @@ const AccountDeletion = () => {
             `• 추가 의견: ${formData.additionalComments || '없음'}\n\n` +
             `요청 일시: ${new Date().toLocaleString('ko-KR')}\n\n` +
             `처리 부탁드립니다.`;
-
         try {
             await Clipboard.setStringAsync(emailContent);
             showModal(
@@ -102,11 +93,9 @@ const AccountDeletion = () => {
             );
             return true;
         } catch (error) {
-            console.error('Clipboard copy error:', error);
             return false;
         }
     };
-
     const handleSubmit = async () => {
         if (!formData.phoneNumber || !formData.reason) {
             showModal(
@@ -116,7 +105,6 @@ const AccountDeletion = () => {
             );
             return;
         }
-
         setIsSubmitting(true);
         
         try {
@@ -143,7 +131,6 @@ const AccountDeletion = () => {
                 }
             }
         } catch (error) {
-            console.error('Handle submit error:', error);
             // 에러 발생시에도 클립보드 복사 시도
             const copied = await copyToClipboardAndShowModal();
             if (!copied) {
@@ -157,7 +144,6 @@ const AccountDeletion = () => {
             setIsSubmitting(false);
         }
     };
-
     return (
         <SafeAreaView style={{ flex: 1 }} edges={['top']}>
             <KeyboardAvoidingView 
@@ -175,7 +161,6 @@ const AccountDeletion = () => {
                         </TouchableOpacity>
                         <Text className="text-2xl font-bold text-gray-800">계정 삭제 요청</Text>
                     </View>
-
                     <View className="bg-white rounded-2xl p-6 mb-6 shadow-sm">
                         <View className="flex-row items-center mb-4">
                             <Ionicons name="warning" size={24} color="#f59e0b" />
@@ -197,7 +182,6 @@ const AccountDeletion = () => {
                             </Text>
                         </View>
                     </View>
-
                     <View className="bg-white rounded-2xl p-6 mb-6 shadow-sm">
                         <Text className="text-lg font-bold text-gray-800 mb-4">삭제 요청 정보</Text>
                         
@@ -211,7 +195,6 @@ const AccountDeletion = () => {
                                 keyboardType="phone-pad"
                             />
                         </View>
-
                         <View className="mb-4">
                             <Text className="text-gray-700 font-medium mb-2">삭제 사유 *</Text>
                             <View className="space-y-2">
@@ -245,7 +228,6 @@ const AccountDeletion = () => {
                                 ))}
                             </View>
                         </View>
-
                         <View className="mb-6">
                             <Text className="text-gray-700 font-medium mb-2">추가 의견 (선택사항)</Text>
                             <TextInput
@@ -257,7 +239,6 @@ const AccountDeletion = () => {
                                 textAlignVertical="top"
                             />
                         </View>
-
                         <TouchableOpacity
                             onPress={handleSubmit}
                             disabled={isSubmitting || !formData.phoneNumber || !formData.reason}
@@ -276,7 +257,6 @@ const AccountDeletion = () => {
                             </Text>
                         </TouchableOpacity>
                     </View>
-
                     <View className="bg-white rounded-2xl p-6 mb-6 shadow-sm">
                         <Text className="text-lg font-bold text-gray-800 mb-4">문의하기</Text>
                         <Text className="text-gray-600 leading-6 mb-4">
@@ -300,5 +280,4 @@ const AccountDeletion = () => {
         </SafeAreaView>
     );
 };
-
 export default AccountDeletion;

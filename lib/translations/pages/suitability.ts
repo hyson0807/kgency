@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const suitabilityTranslations: TranslationData = {
     'suitability.label': {
         en: 'Suitability',

@@ -1,15 +1,12 @@
-
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, Modal, KeyboardAvoidingView, Platform } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-
 interface CancelInterviewModalProps {
     visible: boolean
     onClose: () => void
     onConfirm: (reason: string) => void
     loading?: boolean
 }
-
 export default function CancelInterviewModal({
                                                  visible,
                                                  onClose,
@@ -18,7 +15,6 @@ export default function CancelInterviewModal({
                                              }: CancelInterviewModalProps) {
     const [reason, setReason] = useState('')
     const [error, setError] = useState('')
-
     const handleConfirm = () => {
         if (!reason.trim()) {
             setError('취소 사유를 입력해주세요.')
@@ -30,13 +26,11 @@ export default function CancelInterviewModal({
         }
         onConfirm(reason.trim())
     }
-
     const handleClose = () => {
         setReason('')
         setError('')
         onClose()
     }
-
     return (
         <Modal
             visible={visible}
@@ -67,14 +61,12 @@ export default function CancelInterviewModal({
                                 <Ionicons name="close" size={24} color="#9CA3AF" />
                             </TouchableOpacity>
                         </View>
-
                         {/* Warning Message */}
                         <View className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
                             <Text className="text-red-700 text-sm">
                                 ⚠️ 면접을 취소하시면 회사에 취소 사유가 전달됩니다.
                             </Text>
                         </View>
-
                         {/* Input */}
                         <View className="mb-4">
                             <Text className="text-gray-700 mb-2">취소 사유를 입력해주세요</Text>
@@ -96,7 +88,6 @@ export default function CancelInterviewModal({
                                 <Text className="text-red-500 text-sm mt-1">{error}</Text>
                             )}
                         </View>
-
                         {/* Buttons */}
                         <View className="flex-row space-x-3">
                             <TouchableOpacity

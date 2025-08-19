@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, Text, TextInput } from 'react-native'
-
 interface JobBasicInfoFormProps {
     jobTitle: string
     setJobTitle: (value: string) => void
@@ -15,7 +14,6 @@ interface JobBasicInfoFormProps {
     specialNotes?: string
     setSpecialNotes?: (value: string) => void
 }
-
 export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
     jobTitle,
     setJobTitle,
@@ -33,7 +31,6 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
     return (
         <View className="p-6 border-b border-gray-100">
             <Text className="text-xl font-bold mb-4">채용 정보</Text>
-
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">채용 제목 *</Text>
                 <TextInput
@@ -43,7 +40,6 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
                     onChangeText={setJobTitle}
                 />
             </View>
-
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">업무 내용</Text>
                 <TextInput
@@ -56,7 +52,6 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
                     textAlignVertical="top"
                 />
             </View>
-
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">가게 주소</Text>
                 <TextInput
@@ -66,9 +61,6 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
                     onChangeText={setJobAddress}
                 />
             </View>
-
-
-
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">모집인원</Text>
                 <TextInput
@@ -79,7 +71,6 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
                     keyboardType="numeric"
                 />
             </View>
-
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">면접 장소</Text>
                 <TextInput
@@ -89,7 +80,6 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
                     onChangeText={setInterviewLocation}
                 />
             </View>
-
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">특이사항</Text>
                 <TextInput

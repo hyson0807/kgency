@@ -1,7 +1,5 @@
 import {Text, TouchableOpacity, View} from "react-native";
 import React from "react";
-
-
 interface WorkDaySelectorProps {
     workDayKeywords: { id: number, keyword: string }[];
     selectedWorkDays: number[];
@@ -10,7 +8,6 @@ interface WorkDaySelectorProps {
     onSelectLaterClick?: () => void;
     isSelectLater?: boolean;
 }
-
 export const WorkDaySelector = ({
     workDayKeywords,
     selectedWorkDays,
@@ -19,7 +16,6 @@ export const WorkDaySelector = ({
     onSelectLaterClick,
     isSelectLater = false,
                                 }: WorkDaySelectorProps) => {
-
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
             <View className="flex-row items-center justify-between mb-4">
@@ -72,7 +68,6 @@ export const WorkDaySelector = ({
                         </TouchableOpacity>
                     ))}
             </View>
-
             {selectedWorkDays.length === 0 && !isSelectLater && (
                 <Text className="text-sm text-gray-500 mt-3 text-center">
                     선택된 근무요일이 없습니다

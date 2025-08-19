@@ -5,8 +5,6 @@ import {useTranslation} from "@/contexts/TranslationContext";
 import {SuitabilityResult} from "@/lib/suitability";
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-
-
 interface JobPosting {
     id: string
     title: string
@@ -31,13 +29,11 @@ interface JobPosting {
         }
     }[]
 }
-
 interface MatchedKeyword {
     id: number
     keyword: string
     category: string
 }
-
 interface MatchedPosting {
     posting: JobPosting
     matchedCount: number
@@ -55,15 +51,11 @@ interface MatchedPosting {
     }
     suitability: SuitabilityResult // 추가
 }
-
 interface HeaderProps {
     matchedPostings: MatchedPosting[]
 }
-
-
 export const Header_Home = ({matchedPostings}: HeaderProps) => {
     const {t} = useTranslation();
-
     return (
         <View className="bg-white p-4 mb-2">
             {/* 헤더 타이틀 */}
@@ -73,9 +65,7 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                         {t('home.recommended_jobs', '추천 일자리')}
                     </Text>
                 </View>
-
             </View>
-
             {/* 옵션 1: 부드러운 보라색 그라데이션 */}
             <LinearGradient
                 colors={['#6366F1', '#8B5CF6', '#A855F7']}
@@ -93,7 +83,6 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                     </Text>
                 </View>
             </LinearGradient>
-
             {/* 옵션 1: 민트/그린 그라데이션 */}
             <LinearGradient
                 colors={['#10B981', '#34D399', '#6EE7B7']}

@@ -6,7 +6,6 @@ import { router } from 'expo-router';
 import { api } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
-
 interface TokenTransaction {
   id: string;
   type: 'purchase' | 'usage';
@@ -15,40 +14,29 @@ interface TokenTransaction {
   created_at: string;
   balance_after: number;
 }
-
 const UsageHistory = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<TokenTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
   useEffect(() => {
     fetchTokenHistory();
   }, []);
-
   const fetchTokenHistory = async () => {
     if (!user) {
-      console.log('No user logged in, skipping token history fetch');
       return;
     }
-
     try {
-      console.log('Fetching token history for user:', user.userId);
       const response = await api('GET', '/api/purchase/tokens/transactions');
-      console.log('Token history response:', response);
-
       if (response?.success) {
         setTransactions(response.transactions || []);
       } else {
-        console.log('Token history fetch unsuccessful:', response);
         setTransactions([]);
       }
     } catch (error: any) {
-      console.error('Failed to fetch token history:', error);
       
       if (error?.message?.includes('Network Error')) {
-        console.log('Network error - server might not be running');
       }
       
       setTransactions([]);
@@ -57,12 +45,10 @@ const UsageHistory = () => {
       setRefreshing(false);
     }
   };
-
   const onRefresh = () => {
     setRefreshing(true);
     fetchTokenHistory();
   };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('ko-KR', {
@@ -73,19 +59,15 @@ const UsageHistory = () => {
       minute: '2-digit',
     });
   };
-
   const getTransactionIcon = (type: string) => {
     return type === 'purchase' ? 'add-circle' : 'remove-circle';
   };
-
   const getTransactionColor = (type: string) => {
     return type === 'purchase' ? '#10B981' : '#EF4444';
   };
-
   const getAmountText = (type: string, amount: number) => {
     return type === 'purchase' ? `+${amount}` : `-${amount}`;
   };
-
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
@@ -96,7 +78,6 @@ const UsageHistory = () => {
       </SafeAreaView>
     );
   }
-
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <ScrollView 
@@ -118,7 +99,6 @@ const UsageHistory = () => {
             <View className="w-10" />
           </View>
         </View>
-
         {/* Content */}
         <View className="px-4 pt-6">
           {transactions.length === 0 ? (
@@ -175,12 +155,10 @@ const UsageHistory = () => {
             </View>
           )}
         </View>
-
         {/* Bottom spacing */}
         <View className="h-8" />
       </ScrollView>
     </SafeAreaView>
   );
 };
-
 export default UsageHistory;

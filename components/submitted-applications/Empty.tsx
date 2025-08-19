@@ -2,14 +2,11 @@ import React from 'react'
 import {Ionicons} from "@expo/vector-icons";
 import {Text, TouchableOpacity, View} from "react-native";
 import {router} from "expo-router";
-
 interface EmptyProps {
     activeFilter: 'all' | 'user_initiated' | 'company_invited' | 'user_instant_interview'
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
 }
-
 export const Empty = ({activeFilter, t}: EmptyProps) => {
-
     return (
         <View className="flex-1 justify-center items-center p-8">
             <Ionicons name="document-text-outline" size={80} color="#9ca3af" />

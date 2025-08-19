@@ -5,9 +5,7 @@ import {SafeAreaProvider} from "react-native-safe-area-context";
 import {TranslationProvider} from "@/contexts/TranslationContext";
 import {NotificationProvider} from "@/contexts/NotificationContext";
 import {TabBarProvider} from "@/contexts/TabBarContext";
-
 export default function RootLayout() {
-
   return (
       <TranslationProvider>
             <AuthProvider>
@@ -24,6 +22,5 @@ export default function RootLayout() {
                 </NotificationProvider>
             </AuthProvider>
       </TranslationProvider>
-
   )
 }

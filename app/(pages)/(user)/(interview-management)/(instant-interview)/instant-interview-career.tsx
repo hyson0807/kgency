@@ -8,7 +8,6 @@ import { useTranslation } from "@/contexts/TranslationContext"
 import { CareerInformation } from "@/components/user_keyword(info)/CareerInformation"
 import { useProfile } from "@/hooks/useProfile"
 import LoadingScreen from "@/components/common/LoadingScreen"
-
 const InstantInterviewCareer = () => {
     const params = useLocalSearchParams()
     const { t } = useTranslation()
@@ -23,14 +22,12 @@ const InstantInterviewCareer = () => {
     const jobAddress = params.jobAddress as string
     const interviewLocation = params.interviewLocation as string
     const specialNotes = params.specialNotes as string
-
     // 경력 정보 상태
     const [howLong, setHowLong] = useState<string | null>(null)
     const [selectedDays, setSelectedDays] = useState<string[]>([])
     const [selectedTimes, setSelectedTimes] = useState<string[]>([])
     const [experience, setExperience] = useState<string | null>(null)
     const [experienceContent, setExperienceContent] = useState('')
-
     // 프로필에서 기존 경력 정보 로드
     useEffect(() => {
         if (profile?.user_info) {
@@ -41,7 +38,6 @@ const InstantInterviewCareer = () => {
             setSelectedTimes(profile.user_info.preferred_times || [])
         }
     }, [profile])
-
     // 경력 정보 핸들러들
     const toggleDay = (day: string) => {
         setSelectedDays(prev =>
@@ -50,7 +46,6 @@ const InstantInterviewCareer = () => {
                 : [...prev, day]
         )
     }
-
     const toggleTime = (time: string) => {
         setSelectedTimes(prev =>
             prev.includes(time)
@@ -58,7 +53,6 @@ const InstantInterviewCareer = () => {
                 : [...prev, time]
         )
     }
-
     const validateForm = () => {
         if (!howLong) {
             showModal(
@@ -67,7 +61,6 @@ const InstantInterviewCareer = () => {
             )
             return false
         }
-
         if (selectedDays.length === 0) {
             showModal(
                 t('alert.notification', '알림'),
@@ -75,7 +68,6 @@ const InstantInterviewCareer = () => {
             )
             return false
         }
-
         if (selectedTimes.length === 0) {
             showModal(
                 t('alert.notification', '알림'),
@@ -83,7 +75,6 @@ const InstantInterviewCareer = () => {
             )
             return false
         }
-
         if (!experience) {
             showModal(
                 t('alert.notification', '알림'),
@@ -91,7 +82,6 @@ const InstantInterviewCareer = () => {
             )
             return false
         }
-
         if (!experienceContent || experienceContent.trim().length === 0) {
             showModal(
                 t('alert.notification', '알림'),
@@ -99,16 +89,13 @@ const InstantInterviewCareer = () => {
             )
             return false
         }
-
         return true
     }
-
     const handleNext = async () => {
         // 폼 유효성 검사
         if (!validateForm()) {
             return
         }
-
         // 경력 정보 저장
         try {
             const updated = await updateProfile({
@@ -120,7 +107,6 @@ const InstantInterviewCareer = () => {
                     preferred_times: selectedTimes
                 }
             })
-
             if (updated) {
                 // 면접 일정 선택 페이지로 이동
                 router.push({
@@ -142,16 +128,13 @@ const InstantInterviewCareer = () => {
                 )
             }
         } catch (error) {
-            console.error('경력 정보 저장 오류:', error)
             showModal(
                 t('alert.error', '오류'),
                 t('alert.save_failed', '저장에 실패했습니다. 다시 시도해주세요.')
             )
         }
     }
-
     if (loading) return <LoadingScreen />
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             <View className="flex-1">
@@ -163,7 +146,6 @@ const InstantInterviewCareer = () => {
                         </Text>
                     </View>
                 </View>
-
                 <ScrollView
                     className="flex-1"
                     showsVerticalScrollIndicator={false}
@@ -178,7 +160,6 @@ const InstantInterviewCareer = () => {
                             {t('instant_interview.career_info_required', '면접 확정을 위해 경력 정보를 모두 입력해주세요.')}
                         </Text>
                     </View>
-
                     {/* 경력 정보 컴포넌트 */}
                     <CareerInformation
                         t={t}
@@ -200,7 +181,6 @@ const InstantInterviewCareer = () => {
                         }}
                     />
                 </ScrollView>
-
                 {/* 하단 버튼 */}
                 <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 pb-8">
                     <TouchableOpacity
@@ -217,5 +197,4 @@ const InstantInterviewCareer = () => {
         </SafeAreaView>
     )
 }
-
 export default InstantInterviewCareer

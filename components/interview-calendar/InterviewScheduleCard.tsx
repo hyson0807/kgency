@@ -4,7 +4,6 @@ import { View, Text, TouchableOpacity, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { UserDetailModal } from './UserDetailModal'
-
 interface InterviewScheduleCardProps {
     schedule: {
         id: string
@@ -31,31 +30,26 @@ interface InterviewScheduleCardProps {
     }
     onCancel: () => void
 }
-
 export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleCardProps) => {
     const [showUserModal, setShowUserModal] = useState(false)
     
     const formatTime = (dateString: string) => {
         return format(new Date(dateString), 'HH:mm')
     }
-
     // 인터뷰가 이미 지났는지 확인
     const isExpired = () => {
         const now = new Date()
         const interviewEndTime = new Date(schedule.interview_slot.end_time)
         return now > interviewEndTime
     }
-
     const handleCall = () => {
         const phoneNumber = schedule.proposal.application.user.phone_number
         Linking.openURL(`tel:${phoneNumber}`)
     }
-
     const handleMessage = () => {
         const phoneNumber = schedule.proposal.application.user.phone_number
         Linking.openURL(`sms:${phoneNumber}`)
     }
-
     const getInterviewTypeIcon = (type: string) => {
         switch (type) {
             case '화상':
@@ -66,7 +60,6 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                 return 'people-outline'
         }
     }
-
     return (
         <View className="bg-white rounded-xl p-4 shadow-sm">
             {/* 시간 정보 */}
@@ -83,7 +76,6 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                     </Text>
                 </View>
             </View>
-
             {/* 지원자 정보 */}
             <TouchableOpacity
                 onPress={() => setShowUserModal(true)}
@@ -112,7 +104,6 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                 </View>
                 <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
             </TouchableOpacity>
-
             {/* 면접 정보 */}
             <View className="space-y-1 mb-3">
                 <View className="flex-row items-center">
@@ -135,7 +126,6 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                     </View>
                 )}
             </View>
-
             {/* 액션 버튼들 */}
             <View className="flex-row gap-2 pt-3 border-t border-gray-100">
                 <TouchableOpacity
@@ -145,7 +135,6 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                     <Ionicons name="call-outline" size={18} color="#16a34a" />
                     <Text className="text-green-600 text-sm font-medium ml-1">전화</Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                     onPress={handleMessage}
                     className="flex-1 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
@@ -153,7 +142,6 @@ export const InterviewScheduleCard = ({ schedule, onCancel }: InterviewScheduleC
                     <Ionicons name="chatbubble-outline" size={18} color="#3b82f6" />
                     <Text className="text-blue-600 text-sm font-medium ml-1">문자</Text>
                 </TouchableOpacity>
-
                 {isExpired() ? (
                     <View className="flex-1 flex-row items-center justify-center bg-gray-100 py-2 rounded-lg">
                         <Ionicons name="time-outline" size={18} color="#6b7280" />

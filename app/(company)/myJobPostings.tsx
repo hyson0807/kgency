@@ -9,7 +9,6 @@ import {FloatingButton} from "@/components/myJobPostings(company)/FloatingButton
 import {Empty} from "@/components/myJobPostings(company)/Empty";
 import {Ionicons} from "@expo/vector-icons";
 import { api } from '@/lib/api';
-
 interface MyJobPostings {
     id: string
     title: string
@@ -36,46 +35,37 @@ interface MyJobPostings {
         }
     }[]
 }
-
 const JobPosting = () => {
     const { user } = useAuth()
     const [postings, setPostings] = useState<MyJobPostings[]>([])
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
-
     // useModal 사용
     const { showModal, hideModal, ModalComponent } = useModal()
-
     useEffect(() => {
         if (user) {
             fetchPostings()
         }
     }, [user])
-
     const fetchPostings = async () => {
         if (!user) return
-
         try {
             const response = await api('GET', '/api/job-postings/company');
             
             if (response.success) {
                 setPostings(response.data || [])
             } else {
-                console.error('공고 조회 실패:', response.error)
             }
         } catch (error) {
-            console.error('공고 조회 실패:', error)
         } finally {
             setLoading(false)
         }
     }
-
     const onRefresh = useCallback(async () => {
         setRefreshing(true)
         await fetchPostings()
         setRefreshing(false)
     }, [user])
-
     const handleToggleActive = async (postingId: string, currentStatus: boolean) => {
         try {
             const response = await api('PATCH', `/api/job-postings/${postingId}/toggle-active`);
@@ -90,13 +80,10 @@ const JobPosting = () => {
                     )
                 )
             } else {
-                console.error('상태 변경 실패:', response.error)
             }
         } catch (error) {
-            console.error('상태 변경 실패:', error)
         }
     }
-
     const handleDelete = (postingId: string, title: string) => {
         showModal(
             '공고 삭제',
@@ -109,7 +96,6 @@ const JobPosting = () => {
             true
         )
     }
-
     const confirmDelete = async (postingId: string) => {
         try {
             const response = await api('DELETE', `/api/job-postings/${postingId}`);
@@ -118,7 +104,6 @@ const JobPosting = () => {
                 // 로컬 상태 업데이트
                 setPostings(prev => prev.filter(p => p.id !== postingId))
             } else {
-                console.error('삭제 처리 실패:', response.error)
                 showModal(
                     '오류',
                     '공고 삭제 중 문제가 발생했습니다.',
@@ -127,7 +112,6 @@ const JobPosting = () => {
                 )
             }
         } catch (error) {
-            console.error('삭제 처리 실패:', error)
             showModal(
                 '오류',
                 '공고 삭제 중 문제가 발생했습니다.',
@@ -136,17 +120,11 @@ const JobPosting = () => {
             )
         }
     }
-
-
-
-
-
     if (loading) {
         return (
             <LoadingScreen />
         )
     }
-
     return (
         <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             {/* 헤더 */}
@@ -158,10 +136,8 @@ const JobPosting = () => {
                             총 {postings.length}개의 공고
                         </Text>
                     </View>
-
                 </View>
             </View>
-
             {/* 공고 목록 */}
             <FlatList
                 data={postings}
@@ -178,12 +154,9 @@ const JobPosting = () => {
                     />
                 }
             />
-
             <FloatingButton/>
-
             <ModalComponent />
         </View>
     )
 }
-
 export default JobPosting

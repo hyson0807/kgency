@@ -1,6 +1,5 @@
 import React, { JSX } from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, TouchableOpacityProps, View } from 'react-native';
-
 interface PrimaryButtonProps extends TouchableOpacityProps {
     title: string;
     loading?: boolean;
@@ -10,7 +9,6 @@ interface PrimaryButtonProps extends TouchableOpacityProps {
     icon?: React.ReactNode;
     iconPosition?: 'left' | 'right';
 }
-
 export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
                                                                 title,
                                                                 loading = false,
@@ -42,21 +40,18 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
             disabled: 'bg-green-300'
         }
     };
-
     // 버튼 크기 스타일
     const sizeStyles = {
         small: 'py-2 px-4',
         medium: 'py-3 px-6',
         large: 'py-4 px-8'
     };
-
     // 텍스트 크기 스타일
     const textSizeStyles = {
         small: 'text-sm',
         medium: 'text-base',
         large: 'text-lg'
     };
-
     // 텍스트 색상
     const textColorStyles = {
         primary: 'text-white',
@@ -64,12 +59,10 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         danger: 'text-white',
         success: 'text-white'
     };
-
     const isDisabled = disabled || loading;
     const buttonStyle = isDisabled
         ? variantStyles[variant].disabled
         : variantStyles[variant].enabled;
-
     return (
         <TouchableOpacity
             disabled={isDisabled}
@@ -110,25 +103,20 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         </TouchableOpacity>
     );
 };
-
 // 특화된 버튼 컴포넌트들
 export const SubmitButton: React.FC<Omit<PrimaryButtonProps, 'variant'>> = (props) => (
     <PrimaryButton variant="primary" {...props} />
 );
-
 export const CancelButton: React.FC<Omit<PrimaryButtonProps, 'variant'>> = (props) => (
     <PrimaryButton variant="secondary" {...props} />
 );
-
 export const DangerButton: React.FC<Omit<PrimaryButtonProps, 'variant'>> = (props) => (
     <PrimaryButton variant="danger" {...props} />
 );
-
 // 하단 고정 버튼 컴포넌트
 interface BottomButtonProps extends PrimaryButtonProps {
     containerClassName?: string;
 }
-
 export const BottomButton: React.FC<BottomButtonProps> = ({
                                                               containerClassName = '',
                                                               ...props
@@ -139,7 +127,6 @@ export const BottomButton: React.FC<BottomButtonProps> = ({
         </View>
     );
 };
-
 // 사용 예시 타입
 export interface ButtonUsageExamples {
     // 기본 사용

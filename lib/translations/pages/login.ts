@@ -1,7 +1,5 @@
 // 로그인 페이지
-
 import {TranslationData} from "@/lib/translations/types";
-
 export const loginTranslations: TranslationData = {
     'login.phone_auth': {
         en: 'Phone Verification',

@@ -1,7 +1,6 @@
 import {Text, View} from "react-native";
 import {Dropdown} from "react-native-element-dropdown";
 import React from "react";
-
 interface LocationProps {
     selectedLocation: number | null,
     setSelectedLocation: (locationId: number | null) => void,
@@ -10,16 +9,11 @@ interface LocationProps {
         value: number
     }[]
 }
-
 export const LocationSelector = ({
     selectedLocation,
     setSelectedLocation,
     locationOptions,
                          }: LocationProps) => {
-
-
-
-
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
             <Text className="text-lg font-semibold mb-4 text-gray-900">사업장 위치</Text>

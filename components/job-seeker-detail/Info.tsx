@@ -1,7 +1,6 @@
 import {Text, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import React from "react";
-
 interface UserInfo {
     age?: number
     gender?: string
@@ -13,7 +12,6 @@ interface UserInfo {
     preferred_days?: string[]
     preferred_times?: string[]
 }
-
 interface UserKeyword {
     keyword_id: number
     keyword: {
@@ -22,7 +20,6 @@ interface UserKeyword {
         category: string
     }
 }
-
 interface JobSeekerDetail {
     id: string
     name: string
@@ -32,15 +29,12 @@ interface JobSeekerDetail {
     user_info?: UserInfo
     user_keywords?: UserKeyword[]
 }
-
 interface InfoProps {
     jobSeeker: JobSeekerDetail,
 }
-
 export const Info = ({
     jobSeeker,
                      }: InfoProps) => {
-
     return (
         <View className="p-6 border-b border-gray-100">
             <View className="flex-row items-center justify-between mb-4">
@@ -61,7 +55,6 @@ export const Info = ({
                     </View>
                 </View>
             </View>
-
             {/* 기본 정보 그리드 */}
             <View className="flex-row flex-wrap gap-4 mt-4">
                 {jobSeeker.user_info?.age && (
@@ -75,7 +68,6 @@ export const Info = ({
                         </View>
                     </View>
                 )}
-
                 {jobSeeker.user_info?.gender && (
                     <View className="flex-row items-center">
                         <View className="w-8 h-8 bg-purple-100 rounded-full items-center justify-center">
@@ -87,7 +79,6 @@ export const Info = ({
                         </View>
                     </View>
                 )}
-
                 {jobSeeker.user_info?.visa && (
                     <View className="flex-row items-center">
                         <View className="w-8 h-8 bg-green-100 rounded-full items-center justify-center">
@@ -99,7 +90,6 @@ export const Info = ({
                         </View>
                     </View>
                 )}
-
                 {jobSeeker.user_info?.korean_level && (
                     <View className="flex-row items-center">
                         <View className="w-8 h-8 bg-orange-100 rounded-full items-center justify-center">
@@ -112,9 +102,6 @@ export const Info = ({
                     </View>
                 )}
             </View>
-
-
-
             {/* 경력 정보 섹션 */}
             {(jobSeeker.user_info?.how_long ||
               jobSeeker.user_info?.preferred_days?.length || 
@@ -136,7 +123,6 @@ export const Info = ({
                             </View>
                         </View>
                     )}
-
                     {/* 희망 근무 요일 */}
                     {jobSeeker.user_info?.preferred_days && jobSeeker.user_info.preferred_days.length > 0 && (
                         <View className="flex-row items-start mb-3">
@@ -155,7 +141,6 @@ export const Info = ({
                             </View>
                         </View>
                     )}
-
                     {/* 희망 시간대 */}
                     {jobSeeker.user_info?.preferred_times && jobSeeker.user_info.preferred_times.length > 0 && (
                         <View className="flex-row items-start mb-3">
@@ -174,7 +159,6 @@ export const Info = ({
                             </View>
                         </View>
                     )}
-
                     {/* 관련 경력 */}
                     {jobSeeker.user_info?.experience && (
                         <View className="flex-row items-center mb-3">
@@ -187,7 +171,6 @@ export const Info = ({
                             </View>
                         </View>
                     )}
-
                     {/* 경력 내용 */}
                     {jobSeeker.user_info?.experience_content && (
                         <View className="flex-row items-start mb-3">

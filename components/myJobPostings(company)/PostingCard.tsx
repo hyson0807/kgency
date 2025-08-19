@@ -1,8 +1,6 @@
 import {Text, TouchableOpacity, View} from "react-native";
 import {router} from "expo-router";
 import React from "react";
-
-
 interface MyJobPostings {
     id: string
     title: string
@@ -29,30 +27,22 @@ interface MyJobPostings {
         }
     }[]
 }
-
 interface PostingCardProps {
     item: MyJobPostings
     onToggleActive: (postingId: string, currentStatus: boolean) => void
     onDelete: (postingId: string, title: string) => void
 }
-
 export const PostingCard = ({
     item,
     onToggleActive,
     onDelete,
                             }: PostingCardProps) => {
-
     const applicationCount = item.applications?.length || 0
     const jobKeywords = item.job_posting_keywords?.filter(k => k.keyword.category === '직종') || []
-
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
         return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`
     }
-
-
-
-
     return (
         <TouchableOpacity
             onPress={() => router.push({
@@ -92,14 +82,12 @@ export const PostingCard = ({
                     </Text>
                 </View>
             </View>
-
             {/* 공고 정보 */}
             <View className="mb-3">
                 <Text className="text-sm text-gray-500 mt-1">
                     등록일: {formatDate(item.created_at)}
                 </Text>
             </View>
-
             {/* 액션 버튼들 */}
             <View className="flex-row gap-2 pt-3 border-t border-gray-200">
                 <TouchableOpacity
@@ -114,7 +102,6 @@ export const PostingCard = ({
                 >
                     <Text className="text-center text-blue-600 font-medium">수정</Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                     onPress={(e) => {
                         e.stopPropagation()
@@ -130,7 +117,6 @@ export const PostingCard = ({
                         {item.is_active ? '마감' : '재개'}
                     </Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                     onPress={(e) => {
                         e.stopPropagation()

@@ -1,5 +1,4 @@
 import { TranslationData } from "@/lib/translations/types";
-
 export const jobDetailModalTranslations: TranslationData = {
     'job_detail.translate': {
         en: 'Translate',

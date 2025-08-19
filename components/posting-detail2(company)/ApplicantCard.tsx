@@ -7,7 +7,6 @@ import { useMatchedJobPostings } from "@/hooks/useMatchedJobPostings";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { api } from "@/lib/api";
 import { SuitabilityResult } from "@/lib/suitability/types";
-
 interface Application {
     id: string
     applied_at: string
@@ -42,27 +41,23 @@ interface Application {
         is_read: boolean
     }
 }
-
 interface ApplicantCardProps {
     item: Application;
     postingId: string;
     proposalStatus?: string;
     onStatusChange?: () => void; // 상태 변경 콜백
 }
-
 export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStatusChange }: ApplicantCardProps) => {
     const { showModal, ModalComponent } = useModal();
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings();
     const [matchedKeywords, setMatchedKeywords] = useState<{ id: number; keyword: string; category: string }[]>([]);
     const [isDeleting, setIsDeleting] = useState(false);
     const [suitabilityResult, setSuitabilityResult] = useState<SuitabilityResult | null>(null);
-
     useEffect(() => {
         const loadPostingAndMatchKeywords = async () => {
             const posting = await fetchPostingById(postingId);
             if (posting) {
                 const postingKeywords = getPostingKeywords(posting);
-
                 // 모든 공고 키워드를 평면 배열로 변환
                 const allPostingKeywords = [
                     ...postingKeywords.countries,
@@ -76,15 +71,12 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     ...postingKeywords.koreanLevel,
                     ...postingKeywords.workDay
                 ];
-
                 // 유저가 지역이동 가능 키워드를 가지고 있는지 확인
                 const userCanMove = item.user.user_keyword?.some(uk => uk.keywords.category === '지역이동');
-
                 // 유저 키워드와 공고 키워드 매칭
                 let matched = item.user.user_keyword?.filter(userKw =>
                     allPostingKeywords.some(postingKw => postingKw.id === userKw.keywords.id)
                 ).map(uk => uk.keywords) || [];
-
                 // 지역이동 가능인 경우 공고의 지역 키워드를 매칭된 것으로 추가
                 if (userCanMove) {
                     const postingLocationKeywords = postingKeywords.location.filter(loc => 
@@ -92,9 +84,7 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     );
                     matched = [...matched, ...postingLocationKeywords];
                 }
-
                 setMatchedKeywords(matched);
-
                 // 서버에서 적합도 계산
                 if (item.user.id && postingId) {
                     try {
@@ -103,7 +93,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                             setSuitabilityResult(response.data);
                         }
                     } catch (error) {
-                        console.error('적합도 계산 실패:', error);
                         // 적합도 계산 실패시 기본값 설정
                         setSuitabilityResult({
                             score: 0,
@@ -131,10 +120,8 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                 }
             }
         };
-
         loadPostingAndMatchKeywords();
     }, [postingId, item.user.id]);
-
     const handleViewResume = (application: Application) => {
         if (application.message) {
             router.push({
@@ -151,14 +138,12 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
             })
         }
     }
-
     const handleCancelProposal = async () => {
         if (isDeleting) return; // 이미 진행 중이면 중복 실행 방지
         
         const confirmMessage = item.type === 'company_invited'
             ? '회사가 제안한 지원서이므로 면접 제안과 함께 지원서도 삭제됩니다. 계속하시겠습니까?'
             : '면접 제안을 취소하시겠습니까?';
-
         showModal(
             '면접 제안 취소',
             confirmMessage,
@@ -167,7 +152,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                 try {
                     setIsDeleting(true);
                     const response = await api('DELETE', `/api/interview-proposals/company/${item.id}`);
-
                     if (response?.success) {
                         // 성공 시 상태 변경 콜백 실행 (모달 없이)
                         if (onStatusChange) {
@@ -175,11 +159,9 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                         }
                     } else {
                         // 에러 메시지를 console에만 출력하고 모달은 표시하지 않음
-                        console.error('면접 제안 취소 실패:', response?.message || '면접 제안 취소에 실패했습니다.');
                     }
                 } catch (error) {
                     // 에러 메시지를 console에만 출력하고 모달은 표시하지 않음
-                    console.error('면접 제안 취소 실패:', error);
                 } finally {
                     setIsDeleting(false);
                 }
@@ -189,16 +171,13 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
             '취소'
         );
     }
-
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
         return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
     }
-
     const locationKeyword = item.user.user_keyword?.find(
         uk => uk.keywords.category === '지역'
     )?.keywords.keyword;
-
     // 카테고리별 색상 설정
     const getCategoryColor = (category: string) => {
         switch (category) {
@@ -215,7 +194,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
             default: return 'bg-gray-100 text-gray-700';
         }
     };
-
     // 적합도 배지 색상 설정
     const getSuitabilityBadgeColor = (level: string) => {
         switch (level) {
@@ -227,7 +205,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
             default: return 'bg-gray-300 text-gray-600';
         }
     };
-
     // 적합도 레벨 한글 텍스트
     const getSuitabilityLevelText = (level: string) => {
         switch (level) {
@@ -239,8 +216,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
             default: return '계산중';
         }
     };
-
-
     return (
         <>
             <TouchableOpacity
@@ -265,7 +240,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                         </View>
                     </View>
                 )}
-
                 <View className="flex-row items-center gap-5">
                     <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
                         <Text className="text-2xl font-bold">{item.user.name.charAt(0)}</Text>
@@ -273,7 +247,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     <View className="flex-1">
                         <View className="flex-row items-center gap-2">
                             <Text className="text-lg font-bold">{item.user.name}</Text>
-
                             <Text className="text-sm text-gray-600">{formatDate(item.applied_at)}</Text>
                         </View>
                         <View className="flex-row items-center gap-5">
@@ -289,13 +262,11 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                         </View>
                     </View>
                 </View>
-
                 {item.type === 'user_initiated' && (
                     <View className="flex bg-gray-100 rounded-xl p-2">
                         <Text className="text-start flex-shrink" numberOfLines={2}>{item.message?.content}</Text>
                     </View>
                 )}
-
                 {/* 매칭된 키워드 표시 */}
                 {matchedKeywords.length > 0 && (
                     <View className="flex-row flex-wrap gap-2 ">
@@ -312,7 +283,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                         ))}
                     </View>
                 )}
-
                 {/* 버튼들 */}
                 <View className="flex-row gap-2 pt-3 border-t border-gray-100">
                     {item.type === 'company_invited' ? (
@@ -332,7 +302,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                             <Text className="font-medium ml-2">이력서 보기</Text>
                         </TouchableOpacity>
                     )}
-
                     {proposalStatus === 'pending' && (
                         <View className="flex-1 gap-2">
                             <View className="bg-orange-100 py-3 rounded-lg flex-row items-center justify-center">
@@ -351,7 +320,6 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                             </TouchableOpacity>
                         </View>
                     )}
-
                     {proposalStatus === 'scheduled' && (
                         <View className="flex-1 bg-green-100 py-3 rounded-lg flex-row items-center justify-center">
                             <AntDesign name="checkcircleo" size={18} color="#16a34a" />

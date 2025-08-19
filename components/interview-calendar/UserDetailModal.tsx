@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, Modal, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { userAPI } from '@/lib/api/userAPI'
-
 interface UserInfo {
     name: string
     age: number
@@ -16,37 +15,30 @@ interface UserInfo {
     preferred_days?: string[]
     preferred_times?: string[]
 }
-
 interface Keyword {
     id: number
     keyword: string
     category: string
 }
-
 interface UserDetailModalProps {
     visible: boolean
     onClose: () => void
     userId: string
 }
-
 export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalProps) => {
     const [loading, setLoading] = useState(true)
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
     const [keywords, setKeywords] = useState<Keyword[]>([])
     const [profileName, setProfileName] = useState<string>('')
-
     useEffect(() => {
         if (visible && userId) {
             fetchUserDetails()
         }
     }, [visible, userId])
-
     const fetchUserDetails = async () => {
         try {
             setLoading(true)
-
             const data = await userAPI.getUserDetails(userId)
-
             if (data) {
                 setUserInfo(data.userInfo)
                 setProfileName(data.profile.name) // profiles 테이블의 name 사용
@@ -59,12 +51,10 @@ export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalPro
                 setKeywords(filteredKeywords)
             }
         } catch (error) {
-            console.error('Error fetching user details:', error)
         } finally {
             setLoading(false)
         }
     }
-
     const getCategoryIcon = (category: string) => {
         const iconMap: { [key: string]: string } = {
             '국가': 'globe-outline',
@@ -79,7 +69,6 @@ export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalPro
         }
         return iconMap[category] || 'ellipse-outline'
     }
-
     const getCategoryLabel = (category: string) => {
         const labelMap: { [key: string]: string } = {
             '국가': '국가',
@@ -95,7 +84,6 @@ export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalPro
         }
         return labelMap[category] || category
     }
-
     const groupKeywordsByCategory = () => {
         const grouped: { [key: string]: Keyword[] } = {}
         keywords.forEach(keyword => {
@@ -106,7 +94,6 @@ export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalPro
         })
         return grouped
     }
-
     return (
         <Modal
             visible={visible}
@@ -128,7 +115,6 @@ export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalPro
                             <Ionicons name="close" size={24} color="#6b7280" />
                         </TouchableOpacity>
                     </View>
-
                     {loading ? (
                         <View className="p-10 items-center">
                             <ActivityIndicator size="large" color="#3b82f6" />
@@ -156,7 +142,6 @@ export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalPro
                                             )}
                                         </View>
                                     </View>
-
                                     {/* Career Info */}
                                     <View className="mb-6">
                                         <Text className="text-lg font-bold mb-3">경력 정보</Text>
@@ -195,9 +180,6 @@ export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalPro
                                             )}
                                         </View>
                                     </View>
-
-
-
                                     {/* Keywords */}
                                     <View className="mb-6">
                                         <Text className="text-lg font-bold mb-3">선택 키워드</Text>
@@ -241,7 +223,6 @@ export const UserDetailModal = ({ visible, onClose, userId }: UserDetailModalPro
         </Modal>
     )
 }
-
 const InfoRow = ({ label, value }: { label: string; value: string }) => (
     <View className="flex-row justify-between">
         <Text className="text-sm text-gray-600">{label}</Text>

@@ -7,11 +7,9 @@ import {router} from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
 import {useTranslation} from "@/contexts/TranslationContext";
 import { api } from '@/lib/api';
-
 const UserLogin = () => {
     const { login } = useAuth();
     const { t } = useTranslation();
-
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
@@ -23,7 +21,6 @@ const UserLogin = () => {
     const [modalTitle, setModalTitle] = useState('');
     const [modalMessage, setModalMessage] = useState('');
     const [modalType, setModalType] = useState<'info' | 'warning'>('info');
-
     const otpInputRef = useRef<TextInput>(null);
     const hasAttemptedRef = useRef(false);
     
@@ -45,7 +42,6 @@ const UserLogin = () => {
     const hideModal = () => {
         setModalVisible(false);
     };
-
     // OTP 재전송 타이머
     useEffect(() => {
         if (resendTimer > 0) {
@@ -53,19 +49,16 @@ const UserLogin = () => {
             return () => clearTimeout(timer);
         }
     }, [resendTimer]);
-
     const formatPhoneNumber = (value: string) => {
         const numbers = value.replace(/[^\d]/g, '');
         if (numbers.length <= 3) return numbers;
         if (numbers.length <= 7) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
         return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
     };
-
     const handlePhoneChange = (text: string) => {
         const formatted = formatPhoneNumber(text);
         setPhone(formatted);
     };
-
     const sendOtp = async () => {
         const cleanPhone = phone.replace(/[^0-9]/g, '');
         if(!cleanPhone || cleanPhone.length !== 11) {
@@ -82,10 +75,8 @@ const UserLogin = () => {
         }
         
         setLoading(true);
-
         try {
             const formattedPhone = `+82${cleanPhone.slice(1)}`;
-
             const response = await api ('POST','/api/auth/send-otp', {phone: formattedPhone})
             if (response.success) {
                 setInputOtp(true);
@@ -95,21 +86,12 @@ const UserLogin = () => {
                 showModal(t('alert.send_failed', '전송 실패'), response.data.error || t('alert.code_send_error', '인증번호 전송에 실패했습니다'), 'warning');
             }
         } catch (error: any) {
-            console.error('OTP 전송 에러:', error);
-            console.error('에러 상세:', {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status,
-                url: error.config?.url
-            });
-            
             const errorMessage = error.response?.data?.error || error.message || t('alert.check_network', '네트워크 연결을 확인해주세요');
             showModal(t('alert.error', '오류'), errorMessage, 'warning');
         } finally {
             setLoading(false);
         }
     }
-
     const verifyOtp = async () => {
         if (!otp || otp.length !== 6) {
             showModal(t('alert.notification', '알림'), t('alert.enter_6_digits', '6자리 인증번호를 입력해주세요'));
@@ -119,10 +101,8 @@ const UserLogin = () => {
         try{
             const cleanPhone = phone.replace(/-/g, '');
             const formattedPhone = `+82${cleanPhone.slice(1)}`;
-
             // 애플 심사용 데모 계정 체크
             const isDemoAccount = cleanPhone === '01099999999' && otp === '999999';
-
             try {
                 const response = await api ('POST','/api/auth/verify-otp', {
                     phone: formattedPhone,
@@ -130,14 +110,12 @@ const UserLogin = () => {
                     userType: 'user',
                     isDemoAccount: isDemoAccount // 데모 계정 플래그 추가
                 });
-
                 // 성공한 경우
                 const result = await login(
                     response.token,
                     response.user,
                     response.onboardingStatus
                 );
-
                 if (result.success) {
                     if (response.onboardingStatus.completed) {
                         router.replace('/(user)/home');
@@ -152,7 +130,6 @@ const UserLogin = () => {
                 }
                 
             } catch (apiError: any) {
-
                 // 인증 시도 플래그 즉시 리셋
                 hasAttemptedRef.current = false;
                 setOtp('');
@@ -173,7 +150,6 @@ const UserLogin = () => {
             setLoading(false);
         }
     };
-
     // OTP 입력 처리 (6자리 입력 시 자동 인증)
     useEffect(() => {
         if (otp.length === 6 && inputOtp && !loading && !hasAttemptedRef.current) {
@@ -183,7 +159,6 @@ const UserLogin = () => {
             hasAttemptedRef.current = false;
         }
     }, [otp, loading, inputOtp]);
-
     return (
         <SafeAreaView className="flex-1">
             <KeyboardAvoidingView
@@ -193,7 +168,6 @@ const UserLogin = () => {
                 <View className="px-6 pt-2 pb-4">
                     <Back />
                 </View>
-
                 <View className="flex-1 px-6">
                     {/* 헤더 영역 */}
                     <View className="mt-8 mb-12">
@@ -204,7 +178,6 @@ const UserLogin = () => {
                             {t('login.subtitle', '원활한 서비스 이용을 위해 본인인증을 해주세요')}
                         </Text>
                     </View>
-
                     {/* 휴대폰 번호 입력 */}
                     <View className="mb-8">
                         <Text className="text-sm font-medium text-gray-700 mb-3" >{t('login.phone_number', '휴대폰 번호')}</Text>
@@ -212,7 +185,6 @@ const UserLogin = () => {
                             <View className=" flex-row items-center" style={{ height: 40 }}>
                                 <TextInput
                                     className="flex-1 text-lg text-gray-900 py-2"
-
                                     placeholder="010-0000-0000"
                                     placeholderTextColor="#9ca3af"
                                     maxLength={13}
@@ -238,7 +210,6 @@ const UserLogin = () => {
                             </View>
                         </View>
                     </View>
-
                     {/* OTP 입력 */}
                     {inputOtp && (
                         <View className="mb-8">
@@ -281,7 +252,6 @@ const UserLogin = () => {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-
                             {/* 재전송 버튼 */}
                             {resendTimer === 0 && (
                                 <TouchableOpacity
@@ -294,7 +264,6 @@ const UserLogin = () => {
                                     <Text className="text-blue-500 text-center">{t('login.resend', '인증번호 재전송')}</Text>
                                 </TouchableOpacity>
                             )}
-
                             {/* 자동 인증 안내 */}
                             <View className="mt-6 bg-blue-50 p-4 rounded-xl flex-row items-start">
                                 <Ionicons name="information-circle" size={20} color="#3b82f6" />
@@ -304,7 +273,6 @@ const UserLogin = () => {
                             </View>
                         </View>
                     )}
-
                     {/* 개발 모드 테스트 계정 */}
                     {__DEV__ && (
                         <View className="mt-auto mb-8">
@@ -346,12 +314,10 @@ const UserLogin = () => {
                                 {modalTitle}
                             </Text>
                         </View>
-
                         {/* 메시지 */}
                         <Text className="text-gray-600 text-center mb-6">
                             {modalMessage}
                         </Text>
-
                         {/* 확인 버튼 */}
                         <TouchableOpacity
                             onPress={hideModal}
@@ -369,7 +335,4 @@ const UserLogin = () => {
         </SafeAreaView>
     )
 }
-
-
-
 export default UserLogin

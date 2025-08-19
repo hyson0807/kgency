@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
 // Step 1: 기본 정보 타입
 interface Step1Data {
   jobTitle: string
@@ -13,7 +12,6 @@ interface Step1Data {
   isEditMode: boolean
   jobPostingId?: string
 }
-
 // Step 2: 근무 정보 타입
 interface Step2Data {
   selectedLocation: number | null
@@ -27,7 +25,6 @@ interface Step2Data {
   payDay: string
   payDayNegotiable: boolean
 }
-
 // Step 3: 인재 선호 정보 타입
 interface Step3Data {
   selectedCountries: number[]
@@ -39,7 +36,6 @@ interface Step3Data {
   selectedKoreanLevels: number[]
   isPostingActive: boolean
 }
-
 // 전체 스토어 타입
 interface JobPostingStore {
   // 데이터
@@ -91,7 +87,6 @@ interface JobPostingStore {
   isDataEmpty: () => boolean
   confirmReset: () => Promise<boolean>
 }
-
 // 초기 상태
 const initialStep1: Step1Data = {
   jobTitle: '',
@@ -103,7 +98,6 @@ const initialStep1: Step1Data = {
   isEditMode: false,
   jobPostingId: undefined
 }
-
 const initialStep2: Step2Data = {
   selectedLocation: null,
   workingHours: '',
@@ -116,7 +110,6 @@ const initialStep2: Step2Data = {
   payDay: '',
   payDayNegotiable: false
 }
-
 const initialStep3: Step3Data = {
   selectedCountries: [],
   selectedJobs: [],
@@ -127,7 +120,6 @@ const initialStep3: Step3Data = {
   selectedKoreanLevels: [],
   isPostingActive: true
 }
-
 // Zustand Store 생성
 export const useJobPostingStore = create<JobPostingStore>()(
   persist(
@@ -358,7 +350,6 @@ export const useJobPostingStore = create<JobPostingStore>()(
     }
   )
 )
-
 // 편의 함수들
 export const useStep1Data = () => useJobPostingStore((state) => state.step1)
 export const useStep2Data = () => useJobPostingStore((state) => state.step2)

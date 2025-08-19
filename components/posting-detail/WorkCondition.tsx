@@ -3,13 +3,11 @@ import WorkLocation from "@/components/posting-detail/WorkLocation";
 import {Ionicons} from "@expo/vector-icons";
 import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
-
 interface WorkConditionProps {
     posting: any,
     isTranslated: boolean,
     translatedData: any,
 }
-
 export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkConditionProps) => {
     const { t } = useTranslation();
     
@@ -33,11 +31,9 @@ export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkCon
                     {isTranslated && translatedData?.title ? translatedData.title : posting.title}
                 </Text>
             </View>
-
             {/* 주요 정보 */}
             <View className="p-6 border-b border-gray-100">
                 <Text className="text-lg font-semibold mb-4">{t('posting_detail.work_conditions', '근무 조건')}</Text>
-
                 {/* 근무지역 */}
                 <WorkLocation
                     posting={posting}
@@ -45,8 +41,6 @@ export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkCon
                     translatedData={translatedData}
                     t={t}
                 />
-
-
                 {/* 근무일 */}
                 {posting.working_days && posting.working_days.length > 0 && (
                     <View className="flex-row items-center mb-3">
@@ -65,7 +59,6 @@ export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkCon
                         </View>
                     </View>
                 )}
-
                 {/* 근무시간 */}
                 {posting.working_hours && (
                     <View className="flex-row items-center mb-3">
@@ -84,8 +77,6 @@ export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkCon
                         </View>
                     </View>
                 )}
-
-
                 {/* 급여타입 & 급여 */}
                 {(posting.salary_range) && (
                     <View className="flex-row items-center mb-3">
@@ -116,7 +107,6 @@ export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkCon
                         </View>
                     </View>
                 )}
-
                 {/* 급여일 */}
                 {/*{posting.pay_day && (*/}
                 {/*    <View className="flex-row items-center mb-3">*/}
@@ -135,7 +125,6 @@ export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkCon
                 {/*        </View>*/}
                 {/*    </View>*/}
                 {/*)}*/}
-
                 {posting.hiring_count && (
                     <View className="flex-row items-center">
                         <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center">
@@ -148,7 +137,6 @@ export const WorkCondition = ({posting, isTranslated, translatedData, }: WorkCon
                     </View>
                 )}
             </View>
-
             {/* 상세 설명 */}
             {posting.description && (
                 <View className="p-6 border-b border-gray-100">

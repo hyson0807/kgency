@@ -1,18 +1,15 @@
 import { create } from 'zustand'
-
 // 키워드 타입
 interface Keyword {
   id: number
   keyword: string
   category: string
 }
-
 // Step 1: 사업장위치, 모집직종
 interface Step1Data {
   location: number | null
   jobs: number[]
 }
-
 // Step 2: 국가, 성별, 나이대, 비자
 interface Step2Data {
   countries: number[]
@@ -20,14 +17,12 @@ interface Step2Data {
   ages: number[]
   visas: number[]
 }
-
 // Step 3: 한국어수준, 근무요일
 interface Step3Data {
   koreanLevel: number | null
   workDays: number[]
   isWorkDaysSelectLater: boolean
 }
-
 // 전체 스토어 타입
 interface CompanyKeywordsStore {
   // 데이터
@@ -77,26 +72,22 @@ interface CompanyKeywordsStore {
   getAllSelectedKeywords: () => number[]
   setInitialData: (keywordIds: number[], keywords: Keyword[]) => void
 }
-
 // 초기 상태
 const initialStep1: Step1Data = {
   location: null,
   jobs: []
 }
-
 const initialStep2: Step2Data = {
   countries: [],
   genders: [],
   ages: [],
   visas: []
 }
-
 const initialStep3: Step3Data = {
   koreanLevel: null,
   workDays: [],
   isWorkDaysSelectLater: false
 }
-
 // Zustand Store 생성 (AsyncStorage 없이)
 export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
   (set, get) => ({
@@ -379,7 +370,6 @@ export const useCompanyKeywordsStore = create<CompanyKeywordsStore>()(
       }
     })
 )
-
 // 편의 함수들
 export const useStep1KeywordsData = () => useCompanyKeywordsStore((state) => state.step1)
 export const useStep2KeywordsData = () => useCompanyKeywordsStore((state) => state.step2)

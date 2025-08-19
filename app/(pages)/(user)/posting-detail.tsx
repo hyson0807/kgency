@@ -13,25 +13,19 @@ import HiringFields from "@/components/posting-detail/HiringFields";
 import Header from "@/components/posting-detail/Header";
 import {WorkCondition} from "@/components/posting-detail/WorkCondition";
 import {api} from "@/lib/api";
-
-
 export default function PostingDetail() {
-
     const params = useLocalSearchParams()
     const { postingId, companyId, companyName, suitability } = params
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings()
     const { user } = useAuth()
-
     const [posting, setPosting] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [hasApplied, setHasApplied] = useState(false)
     const { t, translateDB, language } = useTranslation()
     const { showModal, ModalComponent } = useModal()
-
     // 애니메이션을 위한 ref
     const scaleAnim = useRef(new Animated.Value(1)).current
     const glowAnim = useRef(new Animated.Value(0)).current
-
     const dayTranslations: { [key: string]: { [lang: string]: string } } = {
         '월': {
             en: 'Mon', ja: '月', zh: '周一', vi: 'T2', hi: 'सोम', si: 'සඳුදා', ar: 'الإثنين', tr: 'Pzt', my: 'တနင်္လာ', ky: 'Дүйшөмбү', mn: 'Даваа'
@@ -49,7 +43,6 @@ export default function PostingDetail() {
         '일': {en: 'Sun', ja: '日', zh: '周日', vi: 'CN', hi: 'रवि', si: 'ඉරිදා', ar: 'الأحد', tr: 'Paz', my: 'တနင်္ဂနွေ', ky: 'Жекшемби', ha: 'Lahadi', mn: 'Ням'
         }
     };
-
     const [translatedData, setTranslatedData] = useState<{
         title?: string
         description?: string
@@ -61,19 +54,15 @@ export default function PostingDetail() {
     } | null>(null)
     const [isTranslated, setIsTranslated] = useState(false)
     const [isTranslating, setIsTranslating] = useState(false)
-
-
     useEffect(() => {
         loadPostingDetail()
         checkApplicationStatus()
     }, [postingId])
-
     useEffect(() => {
         // 언어가 변경되면 번역 상태 초기화
         setTranslatedData(null)
         setIsTranslated(false)
     }, [language])
-
     useEffect(() => {
         // 면접 즉시 확정 버튼 애니메이션
         if (suitability === 'perfect' && !hasApplied) {
@@ -92,7 +81,6 @@ export default function PostingDetail() {
                     }),
                 ]),
             ).start()
-
             // 글로우 애니메이션
             Animated.loop(
                 Animated.sequence([
@@ -110,10 +98,8 @@ export default function PostingDetail() {
             ).start()
         }
     }, [suitability, hasApplied])
-
     const loadPostingDetail = async () => {
         if (!postingId) return
-
         setLoading(true)
         try {
             const data = await fetchPostingById(postingId as string)
@@ -121,26 +107,20 @@ export default function PostingDetail() {
                 setPosting(data)
             }
         } catch (error) {
-            console.error('공고 상세 로드 실패:', error)
         } finally {
             setLoading(false)
         }
     }
-
     const checkApplicationStatus = async () => {
         if (!user || !postingId) return
-
         try {
             const response = await api('GET', `/api/applications/check-duplicate?jobPostingId=${postingId}`)
-
             if (response?.success) {
                 setHasApplied(response.isDuplicate)
             }
         } catch (error) {
-            console.error('지원 상태 확인 실패:', error)
         }
     }
-
     const handleApply = () => {
         router.push({
             pathname: '/(pages)/(user)/(application-registration)/application-step1',
@@ -152,7 +132,6 @@ export default function PostingDetail() {
             }
         })
     }
-
     const handleInstantInterview = () => {
         showModal(
             t('posting_detail.instant_interview_title', '면접 즉시 확정'),
@@ -178,22 +157,18 @@ export default function PostingDetail() {
             t('posting_detail.cancel', '취소') // cancelText
         )
     }
-
     const handleTranslate = async () => {
         if (!posting) return
-
         // 토글 기능
         if (isTranslated && translatedData) {
             setIsTranslated(false)
             return
         }
-
         // 이미 번역된 데이터가 있으면 토글
         if (translatedData) {
             setIsTranslated(true)
             return
         }
-
         // 새로 번역
         setIsTranslating(true)
         try {
@@ -201,7 +176,6 @@ export default function PostingDetail() {
             const translatedDays = posting.working_days?.map((day: string) =>
                 dayTranslations[day]?.[language] || day
             ) || []
-
             // 요일을 제외한 나머지 텍스트만 API로 번역
             const textsToTranslate = [
                 { key: 'title', text: posting.title },
@@ -211,31 +185,25 @@ export default function PostingDetail() {
                 { key: 'salary_range', text: posting.salary_range || '' },
                 { key: 'pay_day', text: posting.pay_day || '' }
             ].filter(item => item.text)
-
             const response = await api('POST', '/api/translate/translate-batch', {
                 texts: textsToTranslate,
                 targetLang: language === 'ko' ? 'ko' : language
             })
-
             if (response.success) {
                 const translations = response.translations
-
                 // 번역 결과를 객체로 변환
                 const translatedResult: any = {
                     working_days: translatedDays // 요일은 매핑된 값 사용
                 }
-
                 translations.forEach((item: any) => {
                     translatedResult[item.key] = item.translatedText
                 })
-
                 setTranslatedData(translatedResult)
                 setIsTranslated(true)
             } else {
                 throw new Error('번역 실패')
             }
         } catch (error) {
-            console.error('번역 오류:', error)
             showModal(
                 '번역 실패',
                 '번역하는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
@@ -245,9 +213,6 @@ export default function PostingDetail() {
             setIsTranslating(false)
         }
     }
-
-
-
     if (loading) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -257,7 +222,6 @@ export default function PostingDetail() {
             </SafeAreaView>
         )
     }
-
     if (!posting) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -270,14 +234,11 @@ export default function PostingDetail() {
             </SafeAreaView>
         )
     }
-
     const keywords = getPostingKeywords(posting)
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             {/* 헤더 */}
             <Header language={language} handleTranslate={handleTranslate} isTranslated={isTranslated} isTranslating={isTranslating} t={t} />
-
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -285,12 +246,9 @@ export default function PostingDetail() {
             >
                 {/* 회사 정보 */}
                 <WorkCondition posting={posting} isTranslated={isTranslated} translatedData={translatedData} />
-
                 {/* 채용 분야 */}
                 <HiringFields keywords={keywords} translateDB={translateDB} />
-
             </ScrollView>
-
             {/* 하단 지원 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-8 pt-2" >
                 {hasApplied ? (
@@ -332,12 +290,10 @@ export default function PostingDetail() {
                                         <Text className="text-white text-lg font-bold ml-2">
                                             {t('posting_detail.instant_interview', '면접 즉시 확정')}
                                         </Text>
-
                                     </View>
                                 </TouchableOpacity>
                             </Animated.View>
                         )}
-
                         {/* 일반 지원하기 버튼 */}
                         <TouchableOpacity
                             className="bg-blue-500 py-4 web:py-3 rounded-xl items-center mx-4 my-2"

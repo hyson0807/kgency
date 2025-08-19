@@ -1,5 +1,4 @@
 import {TranslationData} from "@/lib/translations/types";
-
 export const resumeTranslations: TranslationData = {
     // Resume 페이지
     'resume.title': {

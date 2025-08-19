@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 interface UserInfoFormData {
   // Career Information
   howLong: string | null;
@@ -26,7 +25,6 @@ interface UserInfoFormData {
   selectedJobs: number[];
   selectedConditions: number[];
 }
-
 interface UserInfoStore {
   formData: UserInfoFormData;
   currentStep: number;
@@ -56,7 +54,6 @@ interface UserInfoStore {
   resetForm: () => void;
   loadFormData: (data: Partial<UserInfoFormData>) => void;
 }
-
 const initialFormData: UserInfoFormData = {
   // Career Information
   howLong: null,
@@ -81,7 +78,6 @@ const initialFormData: UserInfoFormData = {
   selectedJobs: [],
   selectedConditions: [],
 };
-
 export const useUserInfoStore = create<UserInfoStore>()(
   persist(
       (set) => ({

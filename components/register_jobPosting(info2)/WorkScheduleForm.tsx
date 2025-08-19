@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
-
 interface WorkScheduleFormProps {
     workingHours: string
     setWorkingHours: (value: string) => void
@@ -12,7 +11,6 @@ interface WorkScheduleFormProps {
     workingDaysNegotiable: boolean
     setWorkingDaysNegotiable: (value: boolean) => void
 }
-
 export const WorkScheduleForm: React.FC<WorkScheduleFormProps> = ({
     workingHours,
     setWorkingHours,
@@ -33,7 +31,6 @@ export const WorkScheduleForm: React.FC<WorkScheduleFormProps> = ({
         { label: '토', value: '토' },
         { label: '일', value: '일' }
     ]
-
     return (
         <>
             <View className="mb-4">
@@ -57,7 +54,6 @@ export const WorkScheduleForm: React.FC<WorkScheduleFormProps> = ({
                     onChangeText={setWorkingHours}
                 />
             </View>
-
             <View className="mb-4">
                 <View className="flex-row items-center justify-between mb-2">
                     <Text className="text-gray-700">근무일 *</Text>
