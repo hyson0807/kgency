@@ -2,7 +2,7 @@
   "expo": {
     "name": "kgency",
     "slug": "welkit-kgency",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/kgency_logo.png",
     "scheme": "kgency",
@@ -13,6 +13,8 @@
       "bundleIdentifier": "com.welkit.kgency",
       "infoPlist": {
         "NSUserNotificationUsageDescription": "이 앱은 면접 제안 및 지원 상태 알림을 보내기 위해 푸시 알림을 사용합니다.",
+        "NSCameraUsageDescription": "프로필 사진을 촬영하기 위해 카메라 접근 권한이 필요합니다.",
+        "NSPhotoLibraryUsageDescription": "프로필 사진을 선택하기 위해 사진 라이브러리 접근 권한이 필요합니다.",
         "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationQueriesSchemes": ["mailto"]
       }
@@ -25,7 +27,10 @@
       "edgeToEdgeEnabled": false,
       "package": "com.welkit.kgency",
       "permissions": [
-        "com.android.vending.BILLING"
+        "com.android.vending.BILLING",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
       "intentFilters": [
         {
@@ -50,6 +55,7 @@
     "plugins": [
       "expo-router",
       "expo-dev-client",
+      "expo-image-picker",
       [
         "expo-splash-screen",
         {

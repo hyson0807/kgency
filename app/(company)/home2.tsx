@@ -24,6 +24,7 @@ interface JobSeeker {
     name: string
     phone_number: string
     job_seeking_active: boolean
+    profile_image_url?: string | null
     created_at: string
     user_info?: {
         age?: number

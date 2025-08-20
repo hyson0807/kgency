@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { SuitabilityResult } from '@/lib/suitability/types';
@@ -15,6 +15,7 @@ interface JobSeeker {
     name: string;
     phone_number: string;
     job_seeking_active: boolean;
+    profile_image_url?: string | null;
     created_at: string;
     user_info?: {
         age?: number;
@@ -167,9 +168,17 @@ export const UserCard = ({ item, onPress }: UserCardProps) => {
             )}
             {/* 기본 정보 */}
             <View className="flex-row mb-3 gap-3">
-                <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
-                    <Text className="text-2xl font-bold">{item.user.name?.charAt(0) || '?'}</Text>
-                </View>
+                {jobSeeker.profile_image_url ? (
+                    <Image 
+                        source={{ uri: jobSeeker.profile_image_url }} 
+                        className="w-14 h-14 rounded-full bg-gray-100"
+                        resizeMode="cover"
+                    />
+                ) : (
+                    <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
+                        <Text className="text-2xl font-bold">{item.user.name?.charAt(0) || '?'}</Text>
+                    </View>
+                )}
                 <View className="flex-1">
                     <Text className={`text-lg font-bold text-gray-800 ${
                         suitability && suitabilityInfo ? 'pr-40' : 'pr-4'

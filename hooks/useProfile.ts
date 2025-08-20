@@ -15,6 +15,7 @@ interface Profile {
     description?: string;
     onboarding_completed: boolean;
     job_seeking_active?: boolean;
+    profile_image_url?: string | null;
     created_at?: string;
 }
 interface UserInfo {

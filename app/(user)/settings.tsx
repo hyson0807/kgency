@@ -14,6 +14,7 @@ import TermsOfService from '@/components/common/TermsOfService';
 import PrivacyPolicy from '@/components/common/PrivacyPolicy';
 import { languages } from '@/lib/constants/languages';
 import { removePushToken } from '@/lib/notifications';
+import ProfileImageUploader from '@/components/ProfileImageUploader';
 const Settings = () => {
     const { logout, user,checkAuthState } = useAuth()
     const { profile, updateProfile } = useProfile()
@@ -159,23 +160,24 @@ const Settings = () => {
             >
                 {/* 프로필 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
-                    <View className="flex-row items-center justify-between mb-4">
-                        <View className="flex-row items-center">
-                            <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center">
-                                <Ionicons name="person" size={24} color="#3b82f6" />
-                            </View>
-                            <View className="ml-3">
-                                <Text className="font-bold text-lg">{profile?.name || t('settings.no_name', '이름 없음')}</Text>
-                                <Text className="text-sm text-gray-600">{profile?.phone_number}</Text>
-                            </View>
-                        </View>
-                        <TouchableOpacity
-                            onPress={() => router.push('/(pages)/(user)/(user-information)/info')}
-                            className="bg-blue-100 px-3 py-1 rounded-lg"
-                        >
-                            <Text className="text-blue-600 text-sm font-medium">{t('settings.edit_profile', '프로필 수정')}</Text>
-                        </TouchableOpacity>
+                    <View className="items-center mb-4">
+                        <ProfileImageUploader 
+                            currentImageUrl={profile?.profile_image_url}
+                            onImageUpdate={async (url) => {
+                                await updateProfile({
+                                    profile: { profile_image_url: url }
+                                });
+                            }}
+                        />
+                        <Text className="font-bold text-lg mt-3">{profile?.name || t('settings.no_name', '이름 없음')}</Text>
+                        <Text className="text-sm text-gray-600">{profile?.phone_number}</Text>
                     </View>
+                    <TouchableOpacity
+                        onPress={() => router.push('/(pages)/(user)/(user-information)/info')}
+                        className="bg-blue-100 px-4 py-2 rounded-lg self-center"
+                    >
+                        <Text className="text-blue-600 text-sm font-medium">{t('settings.edit_profile', '프로필 수정')}</Text>
+                    </TouchableOpacity>
                 </View>
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                 <View className="flex-row items-center justify-between mb-4">
