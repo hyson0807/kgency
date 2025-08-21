@@ -9,7 +9,7 @@ import { useModal } from '@/hooks/useModal'
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import {Info} from "@/components/shared/job-seeker-detail/Info";
 import {UserKeywords} from "@/components/shared/job-seeker-detail/UserKeywords";
-import { api } from '@/lib/api';
+import { api } from "@/lib/api"
 interface UserInfo {
     age?: number
     gender?: string

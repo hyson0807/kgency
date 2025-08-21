@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, Alert, ActivityIndicator, ActionSheetIOS, Platform, Modal, Text } from 'react-native';
 import { launchImageLibraryAsync, launchCameraAsync, requestMediaLibraryPermissionsAsync, requestCameraPermissionsAsync } from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { api } from '@/lib/api';
+import { api } from "@/lib/api"
 import { useAuth } from '@/contexts/AuthContext';
 
 interface ProfileImageUploaderProps {

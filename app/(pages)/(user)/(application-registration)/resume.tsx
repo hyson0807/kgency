@@ -7,7 +7,7 @@ import Back from '@/components/back'
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
-import {api} from "@/lib/api";
+import {api} from "@/lib/api"
 import { useApplicationFormStore } from '@/stores/applicationFormStore'
 export default function Resume() {
     const params = useLocalSearchParams();

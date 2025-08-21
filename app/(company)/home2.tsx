@@ -1,7 +1,7 @@
 import { View, Text, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useAuth } from "@/contexts/AuthContext"
-import { api } from '@/lib/api'
+import { api } from "@/lib/api"
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import {SecondHeader} from "@/components/company/home/header/SecondHeader";

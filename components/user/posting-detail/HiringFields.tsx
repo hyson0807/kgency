@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { sortWorkDayKeywords } from '@/lib/utils/keywordUtils';
+import { sortWorkDayKeywords } from "@/lib/utils/keywords";
 interface Keyword {
     id: number;
     keyword: string;

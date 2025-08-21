@@ -3,6 +3,7 @@ export interface TranslatableKeyword {
   keyword: string;
   category: string;
 }
+
 // translateDB 함수를 매개변수로 받는 순수 함수로 변경
 export const translateKeyword = (
   keyword: TranslatableKeyword, 
@@ -18,6 +19,7 @@ export const translateKeyword = (
     keyword: displayText
   };
 };
+
 export const translateKeywords = (
   keywords: TranslatableKeyword[], 
   translateDB: (tableName: string, columnName: string, rowId: string, defaultText: string) => string

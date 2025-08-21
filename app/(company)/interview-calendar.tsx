@@ -12,7 +12,7 @@ import { InterviewScheduleTab } from '@/components/shared/interview-calendar/com
 import { InterviewSlotsTab } from '@/components/shared/interview-calendar/company/schedule/InterviewSlotsTab'
 import { setupCalendarLocale } from '@/components/shared/interview-calendar/shared/config/calendarLocale'
 // Hooks & Utils
-import { api } from '@/lib/api'
+import { api } from "@/lib/api"
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 // 한국어 캘린더 설정

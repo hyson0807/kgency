@@ -13,7 +13,7 @@ import { useProfile } from '@/hooks/useProfile';
 import { useUserKeywords } from '@/hooks/useUserKeywords';
 import { useKeywordSelection } from '@/hooks/useKeywordSelection';
 import { useModal } from '@/hooks/useModal';
-import { KeywordMapper } from '@/utils/keywordMapper';
+import { KeywordMapper } from "@/lib/utils/keywords";
 import LoadingScreen from '@/components/shared/common/LoadingScreen';
 const OthersPage = () => {
   const { t } = useTranslation();

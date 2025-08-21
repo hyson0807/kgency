@@ -1,7 +1,7 @@
 // hooks/useMatchedJobPostings.ts
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import {api} from "@/lib/api";
+import {api} from "@/lib/api"
 import { SuitabilityResult } from '@/lib/suitability';
 interface JobPosting {
     id: string;

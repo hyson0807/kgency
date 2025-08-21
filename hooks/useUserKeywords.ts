@@ -1,7 +1,7 @@
 // hooks/useUserKeywords.ts
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { api } from '@/lib/api';
+import { api } from "@/lib/api"
 // 타입 정의
 interface Keyword {
     id: number;

@@ -6,7 +6,7 @@ import { useLocalSearchParams, router } from 'expo-router'
 import { useModal } from '@/hooks/useModal'
 import Back from '@/components/back'
 import { useAuth } from '@/contexts/AuthContext'
-import { api } from '@/lib/api'
+import { api } from "@/lib/api"
 import { InterviewCalendarSelector } from '@/components/shared/interview-calendar/company/calendar/InterviewCalendarSelector'
 export default function InterviewProposalTime() {
     const { applicationId, userId, postingId, location } = useLocalSearchParams()

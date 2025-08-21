@@ -5,7 +5,7 @@ import { useModal } from "@/hooks/useModal";
 import { router } from "expo-router";
 import { useMatchedJobPostings } from "@/hooks/useMatchedJobPostings";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { api } from "@/lib/api";
+import { api } from "@/lib/api"
 import { SuitabilityResult } from "@/lib/suitability/types";
 interface Application {
     id: string

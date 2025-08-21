@@ -1,4 +1,4 @@
-// lib/utils/keywordUtils.ts
+// lib/utils/keywords/utils.ts
 /**
  * 요일 키워드를 월화수목금토일 순서로 정렬하는 함수
  */
@@ -17,6 +17,7 @@ export const sortWorkDayKeywords = <T extends { keyword: string }>(workDayKeywor
         return indexA - indexB;
     });
 };
+
 /**
  * 매칭된 키워드들을 카테고리별로 정렬하는 함수
  * 근무요일의 경우 월화수목금토일 순서로 정렬

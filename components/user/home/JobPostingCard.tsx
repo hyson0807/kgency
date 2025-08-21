@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
 import { SuitabilityResult } from '@/lib/suitability';
 import {router} from "expo-router";
-import { sortMatchedKeywords } from '@/lib/utils/keywordUtils';
+import { sortMatchedKeywords } from "@/lib/utils/keywords";
 interface Company {
     id: string;
     name: string;

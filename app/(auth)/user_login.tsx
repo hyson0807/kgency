@@ -6,7 +6,7 @@ import {useAuth} from "@/contexts/AuthContext";
 import {router} from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
 import {useTranslation} from "@/contexts/TranslationContext";
-import { api } from '@/lib/api';
+import { api } from "@/lib/api"
 const UserLogin = () => {
     const { login } = useAuth();
     const { t } = useTranslation();

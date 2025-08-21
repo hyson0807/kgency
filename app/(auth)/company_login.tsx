@@ -15,7 +15,7 @@ import Back from '@/components/back';
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { api } from '@/lib/api';
+import { api } from "@/lib/api"
 const CompanyLogin = () => {
     const { login } = useAuth();
     const [phone, setPhone] = useState('');

@@ -6,7 +6,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { useTranslation } from '@/contexts/TranslationContext'
 import Back from '@/components/back'
 import { Ionicons } from '@expo/vector-icons'
-import { api } from '@/lib/api'
+import { api } from "@/lib/api"
 import { formatKoreanDate, formatTime24 } from '@/lib/dateUtils'
 interface InterviewDetails {
     id: string

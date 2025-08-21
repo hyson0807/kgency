@@ -6,7 +6,7 @@ import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/hooks/useModal'
-import {authAPI} from "@/lib/api";
+import { authAPI } from "@/lib/api/auth"
 import AccountManagementModal from '@/components/shared/common/AccountManagementModal';
 import TermsOfService from '@/components/shared/common/TermsOfService';
 import PrivacyPolicy from '@/components/shared/common/PrivacyPolicy';

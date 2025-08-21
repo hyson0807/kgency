@@ -16,7 +16,7 @@ import { tr } from 'date-fns/locale/tr'
 import Back from '@/components/back'
 import { UserInterviewCard } from '@/components/shared/interview-calendar/user/cards/UserInterviewCard'
 // Hooks & Utils
-import { api } from '@/lib/api'
+import { api } from "@/lib/api"
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from '@/contexts/TranslationContext'

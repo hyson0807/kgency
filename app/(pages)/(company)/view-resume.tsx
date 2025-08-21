@@ -8,7 +8,7 @@ import AntDesign from '@expo/vector-icons/AntDesign'
 import Back from '@/components/back'
 import { useModal } from '@/hooks/useModal'
 import { ActivityIndicator } from 'react-native'
-import {api} from "@/lib/api";
+import {api} from "@/lib/api"
 export default function ViewResume() {
     const { showModal, ModalComponent } = useModal()
     const params = useLocalSearchParams()

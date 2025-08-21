@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, Modal, TouchableOpacity, ScrollView, ActivityIndicator, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { api } from '@/lib/api'
+import { api } from "@/lib/api"
 import { useTranslation } from '@/contexts/TranslationContext'
 interface JobPosting {
     id: string

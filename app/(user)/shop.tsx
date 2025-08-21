@@ -18,7 +18,7 @@ try {
 } catch (error) {
   RNIap = null;
 }
-import { api } from '@/lib/api';
+import { api } from "@/lib/api"
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useModal } from '@/hooks/useModal';

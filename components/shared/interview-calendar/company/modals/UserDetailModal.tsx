@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, Modal, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { userAPI } from '@/lib/api/userAPI'
+import { userAPI } from "@/lib/api/users"
 interface UserInfo {
     name: string
     age: number

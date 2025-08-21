@@ -5,7 +5,7 @@ import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import {router} from "expo-router";
 import { removePushToken } from '@/lib/notifications';
-import { updateTokenCache } from '@/lib/api';
+import { updateTokenCache } from "@/lib/api"
 // 타입 정의
 interface User {
     userId: string;

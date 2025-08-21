@@ -8,7 +8,7 @@ import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import { PersonalInformation } from "@/components/user/application-form/Personal-Information"
 import { useApplicationFormStore } from '@/stores/applicationFormStore'
-import { api } from '@/lib/api'
+import { api } from "@/lib/api"
 import CustomModal from '@/components/CustomModal'
 import { useUserKeywords } from '@/hooks/useUserKeywords'
 // Step 1: 기본 정보 입력 페이지

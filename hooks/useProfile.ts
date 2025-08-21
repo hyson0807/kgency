@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {router} from "expo-router";
-import { api } from '@/lib/api';
+import { api } from "@/lib/api"
 // 타입 정의
 interface Profile {
     id: string;
