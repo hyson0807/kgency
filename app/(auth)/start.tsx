@@ -1,5 +1,16 @@
-import {View, Text, StyleSheet, TouchableOpacity, Modal, FlatList, Animated, Dimensions, ScrollView, Platform} from 'react-native'
-import React, {useState, useEffect, useRef} from 'react'
+import {View, Text, StyleSheet, TouchableOpacity, Modal, FlatList, Dimensions, ScrollView, Platform} from 'react-native'
+import React, {useState, useEffect} from 'react'
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+    withRepeat,
+    withSequence,
+    withDelay,
+    Easing,
+    FadeIn,
+    SlideInDown
+} from 'react-native-reanimated'
 import {router} from "expo-router";
 import {useTranslation} from "@/contexts/TranslationContext";
 import {Ionicons} from "@expo/vector-icons";
@@ -10,60 +21,80 @@ const Start = () => {
     const { language, changeLanguage, t } = useTranslation();
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
     
-    // Animation values
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(new Animated.Value(30)).current;
-    const slideAnimDelay = useRef(new Animated.Value(30)).current;
-    const floatAnim1 = useRef(new Animated.Value(0)).current;
-    const floatAnim2 = useRef(new Animated.Value(0)).current;
-    const floatAnim3 = useRef(new Animated.Value(0)).current;
+    // Animation values using Reanimated
+    const fadeAnim = useSharedValue(0);
+    const slideAnim = useSharedValue(30);
+    const slideAnimDelay = useSharedValue(30);
+    const floatAnim1 = useSharedValue(0);
+    const floatAnim2 = useSharedValue(0);
+    const floatAnim3 = useSharedValue(0);
     useEffect(() => {
-        // Start animations
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 800,
-                useNativeDriver: true,
-            }),
-            Animated.timing(slideAnim, {
-                toValue: 0,
-                duration: 800,
-                useNativeDriver: true,
-            }),
-            Animated.timing(slideAnimDelay, {
-                toValue: 0,
-                duration: 800,
-                delay: 300,
-                useNativeDriver: true,
-            })
-        ]).start();
+        // Start fade and slide animations
+        fadeAnim.value = withTiming(1, { duration: 800 });
+        slideAnim.value = withTiming(0, { duration: 800 });
+        slideAnimDelay.value = withDelay(300, withTiming(0, { duration: 800 }));
+        
         // Floating animations
-        const createFloatingAnimation = (animValue: Animated.Value, delay: number) => {
-            return Animated.loop(
-                Animated.sequence([
-                    Animated.timing(animValue, {
-                        toValue: -20,
-                        duration: 3000,
-                        delay,
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(animValue, {
-                        toValue: 10,
-                        duration: 3000,
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(animValue, {
-                        toValue: 0,
-                        duration: 3000,
-                        useNativeDriver: true,
-                    })
-                ])
-            );
-        };
-        createFloatingAnimation(floatAnim1, 0).start();
-        createFloatingAnimation(floatAnim2, 2000).start();
-        createFloatingAnimation(floatAnim3, 4000).start();
+        floatAnim1.value = withRepeat(
+            withSequence(
+                withTiming(-20, { duration: 3000 }),
+                withTiming(10, { duration: 3000 }),
+                withTiming(0, { duration: 3000 })
+            ),
+            -1,
+            false
+        );
+        
+        floatAnim2.value = withDelay(2000, 
+            withRepeat(
+                withSequence(
+                    withTiming(-20, { duration: 3000 }),
+                    withTiming(10, { duration: 3000 }),
+                    withTiming(0, { duration: 3000 })
+                ),
+                -1,
+                false
+            )
+        );
+        
+        floatAnim3.value = withDelay(4000,
+            withRepeat(
+                withSequence(
+                    withTiming(-20, { duration: 3000 }),
+                    withTiming(10, { duration: 3000 }),
+                    withTiming(0, { duration: 3000 })
+                ),
+                -1,
+                false
+            )
+        );
     }, []);
+    // Animated styles
+    const fadeStyle = useAnimatedStyle(() => ({
+        opacity: fadeAnim.value
+    }));
+    
+    const slideStyle = useAnimatedStyle(() => ({
+        transform: [{ translateY: slideAnim.value }]
+    }));
+    
+    const slideDelayStyle = useAnimatedStyle(() => ({
+        opacity: fadeAnim.value,
+        transform: [{ translateY: slideAnimDelay.value }]
+    }));
+    
+    const floatStyle1 = useAnimatedStyle(() => ({
+        transform: [{ translateY: floatAnim1.value }]
+    }));
+    
+    const floatStyle2 = useAnimatedStyle(() => ({
+        transform: [{ translateY: floatAnim2.value }]
+    }));
+    
+    const floatStyle3 = useAnimatedStyle(() => ({
+        transform: [{ translateY: floatAnim3.value }]
+    }));
+
     const handleLanguageChange = async (langCode: string) => {
         await changeLanguage(langCode);
         setLanguageModalVisible(false);
@@ -103,7 +134,7 @@ const Start = () => {
                             style={[
                                 styles.floatingCircle,
                                 styles.circle1,
-                                { transform: [{ translateY: floatAnim1 }] }
+                                floatStyle1
                             ]}
                         >
                             <LinearGradient
@@ -116,7 +147,7 @@ const Start = () => {
                             style={[
                                 styles.floatingCircle,
                                 styles.circle2,
-                                { transform: [{ translateY: floatAnim2 }] }
+                                floatStyle2
                             ]}
                         >
                             <LinearGradient
@@ -129,7 +160,7 @@ const Start = () => {
                             style={[
                                 styles.floatingCircle,
                                 styles.circle3,
-                                { transform: [{ translateY: floatAnim3 }] }
+                                floatStyle3
                             ]}
                         >
                             <LinearGradient
@@ -142,19 +173,14 @@ const Start = () => {
                 {/* Main content */}
                 <Animated.View 
                     className="w-full max-w-md flex-1 justify-center"
-                    style={{
-                        opacity: fadeAnim,
-                        transform: [{ translateY: slideAnimDelay }]
-                    }}
+                    style={slideDelayStyle}
                 >
                     {/* Logo */}
                     <Animated.View 
                         style={[
                             styles.logo,
-                            {
-                                opacity: fadeAnim,
-                                transform: [{ translateY: slideAnim }]
-                            }
+                            fadeStyle,
+                            slideStyle
                         ]}
                     >
                         <LinearGradient

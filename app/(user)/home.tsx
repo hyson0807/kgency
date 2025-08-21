@@ -3,12 +3,12 @@ import React, { useEffect } from 'react'
 import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import { useTranslation } from "@/contexts/TranslationContext"
-import { JobPostingCard } from "@/components/user_home/JobPostingCard"
+import { JobPostingCard } from "@/components/home(user)/JobPostingCard"
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import {Header} from "@/components/common/Header";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import { SuitabilityResult } from '@/lib/suitability';
-import {Header_Home} from "@/components/user_home/Header";
+import {Header_Home} from "@/components/home(user)/header/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
 import { useTabBarVisibility } from '@/hooks/useTabBarVisibility';

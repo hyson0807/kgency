@@ -1,6 +1,13 @@
 // app/(pages)/(user)/posting-detail.tsx
-import {View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Animated} from 'react-native'
-import React, { useEffect, useState, useRef } from 'react'
+import {View, Text, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withRepeat,
+    withSequence,
+    withTiming
+} from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -23,9 +30,9 @@ export default function PostingDetail() {
     const [hasApplied, setHasApplied] = useState(false)
     const { t, translateDB, language } = useTranslation()
     const { showModal, ModalComponent } = useModal()
-    // 애니메이션을 위한 ref
-    const scaleAnim = useRef(new Animated.Value(1)).current
-    const glowAnim = useRef(new Animated.Value(0)).current
+    // 애니메이션을 위한 shared values
+    const scaleAnim = useSharedValue(1)
+    const glowAnim = useSharedValue(0)
     const dayTranslations: { [key: string]: { [lang: string]: string } } = {
         '월': {
             en: 'Mon', ja: '月', zh: '周一', vi: 'T2', hi: 'सोम', si: 'සඳුදා', ar: 'الإثنين', tr: 'Pzt', my: 'တနင်္လာ', ky: 'Дүйшөмбү', mn: 'Даваа'
@@ -67,37 +74,30 @@ export default function PostingDetail() {
         // 면접 즉시 확정 버튼 애니메이션
         if (suitability === 'perfect' && !hasApplied) {
             // 펄스 애니메이션
-            Animated.loop(
-                Animated.sequence([
-                    Animated.timing(scaleAnim, {
-                        toValue: 1.05,
-                        duration: 1000,
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(scaleAnim, {
-                        toValue: 1,
-                        duration: 1000,
-                        useNativeDriver: true,
-                    }),
-                ]),
-            ).start()
+            scaleAnim.value = withRepeat(
+                withSequence(
+                    withTiming(1.05, { duration: 1000 }),
+                    withTiming(1, { duration: 1000 })
+                ),
+                -1,
+                false
+            )
             // 글로우 애니메이션
-            Animated.loop(
-                Animated.sequence([
-                    Animated.timing(glowAnim, {
-                        toValue: 1,
-                        duration: 1500,
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(glowAnim, {
-                        toValue: 0,
-                        duration: 1500,
-                        useNativeDriver: true,
-                    }),
-                ]),
-            ).start()
+            glowAnim.value = withRepeat(
+                withSequence(
+                    withTiming(1, { duration: 1500 }),
+                    withTiming(0, { duration: 1500 })
+                ),
+                -1,
+                false
+            )
         }
     }, [suitability, hasApplied])
+    
+    // Animated styles
+    const scaleStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scaleAnim.value }]
+    }))
     const loadPostingDetail = async () => {
         if (!postingId) return
         setLoading(true)
@@ -263,13 +263,7 @@ export default function PostingDetail() {
                         {/* 면접 즉시 확정 버튼 - suitability가 perfect일 때만 표시 */}
                         {suitability === 'perfect' && (
                             <Animated.View
-                                style={{
-                                    transform: [{ scale: scaleAnim }],
-                                    opacity: glowAnim.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [0.8, 1]
-                                    })
-                                }}
+                                style={scaleStyle}
                                 className="mx-4 mb-3"
                             >
                                 <TouchableOpacity

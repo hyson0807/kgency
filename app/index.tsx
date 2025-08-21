@@ -2,6 +2,14 @@ import { router } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import { useEffect, useState } from "react";
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+
+// Reanimated 경고 비활성화
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // strict mode 비활성화
+});
+
 export default function Index() {
   const { user, isLoading } = useAuth();
   const [delayComplete, setDelayComplete] = useState(false);
