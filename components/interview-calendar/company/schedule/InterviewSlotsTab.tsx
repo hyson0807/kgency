@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { TimeSlotGrid } from './TimeSlotGrid'
+import { TimeSlotGrid } from '../calendar/TimeSlotGrid'
 interface TimeSlot {
     date: string
     startTime: string

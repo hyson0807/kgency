@@ -5,11 +5,11 @@ import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { api } from '@/lib/api'
 import { useModal } from '@/hooks/useModal'
-import { TimeSlot, InterviewCalendarSelectorProps } from './types'
+import { TimeSlot, InterviewCalendarSelectorProps } from '../../shared/types'
 import { TimeSlotSelector } from './TimeSlotSelector'
-import { InterviewSlotsSummary } from './InterviewSlotsSummary'
-import { setupCalendarLocale } from './config/calendarLocale'
-import { generateTimeSlots } from './utils'
+import { InterviewSlotsSummary } from '../slots/InterviewSlotsSummary'
+import { setupCalendarLocale } from '../../shared/config/calendarLocale'
+import { generateTimeSlots } from '../../shared/utils'
 // 캘린더 로케일 설정
 setupCalendarLocale()
 export const InterviewCalendarSelector: React.FC<InterviewCalendarSelectorProps> = ({

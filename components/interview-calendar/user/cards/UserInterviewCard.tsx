@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { useTranslation } from '@/contexts/TranslationContext'
-import { JobDetailModal } from './JobDetailModal'
+import { JobDetailModal } from '../modals/JobDetailModal'
 interface UserInterviewCardProps {
     schedule: {
         id: string

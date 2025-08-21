@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { TimeSlot } from './types'
+import { TimeSlot } from '../../shared/types'
 interface InterviewSlotsSummaryProps {
     dateTimeMap: Record<string, TimeSlot[]>
     bookedSlots: Record<string, string[]>

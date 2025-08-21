@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
-import { UserDetailModal } from './UserDetailModal'
+import { UserDetailModal } from '../modals/UserDetailModal'
 interface InterviewScheduleCardProps {
     schedule: {
         id: string
