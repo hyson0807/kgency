@@ -6,7 +6,7 @@ import { api } from '@/lib/api'
 import { router } from 'expo-router'
 import Back from '@/components/back'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
-import { LocationSelector } from "@/components/company_keyword(keywords)/Location"
+import { LocationSelector } from "@/components/company/profile/keywords/Location"
 import { useCompanyKeywordsStore } from '@/stores/companyKeywordsStore'
 interface Keyword {
     id: number;

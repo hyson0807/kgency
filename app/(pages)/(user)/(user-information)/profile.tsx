@@ -4,12 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import Back from '@/components/back';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { Profile } from '@/components/user_keyword(info)/Profile';
+import { Profile } from '@/components/user/profile/keywords/Profile';
 import { useUserInfoStore } from '@/stores/userInfoStore';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserKeywords } from '@/hooks/useUserKeywords';
 import { useModal } from '@/hooks/useModal';
-import LoadingScreen from '@/components/common/LoadingScreen';
+import LoadingScreen from '@/components/shared/common/LoadingScreen';
 const ProfilePage = () => {
   const { t } = useTranslation();
   const { profile } = useProfile();

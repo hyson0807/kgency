@@ -6,7 +6,7 @@ import { api } from '@/lib/api'
 import Back from '@/components/back'
 import { useModal } from "@/hooks/useModal";
 import CustomModal from '@/components/CustomModal'
-import { JobBasicInfoForm } from '@/components/register_jobPosting(info2)/JobBasicInfoForm'
+import { JobBasicInfoForm } from '@/components/company/job-postings/forms/JobBasicInfoForm'
 import { useJobPostingStore } from '@/stores/jobPostingStore'
 // Step 1: 채용공고 기본 정보 등록 페이지
 const JobPostingStep1 = () => {

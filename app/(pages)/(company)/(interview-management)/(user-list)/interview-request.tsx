@@ -11,12 +11,12 @@ import Back from '@/components/back'
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
-import { TimeSlotGrid } from '@/components/interview-calendar/company/calendar/TimeSlotGrid'
+import { TimeSlotGrid } from '@/components/shared/interview-calendar/company/calendar/TimeSlotGrid'
 import { getLocalDateString, getLocalTimeString } from '@/lib/dateUtils'
-import JobPostingSelector from '@/components/interview-request/JobPostingSelector'
-import InterviewLocationInput from '@/components/interview-request/InterviewLocationInput'
-import InterviewSummary from '@/components/interview-request/InterviewSummary'
-import { setupCalendarLocale } from '@/components/interview-calendar/shared/config/calendarLocale'
+import JobPostingSelector from '@/components/shared/interview-request/JobPostingSelector'
+import InterviewLocationInput from '@/components/shared/interview-request/InterviewLocationInput'
+import InterviewSummary from '@/components/shared/interview-request/InterviewSummary'
+import { setupCalendarLocale } from '@/components/shared/interview-calendar/shared/config/calendarLocale'
 // 한국어 캘린더 설정
 setupCalendarLocale()
 interface TimeSlot {

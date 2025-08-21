@@ -3,10 +3,10 @@ import React, {useCallback, useState} from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import { useAuth } from "@/contexts/AuthContext"
 import { useTranslation } from "@/contexts/TranslationContext";
-import {Tap} from "@/components/submitted-applications/Tap";
-import {Empty} from "@/components/submitted-applications/Empty";
-import {ApplicationItem} from "@/components/submitted-applications/ApplicationItem";
-import LoadingScreen from "@/components/common/LoadingScreen";
+import {Tap} from "@/components/user/applications/submitted-applications/Tap";
+import {Empty} from "@/components/user/applications/submitted-applications/Empty";
+import {ApplicationItem} from "@/components/user/applications/submitted-applications/ApplicationItem";
+import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import {useApplications} from "@/hooks/useApplications";
 const Applications = () => {
     const { user } = useAuth()

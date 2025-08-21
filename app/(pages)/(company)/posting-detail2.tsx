@@ -6,13 +6,13 @@ import { useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 // Components
 import Back from '@/components/back'
-import { PostingDetail } from "@/components/posting-detail2(company)/PostingDetail"
-import { ApplicantCard } from "@/components/posting-detail2(company)/ApplicantCard"
+import { PostingDetail } from "@/components/company/posting-detail/PostingDetail"
+import { ApplicantCard } from "@/components/company/posting-detail/ApplicantCard"
 // Hooks & Utils
 import { api } from "@/lib/api"
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import { useModal } from '@/hooks/useModal'
-import LoadingScreen from "@/components/common/LoadingScreen";
+import LoadingScreen from "@/components/shared/common/LoadingScreen";
 // Types
 interface Application {
     id: string

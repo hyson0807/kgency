@@ -8,9 +8,9 @@ import { useLocalSearchParams, router } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
 import { getLocalDateString, getLocalTimeString, groupByDate } from '@/lib/dateUtils'
 // Components
-import { InterviewScheduleTab } from '@/components/interview-calendar/company/schedule/InterviewScheduleTab'
-import { InterviewSlotsTab } from '@/components/interview-calendar/company/schedule/InterviewSlotsTab'
-import { setupCalendarLocale } from '@/components/interview-calendar/shared/config/calendarLocale'
+import { InterviewScheduleTab } from '@/components/shared/interview-calendar/company/schedule/InterviewScheduleTab'
+import { InterviewSlotsTab } from '@/components/shared/interview-calendar/company/schedule/InterviewSlotsTab'
+import { setupCalendarLocale } from '@/components/shared/interview-calendar/shared/config/calendarLocale'
 // Hooks & Utils
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'

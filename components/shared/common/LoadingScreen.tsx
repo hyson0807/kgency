@@ -2,7 +2,7 @@ import {View, Text, ActivityIndicator} from 'react-native'
 import React from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useTranslation} from "@/contexts/TranslationContext";
-import {Header} from "@/components/common/Header";
+import {Header} from "@/components/shared/common/Header";
 const LoadingScreen = () => {
     const {t} = useTranslation();
     return (

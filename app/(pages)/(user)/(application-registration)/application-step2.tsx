@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from "expo-router"
 import Back from '@/components/back'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
-import { WorkExperienceInformation } from "@/components/application-form/WorkExperience-Information"
+import { WorkExperienceInformation } from "@/components/user/application-form/WorkExperience-Information"
 import { useApplicationFormStore } from '@/stores/applicationFormStore'
 // Step 2: 경력 및 정보 입력 페이지
 export default function ApplicationStep2() {

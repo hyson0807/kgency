@@ -4,10 +4,10 @@ import { useAuth } from "@/contexts/AuthContext"
 import { api } from '@/lib/api'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import {SecondHeader} from "@/components/home(company)/header/SecondHeader";
-import {Header} from "@/components/common/Header";
-import LoadingScreen from "@/components/common/LoadingScreen";
-import {UserCard} from "@/components/home(company)/UserCard";
+import {SecondHeader} from "@/components/company/home/header/SecondHeader";
+import {Header} from "@/components/shared/common/Header";
+import LoadingScreen from "@/components/shared/common/LoadingScreen";
+import {UserCard} from "@/components/company/home/UserCard";
 import { SuitabilityResult } from '@/lib/suitability/types'
 import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
 import { useTabBarVisibility } from '@/hooks/useTabBarVisibility';

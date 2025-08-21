@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
-import LoadingScreen from "@/components/common/LoadingScreen";
+import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import { useEffect, useState } from "react";
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 

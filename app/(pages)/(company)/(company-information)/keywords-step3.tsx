@@ -6,8 +6,8 @@ import { api } from '@/lib/api'
 import { router } from 'expo-router'
 import Back from '@/components/back'
 import { useModal } from "@/hooks/useModal"
-import { KoreanLevelSelector } from "@/components/company_keyword(keywords)/KoreanLevelSelector"
-import { WorkDaySelector } from "@/components/company_keyword(keywords)/WorkDaySelector"
+import { KoreanLevelSelector } from "@/components/company/profile/keywords/KoreanLevelSelector"
+import { WorkDaySelector } from "@/components/company/profile/keywords/WorkDaySelector"
 import { useCompanyKeywordsStore } from '@/stores/companyKeywordsStore'
 interface Keyword {
     id: number;

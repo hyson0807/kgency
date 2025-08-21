@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { router } from 'expo-router';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserInfoStore } from '@/stores/userInfoStore';
-import LoadingScreen from '@/components/common/LoadingScreen';
+import LoadingScreen from '@/components/shared/common/LoadingScreen';
 const Info = () => {
     const { profile, loading } = useProfile();
     const { resetForm, setCurrentStep } = useUserInfoStore();

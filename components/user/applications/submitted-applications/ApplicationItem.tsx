@@ -3,7 +3,7 @@ import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
 import { api } from '@/lib/api'
-import {InterviewDetailModal} from "@/components/submitted-applications/InterviewDetailModal";
+import {InterviewDetailModal} from "@/components/user/applications/submitted-applications/InterviewDetailModal";
 interface InterviewProposal {
     id: string
     application_id: string

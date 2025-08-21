@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { api } from '@/lib/api'
 import { router } from 'expo-router'
 import Back from '@/components/back'
-import { MultiSelectKeywordSelector } from "@/components/common/MultiSelectKeywordSelector"
+import { MultiSelectKeywordSelector } from "@/components/shared/common/MultiSelectKeywordSelector"
 import { useCompanyKeywordsStore } from '@/stores/companyKeywordsStore'
 interface Keyword {
     id: number;

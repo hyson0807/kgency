@@ -5,10 +5,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { router } from 'expo-router';
 import Back from '@/components/back';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { CareerInformation } from '@/components/user_keyword(info)/CareerInformation';
+import { CareerInformation } from '@/components/user/profile/keywords/CareerInformation';
 import { useUserInfoStore } from '@/stores/userInfoStore';
 import { useProfile } from '@/hooks/useProfile';
-import LoadingScreen from '@/components/common/LoadingScreen';
+import LoadingScreen from '@/components/shared/common/LoadingScreen';
 const CareerPage = () => {
   const { t } = useTranslation();
   const { profile } = useProfile();

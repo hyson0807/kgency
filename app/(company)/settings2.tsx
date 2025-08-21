@@ -7,9 +7,9 @@ import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/hooks/useModal'
 import {authAPI} from "@/lib/api";
-import AccountManagementModal from '@/components/common/AccountManagementModal';
-import TermsOfService from '@/components/common/TermsOfService';
-import PrivacyPolicy from '@/components/common/PrivacyPolicy';
+import AccountManagementModal from '@/components/shared/common/AccountManagementModal';
+import TermsOfService from '@/components/shared/common/TermsOfService';
+import PrivacyPolicy from '@/components/shared/common/PrivacyPolicy';
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { removePushToken } from '@/lib/notifications';

@@ -8,7 +8,7 @@ import { useModal } from "@/hooks/useModal";
 import { useUserKeywords } from '@/hooks/useUserKeywords'
 import JobPreferencesSelector from '@/components/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/WorkConditionsSelector'
-import { BaseKeywordSelector } from '@/components/common/BaseKeywordSelector';
+import { BaseKeywordSelector } from '@/components/shared/common/BaseKeywordSelector';
 import { useKeywordSelection } from '@/hooks/useKeywordSelection';
 import { useJobPostingStore } from '@/stores/jobPostingStore'
 // Step 3: 인재 선호 정보 입력 및 최종 저장 페이지

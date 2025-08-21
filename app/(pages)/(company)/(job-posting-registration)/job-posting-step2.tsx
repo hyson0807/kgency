@@ -6,9 +6,9 @@ import { api } from '@/lib/api'
 import Back from '@/components/back'
 import { useModal } from "@/hooks/useModal";
 import { useUserKeywords } from '@/hooks/useUserKeywords'
-import { WorkLocationForm } from '@/components/register_jobPosting(info2)/WorkLocationForm'
-import { WorkScheduleForm } from '@/components/register_jobPosting(info2)/WorkScheduleForm'
-import { SalaryInfoForm } from '@/components/register_jobPosting(info2)/SalaryInfoForm'
+import { WorkLocationForm } from '@/components/company/job-postings/forms/WorkLocationForm'
+import { WorkScheduleForm } from '@/components/company/job-postings/forms/WorkScheduleForm'
+import { SalaryInfoForm } from '@/components/company/job-postings/forms/SalaryInfoForm'
 import { useJobPostingStore } from '@/stores/jobPostingStore'
 // Step 2: 근무 정보 입력 페이지
 const JobPostingStep2 = () => {

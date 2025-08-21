@@ -6,9 +6,9 @@ import {router, useLocalSearchParams} from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/back'
 import { useModal } from '@/hooks/useModal'
-import LoadingScreen from "@/components/common/LoadingScreen";
-import {Info} from "@/components/job-seeker-detail/Info";
-import {UserKeywords} from "@/components/job-seeker-detail/UserKeywords";
+import LoadingScreen from "@/components/shared/common/LoadingScreen";
+import {Info} from "@/components/shared/job-seeker-detail/Info";
+import {UserKeywords} from "@/components/shared/job-seeker-detail/UserKeywords";
 import { api } from '@/lib/api';
 interface UserInfo {
     age?: number

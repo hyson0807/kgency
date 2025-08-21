@@ -1,5 +1,5 @@
 import {Text, View} from "react-native";
-import WorkLocation from "@/components/posting-detail(user)/WorkLocation";
+import WorkLocation from "@/components/user/posting-detail/WorkLocation";
 import {Ionicons} from "@expo/vector-icons";
 import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";

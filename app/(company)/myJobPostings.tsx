@@ -2,10 +2,10 @@ import { View, Text, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useAuth } from "@/contexts/AuthContext"
 import { useModal } from '@/hooks/useModal'
-import LoadingScreen from "@/components/common/LoadingScreen";
-import {PostingCard} from "@/components/myJobPostings(company)/PostingCard";
-import {FloatingButton} from "@/components/myJobPostings(company)/FloatingButton";
-import {Empty} from "@/components/myJobPostings(company)/Empty";
+import LoadingScreen from "@/components/shared/common/LoadingScreen";
+import {PostingCard} from "@/components/company/job-postings/management/PostingCard";
+import {FloatingButton} from "@/components/company/job-postings/management/FloatingButton";
+import {Empty} from "@/components/company/job-postings/management/Empty";
 import { api } from '@/lib/api';
 interface MyJobPostings {
     id: string

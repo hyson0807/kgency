@@ -9,9 +9,9 @@ import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useNotification } from "@/contexts/NotificationContext";
 import {authAPI} from "@/lib/api";
-import AccountManagementModal from '@/components/common/AccountManagementModal';
-import TermsOfService from '@/components/common/TermsOfService';
-import PrivacyPolicy from '@/components/common/PrivacyPolicy';
+import AccountManagementModal from '@/components/shared/common/AccountManagementModal';
+import TermsOfService from '@/components/shared/common/TermsOfService';
+import PrivacyPolicy from '@/components/shared/common/PrivacyPolicy';
 import { languages } from '@/lib/constants/languages';
 import { removePushToken } from '@/lib/notifications';
 import ProfileImageUploader from '@/components/ProfileImageUploader';

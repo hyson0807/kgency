@@ -5,9 +5,9 @@ import { useLocalSearchParams, router } from 'expo-router'
 import Back from "@/components/back"
 import { useModal } from "@/hooks/useModal"
 import { useTranslation } from "@/contexts/TranslationContext"
-import { CareerInformation } from "@/components/user_keyword(info)/CareerInformation"
+import { CareerInformation } from "@/components/user/profile/keywords/CareerInformation"
 import { useProfile } from "@/hooks/useProfile"
-import LoadingScreen from "@/components/common/LoadingScreen"
+import LoadingScreen from "@/components/shared/common/LoadingScreen"
 const InstantInterviewCareer = () => {
     const params = useLocalSearchParams()
     const { t } = useTranslation()

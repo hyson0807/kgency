@@ -6,7 +6,7 @@ import Back from '@/components/back'
 import { useProfile } from '@/hooks/useProfile'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
-import { PersonalInformation } from "@/components/application-form/Personal-Information"
+import { PersonalInformation } from "@/components/user/application-form/Personal-Information"
 import { useApplicationFormStore } from '@/stores/applicationFormStore'
 import { api } from '@/lib/api'
 import CustomModal from '@/components/CustomModal'
