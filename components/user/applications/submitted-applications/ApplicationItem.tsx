@@ -49,7 +49,7 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
     const handleViewPosting = (application: Application) => {
         if (application.job_posting) {
             router.push({
-                pathname: '/(pages)/(user)/posting-detail(user)',
+                pathname: '/(pages)/(user)/posting-detail',
                 params: {
                     postingId: application.job_posting.id,
                     companyId: application.job_posting.company.id,
