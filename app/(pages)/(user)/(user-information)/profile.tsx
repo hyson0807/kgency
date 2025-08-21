@@ -27,7 +27,8 @@ const ProfilePage = () => {
   useEffect(() => {
     if (profile) {
       updateProfileInfo({
-        name: profile.name || ''
+        name: profile.name || '',
+        profileImageUrl: profile.profile_image_url || null
       });
       if (profile.user_info) {
         updateProfileInfo({
@@ -100,6 +101,7 @@ const ProfilePage = () => {
               gender: formData.gender,
               visa: formData.visa,
               koreanLevel: formData.koreanLevel,
+              profileImageUrl: formData.profileImageUrl,
             }}
             handler={{
               setName: (value) => updateField('name', value),
@@ -107,6 +109,7 @@ const ProfilePage = () => {
               setGender: (value) => updateField('gender', value),
               setVisa: (value) => updateField('visa', value),
               setKoreanLevel: (value) => updateField('koreanLevel', value),
+              setProfileImageUrl: (value) => updateField('profileImageUrl', value),
             }}
             keywords={keywords}
           />

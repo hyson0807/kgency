@@ -1,4 +1,4 @@
-// app/(pages)/(user)/posting-detail.tsx
+// app/(pages)/(user)/posting-detail(user).tsx
 import {View, Text, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Animated, {
@@ -16,9 +16,9 @@ import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useModal } from '@/hooks/useModal'
-import HiringFields from "@/components/posting-detail/HiringFields";
-import Header from "@/components/posting-detail/Header";
-import {WorkCondition} from "@/components/posting-detail/WorkCondition";
+import HiringFields from "@/components/posting-detail(user)/HiringFields";
+import Header from "@/components/posting-detail(user)/Header";
+import {WorkCondition} from "@/components/posting-detail(user)/WorkCondition";
 import {api} from "@/lib/api";
 export default function PostingDetail() {
     const params = useLocalSearchParams()

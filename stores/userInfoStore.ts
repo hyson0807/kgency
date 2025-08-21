@@ -15,6 +15,7 @@ interface UserInfoFormData {
   gender: string | null;
   visa: string | null;
   koreanLevel: string | null;
+  profileImageUrl: string | null;
   
   // Location & Country
   selectedLocations: number[];
@@ -34,7 +35,7 @@ interface UserInfoStore {
     'howLong' | 'selectedDays' | 'selectedTimes' | 'experience' | 'experienceContent'>>) => void;
   
   updateProfileInfo: (data: Partial<Pick<UserInfoFormData, 
-    'name' | 'age' | 'gender' | 'visa' | 'koreanLevel'>>) => void;
+    'name' | 'age' | 'gender' | 'visa' | 'koreanLevel' | 'profileImageUrl'>>) => void;
   
   updateLocationInfo: (data: Partial<Pick<UserInfoFormData, 
     'selectedLocations' | 'selectedMoveable' | 'selectedCountry'>>) => void;
@@ -68,6 +69,7 @@ const initialFormData: UserInfoFormData = {
   gender: null,
   visa: null,
   koreanLevel: null,
+  profileImageUrl: null,
   
   // Location & Country
   selectedLocations: [],

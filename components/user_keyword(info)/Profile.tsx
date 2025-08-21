@@ -2,6 +2,7 @@ import {Text, TextInput, View} from "react-native";
 import {Dropdown} from "react-native-element-dropdown";
 import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
+import ProfileImageUploader from "@/components/ProfileImageUploader";
 interface Keyword {
     id: number;
     keyword: string;
@@ -14,6 +15,7 @@ interface ProfileProps {
         gender: string | null,
         visa: string | null,
         koreanLevel: string | null,
+        profileImageUrl: string | null,
     }
     handler: {
         setName: (name: string) => void,
@@ -21,13 +23,14 @@ interface ProfileProps {
         setGender: (gender: string | null) => void,
         setVisa: (visa: string | null) => void,
         setKoreanLevel: (koreanLevel: string | null) => void,
+        setProfileImageUrl: (url: string | null) => void,
     }
     keywords: Keyword[];
 }
 export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
     const { t } = useTranslation();
-    const { name, age, gender, visa, koreanLevel } = formData;
-    const { setName, setAge, setGender, setVisa, setKoreanLevel } = handler;
+    const { name, age, gender, visa, koreanLevel, profileImageUrl } = formData;
+    const { setName, setAge, setGender, setVisa, setKoreanLevel, setProfileImageUrl } = handler;
     // DB에서 카테고리별 키워드 필터링
     const genderKeywords = keywords.filter(k => k.category === '성별')
     
@@ -91,6 +94,21 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
     return (
         <View className="mx-4 mb-4 p-5 bg-white rounded-2xl shadow-sm">
             <Text className="text-lg font-semibold mb-4 text-gray-900">{t('info.profile_info', '프로필 정보')}</Text>
+
+            {/* 프로필 이미지 */}
+            <View className="mb-4">
+                <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.profile_image', '프로필 이미지')}</Text>
+                <View className="items-center py-2">
+                    <ProfileImageUploader
+                        currentImageUrl={profileImageUrl}
+                        onImageUpdate={setProfileImageUrl}
+                    />
+                    <Text className="text-xs text-gray-500 mt-2 text-center">
+                        {t('info.upload_clean_photo', '깔끔한 얼굴 사진을 올려주세요')}
+                    </Text>
+                </View>
+            </View>
+
             {/* 이름 */}
             <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.name', '이름')} *</Text>
@@ -144,6 +162,9 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                     }}
                 />
             </View>
+
+
+
             {/* 비자 */}
             <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.visa_type', '비자 종류')} *</Text>
