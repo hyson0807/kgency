@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Back from '@/components/back';
+import Back from '@/components/shared/common/back';
 export default function RefundPolicy() {
   return (
     <SafeAreaView className="flex-1 bg-white">

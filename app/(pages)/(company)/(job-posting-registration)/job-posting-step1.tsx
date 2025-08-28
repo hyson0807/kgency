@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from "expo-router"
 import { api } from "@/lib/api"
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { useModal } from "@/hooks/useModal";
-import CustomModal from '@/components/CustomModal'
+import CustomModal from '@/components/shared/modal/CustomModal'
 import { JobBasicInfoForm } from '@/components/company/job-postings/forms/JobBasicInfoForm'
 import { useJobPostingStore } from '@/stores/jobPostingStore'
 // Step 1: 채용공고 기본 정보 등록 페이지

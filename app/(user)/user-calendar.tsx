@@ -13,7 +13,7 @@ import { hi } from 'date-fns/locale/hi'
 import { ar } from 'date-fns/locale/ar'
 import { tr } from 'date-fns/locale/tr'
 // Components
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { UserInterviewCard } from '@/components/shared/interview-calendar/user/cards/UserInterviewCard'
 // Hooks & Utils
 import { api } from "@/lib/api"

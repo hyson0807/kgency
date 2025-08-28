@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useModal } from '@/hooks/useModal'
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 export default function InterviewSchedule() {
     const { applicationId, userId, postingId } = useLocalSearchParams()
     const { showModal, ModalComponent } = useModal()

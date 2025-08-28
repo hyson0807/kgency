@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import Back from '@/components/back';
+import Back from '@/components/shared/common/back';
 export default function Contact() {
   const handleEmailPress = () => {
     Linking.openURL('mailto:welkit.answer@gmail.com');

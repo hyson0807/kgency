@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 export default function ViewMyResume() {
     const params = useLocalSearchParams()
     const { applicationId, companyName, jobTitle, resume, appliedAt } = params

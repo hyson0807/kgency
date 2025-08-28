@@ -1,5 +1,5 @@
 import {Text, TouchableOpacity, View} from "react-native";
-import Back from "@/components/back";
+import Back from "@/components/shared/common/back";
 import {Ionicons} from "@expo/vector-icons";
 import React from "react";
 interface HeaderProps {

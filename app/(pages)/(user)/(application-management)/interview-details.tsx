@@ -4,7 +4,7 @@ import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams } from 'expo-router'
 import { useTranslation } from '@/contexts/TranslationContext'
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { Ionicons } from '@expo/vector-icons'
 import { api } from "@/lib/api"
 import { formatKoreanDate, formatTime24 } from '@/lib/dateUtils'

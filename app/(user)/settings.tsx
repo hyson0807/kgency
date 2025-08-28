@@ -14,7 +14,7 @@ import TermsOfService from '@/components/shared/common/TermsOfService';
 import PrivacyPolicy from '@/components/shared/common/PrivacyPolicy';
 import { languages } from '@/lib/constants/languages';
 import { removePushToken } from '@/lib/notifications';
-import ProfileImageUploader from '@/components/ProfileImageUploader';
+import ProfileImageUploader from '@/components/shared/Image/ProfileImageUploader';
 const Settings = () => {
     const { logout, user,checkAuthState } = useAuth()
     const { profile, updateProfile } = useProfile()

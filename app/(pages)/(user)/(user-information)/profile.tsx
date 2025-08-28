@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import Back from '@/components/back';
+import Back from '@/components/shared/common/back';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { Profile } from '@/components/user/profile/keywords/Profile';
 import { useUserInfoStore } from '@/stores/userInfoStore';

@@ -11,7 +11,7 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from "@/contexts/TranslationContext";

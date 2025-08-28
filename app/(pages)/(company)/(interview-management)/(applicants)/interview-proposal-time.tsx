@@ -4,7 +4,7 @@ import { View, Text, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useModal } from '@/hooks/useModal'
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from "@/lib/api"
 import { InterviewCalendarSelector } from '@/components/shared/interview-calendar/company/calendar/InterviewCalendarSelector'

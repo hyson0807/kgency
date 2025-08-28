@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
 import { api } from "@/lib/api"
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { useModal } from "@/hooks/useModal";
 import { useUserKeywords } from '@/hooks/useUserKeywords'
-import JobPreferencesSelector from '@/components/JobPreferencesSelector'
-import WorkConditionsSelector from '@/components/WorkConditionsSelector'
+import JobPreferencesSelector from '@/components/shared/keyword/JobPreferencesSelector'
+import WorkConditionsSelector from '@/components/shared/keyword/WorkConditionsSelector'
 import { BaseKeywordSelector } from '@/components/shared/common/BaseKeywordSelector';
 import { useKeywordSelection } from '@/hooks/useKeywordSelection';
 import { useJobPostingStore } from '@/stores/jobPostingStore'

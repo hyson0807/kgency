@@ -2,7 +2,7 @@ import {Text, TextInput, View} from "react-native";
 import {Dropdown} from "react-native-element-dropdown";
 import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
-import ProfileImageUploader from "@/components/ProfileImageUploader";
+import ProfileImageUploader from "@/components/shared/Image/ProfileImageUploader";
 interface Keyword {
     id: number;
     keyword: string;

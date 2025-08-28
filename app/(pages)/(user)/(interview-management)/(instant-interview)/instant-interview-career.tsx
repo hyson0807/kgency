@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useLocalSearchParams, router } from 'expo-router'
-import Back from "@/components/back"
+import Back from "@/components/shared/common/back"
 import { useModal } from "@/hooks/useModal"
 import { useTranslation } from "@/contexts/TranslationContext"
 import { CareerInformation } from "@/components/user/profile/keywords/CareerInformation"

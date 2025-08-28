@@ -7,7 +7,7 @@ import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { api } from "@/lib/api"
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'

@@ -1,6 +1,6 @@
 // hooks/useModal.tsx
 import { useState } from 'react'
-import CustomModal from '@/components/CustomModal'
+import CustomModal from '@/components/shared/modal/CustomModal'
 import { useTranslation } from '@/contexts/TranslationContext'
 export const useModal = () => {
     const { t } = useTranslation()

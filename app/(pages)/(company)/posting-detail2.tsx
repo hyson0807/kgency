@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 // Components
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { PostingDetail } from "@/components/company/posting-detail/PostingDetail"
 import { ApplicantCard } from "@/components/company/posting-detail/ApplicantCard"
 // Hooks & Utils

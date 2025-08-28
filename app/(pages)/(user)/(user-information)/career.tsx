@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { router } from 'expo-router';
-import Back from '@/components/back';
+import Back from '@/components/shared/common/back';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { CareerInformation } from '@/components/user/profile/keywords/CareerInformation';
 import { useUserInfoStore } from '@/stores/userInfoStore';

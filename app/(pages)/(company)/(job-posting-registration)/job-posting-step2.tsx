@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
 import { api } from "@/lib/api"
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { useModal } from "@/hooks/useModal";
 import { useUserKeywords } from '@/hooks/useUserKeywords'
 import { WorkLocationForm } from '@/components/company/job-postings/forms/WorkLocationForm'

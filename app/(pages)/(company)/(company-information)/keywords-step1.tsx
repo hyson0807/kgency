@@ -4,8 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { api } from "@/lib/api"
 import { router } from 'expo-router'
-import Back from '@/components/back'
-import JobPreferencesSelector from '@/components/JobPreferencesSelector'
+import Back from '@/components/shared/common/back'
+import JobPreferencesSelector from '@/components/shared/keyword/JobPreferencesSelector'
 import { LocationSelector } from "@/components/company/profile/keywords/Location"
 import { useCompanyKeywordsStore } from '@/stores/companyKeywordsStore'
 interface Keyword {

@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
 import { api } from "@/lib/api"
 import { router } from 'expo-router'
-import Back from '@/components/back'
+import Back from '@/components/shared/common/back'
 import { MultiSelectKeywordSelector } from "@/components/shared/common/MultiSelectKeywordSelector"
 import { useCompanyKeywordsStore } from '@/stores/companyKeywordsStore'
 interface Keyword {
