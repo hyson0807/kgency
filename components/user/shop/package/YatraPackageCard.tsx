@@ -61,11 +61,11 @@ const YatraPackageCard: React.FC<YatraPackageCardProps> = ({
           <View className="space-y-2">
             <View className="flex-row items-center">
               <Ionicons name="checkmark-circle" size={16} color="#7C3AED" />
-              <Text className="text-gray-600 ml-2 text-sm">{t('shop.yatraPDF', 'PDF 가이드북')}</Text>
+              <Text className="text-gray-600 ml-2 text-sm">{t('shop.yatraPDF', 'PDF 가이드북 (10,000원 상당)')}</Text>
             </View>
             <View className="flex-row items-center">
               <Ionicons name="checkmark-circle" size={16} color="#7C3AED" />
-              <Text className="text-gray-600 ml-2 text-sm">{t('shop.yatraJobGuarantee', '야트라 전용 구직 확정권!')}</Text>
+              <Text className="text-gray-600 ml-2 text-sm">{t('shop.yatraJobGuarantee', '야트라 전용 구직 확정권! (50,000원 상당)')}</Text>
             </View>
             <View className="flex-row items-center">
               <Ionicons name="checkmark-circle" size={16} color="#7C3AED" />
@@ -75,15 +75,23 @@ const YatraPackageCard: React.FC<YatraPackageCardProps> = ({
         </View>
 
         <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-2xl font-bold text-purple-900">
-            {(() => {
-              const yatraProduct = products.find(p => p.productId === 'yatra_package_1');
-              if (yatraProduct && yatraProduct.localizedPrice) {
-                return yatraProduct.localizedPrice;
-              }
-              return `₩55,000${!isIAPAvailable ? ` ${t('shop.devModePrice', '(개발모드)')}` : ''}`;
-            })()}
-          </Text>
+          <View>
+            <Text className="text-2xl font-bold text-purple-900">
+              {(() => {
+                const yatraProduct = products.find(p => p.productId === 'yatra_package_1');
+                if (yatraProduct && yatraProduct.localizedPrice) {
+                  return yatraProduct.localizedPrice;
+                }
+                return `₩55,000${!isIAPAvailable ? ` ${t('shop.devModePrice', '(개발모드)')}` : ''}`;
+              })()}
+            </Text>
+            <View className="flex-row items-center">
+              <Text className="text-gray-500 text-sm line-through mr-2">₩82,000</Text>
+              <View className="bg-red-500 px-2 py-1 rounded">
+                <Text className="text-white text-xs font-semibold">33% 할인</Text>
+              </View>
+            </View>
+          </View>
         </View>
 
         <TouchableOpacity
