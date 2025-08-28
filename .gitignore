@@ -68,3 +68,7 @@ temp/
 coverage/
 
 app-example
+
+# Google Cloud Service Account credentials
+kgency-expo-project-*.json
+*.json
