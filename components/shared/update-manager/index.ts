@@ -1,0 +1,1 @@
+export { default as UpdateManager } from './UpdateManager';
