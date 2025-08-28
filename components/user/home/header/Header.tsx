@@ -3,6 +3,7 @@ import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
 import {SuitabilityResult} from "@/lib/suitability";
 import { HeaderCarousel } from './HeaderCarousel';
+import { EventBanner } from '../EventBanner';
 interface JobPosting {
     id: string
     title: string
@@ -64,6 +65,7 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                     </Text>
                 </View>
             </View>
+            <EventBanner />
             <HeaderCarousel />
         </View>
     )

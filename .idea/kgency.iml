@@ -9,5 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="kgency_server" />
+    <orderEntry type="module" module-name="kgency_shop" />
   </component>
 </module>

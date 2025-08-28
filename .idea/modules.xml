@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/kgency.iml" filepath="$PROJECT_DIR$/.idea/kgency.iml" />
       <module fileurl="file://$PROJECT_DIR$/../kgency_server/.idea/kgency_server.iml" filepath="$PROJECT_DIR$/../kgency_server/.idea/kgency_server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../kgency_shop/.idea/kgency_shop.iml" filepath="$PROJECT_DIR$/../kgency_shop/.idea/kgency_shop.iml" />
     </modules>
   </component>
 </project>
