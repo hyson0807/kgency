@@ -65,7 +65,7 @@ export const Header_Home = ({matchedPostings}: HeaderProps) => {
                     </Text>
                 </View>
             </View>
-            <EventBanner />
+            {/*<EventBanner />*/}
             <HeaderCarousel />
         </View>
     )
