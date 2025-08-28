@@ -55,7 +55,7 @@ const Shop = () => {
   const { showModal, ModalComponent } = useModal();
 
   // 야트라 패키지 출시 플래그 - 앱스토어 심사 후 true로 변경
-  const YATRA_PACKAGE_AVAILABLE = false;
+  const YATRA_PACKAGE_AVAILABLE = true;
   const tokenPackages: TokenPackage[] = [
     {
       id: Platform.OS === 'android' ? 'token_5_pack_android' : 'token_5_pack',
@@ -77,6 +77,7 @@ const Shop = () => {
       }
     };
   }, []);
+
   const initIAP = async () => {
     setLoading(true);
     
@@ -317,7 +318,6 @@ const Shop = () => {
       }
     }
   };
-
   const handleYatraPurchase = async () => {
     if (purchasing || !yatraEmail || !yatraEmail.includes('@')) return;
     
@@ -334,7 +334,6 @@ const Shop = () => {
       t('shop.cancel', '취소')
     );
   };
-
   const processYatraPurchase = async () => {
     if (purchasing) return;
     
@@ -424,7 +423,6 @@ const Shop = () => {
       setPurchasing(false);
     }
   };
-
   const verifyYatraPurchaseWithServer = async (purchase: AndroidPurchaseData | IOSPurchaseData, email: string) => {
     const platform = Platform.OS as 'ios' | 'android';
     const payload: any = { 

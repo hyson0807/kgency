@@ -45,7 +45,7 @@ const EmailInputModal: React.FC<EmailInputModalProps> = ({
           </Text>
 
           <TextInput
-            className="border border-gray-300 rounded-lg px-4 py-3 text-base mb-6"
+            className="border border-gray-300 rounded-lg px-4 py-3 text-base mb-6 text-center"
             placeholder={t('shop.emailPlaceholder', 'example@email.com')}
             value={email}
             onChangeText={onEmailChange}

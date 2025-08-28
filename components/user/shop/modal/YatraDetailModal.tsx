@@ -48,7 +48,7 @@ const YatraDetailModal: React.FC<YatraDetailModalProps> = ({
                 {t('shop.whatYouGet', '무엇을 받게 되나요?')}
               </Text>
               
-              <View className="bg-purple-50 rounded-xl p-4 mb-4">
+              <View className=" bg-purple-50 rounded-xl p-4 mb-4">
                 <View className="flex-row items-start mb-3">
                   <View className="bg-purple-100 p-2 rounded-full mr-3">
                     <Ionicons name="document-text" size={20} color="#7C3AED" />
@@ -101,7 +101,7 @@ const YatraDetailModal: React.FC<YatraDetailModalProps> = ({
               <Text className="text-lg font-semibold text-gray-900 mb-3">
                 {t('shop.howItWorks', '구매 후 프로세스')}
               </Text>
-              <View className="space-y-3">
+              <View className="gap-3">
                 <View className="flex-row items-center">
                   <View className="bg-purple-600 w-8 h-8 rounded-full items-center justify-center mr-3">
                     <Text className="text-white font-bold">1</Text>
