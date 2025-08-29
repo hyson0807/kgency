@@ -3,7 +3,14 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { TimeSlot } from '../../shared/types'
+interface TimeSlot {
+    date: string
+    startTime: string
+    endTime: string
+    interviewType: '대면' | '화상' | '전화'
+    maxCapacity?: number
+    currentCapacity?: number
+}
 interface InterviewSlotsSummaryProps {
     dateTimeMap: Record<string, TimeSlot[]>
     bookedSlots: Record<string, string[]>
@@ -18,7 +25,15 @@ export const InterviewSlotsSummary: React.FC<InterviewSlotsSummaryProps> = ({
         return format(date, 'M월 d일 (E)', { locale: ko })
     }
     const now = new Date()
-    const allValidSlots: Array<{ date: string, time: string, isBooked: boolean }> = []
+    const allValidSlots: Array<{ 
+        date: string, 
+        time: string, 
+        isBooked: boolean,
+        maxCapacity: number,
+        currentCapacity: number,
+        availableSpots: number
+    }> = []
+    
     // 모든 날짜의 시간대를 수집하고 현재 시간 이후만 필터링
     Object.entries(dateTimeMap).forEach(([date, slots]) => {
         const dateObj = new Date(date)
@@ -30,11 +45,18 @@ export const InterviewSlotsSummary: React.FC<InterviewSlotsSummaryProps> = ({
             // 오늘인 경우 현재 시간 이후만, 미래 날짜는 모두 포함
             const isValidTime = isToday ? slotDateTime >= now : dateObj > now
             if (isValidTime) {
-                const isBooked = bookedSlots[date]?.includes(slot.startTime) || false
+                const maxCapacity = slot.maxCapacity || 1
+                const currentCapacity = slot.currentCapacity || 0
+                const availableSpots = maxCapacity - currentCapacity
+                const isBooked = availableSpots <= 0
+                
                 allValidSlots.push({
                     date: date,
                     time: slot.startTime,
-                    isBooked: isBooked
+                    isBooked: isBooked,
+                    maxCapacity: maxCapacity,
+                    currentCapacity: currentCapacity,
+                    availableSpots: availableSpots
                 })
             }
         })
@@ -59,7 +81,8 @@ export const InterviewSlotsSummary: React.FC<InterviewSlotsSummaryProps> = ({
                 <View className="flex-row items-center gap-2">
                     <Ionicons name="calendar" size={20} color="#16a34a" />
                     <Text className="text-lg font-semibold text-green-900">
-                        전체 면접 가능 시간대 ({allValidSlots.length}개)
+                        전체 면접 가능 시간대 ({allValidSlots.length}개, 
+                        총 {allValidSlots.reduce((sum, slot) => sum + slot.availableSpots, 0)}자리)
                     </Text>
                 </View>
                 <Ionicons
@@ -96,7 +119,10 @@ export const InterviewSlotsSummary: React.FC<InterviewSlotsSummaryProps> = ({
                                         <Text className={`text-sm font-medium ${
                                             slot.isBooked ? 'text-gray-600' : 'text-green-800'
                                         }`}>
-                                            {slot.time}{slot.isBooked ? ' (예약됨)' : ''}
+                                            {slot.time} 
+                                            {slot.currentCapacity > 0 
+                                                ? ` ${slot.currentCapacity}/${slot.maxCapacity} 예약됨`
+                                                : ` (${slot.availableSpots}자리)`}
                                         </Text>
                                     </View>
                                 ))}

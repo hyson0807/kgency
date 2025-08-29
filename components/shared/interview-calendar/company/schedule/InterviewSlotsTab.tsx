@@ -1,14 +1,18 @@
 // components/interview-calendar/InterviewSlotsTab.tsx
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { TimeSlotGrid } from '../calendar/TimeSlotGrid'
+import { TimeSlotManager, TimeSlot as ManagerTimeSlot } from '../slots/TimeSlotManager'
+
 interface TimeSlot {
     date: string
     startTime: string
     endTime: string
     interviewType: '대면' | '화상' | '전화'
+    maxCapacity?: number
+    currentCapacity?: number
 }
+
 interface InterviewSlotsTabProps {
     selectedDate: string
     formatDateHeader: (dateString: string) => string
@@ -19,10 +23,11 @@ interface InterviewSlotsTabProps {
     timeSlots: string[]
     selectedTimes: string[]
     onTimeToggle: (time: string) => void
-    onSaveForDate: () => void
+    onSaveForDate: (slots: ManagerTimeSlot[]) => void
     dateTimeMap: Record<string, TimeSlot[]>
     allBookedSlots: Record<string, string[]>
 }
+
 export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
     selectedDate,
     formatDateHeader,
@@ -38,12 +43,41 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
     allBookedSlots
 }) => {
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
+    const [currentSlots, setCurrentSlots] = useState<ManagerTimeSlot[]>([])
+
+    // 기존 TimeSlot을 ManagerTimeSlot으로 변환 (예약 정보 포함)
+    const initialSlots: ManagerTimeSlot[] = useMemo(() => {
+        const existingSlots = dateTimeMap[selectedDate] || []
+        
+        // 각 시간대별 예약 수 계산
+        const bookingCounts: Record<string, number> = {}
+        if (bookedSlots.length > 0) {
+            bookedSlots.forEach(time => {
+                bookingCounts[time] = (bookingCounts[time] || 0) + 1
+            })
+        }
+        
+        return existingSlots.map((slot, index) => ({
+            id: `${selectedDate}-${slot.startTime}-${index}`,
+            time: slot.startTime,
+            maxCapacity: slot.maxCapacity || 1,
+            currentBookings: slot.currentCapacity || 0
+        }))
+    }, [selectedDate, dateTimeMap, bookedSlots])
+
+    const handleSlotsChange = (slots: ManagerTimeSlot[]) => {
+        setCurrentSlots(slots)
+    }
+
+    const handleSave = () => {
+        onSaveForDate(currentSlots)
+    }
     
     return (
-        <View className="px-4 mt-4">
-            <View className="flex-row items-center justify-between mb-3">
+        <View className="flex-1">
+            <View className="flex-row items-center justify-between mb-3 px-4">
                 <Text className="text-lg font-bold">
-                    {formatDateHeader(selectedDate)}
+                    면접 시간대 설정
                 </Text>
                 <TouchableOpacity
                     onPress={onRefresh}
@@ -52,27 +86,33 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                     <Ionicons name="refresh" size={20} color="#3b82f6" />
                 </TouchableOpacity>
             </View>
+
             {selectedDate && (
-                <View>
+                <View className="flex-1">
                     {/* 예약된 시간이 있으면 안내 메시지 */}
                     {bookedSlots.length > 0 && (
-                        <View className="bg-yellow-50 p-3 rounded-lg mb-3">
+                        <View className="bg-yellow-50 p-3 rounded-lg mb-3 mx-4">
                             <Text className="text-sm text-yellow-800">
                                 ⚠️ 이미 예약된 시간대는 변경할 수 없습니다.
                             </Text>
                         </View>
                     )}
-                    <View className="bg-white rounded-xl p-4">
-                        <TimeSlotGrid
-                            timeSlots={timeSlots}
-                            selectedTimes={selectedTimes}
+
+                    <View className="bg-white rounded-xl mx-4 p-4">
+                        <TimeSlotManager
+                            selectedDate={selectedDate}
+                            formatDateHeader={formatDateHeader}
+                            initialSlots={initialSlots}
                             bookedSlots={bookedSlots}
-                            onTimeToggle={onTimeToggle}
+                            onSlotsChange={handleSlotsChange}
+                            onSave={handleSave}
                         />
+
                         {/* 모든 날짜별 선택된 시간대 종합 요약 */}
                         {Object.keys(dateTimeMap).length > 0 && (() => {
                             const now = new Date()
-                            const allValidSlots: Array<{ date: string, time: string, isBooked: boolean }> = []
+                            const allValidSlots: Array<{ date: string, time: string, isBooked: boolean, capacity?: number }> = []
+                            
                             // 모든 날짜의 시간대를 수집하고 현재 시간 이후만 필터링
                             Object.entries(dateTimeMap).forEach(([date, slots]) => {
                                 const dateObj = new Date(date)
@@ -88,11 +128,13 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                         allValidSlots.push({
                                             date: date,
                                             time: slot.startTime,
-                                            isBooked: isBooked
+                                            isBooked: isBooked,
+                                            capacity: slot.maxCapacity || 1
                                         })
                                     }
                                 })
                             })
+
                             // 날짜별, 시간별로 정렬
                             allValidSlots.sort((a, b) => {
                                 if (a.date !== b.date) {
@@ -102,7 +144,11 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                 const [bHour, bMin] = b.time.split(':').map(Number)
                                 return (aHour * 60 + aMin) - (bHour * 60 + bMin)
                             })
+
                             if (allValidSlots.length === 0) return null
+
+                            const totalCapacity = allValidSlots.reduce((sum, slot) => sum + (slot.capacity || 1), 0)
+
                             return (
                                 <View className="mt-6 bg-green-50 rounded-lg border border-green-200">
                                     {/* 접기/펼치기 헤더 */}
@@ -113,7 +159,7 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                         <View className="flex-row items-center gap-2">
                                             <Ionicons name="calendar" size={20} color="#16a34a" />
                                             <Text className="text-lg font-semibold text-green-900">
-                                                전체 면접 가능 시간대 ({allValidSlots.length}개)
+                                                전체 면접 가능 시간대 ({allValidSlots.length}개, 총 {totalCapacity}명)
                                             </Text>
                                         </View>
                                         <Ionicons
@@ -122,6 +168,7 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                             color="#16a34a"
                                         />
                                     </TouchableOpacity>
+                                    
                                     {/* 접을 수 있는 내용 */}
                                     {isSummaryExpanded && (
                                         <View className="px-4 pb-4">
@@ -150,7 +197,8 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                                                 <Text className={`text-sm font-medium ${
                                                                     slot.isBooked ? 'text-gray-600' : 'text-green-800'
                                                                 }`}>
-                                                                    {slot.time}{slot.isBooked ? ' (예약됨)' : ''}
+                                                                    {slot.time} ({slot.capacity || 1}명)
+                                                                    {slot.isBooked ? ' (예약됨)' : ''}
                                                                 </Text>
                                                             </View>
                                                         ))}
@@ -167,18 +215,6 @@ export const InterviewSlotsTab: React.FC<InterviewSlotsTabProps> = ({
                                 </View>
                             )
                         })()}
-                        {/* 저장 버튼 */}
-                        <TouchableOpacity
-                            onPress={onSaveForDate}
-                            className="mt-4 py-3 gap-2 bg-blue-500 rounded-lg"
-                        >
-                            <Text className="text-center text-white font-semibold">
-                                회사 면접 시간대 저장
-                            </Text>
-                            <Text className="text-center text-white font-normal">
-                                저장된 시간은 모든 구직자에게 제공됩니다
-                            </Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
             )}

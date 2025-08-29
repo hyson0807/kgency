@@ -53,6 +53,8 @@ interface TimeSlot {
     startTime: string
     endTime: string
     interviewType: '대면' | '화상' | '전화'
+    maxCapacity?: number
+    currentCapacity?: number
 }
 export default function InterviewCalendar() {
     const insets = useSafeAreaInsets()
@@ -155,15 +157,17 @@ export default function InterviewCalendar() {
                     date: date,
                     startTime: startTime,
                     endTime: endTime,
-                    interviewType: slot.interview_type
+                    interviewType: slot.interview_type,
+                    maxCapacity: slot.max_capacity || 1,
+                    currentCapacity: slot.current_capacity || 0
                 }
                 if (!groupedSlots[date]) {
                     groupedSlots[date] = []
                     bookedSlotsMap[date] = []
                 }
                 groupedSlots[date].push(timeSlot)
-                // 예약된 슬롯이면 기록
-                if (slot.is_booked) {
+                // 예약된 슬롯이면 기록 (current_capacity > 0인 경우)
+                if (slot.current_capacity > 0) {
                     bookedSlotsMap[date].push(startTime)
                 }
             })
@@ -216,22 +220,23 @@ export default function InterviewCalendar() {
             setSelectedTimes(newTimes)
         }
     }
-    const handleSaveForDate = async () => {
+    const handleSaveForDate = async (newSlots: { id: string; time: string; maxCapacity: number }[]) => {
         if (!selectedDate) {
             showModal('알림', '날짜를 선택해주세요.')
             return
         }
+
         const bookedTimesForDate = bookedSlots[selectedDate] || []
-        const mustIncludeBookedTimes = [...bookedTimesForDate]
-        const newlySelectedTimes = selectedTimes.filter(time => !bookedTimesForDate.includes(time))
-        const finalTimes = [...new Set([...mustIncludeBookedTimes, ...newlySelectedTimes])]
         
-        if (finalTimes.length === 0) {
+        // 새 슬롯이 없고 예약된 시간대가 있으면 삭제 불가
+        if (newSlots.length === 0 && bookedTimesForDate.length > 0) {
+            showModal('알림', '예약된 시간대가 있어 모든 시간을 삭제할 수 없습니다.')
+            return
+        }
+
+        // 새 슬롯이 없으면 모든 시간대 삭제 확인
+        if (newSlots.length === 0) {
             if (dateTimeMap[selectedDate] && dateTimeMap[selectedDate].length > 0) {
-                if (bookedTimesForDate.length > 0) {
-                    showModal('알림', '예약된 시간대가 있어 모든 시간을 삭제할 수 없습니다.')
-                    return
-                }
                 showModal(
                     '확인',
                     `${selectedDate}의 모든 면접 시간대를 삭제하시겠습니까?`,
@@ -254,29 +259,50 @@ export default function InterviewCalendar() {
                 return
             }
         }
-        const slots = finalTimes.map(time => {
-            const [hour, minute] = time.split(':')
+
+        // 예약된 시간대는 반드시 포함
+        const allSlots = [...newSlots]
+        
+        // 예약된 시간 중에서 새 슬롯에 없는 것들 추가
+        bookedTimesForDate.forEach(bookedTime => {
+            if (!newSlots.some(slot => slot.time === bookedTime)) {
+                const existingSlot = dateTimeMap[selectedDate]?.find(s => s.startTime === bookedTime)
+                allSlots.push({
+                    id: `booked-${bookedTime}`,
+                    time: bookedTime,
+                    maxCapacity: existingSlot?.maxCapacity || 1
+                })
+            }
+        })
+
+        const slots = allSlots.map(slot => {
+            const [hour, minute] = slot.time.split(':')
             const endHour = minute === '30' ? parseInt(hour) + 1 : parseInt(hour)
             const endMinute = minute === '30' ? '00' : '30'
-            const existingSlot = dateTimeMap[selectedDate]?.find(s => s.startTime === time)
+            const existingSlot = dateTimeMap[selectedDate]?.find(s => s.startTime === slot.time)
+            
             // 한국 시간대로 직접 ISO 문자열 생성
-            const startDateTimeISO = `${selectedDate}T${time}:00+09:00`
+            const startDateTimeISO = `${selectedDate}T${slot.time}:00+09:00`
             const endTimeString = `${endHour.toString().padStart(2, '0')}:${endMinute}`
             const endDateTimeISO = `${selectedDate}T${endTimeString}:00+09:00`
+            
             return {
                 date: selectedDate,
-                startTime: time,
+                startTime: slot.time,
                 endTime: existingSlot?.endTime || `${endHour.toString().padStart(2, '0')}:${endMinute}`,
                 interviewType: existingSlot?.interviewType || interviewType,
+                maxCapacity: slot.maxCapacity,
                 startDateTime: startDateTimeISO,
                 endDateTime: endDateTimeISO
             }
         })
+
         const response = await api('POST', '/api/company/interview-slots', {
             companyId: user?.userId,
             date: selectedDate,
             slots: slots
         })
+
         if (response?.success) {
             await fetchSlots()
             showModal('성공', '선택된 시간대가 구직자에게 제공됩니다', 'info', () => {

@@ -47,9 +47,17 @@ CREATE TABLE interview_slots (
     end_time timestamp NOT NULL,
     interview_type varchar DEFAULT '대면',
     is_available boolean DEFAULT true,
-    created_at timestamp DEFAULT now()
+    max_capacity integer DEFAULT 1 CHECK (max_capacity >= 1),
+    current_capacity integer DEFAULT 0 CHECK (current_capacity >= 0),
+    created_at timestamp DEFAULT now(),
+    CONSTRAINT check_capacity CHECK (current_capacity <= max_capacity)
 );
 ```
+
+**새로 추가된 필드:**
+- `max_capacity`: 해당 시간대에 면접 가능한 최대 인원수
+- `current_capacity`: 현재 예약된 인원수 
+- 용량 제약조건으로 오버부킹 방지
 
 #### 2. interview_proposals (면접 제안)
 ```sql
@@ -91,164 +99,561 @@ erDiagram
 
 ## 📅 기업용 면접 슬롯 관리
 
-### 면접 시간 등록 화면
+### TimeSlotManager 컴포넌트 (새로운 아키텍처)
+
+TimeSlotManager는 기존의 고정된 시간대 버튼 시스템을 대체하는 유연한 시간 및 용량 관리 시스템입니다.
+
+#### 주요 기능
+- **유연한 시간 설정**: 구인자가 원하는 시간을 자유롭게 설정 가능
+- **용량 관리**: 시간대별로 1-10명까지 면접 가능 인원 설정
+- **예약 보호**: 이미 예약된 인원보다 적게 용량을 줄이거나 삭제 불가
+- **과거 시간 방지**: 오늘 날짜의 지난 시간은 수정/추가 불가
+- **실시간 예약 상태**: "X명 예약됨" 형태로 예약 현황 표시
+
+#### TimeSlotManager 인터페이스
 
 ```typescript
-// app/(company)/interviewSlots.tsx
-const InterviewSlotsScreen: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [slots, setSlots] = useState<InterviewSlot[]>([]);
-  const [showAddModal, setShowAddModal] = useState(false);
+// TimeSlotManager 컴포넌트 인터페이스
+interface TimeSlot {
+  id: string;
+  time: string; // "HH:MM" 형식
+  maxCapacity: number; // 1-10
+  currentBookings?: number; // 현재 예약된 인원수
+}
 
-  // 면접 슬롯 조회
-  const fetchSlots = async () => {
-    const { data } = await supabase
-      .from('interview_slots')
-      .select('*')
-      .eq('company_id', user.id)
-      .gte('start_time', startOfDay(selectedDate))
-      .lt('start_time', startOfDay(addDays(selectedDate, 1)))
-      .order('start_time');
-    
-    setSlots(data || []);
-  };
+interface TimeSlotManagerProps {
+  selectedDate: Date;
+  dateTimeMap: Record<string, TimeSlot[]>;
+  bookedSlots?: Record<string, string[]>;
+  onSlotsChange: (date: string, slots: TimeSlot[]) => void;
+}
 
-  // 새 슬롯 추가
-  const addSlot = async (slotData: NewSlotData) => {
-    const { error } = await supabase
-      .from('interview_slots')
-      .insert({
-        company_id: user.id,
-        start_time: slotData.startTime,
-        end_time: slotData.endTime,
-        interview_type: slotData.type
-      });
-
-    if (!error) {
-      fetchSlots();
-      setShowAddModal(false);
-    }
-  };
-
+// 사용 예시
+const InterviewSlotsTab: React.FC = () => {
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      {/* 캘린더 헤더 */}
-      <CalendarHeader 
-        selectedDate={selectedDate}
-        onDateChange={setSelectedDate}
-      />
-      
-      {/* 슬롯 목록 */}
-      <ScrollView className="flex-1 p-4">
-        {slots.map(slot => (
-          <SlotCard 
-            key={slot.id}
-            slot={slot}
-            onEdit={editSlot}
-            onDelete={deleteSlot}
-          />
-        ))}
-        
-        {/* 빈 상태 */}
-        {slots.length === 0 && (
-          <EmptySlotState onAddSlot={() => setShowAddModal(true)} />
-        )}
-      </ScrollView>
-
-      {/* 추가 버튼 */}
-      <TouchableOpacity
-        className="absolute bottom-6 right-6 bg-blue-500 w-14 h-14 rounded-full items-center justify-center shadow-lg"
-        onPress={() => setShowAddModal(true)}
-      >
-        <Ionicons name="add" size={28} color="white" />
-      </TouchableOpacity>
-
-      {/* 슬롯 추가 모달 */}
-      <AddSlotModal
-        visible={showAddModal}
-        selectedDate={selectedDate}
-        onAdd={addSlot}
-        onClose={() => setShowAddModal(false)}
-      />
-    </SafeAreaView>
+    <TimeSlotManager
+      selectedDate={selectedDate}
+      dateTimeMap={dateTimeMap}
+      onSlotsChange={handleSlotsChange}
+    />
   );
 };
 ```
 
-### 면접 슬롯 카드 컴포넌트
+#### 핵심 기능 구현
 
 ```typescript
-const SlotCard: React.FC<{ slot: InterviewSlot }> = ({ slot }) => {
-  const [isBooked, setIsBooked] = useState(false);
-
-  // 예약 상태 확인
-  useEffect(() => {
-    checkBookingStatus();
-  }, [slot.id]);
-
-  const checkBookingStatus = async () => {
-    const { data } = await supabase
-      .from('interview_schedules')
-      .select('id')
-      .eq('interview_slot_id', slot.id)
-      .single();
+// components/shared/interview-calendar/company/slots/TimeSlotManager.tsx
+const TimeSlotManager: React.FC<TimeSlotManagerProps> = ({
+  selectedDate,
+  dateTimeMap,
+  onSlotsChange
+}) => {
+  // 새 시간대 추가 (현재 시간 기반 기본값)
+  const addNewSlot = () => {
+    const now = new Date();
+    const defaultHour = now.getHours();
+    const defaultMinute = Math.ceil(now.getMinutes() / 15) * 15; // 15분 단위
     
-    setIsBooked(!!data);
+    const newSlot: TimeSlot = {
+      id: generateUniqueId(),
+      time: `${String(defaultHour).padStart(2, '0')}:${String(defaultMinute).padStart(2, '0')}`,
+      maxCapacity: 1
+    };
+    
+    updateDateSlots([...currentSlots, newSlot]);
+  };
+
+  // 용량 업데이트 (예약 보호 로직)
+  const updateSlotCapacity = (slotId: string, newCapacity: number) => {
+    const slot = currentSlots.find(s => s.id === slotId);
+    const currentBookings = slot?.currentBookings || 0;
+    
+    // 예약된 인원보다 적게 설정 불가
+    if (newCapacity < currentBookings) {
+      Alert.alert('알림', `현재 ${currentBookings}명이 예약되어 있어 ${newCapacity}명으로 줄일 수 없습니다.`);
+      return;
+    }
+    
+    updateSlot(slotId, { maxCapacity: newCapacity });
+  };
+
+  // 시간대 삭제 (예약 보호)
+  const deleteSlot = (slotId: string) => {
+    const slot = currentSlots.find(s => s.id === slotId);
+    const hasBookings = (slot?.currentBookings || 0) > 0;
+    
+    if (hasBookings) {
+      Alert.alert('알림', '예약된 면접이 있어 삭제할 수 없습니다.');
+      return;
+    }
+    
+    const updatedSlots = currentSlots.filter(s => s.id !== slotId);
+    updateDateSlots(updatedSlots);
+  };
+
+  // 과거 시간 검증
+  const isPastTime = (timeString: string): boolean => {
+    if (!isToday(selectedDate)) return false;
+    
+    const [hour, minute] = timeString.split(':').map(Number);
+    const slotTime = new Date();
+    slotTime.setHours(hour, minute, 0, 0);
+    
+    return slotTime <= new Date();
   };
 
   return (
-    <View className="bg-white p-4 rounded-lg mb-3 shadow-sm">
-      <View className="flex-row justify-between items-start">
-        <View className="flex-1">
-          <Text className="text-lg font-semibold">
-            {format(new Date(slot.start_time), 'HH:mm')} - 
-            {format(new Date(slot.end_time), 'HH:mm')}
-          </Text>
-          <Text className="text-gray-600 mt-1">{slot.interview_type}</Text>
-          
-          {/* 예약 상태 표시 */}
-          <View className="flex-row items-center mt-2">
-            <View 
-              className={`px-2 py-1 rounded-full ${
-                isBooked ? 'bg-red-100' : 'bg-green-100'
-              }`}
-            >
-              <Text 
-                className={`text-xs font-medium ${
-                  isBooked ? 'text-red-600' : 'text-green-600'
-                }`}
-              >
-                {isBooked ? '예약됨' : '예약 가능'}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* 액션 버튼 */}
-        <View className="flex-row">
-          <TouchableOpacity
-            className="p-2 ml-2"
-            onPress={() => onEdit(slot)}
-          >
-            <Ionicons name="pencil" size={20} color="#6B7280" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            className="p-2 ml-1"
-            onPress={() => onDelete(slot.id)}
-            disabled={isBooked}
-          >
-            <Ionicons 
-              name="trash" 
-              size={20} 
-              color={isBooked ? "#D1D5DB" : "#EF4444"} 
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
+    <View>
+      {/* 시간대 목록 */}
+      {currentSlots.map(slot => (
+        <TimeSlotItem
+          key={slot.id}
+          slot={slot}
+          isPast={isPastTime(slot.time)}
+          onTimeChange={handleTimeChange}
+          onCapacityChange={updateSlotCapacity}
+          onDelete={deleteSlot}
+        />
+      ))}
+      
+      {/* 추가 버튼 */}
+      <TouchableOpacity onPress={addNewSlot}>
+        <Text>+ 시간대 추가</Text>
+      </TouchableOpacity>
     </View>
   );
 };
+```
+
+#### 시간 선택 모달
+
+```typescript
+// 커스텀 시간 선택 인터페이스 (DateTimePicker 대체)
+const CustomTimePickerModal: React.FC<TimePickerProps> = ({
+  visible,
+  currentTime,
+  onConfirm,
+  onCancel
+}) => {
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const minutes = [0, 15, 30, 45];
+  
+  return (
+    <Modal visible={visible} transparent animationType="slide">
+      <View className="flex-1 justify-center bg-black/50">
+        <View className="bg-white mx-4 rounded-lg">
+          <View className="flex-row">
+            {/* 시간 선택 ScrollView */}
+            <ScrollView className="flex-1 max-h-40">
+              {hours.map(hour => (
+                <TouchableOpacity
+                  key={hour}
+                  onPress={() => setSelectedHour(hour)}
+                  className={selectedHour === hour ? 'bg-blue-100' : ''}
+                >
+                  <Text className="p-3 text-center">
+                    {String(hour).padStart(2, '0')}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            
+            {/* 분 선택 ScrollView */}
+            <ScrollView className="flex-1 max-h-40">
+              {minutes.map(minute => (
+                <TouchableOpacity
+                  key={minute}
+                  onPress={() => setSelectedMinute(minute)}
+                  className={selectedMinute === minute ? 'bg-blue-100' : ''}
+                >
+                  <Text className="p-3 text-center">
+                    {String(minute).padStart(2, '0')}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+          
+          {/* 확인/취소 버튼 */}
+          <View className="flex-row border-t border-gray-200">
+            <TouchableOpacity onPress={onCancel} className="flex-1 p-3">
+              <Text className="text-center text-gray-600">취소</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => onConfirm(selectedTime)} className="flex-1 p-3">
+              <Text className="text-center text-blue-600 font-semibold">확인</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+```
+
+### TimeSlotItem 컴포넌트 (새로운 아키텍처)
+
+```typescript
+const TimeSlotItem: React.FC<{
+  slot: TimeSlot;
+  isPast: boolean;
+  onTimeChange: (slotId: string, newTime: string) => void;
+  onCapacityChange: (slotId: string, newCapacity: number) => void;
+  onDelete: (slotId: string) => void;
+}> = ({ slot, isPast, onTimeChange, onCapacityChange, onDelete }) => {
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const hasBookings = (slot.currentBookings || 0) > 0;
+  const availableSpots = slot.maxCapacity - (slot.currentBookings || 0);
+
+  const handleCapacityIncrease = () => {
+    if (slot.maxCapacity < 10) {
+      onCapacityChange(slot.id, slot.maxCapacity + 1);
+    }
+  };
+
+  const handleCapacityDecrease = () => {
+    const currentBookings = slot.currentBookings || 0;
+    if (slot.maxCapacity > Math.max(1, currentBookings)) {
+      onCapacityChange(slot.id, slot.maxCapacity - 1);
+    }
+  };
+
+  return (
+    <View className={`bg-white p-4 rounded-lg mb-3 shadow-sm ${
+      isPast ? 'opacity-50' : ''
+    }`}>
+      <View className="flex-row justify-between items-center">
+        {/* 시간 표시 및 수정 */}
+        <TouchableOpacity
+          onPress={() => !isPast && setShowTimePicker(true)}
+          disabled={isPast}
+          className="flex-row items-center"
+        >
+          <Text className={`text-lg font-semibold ${
+            isPast ? 'text-gray-400' : 'text-blue-600'
+          }`}>
+            {slot.time}
+          </Text>
+          {!isPast && (
+            <Ionicons name="pencil" size={16} color="#3B82F6" className="ml-2" />
+          )}
+        </TouchableOpacity>
+
+        {/* 용량 관리 */}
+        <View className="flex-row items-center">
+          <TouchableOpacity
+            onPress={handleCapacityDecrease}
+            disabled={isPast || slot.maxCapacity <= Math.max(1, slot.currentBookings || 0)}
+            className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center"
+          >
+            <Ionicons name="remove" size={16} color="#6B7280" />
+          </TouchableOpacity>
+          
+          <Text className="mx-3 text-lg font-semibold min-w-[60px] text-center">
+            {slot.maxCapacity}명
+          </Text>
+          
+          <TouchableOpacity
+            onPress={handleCapacityIncrease}
+            disabled={isPast || slot.maxCapacity >= 10}
+            className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center"
+          >
+            <Ionicons name="add" size={16} color="#6B7280" />
+          </TouchableOpacity>
+        </View>
+
+        {/* 삭제 버튼 */}
+        <TouchableOpacity
+          onPress={() => onDelete(slot.id)}
+          disabled={isPast || hasBookings}
+          className="p-2"
+        >
+          <Ionicons
+            name="trash"
+            size={20}
+            color={isPast || hasBookings ? "#D1D5DB" : "#EF4444"}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* 예약 상태 표시 */}
+      {hasBookings && (
+        <View className="mt-2 pt-2 border-t border-gray-100">
+          <View className="flex-row items-center">
+            <View className="px-2 py-1 rounded-full bg-orange-100">
+              <Text className="text-xs font-medium text-orange-600">
+                {slot.currentBookings}명 예약됨
+              </Text>
+            </View>
+            <Text className="text-sm text-gray-500 ml-2">
+              (잔여 {availableSpots}자리)
+            </Text>
+          </View>
+        </View>
+      )}
+
+      {/* 시간 선택 모달 */}
+      <CustomTimePickerModal
+        visible={showTimePicker}
+        currentTime={slot.time}
+        onConfirm={(newTime) => {
+          onTimeChange(slot.id, newTime);
+          setShowTimePicker(false);
+        }}
+        onCancel={() => setShowTimePicker(false)}
+      />
+    </View>
+  );
+};
+```
+
+### InterviewSlotsSummary 컴포넌트 (용량 정보 표시)
+
+```typescript
+const InterviewSlotsSummary: React.FC<{
+  dateTimeMap: Record<string, TimeSlot[]>;
+}> = ({ dateTimeMap }) => {
+  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+
+  // 유효한 슬롯 수집 (현재 시간 이후)
+  const allValidSlots = useMemo(() => {
+    const slots: Array<{
+      date: string;
+      time: string;
+      isBooked: boolean;
+      maxCapacity: number;
+      currentCapacity: number;
+      availableSpots: number;
+    }> = [];
+
+    const now = new Date();
+    
+    Object.entries(dateTimeMap).forEach(([date, timeSlots]) => {
+      const dateObj = new Date(date);
+      const isToday = dateObj.toDateString() === now.toDateString();
+      
+      timeSlots.forEach(slot => {
+        const [hour, minute] = slot.time.split(':');
+        const slotDateTime = new Date(date);
+        slotDateTime.setHours(parseInt(hour), parseInt(minute), 0, 0);
+        
+        const isValidTime = isToday ? slotDateTime >= now : dateObj > now;
+        
+        if (isValidTime) {
+          const maxCapacity = slot.maxCapacity || 1;
+          const currentCapacity = slot.currentBookings || 0;
+          const availableSpots = maxCapacity - currentCapacity;
+          
+          slots.push({
+            date,
+            time: slot.time,
+            isBooked: availableSpots <= 0,
+            maxCapacity,
+            currentCapacity,
+            availableSpots
+          });
+        }
+      });
+    });
+
+    return slots.sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return a.time.localeCompare(b.time);
+    });
+  }, [dateTimeMap]);
+
+  const totalAvailableSpots = allValidSlots.reduce(
+    (sum, slot) => sum + slot.availableSpots, 0
+  );
+
+  return (
+    <View className="mt-6 bg-green-50 rounded-lg border border-green-200">
+      {/* 헤더 */}
+      <TouchableOpacity
+        onPress={() => setIsSummaryExpanded(!isSummaryExpanded)}
+        className="flex-row items-center justify-between p-4"
+      >
+        <View className="flex-row items-center gap-2">
+          <Ionicons name="calendar" size={20} color="#16a34a" />
+          <Text className="text-lg font-semibold text-green-900">
+            전체 면접 가능 시간대 ({allValidSlots.length}개, 총 {totalAvailableSpots}자리)
+          </Text>
+        </View>
+        <Ionicons
+          name={isSummaryExpanded ? "chevron-up" : "chevron-down"}
+          size={20}
+          color="#16a34a"
+        />
+      </TouchableOpacity>
+
+      {/* 상세 내용 */}
+      {isSummaryExpanded && (
+        <View className="px-4 pb-4">
+          {Object.entries(
+            allValidSlots.reduce((acc, slot) => {
+              if (!acc[slot.date]) acc[slot.date] = [];
+              acc[slot.date].push(slot);
+              return acc;
+            }, {} as Record<string, typeof allValidSlots>)
+          ).map(([date, slots]) => (
+            <View key={date} className="mb-3">
+              <Text className="text-sm font-medium text-green-800 mb-2">
+                {format(new Date(date), 'M월 d일 (E)', { locale: ko })}
+              </Text>
+              <View className="flex-row flex-wrap gap-2 pl-2">
+                {slots.map((slot) => (
+                  <View
+                    key={`${slot.date}-${slot.time}`}
+                    className={`px-3 py-1.5 rounded-full border ${
+                      slot.isBooked
+                        ? 'bg-gray-100 border-gray-300'
+                        : 'bg-green-100 border-green-300'
+                    }`}
+                  >
+                    <Text className={`text-sm font-medium ${
+                      slot.isBooked ? 'text-gray-600' : 'text-green-800'
+                    }`}>
+                      {slot.time} {slot.currentCapacity > 0 
+                        ? `${slot.currentCapacity}/${slot.maxCapacity} 예약됨`
+                        : `(${slot.availableSpots}자리)`}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+};
+```
+
+### 서버 측 용량 관리 시스템
+
+```javascript
+// kgency_server/src/services/interviewSlot.service.js
+class InterviewSlotService {
+  // 슬롯 생성 시 용량 필드 처리
+  async create(slotData) {
+    const { 
+      company_id, 
+      start_time, 
+      end_time, 
+      interview_type = '대면',
+      max_capacity = 1,
+      current_capacity = 0
+    } = slotData;
+
+    // 용량 검증
+    if (max_capacity < 1 || max_capacity > 10) {
+      throw new Error('최대 용량은 1-10명 사이여야 합니다.');
+    }
+    
+    if (current_capacity > max_capacity) {
+      throw new Error('현재 용량이 최대 용량을 초과할 수 없습니다.');
+    }
+
+    const { data, error } = await supabase
+      .from('interview_slots')
+      .insert({
+        company_id,
+        start_time,
+        end_time,
+        interview_type,
+        max_capacity,
+        current_capacity
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  // 슬롯 조회 시 실시간 예약 상태 계산
+  async getAll(company_id, date) {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // 슬롯과 예약 수 조인 쿼리
+    const { data: slots, error } = await supabase
+      .from('interview_slots')
+      .select(`
+        *,
+        schedules:interview_schedules(count)
+      `)
+      .eq('company_id', company_id)
+      .gte('start_time', startOfDay.toISOString())
+      .lte('start_time', endOfDay.toISOString())
+      .order('start_time');
+
+    if (error) throw error;
+
+    // 실시간 예약 수 계산
+    return slots.map(slot => ({
+      ...slot,
+      current_capacity: slot.schedules?.[0]?.count || 0,
+      available_spots: slot.max_capacity - (slot.schedules?.[0]?.count || 0),
+      is_fully_booked: (slot.schedules?.[0]?.count || 0) >= slot.max_capacity
+    }));
+  }
+
+  // 용량 업데이트 (예약 보호 로직)
+  async updateCapacity(slot_id, new_max_capacity) {
+    // 현재 예약 수 조회
+    const { data: currentBookings } = await supabase
+      .from('interview_schedules')
+      .select('id')
+      .eq('interview_slot_id', slot_id)
+      .eq('status', 'confirmed');
+
+    const bookingCount = currentBookings?.length || 0;
+
+    // 예약된 인원보다 적게 설정하려는 경우 방지
+    if (new_max_capacity < bookingCount) {
+      throw new Error(`현재 ${bookingCount}명이 예약되어 있어 ${new_max_capacity}명으로 줄일 수 없습니다.`);
+    }
+
+    const { data, error } = await supabase
+      .from('interview_slots')
+      .update({ 
+        max_capacity: new_max_capacity,
+        current_capacity: bookingCount // 실제 예약 수로 업데이트
+      })
+      .eq('id', slot_id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  // 슬롯 삭제 (예약 보호 로직)
+  async delete(slot_id) {
+    // 해당 슬롯에 예약이 있는지 확인
+    const { data: existingBookings } = await supabase
+      .from('interview_schedules')
+      .select('id')
+      .eq('interview_slot_id', slot_id)
+      .eq('status', 'confirmed');
+
+    if (existingBookings && existingBookings.length > 0) {
+      throw new Error('예약된 면접이 있어 삭제할 수 없습니다.');
+    }
+
+    const { error } = await supabase
+      .from('interview_slots')
+      .delete()
+      .eq('id', slot_id);
+
+    if (error) throw error;
+    return { success: true };
+  }
+}
 ```
 
 ## 💼 면접 제안 시스템
@@ -458,20 +863,32 @@ const InterviewScheduleScreen: React.FC = () => {
   const fetchAvailableSlots = async () => {
     if (!proposal) return;
 
+    // 용량 기반 슬롯 조회 (여유 공간이 있는 슬롯만)
     const { data } = await supabase
       .from('interview_slots')
-      .select('*')
+      .select(`
+        *,
+        schedules:interview_schedules!interview_slot_id(count)
+      `)
       .eq('company_id', proposal.company_id)
-      .eq('is_available', true)
       .gte('start_time', new Date().toISOString())
-      .not('id', 'in', `(
-        SELECT interview_slot_id 
-        FROM interview_schedules 
-        WHERE interview_slot_id IS NOT NULL
-      )`)
       .order('start_time');
 
-    setAvailableSlots(data || []);
+    // 여유 공간이 있는 슬롯만 필터링
+    const availableSlots = data?.filter(slot => {
+      const currentBookings = slot.schedules?.[0]?.count || 0;
+      const maxCapacity = slot.max_capacity || 1;
+      return currentBookings < maxCapacity;
+    }) || [];
+
+    // 용량 정보 추가
+    const slotsWithCapacity = availableSlots.map(slot => ({
+      ...slot,
+      current_capacity: slot.schedules?.[0]?.count || 0,
+      available_spots: (slot.max_capacity || 1) - (slot.schedules?.[0]?.count || 0)
+    }));
+
+    setAvailableSlots(slotsWithCapacity);
   };
 
   const confirmSchedule = async () => {
@@ -495,10 +912,22 @@ const InterviewScheduleScreen: React.FC = () => {
         .update({ status: 'accepted' })
         .eq('id', proposal.id);
 
-      // 3. 슬롯 예약 상태 업데이트
+      // 3. 슬롯 용량 업데이트 (용량 기반 시스템)
+      const { data: currentSlot } = await supabase
+        .from('interview_slots')
+        .select('current_capacity, max_capacity')
+        .eq('id', selectedSlot)
+        .single();
+
+      const newCurrentCapacity = (currentSlot.current_capacity || 0) + 1;
+      const isFullyBooked = newCurrentCapacity >= currentSlot.max_capacity;
+
       await supabase
         .from('interview_slots')
-        .update({ is_available: false })
+        .update({ 
+          current_capacity: newCurrentCapacity,
+          is_available: !isFullyBooked // 용량이 찰 때만 false로 변경
+        })
         .eq('id', selectedSlot);
 
       Alert.alert('완료', '면접 일정이 확정되었습니다.', [
@@ -560,7 +989,7 @@ const InterviewScheduleScreen: React.FC = () => {
                     {format(new Date(slot.end_time), 'HH:mm')}
                   </Text>
                   <Text className="text-sm text-gray-500 mt-1">
-                    {slot.interview_type}
+                    {slot.interview_type} • {slot.available_spots}자리 남음
                   </Text>
                 </View>
                 
@@ -971,3 +1400,395 @@ const useInterviewUpdates = (userId: string) => {
   }, [userId]);
 };
 ```
+
+## 🔄 컴포넌트 통합 및 사용법
+
+### TimeSlotManager 통합 패턴
+
+TimeSlotManager는 다음 두 곳에서 사용됩니다:
+
+#### 1. 기업 시간대 관리 (InterviewSlotsTab)
+```typescript
+// components/shared/interview-calendar/company/schedule/InterviewSlotsTab.tsx
+const InterviewSlotsTab: React.FC = () => {
+  const [dateTimeMap, setDateTimeMap] = useState<Record<string, ManagerTimeSlot[]>>({});
+  const { user } = useAuth();
+
+  // 서버 데이터 -> TimeSlotManager 형식 변환
+  const convertToManagerFormat = (serverSlots: TimeSlot[]): ManagerTimeSlot[] => {
+    return serverSlots.map(slot => ({
+      id: slot.id,
+      time: format(new Date(slot.start_time), 'HH:mm'),
+      maxCapacity: slot.max_capacity || 1,
+      currentBookings: slot.current_capacity || 0
+    }));
+  };
+
+  const handleSlotsChange = useCallback(async (dateKey: string, slots: ManagerTimeSlot[]) => {
+    try {
+      // 1. 기존 슬롯 삭제
+      await interviewSlotAPI.deleteByDate(user.id, dateKey);
+      
+      // 2. 새 슬롯 생성
+      const slotPromises = slots.map(slot => 
+        interviewSlotAPI.create({
+          company_id: user.id,
+          start_time: `${dateKey} ${slot.time}:00`,
+          end_time: calculateEndTime(dateKey, slot.time),
+          max_capacity: slot.maxCapacity,
+          interview_type: '대면'
+        })
+      );
+      
+      await Promise.all(slotPromises);
+      
+      // 3. 로컬 상태 업데이트
+      setDateTimeMap(prev => ({ ...prev, [dateKey]: slots }));
+      
+    } catch (error) {
+      Alert.alert('오류', '시간대 저장 중 오류가 발생했습니다.');
+    }
+  }, [user.id]);
+
+  return (
+    <TimeSlotManager
+      selectedDate={selectedDate}
+      dateTimeMap={dateTimeMap}
+      onSlotsChange={handleSlotsChange}
+    />
+  );
+};
+```
+
+#### 2. 면접 요청 화면 (interview-request.tsx)
+```typescript
+// app/(pages)/(company)/(interview-management)/(user-list)/interview-request.tsx
+type DateTimeMap = { [key: string]: TimeSlot[] };
+type BookedSlotsMap = { [key: string]: string[] };
+type UserSelectedMap = { [key: string]: string[] };
+
+const InterviewRequestScreen: React.FC = () => {
+  const [dateTimeMap, setDateTimeMap] = useState<DateTimeMap>({});
+  const [userSelectedSlots, setUserSelectedSlots] = useState<UserSelectedMap>({});
+  
+  // Record 타입 이슈 해결을 위한 커스텀 타입 사용
+  const handleSlotsChange = useCallback((dateKey: string, slots: TimeSlot[]) => {
+    setDateTimeMap(prev => ({ ...prev, [dateKey]: slots }));
+  }, []);
+
+  // 무한 루프 방지를 위한 초기화 패턴
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    if (selectedDate && !isInitialized) {
+      updateSelectedDateData();
+      setIsInitialized(true);
+    }
+  }, [selectedDate]);
+
+  useEffect(() => {
+    if (isInitialized && selectedDate) {
+      updateSelectedDateData();
+    }
+  }, [selectedDate, isInitialized]);
+
+  return (
+    <TimeSlotManager
+      selectedDate={selectedDate}
+      dateTimeMap={dateTimeMap}
+      onSlotsChange={handleSlotsChange}
+    />
+  );
+};
+```
+
+### 데이터 변환 패턴
+
+```typescript
+// 서버 TimeSlot -> Manager TimeSlot 변환
+interface ServerTimeSlot {
+  id: string;
+  start_time: string; // ISO timestamp
+  end_time: string;
+  max_capacity: number;
+  current_capacity: number;
+  interview_type: string;
+}
+
+interface ManagerTimeSlot {
+  id: string;
+  time: string; // "HH:mm" format
+  maxCapacity: number;
+  currentBookings?: number;
+}
+
+const convertServerToManager = (serverSlots: ServerTimeSlot[]): ManagerTimeSlot[] => {
+  return serverSlots.map(slot => ({
+    id: slot.id,
+    time: format(new Date(slot.start_time), 'HH:mm'),
+    maxCapacity: slot.max_capacity,
+    currentBookings: slot.current_capacity
+  }));
+};
+
+// Manager TimeSlot -> 서버 데이터 변환
+const convertManagerToServer = (managerSlots: ManagerTimeSlot[], date: string) => {
+  return managerSlots.map(slot => ({
+    company_id: user.id,
+    start_time: `${date} ${slot.time}:00`,
+    end_time: calculateEndTime(date, slot.time), // +1시간
+    max_capacity: slot.maxCapacity,
+    current_capacity: 0,
+    interview_type: '대면'
+  }));
+};
+```
+
+### 오류 처리 및 해결방안
+
+#### 1. React Native 타입 오류
+```typescript
+// 문제: Property 'Record' doesn't exist 오류
+// 해결: 커스텀 타입 사용
+type DateTimeMap = { [key: string]: TimeSlot[] };
+type BookedSlotsMap = { [key: string]: string[] };
+```
+
+#### 2. 무한 루프 방지
+```typescript
+// 문제: useEffect의 의존성 배열에 onSlotsChange 포함 시 무한 루프
+// 해결: useCallback 사용 및 초기화 플래그
+const handleSlotsChange = useCallback((dateKey: string, slots: TimeSlot[]) => {
+  setDateTimeMap(prev => ({ ...prev, [dateKey]: slots }));
+}, []); // 빈 의존성 배열
+
+const [isInitialized, setIsInitialized] = useState(false);
+```
+
+#### 3. Text 렌더링 오류
+```typescript
+// 문제: Text strings must be rendered within a <Text> component
+// 해결: null 값 처리
+<Text>
+  {slot.currentBookings || 0}명 예약됨
+</Text>
+
+const hasBookings = (slot.currentBookings || 0) > 0;
+```
+
+## 📊 면접 시스템 마이그레이션 가이드
+
+### 데이터베이스 마이그레이션
+
+기존 1:1 시스템에서 용량 기반 시스템으로 전환하기 위한 마이그레이션:
+
+```sql
+-- 용량 필드 추가
+ALTER TABLE interview_slots 
+ADD COLUMN max_capacity integer DEFAULT 1 CHECK (max_capacity >= 1),
+ADD COLUMN current_capacity integer DEFAULT 0 CHECK (current_capacity >= 0),
+ADD CONSTRAINT check_capacity CHECK (current_capacity <= max_capacity);
+
+-- 인덱스 추가 (성능 최적화)
+CREATE INDEX idx_interview_slots_capacity ON interview_slots(company_id, start_time, max_capacity, current_capacity);
+
+-- 기존 데이터 마이그레이션
+UPDATE interview_slots 
+SET max_capacity = 1, current_capacity = (
+  CASE 
+    WHEN is_available = false THEN 1 -- 예약됨
+    ELSE 0 -- 예약 안됨
+  END
+)
+WHERE max_capacity IS NULL;
+```
+
+### API 엔드포인트 마이그레이션
+
+기존 API는 하위 호환성을 유지하면서 새로운 용량 기능을 지원:
+
+```javascript
+// 기존 API (여전히 작동)
+POST /api/interview/slots
+{
+  "start_time": "2024-01-15 14:00:00",
+  "end_time": "2024-01-15 15:00:00"
+  // max_capacity 기본값: 1
+}
+
+// 새로운 API (용량 지원)
+POST /api/interview/slots
+{
+  "start_time": "2024-01-15 14:00:00",
+  "end_time": "2024-01-15 15:00:00",
+  "max_capacity": 5 // 새로운 필드
+}
+```
+
+### 컴포넌튴 마이그레이션 로드맵
+
+1. **Phase 1**: TimeSlotManager 컴포넌트 개발 및 테스트
+2. **Phase 2**: 데이터베이스 스키마 업데이트
+3. **Phase 3**: 서버 API 로직 업데이트 (예약 보호)
+4. **Phase 4**: 기존 TimeSlotGrid 대체
+5. **Phase 5**: interview-request.tsx 페이지 업데이트
+6. **Phase 6**: 버그 수정 및 성능 최적화
+7. **Phase 7**: 문서 업데이트 및 QA
+
+### 성능 모니터링 및 메트릭스
+
+```typescript
+// TimeSlotManager 성능 모니터링
+const useTimeSlotPerformance = (dateTimeMap: Record<string, TimeSlot[]>) => {
+  const [metrics, setMetrics] = useState({
+    totalSlots: 0,
+    totalCapacity: 0,
+    bookedSlots: 0,
+    utilizationRate: 0
+  });
+
+  useEffect(() => {
+    const calculateMetrics = () => {
+      let totalSlots = 0;
+      let totalCapacity = 0;
+      let currentBookings = 0;
+
+      Object.values(dateTimeMap).forEach(slots => {
+        slots.forEach(slot => {
+          totalSlots++;
+          totalCapacity += slot.maxCapacity;
+          currentBookings += (slot.currentBookings || 0);
+        });
+      });
+
+      const utilizationRate = totalCapacity > 0 
+        ? (currentBookings / totalCapacity) * 100 
+        : 0;
+
+      setMetrics({
+        totalSlots,
+        totalCapacity,
+        bookedSlots: currentBookings,
+        utilizationRate: Math.round(utilizationRate)
+      });
+    };
+
+    calculateMetrics();
+  }, [dateTimeMap]);
+
+  return metrics;
+};
+```
+
+## 📋 컴포넌트 API 참조
+
+### TimeSlotManager Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| selectedDate | Date | Yes | 선택된 날짜 |
+| dateTimeMap | Record<string, TimeSlot[]> | Yes | 날짜별 시간대 맵 |
+| bookedSlots | Record<string, string[]> | No | 예약된 슬롯 ID 목록 |
+| onSlotsChange | (date: string, slots: TimeSlot[]) => void | Yes | 슬롯 변경 콜백 |
+
+### TimeSlot Interface
+
+```typescript
+interface TimeSlot {
+  id: string;              // 고유 ID
+  time: string;            // "HH:MM" 형식
+  maxCapacity: number;     // 최대 수용 인원 (1-10)
+  currentBookings?: number; // 현재 예약 인원
+}
+```
+
+### InterviewSlotsSummary Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| dateTimeMap | Record<string, TimeSlot[]> | Yes | 날짜별 시간대 맵 |
+| bookedSlots | Record<string, string[]> | No | 예약 정보 (사용하지 않음) |
+
+### 주요 메서드
+
+- `addNewSlot()`: 새 시간대 추가
+- `updateSlotCapacity(slotId, newCapacity)`: 용량 업데이트
+- `deleteSlot(slotId)`: 시간대 삭제
+- `handleTimeConfirm(slotId, newTime)`: 시간 변경
+- `isPastTime(timeString)`: 과거 시간 검증
+
+## 🚀 업그레이드 가이드
+
+기존 TimeSlotGrid에서 TimeSlotManager로 업그레이드하기:
+
+### 1. 컴포넌트 교체
+```typescript
+// Before (TimeSlotGrid)
+import { TimeSlotGrid } from '@/components/shared/interview-calendar/company/slots/TimeSlotGrid';
+
+// After (TimeSlotManager)  
+import { TimeSlotManager } from '@/components/shared/interview-calendar/company/slots/TimeSlotManager';
+```
+
+### 2. Props 변경
+```typescript
+// Before
+<TimeSlotGrid
+  selectedTimeType={selectedTimeType}
+  selectedDate={selectedDate}
+  onSlotToggle={handleSlotToggle}
+/>
+
+// After
+<TimeSlotManager
+  selectedDate={selectedDate}
+  dateTimeMap={dateTimeMap}
+  onSlotsChange={handleSlotsChange}
+/>
+```
+
+### 3. 데이터 구조 변경
+```typescript
+// Before: 고정된 시간대
+const timeSlots = ['breakfast', 'morning', 'afternoon', 'evening'];
+
+// After: 유연한 시간대
+const [dateTimeMap, setDateTimeMap] = useState<Record<string, TimeSlot[]>>({});
+```
+
+### 4. 사용 예시
+```typescript
+// 완전한 업그레이드 예시
+import React, { useState, useCallback } from 'react';
+import { TimeSlotManager } from '@/components/shared/interview-calendar/company/slots/TimeSlotManager';
+import { InterviewSlotsSummary } from '@/components/shared/interview-calendar/company/slots/InterviewSlotsSummary';
+
+const MyInterviewSchedule: React.FC = () => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [dateTimeMap, setDateTimeMap] = useState<Record<string, TimeSlot[]>>({});
+  
+  const handleSlotsChange = useCallback(async (dateKey: string, slots: TimeSlot[]) => {
+    // API 호출 로직
+    await saveSlots(dateKey, slots);
+    
+    // 로컬 상태 업데이트
+    setDateTimeMap(prev => ({ ...prev, [dateKey]: slots }));
+  }, []);
+  
+  return (
+    <View>
+      <TimeSlotManager
+        selectedDate={selectedDate}
+        dateTimeMap={dateTimeMap}
+        onSlotsChange={handleSlotsChange}
+      />
+      
+      <InterviewSlotsSummary 
+        dateTimeMap={dateTimeMap}
+      />
+    </View>
+  );
+};
+```
+
+이 가이드를 따라하면 기존 고정된 시간대 시스템에서 유연한 용량 기반 시스템으로 원활하게 전환할 수 있습니다.
