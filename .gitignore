@@ -71,4 +71,6 @@ app-example
 
 # Google Cloud Service Account credentials
 kgency-expo-project-*.json
-*.json
+
+# Exclude specific json files, but keep package.json and other critical files
+# *.json  # This was too broad - commented out
