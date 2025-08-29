@@ -1,6 +1,7 @@
 // hooks/useProfile.ts
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProfileContext } from '@/contexts/ProfileContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {router} from "expo-router";
 import { api } from "@/lib/api"
@@ -38,15 +39,24 @@ type FullProfile = Profile & {
 };
 export const useProfile = () => {
     const { user } = useAuth();
-    const [profile, setProfile] = useState<FullProfile | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { preloadedProfile, setPreloadedProfile } = useProfileContext();
+    const [profile, setProfile] = useState<FullProfile | null>(preloadedProfile);
+    const [loading, setLoading] = useState(!preloadedProfile);
     const [error, setError] = useState<string | null>(null);
-    // 프로필 가져오기
+    // 프로필 가져오기 (cache-first 전략)
     const fetchProfile = async () => {
         if (!user) {
             setLoading(false);
             return;
         }
+
+        // 이미 preloaded 프로필이 있으면 사용
+        if (preloadedProfile) {
+            setProfile(preloadedProfile);
+            setLoading(false);
+            return;
+        }
+
         try {
             setError(null);
             const response = await api('GET', '/api/profiles');
@@ -65,6 +75,7 @@ export const useProfile = () => {
             }
             const fullProfile: FullProfile = response.data;
             setProfile(fullProfile);
+            setPreloadedProfile(fullProfile); // Context에도 저장
             // AsyncStorage에도 저장
             await AsyncStorage.setItem('userProfile', JSON.stringify(fullProfile));
         } catch (error) {
@@ -88,6 +99,8 @@ export const useProfile = () => {
             }
             // 프로필 다시 가져오기
             await fetchProfile();
+            // Context의 preloaded 프로필도 무효화
+            setPreloadedProfile(null);
             // 프로필 업데이트 성공
             return true;
         } catch (error) {
@@ -105,6 +118,7 @@ export const useProfile = () => {
             }
             const fullProfile: FullProfile = response.data;
             setProfile(fullProfile);
+            setPreloadedProfile(fullProfile); // Context에도 저장
             // AsyncStorage에도 저장
             await AsyncStorage.setItem('userProfile', JSON.stringify(fullProfile));
         } catch (error) {
@@ -115,11 +129,17 @@ export const useProfile = () => {
     // 컴포넌트 마운트 시 프로필 가져오기
     useEffect(() => {
         if (user?.userId) {
-            fetchProfile();
+            // preloaded 프로필이 있으면 즉시 사용, 없으면 fetch
+            if (preloadedProfile) {
+                setProfile(preloadedProfile);
+                setLoading(false);
+            } else {
+                fetchProfile();
+            }
         } else {
             setLoading(false);
         }
-    }, [user?.userId]);
+    }, [user?.userId, preloadedProfile]);
     return {
         profile,
         loading,

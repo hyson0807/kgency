@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ReactNode } from 'react';
 import { View, Text, Alert, AppState } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProfileContext } from '@/contexts/ProfileContext';
 import { preloadAppData, useOfflineStatus } from '@/lib/preloader';
 import { InitializationScreen } from './InitializationScreen';
 import { SkeletonScreen } from './SkeletonScreen';
@@ -22,6 +23,7 @@ interface ExtendedInitializationState extends InitializationState {
 
 export const AppInitializer: React.FC<AppInitializerProps> = ({ children }) => {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const { setPreloadedProfile } = useProfileContext();
   const { isOffline, networkStatus, offlineInfo } = useOfflineStatus();
   const [state, setState] = useState<ExtendedInitializationState>({
     isInitialized: false,
@@ -104,6 +106,12 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({ children }) => {
           showSkeletonScreen: false
         }));
         return;
+      }
+
+      // preload된 프로필 데이터를 Context에 저장
+      if (result.data?.profile) {
+        setPreloadedProfile(result.data.profile);
+        console.log('✅ preload된 프로필 데이터를 Context에 저장');
       }
 
       if (!result.success) {

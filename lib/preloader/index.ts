@@ -1,8 +1,7 @@
 import React from 'react';
 import { User } from '@/contexts/AuthContext';
-import { preloadKeywords } from './keywordPreloader';
-import { preloadUserData } from './userPreloader';
-import { preloadCompanyData } from './companyPreloader';
+import { preloadUserProfile } from './userPreloader';
+import { preloadCompanyProfile } from './companyPreloader';
 import { PreloadResult, ProgressCallback } from './types';
 import { offlineManager } from '@/lib/offline/OfflineManager';
 
@@ -13,74 +12,50 @@ export const preloadAppData = async (
   const isOffline = offlineManager.isOffline();
   
   try {
-    console.log(`🚀 앱 데이터 프리로딩 시작: ${user.userType}(${user.userId || 'unknown'}) - ${isOffline ? '오프라인' : '온라인'} 모드`);
+    console.log(`🚀 프로파일 데이터 프리로딩 시작: ${user.userType}(${user.userId || 'unknown'}) - ${isOffline ? '오프라인' : '온라인'} 모드`);
     
     // 오프라인 모드인 경우 캐시된 데이터 확인
     if (isOffline) {
       return await handleOfflinePreload(user, onProgress);
     }
     
-    const results: PreloadResult[] = [];
-    let totalProgress = 10;
+    let totalProgress = 20;
+    onProgress?.(totalProgress, '프로파일 데이터 로딩 중...');
 
-    // 1. 키워드 마스터 데이터 (모든 사용자 공통)
-    onProgress?.(totalProgress, '키워드 데이터 로딩 중...');
-    const keywordResult = await preloadKeywords();
-    results.push(keywordResult);
-    totalProgress = 40;
-
-    // 2. 사용자 타입별 데이터
-    onProgress?.(totalProgress, '사용자 데이터 로딩 중...');
-    
-    let userDataResult: PreloadResult;
+    // 사용자 타입별 프로파일 데이터만 로드
+    let profileResult: PreloadResult;
     if (user.userType === 'user') {
-      userDataResult = await preloadUserData(user.userId || '');
+      profileResult = await preloadUserProfile(user.userId || '');
     } else {
-      userDataResult = await preloadCompanyData(user.userId || '');
+      profileResult = await preloadCompanyProfile(user.userId || '');
     }
     
-    results.push(userDataResult);
-    totalProgress = 70;
+    totalProgress = 60;
 
-    // 3. 오프라인 데이터 저장 (온라인 모드에서만)
+    // 오프라인 데이터 저장 (온라인 모드에서만)
     onProgress?.(totalProgress, '오프라인 데이터 저장 중...');
     try {
-      const combinedData = results.reduce((acc, result) => ({ ...acc, ...result.data }), {});
-      await offlineManager.saveOfflineData(user.userId || '', user.userType, combinedData);
-      console.log('💾 오프라인 데이터 저장 완료');
+      if (profileResult.data) {
+        await offlineManager.saveOfflineData(user.userId || '', user.userType, profileResult.data);
+        console.log('💾 오프라인 프로파일 데이터 저장 완료');
+      }
     } catch (offlineError) {
       console.warn('오프라인 데이터 저장 실패:', offlineError);
     }
-    totalProgress = 80;
+    totalProgress = 90;
 
-    // 4. 푸시 토큰 등록 (백그라운드 - 선택사항)
-    onProgress?.(totalProgress, '푸시 알림 설정 중...');
-    try {
-      // 푸시 토큰 등록 로직은 나중에 추가
-      console.log('푸시 토큰 등록 스킵됨');
-    } catch (pushError) {
-      console.warn('푸시 토큰 등록 실패 (무시됨):', pushError);
-    }
-
-    // 결과 통합
-    const allSuccess = results.every(result => result.success);
-    const allErrors = results.flatMap(result => result.errors || []);
-    const hasEssentialData = results.some(result => 
-      result.success && (result.data?.keywords || result.data?.profile)
-    );
-
-    onProgress?.(90, '초기화 완료 중...');
+    onProgress?.(totalProgress, '초기화 완료 중...');
 
     const finalResult = {
-      success: allSuccess,
-      canProceed: hasEssentialData,
-      data: results.reduce((acc, result) => ({ ...acc, ...result.data }), {}),
-      errors: allErrors.length > 0 ? allErrors : undefined,
+      success: profileResult.success,
+      canProceed: profileResult.canProceed && !!profileResult.data?.profile,
+      data: profileResult.data,
+      errors: profileResult.errors,
       isOfflineMode: false,
       networkStatus: offlineManager.getNetworkStatus()
     };
     
-    console.log(`✅ 온라인 프리로딩 완료: 성공=${allSuccess}, 진행가능=${hasEssentialData}`);
+    console.log(`✅ 프로파일 프리로딩 완료: 성공=${profileResult.success}, 진행가능=${finalResult.canProceed}`);
     return finalResult;
 
   } catch (error) {

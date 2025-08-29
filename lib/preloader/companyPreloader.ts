@@ -5,50 +5,43 @@ import { PreloadResult } from './types';
 
 const cache = new CacheManager();
 
-export const preloadCompanyData = async (companyId: string): Promise<PreloadResult> => {
+export const preloadCompanyProfile = async (companyId: string): Promise<PreloadResult> => {
   try {
-    // 통합 엔드포인트로 한 번에 회사 데이터 로딩
-    const response = await api('GET', '/api/app-init/user-essentials'); // 서버에서 userType에 따라 분기 처리
+    // 회사 프로파일 데이터만 로딩
+    const response = await api('GET', '/api/profiles');
     
     if (!response.success) {
-      throw new Error(response.error || '회사 데이터 로딩 실패');
+      throw new Error(response.error || '회사 프로파일 로딩 실패');
     }
 
-    const companyData = response.data;
-    const hasEssentialData = !!companyData.profile;
+    const profile = response.data;
 
-    // 개별 데이터 캐싱
-    if (companyData.profile) {
-      await cache.set(`${CACHE_KEYS.COMPANY_PROFILE}${companyId}`, companyData.profile, CACHE_TTL.USER_PROFILE);
-    }
-    
-    if (companyData.companyKeywords) {
-      await cache.set(`${CACHE_KEYS.COMPANY_KEYWORDS}${companyId}`, companyData.companyKeywords, CACHE_TTL.USER_KEYWORDS);
+    // 프로파일 데이터 캐싱
+    if (profile) {
+      await cache.set(`${CACHE_KEYS.COMPANY_PROFILE}${companyId}`, profile, CACHE_TTL.USER_PROFILE);
     }
 
     return {
       success: true,
-      canProceed: hasEssentialData,
+      canProceed: !!profile,
       data: {
-        profile: companyData.profile,
-        companyKeywords: companyData.companyKeywords || [],
-        activeJobPostings: companyData.recentActivity?.jobPostings || []
+        profile: profile
       }
     };
 
   } catch (error) {
-    console.error('회사 데이터 프리로딩 실패:', error);
+    console.error('회사 프로파일 프리로딩 실패:', error);
     
-    // 캐시된 데이터로 폴백 시도
-    const fallbackData = await getFallbackCompanyData(companyId);
-    if (fallbackData.profile) {
+    // 캐시된 프로파일 데이터로 폴백 시도
+    const cachedProfile = await cache.get(`${CACHE_KEYS.COMPANY_PROFILE}${companyId}`, true); // 만료된 캐시도 허용
+    if (cachedProfile) {
       return {
         success: false,
         canProceed: true,
-        data: fallbackData,
+        data: { profile: cachedProfile },
         errors: [{ 
-          operation: 'preloadCompanyData', 
-          message: '캐시된 데이터를 사용합니다.' 
+          operation: 'preloadCompanyProfile', 
+          message: '캐시된 프로파일 데이터를 사용합니다.' 
         }]
       };
     }
@@ -57,35 +50,10 @@ export const preloadCompanyData = async (companyId: string): Promise<PreloadResu
       success: false,
       canProceed: false,
       errors: [{ 
-        operation: 'preloadCompanyData', 
-        message: error instanceof Error ? error.message : '회사 데이터 로딩 실패' 
+        operation: 'preloadCompanyProfile', 
+        message: error instanceof Error ? error.message : '회사 프로파일 로딩 실패' 
       }]
     };
   }
 };
 
-// 캐시된 데이터로 폴백
-const getFallbackCompanyData = async (companyId: string) => {
-  const fallback: any = {};
-  
-  try {
-    const cachedProfile = await cache.get(`${CACHE_KEYS.COMPANY_PROFILE}${companyId}`, true);
-    if (cachedProfile) {
-      fallback.profile = cachedProfile;
-    }
-    
-    const cachedKeywords = await cache.get(`${CACHE_KEYS.COMPANY_KEYWORDS}${companyId}`, true);
-    if (cachedKeywords) {
-      fallback.companyKeywords = cachedKeywords;
-    }
-
-    const cachedJobs = await cache.get(`${CACHE_KEYS.COMPANY_JOB_POSTINGS}${companyId}`, true);
-    if (cachedJobs) {
-      fallback.activeJobPostings = cachedJobs;
-    }
-  } catch (error) {
-    console.warn('폴백 데이터 조회 실패:', error);
-  }
-  
-  return fallback;
-};

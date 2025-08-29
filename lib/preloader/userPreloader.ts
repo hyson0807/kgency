@@ -5,50 +5,43 @@ import { PreloadResult } from './types';
 
 const cache = new CacheManager();
 
-export const preloadUserData = async (userId: string): Promise<PreloadResult> => {
+export const preloadUserProfile = async (userId: string): Promise<PreloadResult> => {
   try {
-    // 통합 엔드포인트로 한 번에 사용자 데이터 로딩
-    const response = await api('GET', '/api/app-init/user-essentials');
+    // 프로파일 데이터만 로딩
+    const response = await api('GET', '/api/profiles');
     
     if (!response.success) {
-      throw new Error(response.error || '사용자 데이터 로딩 실패');
+      throw new Error(response.error || '사용자 프로파일 로딩 실패');
     }
 
-    const userData = response.data;
-    const hasEssentialData = userData.profile && userData.selectedKeywords;
-
-    // 개별 데이터 캐싱 (향후 빠른 접근을 위해)
-    if (userData.profile) {
-      await cache.set(`${CACHE_KEYS.USER_PROFILE}${userId}`, userData.profile, CACHE_TTL.USER_PROFILE);
-    }
+    const profile = response.data;
     
-    if (userData.selectedKeywords) {
-      await cache.set(`${CACHE_KEYS.USER_KEYWORDS}${userId}`, userData.selectedKeywords, CACHE_TTL.USER_KEYWORDS);
+    // 프로파일 데이터 캐싱
+    if (profile) {
+      await cache.set(`${CACHE_KEYS.USER_PROFILE}${userId}`, profile, CACHE_TTL.USER_PROFILE);
     }
 
     return {
       success: true,
-      canProceed: hasEssentialData,
+      canProceed: !!profile,
       data: {
-        profile: userData.profile,
-        userKeywords: userData.selectedKeywords || [],
-        recentApplications: userData.recentActivity?.applications || []
+        profile: profile
       }
     };
 
   } catch (error) {
-    console.error('사용자 데이터 프리로딩 실패:', error);
+    console.error('사용자 프로파일 프리로딩 실패:', error);
     
-    // 캐시된 데이터로 폴백 시도
-    const fallbackData = await getFallbackUserData(userId);
-    if (fallbackData.profile) {
+    // 캐시된 프로파일 데이터로 폴백 시도
+    const cachedProfile = await cache.get(`${CACHE_KEYS.USER_PROFILE}${userId}`, true); // 만료된 캐시도 허용
+    if (cachedProfile) {
       return {
         success: false,
         canProceed: true,
-        data: fallbackData,
+        data: { profile: cachedProfile },
         errors: [{ 
-          operation: 'preloadUserData', 
-          message: '캐시된 데이터를 사용합니다.' 
+          operation: 'preloadUserProfile', 
+          message: '캐시된 프로파일 데이터를 사용합니다.' 
         }]
       };
     }
@@ -57,34 +50,13 @@ export const preloadUserData = async (userId: string): Promise<PreloadResult> =>
       success: false,
       canProceed: false,
       errors: [{ 
-        operation: 'preloadUserData', 
-        message: error instanceof Error ? error.message : '사용자 데이터 로딩 실패' 
+        operation: 'preloadUserProfile', 
+        message: error instanceof Error ? error.message : '사용자 프로파일 로딩 실패' 
       }]
     };
   }
 };
 
-// 캐시된 데이터로 폴백
-const getFallbackUserData = async (userId: string) => {
-  const fallback: any = {};
-  
-  try {
-    const cachedProfile = await cache.get(`${CACHE_KEYS.USER_PROFILE}${userId}`, true); // 만료된 캐시도 허용
-    if (cachedProfile) {
-      fallback.profile = cachedProfile;
-    }
-    
-    const cachedKeywords = await cache.get(`${CACHE_KEYS.USER_KEYWORDS}${userId}`, true);
-    if (cachedKeywords) {
-      fallback.userKeywords = cachedKeywords;
-    }
-  } catch (error) {
-    console.warn('폴백 데이터 조회 실패:', error);
-  }
-  
-  return fallback;
-};
 
-//룰루 라랄라 !!@@@
-//2222222
+
 
