@@ -104,11 +104,11 @@ const Home = () => {
             />
         )
     }
-    if (loading) {
-        return (
-            <LoadingScreen />
-        )
-    }
+    // if (loading) {
+    //     return (
+    //         <LoadingScreen />
+    //     )
+    // }
     return (
         <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
             <Header/>
@@ -135,20 +135,22 @@ const Home = () => {
                     />
                 }
                 ListEmptyComponent={
-                    <View className="flex-1 justify-center items-center p-8">
-                        <Ionicons name="document-text-outline" size={80} color="#9ca3af" />
-                        <Text className="text-gray-500 text-lg mt-4">
-                            {t('home.no_matching_postings', '매칭되는 공고가 없습니다')}
-                        </Text>
-                        <TouchableOpacity
-                            onPress={() => router.push('/(pages)/(user)/(user-information)/info')}
-                            className="mt-4 px-6 py-3 bg-blue-500 rounded-xl"
-                        >
-                            <Text className="text-white font-medium">
-                                {t('home.set_preferences', '조건 설정하기')}
+                    !loading ? (
+                        <View className="flex-1 justify-center items-center p-8">
+                            <Ionicons name="document-text-outline" size={80} color="#9ca3af" />
+                            <Text className="text-gray-500 text-lg mt-4">
+                                {t('home.no_matching_postings', '매칭되는 공고가 없습니다')}
                             </Text>
-                        </TouchableOpacity>
-                    </View>
+                            <TouchableOpacity
+                                onPress={() => router.push('/(pages)/(user)/(user-information)/info')}
+                                className="mt-4 px-6 py-3 bg-blue-500 rounded-xl"
+                            >
+                                <Text className="text-white font-medium">
+                                    {t('home.set_preferences', '조건 설정하기')}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : null
                 }
             />
         </View>
