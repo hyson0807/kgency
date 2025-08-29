@@ -1,114 +1,162 @@
-# 프론트엔드 구현 가이드
+# 프론트엔드 구현 가이드 (최적화됨)
 
-앱 초기화 시스템의 프론트엔드 구현에 대한 상세 가이드입니다.
+프로필 중심 앱 초기화 시스템의 프론트엔드 구현에 대한 가이드입니다.
 
-**중요**: 이 구현에서 프론트엔드는 서버 API를 통해서만 데이터베이스에 접근합니다. 직접적인 Supabase 클라이언트 사용은 하지 않습니다.
-
-## 📋 구현 파일 구조
+## 📋 최적화된 파일 구조
 
 ```
+/contexts/
+└── ProfileContext.tsx         # preload된 프로필 전역 상태 관리
+
 /components/app-initializer/
-├── AppInitializer.tsx          # 메인 초기화 컴포넌트
-├── InitializationScreen.tsx    # 로딩 UI 컴포넌트
+├── AppInitializer.tsx          # 프로필 중심 초기화 컴포넌트
+├── InitializationScreen.tsx    # 로딩 UI 컴포넌트  
+├── SkeletonScreen.tsx         # 스켈레톤 UI 컴포넌트
 └── ErrorBoundary.tsx          # 초기화 에러 처리
 
 /lib/preloader/
-├── keywordPreloader.ts        # 키워드 마스터 데이터 로딩
-├── userPreloader.ts          # 사용자별 데이터 로딩
-├── companyPreloader.ts       # 회사별 데이터 로딩
+├── userPreloader.ts          # 사용자 프로필만 로딩
+├── companyPreloader.ts       # 회사 프로필만 로딩
 ├── types.ts                  # 프리로더 타입 정의
-└── index.ts                 # 통합 API
+└── index.ts                 # 통합 preload 함수
 
 /lib/cache/
-├── AsyncStorageCache.ts      # AsyncStorage 캐시 매니저
-├── CacheStrategy.ts         # 캐싱 전략 로직
-└── CacheKeys.ts            # 캐시 키 관리
+├── AsyncStorageCache.ts      # AsyncStorage 캐시 매니저 클래스
+└── CacheKeys.ts            # 캐시 키와 TTL 관리
+
+/lib/offline/
+└── OfflineManager.ts        # 오프라인 모드 지원
 
 /hooks/
-└── useAppInitialization.ts  # 초기화 커스텀 훅
+├── useProfile.ts           # 개선된 cache-first 전략
+├── useUserKeywords.ts      # 키워드 개별 로딩 (기존 유지)
+└── useApplications.ts      # 지원내역 개별 로딩 (기존 유지)
 ```
 
 ## 🔧 핵심 컴포넌트 구현
 
-### 1. AppInitializer.tsx
+### 1. ProfileContext.tsx (신규)
+
+```typescript
+// contexts/ProfileContext.tsx
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+// 프로필 타입 정의
+interface Profile {
+  id: string;
+  user_type: 'user' | 'company';
+  name: string;
+  phone_number: string;
+  email?: string;
+  address?: string;
+  description?: string;
+  onboarding_completed: boolean;
+  job_seeking_active?: boolean;
+  profile_image_url?: string | null;
+  created_at?: string;
+}
+
+interface UserInfo {
+  id: string;
+  user_id: string;
+  name?: string;
+  age?: number;
+  gender?: string;
+  visa?: string;
+  korean_level?: string;
+  how_long?: string | null;
+  experience?: string | null;
+  topic?: string;
+  experience_content?: string | null;
+  preferred_days?: string[];
+  preferred_times?: string[];
+}
+
+type FullProfile = Profile & {
+  user_info?: UserInfo;
+};
+
+interface ProfileContextType {
+  preloadedProfile: FullProfile | null;
+  setPreloadedProfile: (profile: FullProfile | null) => void;
+  isProfilePreloaded: boolean;
+}
+
+const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
+
+export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [preloadedProfile, setPreloadedProfile] = useState<FullProfile | null>(null);
+
+  const value = {
+    preloadedProfile,
+    setPreloadedProfile,
+    isProfilePreloaded: !!preloadedProfile,
+  };
+
+  return (
+    <ProfileContext.Provider value={value}>
+      {children}
+    </ProfileContext.Provider>
+  );
+};
+
+export const useProfileContext = () => {
+  const context = useContext(ProfileContext);
+  if (context === undefined) {
+    throw new Error('useProfileContext must be used within a ProfileProvider');
+  }
+  return context;
+};
+```
+
+### 2. AppInitializer.tsx (최적화됨)
 
 ```typescript
 // components/app-initializer/AppInitializer.tsx
 import React, { useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProfileContext } from '@/contexts/ProfileContext';
 import { preloadAppData } from '@/lib/preloader';
 import { InitializationScreen } from './InitializationScreen';
+import { SkeletonScreen } from './SkeletonScreen';
 import { ErrorBoundary } from './ErrorBoundary';
 
 interface AppInitializerProps {
   children: ReactNode;
 }
 
-interface InitializationState {
-  isInitialized: boolean;
-  isLoading: boolean;
-  error: string | null;
-  progress: number;
-  currentOperation: string;
-}
-
 export const AppInitializer: React.FC<AppInitializerProps> = ({ children }) => {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
-  const [state, setState] = useState<InitializationState>({
+  const { setPreloadedProfile } = useProfileContext();
+  const [state, setState] = useState({
     isInitialized: false,
     isLoading: true,
     error: null,
     progress: 0,
-    currentOperation: '초기화 준비 중...'
+    currentOperation: '초기화 준비 중...',
+    showSkeletonScreen: false
   });
-
-  const updateProgress = (progress: number, operation: string) => {
-    setState(prev => ({
-      ...prev,
-      progress,
-      currentOperation: operation
-    }));
-  };
 
   const initializeApp = async () => {
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
-
-      // AuthContext 로딩이 완료될 때까지 대기
-      if (authLoading) {
-        updateProgress(10, '인증 상태 확인 중...');
-        return;
-      }
-
-      // 비로그인 사용자는 초기화 스킵
-      if (!isAuthenticated || !user) {
-        setState(prev => ({
-          ...prev,
-          isInitialized: true,
-          isLoading: false,
-          progress: 100,
-          currentOperation: '완료'
-        }));
-        return;
-      }
-
-      updateProgress(20, '필수 데이터 로딩 중...');
-
-      // 메인 데이터 프리로딩
-      const result = await preloadAppData(user, updateProgress);
-
-      if (!result.success) {
-        // 부분 실패의 경우 필수 데이터가 있으면 진행
-        if (result.canProceed) {
-          console.warn('일부 데이터 로딩 실패:', result.errors);
-          updateProgress(90, '부분 데이터로 시작...');
-        } else {
-          throw new Error(result.errors?.[0]?.message || '초기화 실패');
-        }
-      }
-
-      updateProgress(100, '초기화 완료');
+      // 인증 확인
+      if (authLoading) return;
       
+      if (!isAuthenticated || !user) {
+        setState(prev => ({ ...prev, isInitialized: true, isLoading: false }));
+        return;
+      }
+
+      // 프로필 데이터 preload
+      const result = await preloadAppData(user, (progress, operation) => {
+        setState(prev => ({ ...prev, progress, currentOperation: operation }));
+      });
+
+      // preload된 프로필 데이터를 Context에 저장
+      if (result.data?.profile) {
+        setPreloadedProfile(result.data.profile);
+      }
+
       // 초기화 완료
       setState(prev => ({
         ...prev,
@@ -117,31 +165,28 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({ children }) => {
       }));
 
     } catch (error) {
-      console.error('앱 초기화 실패:', error);
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
+        error: error instanceof Error ? error.message : '초기화 실패'
       }));
     }
   };
 
-  const handleRetry = () => {
-    setState(prev => ({
-      ...prev,
-      error: null,
-      progress: 0,
-      currentOperation: '재시도 중...'
-    }));
-    initializeApp();
-  };
-
-  // AuthContext 상태 변화 감지
   useEffect(() => {
     initializeApp();
   }, [authLoading, isAuthenticated, user?.userId]);
 
-  // 초기화 중이거나 에러가 있는 경우 로딩 화면 표시
+  // 스켈레톤 스크린 표시 (진행률 70% 이상)
+  if (state.showSkeletonScreen && user) {
+    return (
+      <ErrorBoundary>
+        <SkeletonScreen variant="home" userType={user.userType} animated={true} />
+      </ErrorBoundary>
+    );
+  }
+
+  // 초기화 중이거나 에러가 있는 경우 로딩 화면
   if (state.isLoading || state.error) {
     return (
       <ErrorBoundary>
@@ -149,750 +194,344 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({ children }) => {
           progress={state.progress}
           currentOperation={state.currentOperation}
           error={state.error}
-          onRetry={handleRetry}
+          onRetry={() => initializeApp()}
         />
       </ErrorBoundary>
     );
   }
 
   // 초기화 완료 후 메인 앱 렌더링
-  return <>{children}</>;
+  return <ErrorBoundary>{children}</ErrorBoundary>;
 };
 ```
 
-### 2. InitializationScreen.tsx
-
-```typescript
-// components/app-initializer/InitializationScreen.tsx
-import React from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-
-interface InitializationScreenProps {
-  progress: number;
-  currentOperation: string;
-  error: string | null;
-  onRetry: () => void;
-}
-
-export const InitializationScreen: React.FC<InitializationScreenProps> = ({
-  progress,
-  currentOperation,
-  error,
-  onRetry
-}) => {
-  if (error) {
-    return (
-      <View className="flex-1 justify-center items-center bg-white px-6">
-        <Ionicons name="warning-outline" size={64} color="#ef4444" />
-        
-        <Text className="text-xl font-bold text-gray-900 mt-4 text-center">
-          초기화 중 오류가 발생했습니다
-        </Text>
-        
-        <Text className="text-sm text-gray-600 mt-2 text-center">
-          {error}
-        </Text>
-        
-        <TouchableOpacity
-          onPress={onRetry}
-          className="bg-blue-500 px-6 py-3 rounded-lg mt-6"
-        >
-          <Text className="text-white font-semibold">다시 시도</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          onPress={() => {/* 오프라인 모드 또는 스킵 로직 */}}
-          className="mt-4"
-        >
-          <Text className="text-gray-500 underline">건너뛰기</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  return (
-    <View className="flex-1 justify-center items-center bg-white px-6">
-      {/* 로고 또는 아이콘 */}
-      <View className="mb-8">
-        <Text className="text-3xl font-bold text-blue-600 text-center">
-          kgency
-        </Text>
-      </View>
-      
-      {/* 로딩 인디케이터 */}
-      <ActivityIndicator size="large" color="#3b82f6" />
-      
-      {/* 진행률 표시 */}
-      <View className="w-full mt-6">
-        <View className="bg-gray-200 rounded-full h-2">
-          <View 
-            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </View>
-        
-        <Text className="text-sm text-gray-600 mt-2 text-center">
-          {Math.round(progress)}%
-        </Text>
-      </View>
-      
-      {/* 현재 작업 표시 */}
-      <Text className="text-base text-gray-700 mt-4 text-center">
-        {currentOperation}
-      </Text>
-      
-      {/* 팁이나 안내 메시지 */}
-      <Text className="text-xs text-gray-500 mt-8 text-center">
-        앱을 처음 사용하시면 데이터 준비에 시간이 걸릴 수 있습니다.
-      </Text>
-    </View>
-  );
-};
-```
-
-### 3. ErrorBoundary.tsx
-
-```typescript
-// components/app-initializer/ErrorBoundary.tsx
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-
-interface Props {
-  children: ReactNode;
-}
-
-interface State {
-  hasError: boolean;
-  error: Error | null;
-}
-
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('초기화 ErrorBoundary에서 에러 캐치:', error, errorInfo);
-    
-    // 에러 리포팅 서비스에 전송 (선택사항)
-    // crashlytics().recordError(error);
-  }
-
-  handleRetry = () => {
-    this.setState({ hasError: false, error: null });
-  };
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <View className="flex-1 justify-center items-center bg-white px-6">
-          <Ionicons name="bug-outline" size={64} color="#ef4444" />
-          
-          <Text className="text-xl font-bold text-gray-900 mt-4 text-center">
-            예기치 못한 오류가 발생했습니다
-          </Text>
-          
-          <Text className="text-sm text-gray-600 mt-2 text-center">
-            앱을 다시 시작해주세요. 문제가 계속되면 고객센터에 문의해주세요.
-          </Text>
-          
-          {/* 개발 모드에서만 에러 정보 표시 */}
-          {__DEV__ && this.state.error && (
-            <Text className="text-xs text-red-500 mt-4 text-center">
-              {this.state.error.message}
-            </Text>
-          )}
-          
-          <TouchableOpacity
-            onPress={this.handleRetry}
-            className="bg-blue-500 px-6 py-3 rounded-lg mt-6"
-          >
-            <Text className="text-white font-semibold">다시 시도</Text>
-          </TouchableOpacity>
-        </View>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-```
-
-## 📦 데이터 프리로딩 서비스
-
-### 1. 통합 프리로더 (index.ts)
-
-```typescript
-// lib/preloader/index.ts
-import { User } from '@/contexts/AuthContext';
-import { preloadKeywords } from './keywordPreloader';
-import { preloadUserData } from './userPreloader';
-import { preloadCompanyData } from './companyPreloader';
-import { PreloadResult, ProgressCallback } from './types';
-
-export const preloadAppData = async (
-  user: User,
-  onProgress?: ProgressCallback
-): Promise<PreloadResult> => {
-  try {
-    const results: PreloadResult[] = [];
-    let totalProgress = 20; // 시작 진행률
-
-    // 1. 키워드 마스터 데이터 (모든 사용자 공통)
-    onProgress?.(totalProgress, '키워드 데이터 로딩 중...');
-    const keywordResult = await preloadKeywords();
-    results.push(keywordResult);
-    totalProgress = 50;
-
-    // 2. 사용자 타입별 데이터
-    onProgress?.(totalProgress, '사용자 데이터 로딩 중...');
-    
-    let userDataResult: PreloadResult;
-    if (user.userType === 'user') {
-      userDataResult = await preloadUserData(user.userId);
-    } else {
-      userDataResult = await preloadCompanyData(user.userId);
-    }
-    
-    results.push(userDataResult);
-    totalProgress = 80;
-
-    // 3. 푸시 토큰 등록 (백그라운드)
-    onProgress?.(totalProgress, '푸시 알림 설정 중...');
-    try {
-      const { registerForPushNotificationsAsync, savePushToken } = await import('@/lib/notifications');
-      const pushToken = await registerForPushNotificationsAsync();
-      if (pushToken) {
-        await savePushToken(user.userId);
-      }
-    } catch (pushError) {
-      console.warn('푸시 토큰 등록 실패 (무시됨):', pushError);
-    }
-
-    // 결과 통합
-    const allSuccess = results.every(result => result.success);
-    const allErrors = results.flatMap(result => result.errors || []);
-    const hasEssentialData = results.some(result => 
-      result.success && (result.data?.keywords || result.data?.profile)
-    );
-
-    onProgress?.(90, '초기화 완료 중...');
-
-    return {
-      success: allSuccess,
-      canProceed: hasEssentialData,
-      data: results.reduce((acc, result) => ({ ...acc, ...result.data }), {}),
-      errors: allErrors.length > 0 ? allErrors : undefined
-    };
-
-  } catch (error) {
-    console.error('앱 데이터 프리로딩 실패:', error);
-    return {
-      success: false,
-      canProceed: false,
-      errors: [{ 
-        operation: 'preloadAppData', 
-        message: error instanceof Error ? error.message : '알 수 없는 오류' 
-      }]
-    };
-  }
-};
-```
-
-### 2. 키워드 프리로더
-
-```typescript
-// lib/preloader/keywordPreloader.ts
-import { api } from '@/lib/api';
-import { CacheManager } from '@/lib/cache/AsyncStorageCache';
-import { CACHE_KEYS } from '@/lib/cache/CacheKeys';
-import { PreloadResult } from './types';
-
-const cache = new CacheManager();
-
-export const preloadKeywords = async (): Promise<PreloadResult> => {
-  try {
-    // 1. 캐시에서 먼저 확인
-    const cachedKeywords = await cache.get(CACHE_KEYS.KEYWORDS);
-    if (cachedKeywords) {
-      console.log('키워드 캐시에서 로딩');
-      return {
-        success: true,
-        canProceed: true,
-        data: { keywords: cachedKeywords }
-      };
-    }
-
-    // 2. 서버에서 로딩
-    const response = await api('GET', '/api/app-init/keywords');
-    if (!response.success || !response.data) {
-      throw new Error(response.error || '키워드 데이터를 불러올 수 없습니다.');
-    }
-
-    const keywords = response.data.keywords;
-
-    // 3. 캐시에 저장 (24시간)
-    await cache.set(CACHE_KEYS.KEYWORDS, keywords, 24 * 60 * 60 * 1000);
-
-    // 4. 카테고리별로 정리
-    const keywordsByCategory = keywords.reduce((acc: any, keyword: any) => {
-      if (!acc[keyword.category]) {
-        acc[keyword.category] = [];
-      }
-      acc[keyword.category].push(keyword);
-      return acc;
-    }, {});
-
-    return {
-      success: true,
-      canProceed: true,
-      data: { 
-        keywords: keywords,
-        keywordsByCategory: keywordsByCategory
-      }
-    };
-
-  } catch (error) {
-    console.error('키워드 프리로딩 실패:', error);
-    
-    // 캐시된 데이터라도 있으면 사용
-    const fallbackKeywords = await cache.get(CACHE_KEYS.KEYWORDS, true); // 만료된 캐시도 허용
-    if (fallbackKeywords) {
-      return {
-        success: false,
-        canProceed: true,
-        data: { keywords: fallbackKeywords },
-        errors: [{ operation: 'preloadKeywords', message: '최신 데이터를 불러올 수 없어 캐시된 데이터를 사용합니다.' }]
-      };
-    }
-
-    return {
-      success: false,
-      canProceed: false,
-      errors: [{ 
-        operation: 'preloadKeywords', 
-        message: error instanceof Error ? error.message : '키워드 로딩 실패' 
-      }]
-    };
-  }
-};
-```
-
-### 3. 사용자 데이터 프리로더
+### 3. 프리로더 시스템 (최적화됨)
 
 ```typescript
 // lib/preloader/userPreloader.ts
 import { api } from '@/lib/api';
 import { CacheManager } from '@/lib/cache/AsyncStorageCache';
-import { CACHE_KEYS } from '@/lib/cache/CacheKeys';
+import { CACHE_KEYS, CACHE_TTL } from '@/lib/cache/CacheKeys';
 import { PreloadResult } from './types';
 
 const cache = new CacheManager();
 
-export const preloadUserData = async (userId: string): Promise<PreloadResult> => {
+export const preloadUserProfile = async (userId: string): Promise<PreloadResult> => {
   try {
-    // 통합 엔드포인트로 한 번에 사용자 데이터 로딩
-    const response = await api('GET', '/api/app-init/user-essentials');
+    // 프로필 데이터만 로딩
+    const response = await api('GET', '/api/profiles');
     
     if (!response.success) {
-      throw new Error(response.error || '사용자 데이터 로딩 실패');
+      throw new Error(response.error || '사용자 프로필 로딩 실패');
     }
 
-    const userData = response.data;
-    const hasEssentialData = userData.profile && userData.keywords;
-
-    // 개별 데이터 캐싱 (향후 빠른 접근을 위해)
-    if (userData.profile) {
-      await cache.set(`${CACHE_KEYS.USER_PROFILE}${userId}`, userData.profile, 60 * 60 * 1000);
-    }
+    const profile = response.data;
     
-    if (userData.keywords) {
-      await cache.set(`${CACHE_KEYS.USER_KEYWORDS}${userId}`, userData.keywords, 60 * 60 * 1000);
+    // 프로필 데이터 캐싱
+    if (profile) {
+      await cache.set(`${CACHE_KEYS.USER_PROFILE}${userId}`, profile, CACHE_TTL.USER_PROFILE);
     }
 
     return {
       success: true,
-      canProceed: hasEssentialData,
-      data: {
-        profile: userData.profile,
-        userKeywords: userData.keywords,
-        recentApplications: userData.recentActivity?.applications || []
-      }
+      canProceed: !!profile,
+      data: { profile: profile }
     };
 
   } catch (error) {
-    console.error('사용자 데이터 프리로딩 실패:', error);
-    
-    // 캐시된 데이터로 폴백 시도
-    const fallbackData = await getFallbackUserData(userId);
-    if (fallbackData.profile) {
+    // 캐시된 프로필 데이터로 폴백 시도
+    const cachedProfile = await cache.get(`${CACHE_KEYS.USER_PROFILE}${userId}`, true);
+    if (cachedProfile) {
       return {
         success: false,
         canProceed: true,
-        data: fallbackData,
-        errors: [{ 
-          operation: 'preloadUserData', 
-          message: '캐시된 데이터를 사용합니다.' 
-        }]
+        data: { profile: cachedProfile },
+        errors: [{ operation: 'preloadUserProfile', message: '캐시된 프로필 데이터를 사용합니다.' }]
       };
     }
     
     return {
       success: false,
       canProceed: false,
-      errors: [{ 
-        operation: 'preloadUserData', 
-        message: error instanceof Error ? error.message : '사용자 데이터 로딩 실패' 
-      }]
+      errors: [{ operation: 'preloadUserProfile', message: error instanceof Error ? error.message : '사용자 프로필 로딩 실패' }]
     };
   }
 };
-
-// 캐시된 데이터로 폴백
-const getFallbackUserData = async (userId: string) => {
-  const fallback: any = {};
-  
-  try {
-    const cachedProfile = await cache.get(`${CACHE_KEYS.USER_PROFILE}${userId}`, true); // 만료된 캐시도 허용
-    if (cachedProfile) {
-      fallback.profile = cachedProfile;
-    }
-    
-    const cachedKeywords = await cache.get(`${CACHE_KEYS.USER_KEYWORDS}${userId}`, true);
-    if (cachedKeywords) {
-      fallback.userKeywords = cachedKeywords;
-    }
-  } catch (error) {
-    console.warn('폴백 데이터 조회 실패:', error);
-  }
-  
-  return fallback;
-};
 ```
-
-### 4. 회사 데이터 프리로더
 
 ```typescript
 // lib/preloader/companyPreloader.ts
-import { api } from '@/lib/api';
-import { CacheManager } from '@/lib/cache/AsyncStorageCache';
-import { CACHE_KEYS } from '@/lib/cache/CacheKeys';
-import { PreloadResult } from './types';
-
-const cache = new CacheManager();
-
-export const preloadCompanyData = async (companyId: string): Promise<PreloadResult> => {
+export const preloadCompanyProfile = async (companyId: string): Promise<PreloadResult> => {
   try {
-    // 통합 엔드포인트로 한 번에 회사 데이터 로딩
-    const response = await api('GET', '/api/app-init/user-essentials'); // 서버에서 userType에 따라 분기 처리
+    // 회사 프로필 데이터만 로딩
+    const response = await api('GET', '/api/profiles');
     
     if (!response.success) {
-      throw new Error(response.error || '회사 데이터 로딩 실패');
+      throw new Error(response.error || '회사 프로필 로딩 실패');
     }
 
-    const companyData = response.data;
-    const hasEssentialData = companyData.profile;
+    const profile = response.data;
 
-    // 개별 데이터 캐싱
-    if (companyData.profile) {
-      await cache.set(`${CACHE_KEYS.COMPANY_PROFILE}${companyId}`, companyData.profile, 60 * 60 * 1000);
-    }
-    
-    if (companyData.keywords) {
-      await cache.set(`${CACHE_KEYS.COMPANY_KEYWORDS}${companyId}`, companyData.keywords, 60 * 60 * 1000);
+    // 프로필 데이터 캐싱
+    if (profile) {
+      await cache.set(`${CACHE_KEYS.COMPANY_PROFILE}${companyId}`, profile, CACHE_TTL.USER_PROFILE);
     }
 
     return {
       success: true,
-      canProceed: hasEssentialData,
-      data: {
-        profile: companyData.profile,
-        companyKeywords: companyData.keywords || [],
-        activeJobPostings: companyData.recentActivity?.jobPostings || []
-      }
+      canProceed: !!profile,
+      data: { profile: profile }
     };
 
   } catch (error) {
-    console.error('회사 데이터 프리로딩 실패:', error);
-    
-    // 캐시된 데이터로 폴백 시도
-    const fallbackData = await getFallbackCompanyData(companyId);
-    if (fallbackData.profile) {
+    // 캐시된 프로필 데이터로 폴백 시도
+    const cachedProfile = await cache.get(`${CACHE_KEYS.COMPANY_PROFILE}${companyId}`, true);
+    if (cachedProfile) {
       return {
         success: false,
         canProceed: true,
-        data: fallbackData,
-        errors: [{ 
-          operation: 'preloadCompanyData', 
-          message: '캐시된 데이터를 사용합니다.' 
-        }]
+        data: { profile: cachedProfile },
+        errors: [{ operation: 'preloadCompanyProfile', message: '캐시된 프로필 데이터를 사용합니다.' }]
       };
     }
     
     return {
       success: false,
       canProceed: false,
-      errors: [{ 
-        operation: 'preloadCompanyData', 
-        message: error instanceof Error ? error.message : '회사 데이터 로딩 실패' 
-      }]
+      errors: [{ operation: 'preloadCompanyProfile', message: error instanceof Error ? error.message : '회사 프로필 로딩 실패' }]
     };
   }
 };
+```
 
-// 캐시된 데이터로 폴백
-const getFallbackCompanyData = async (companyId: string) => {
-  const fallback: any = {};
+```typescript
+// lib/preloader/index.ts
+import { User } from '@/contexts/AuthContext';
+import { preloadUserProfile } from './userPreloader';
+import { preloadCompanyProfile } from './companyPreloader';
+import { PreloadResult, ProgressCallback } from './types';
+import { offlineManager } from '@/lib/offline/OfflineManager';
+
+export const preloadAppData = async (
+  user: User,
+  onProgress?: ProgressCallback
+): Promise<PreloadResult> => {
+  const isOffline = offlineManager.isOffline();
   
   try {
-    const cachedProfile = await cache.get(`${CACHE_KEYS.COMPANY_PROFILE}${companyId}`, true);
-    if (cachedProfile) {
-      fallback.profile = cachedProfile;
+    console.log(`🚀 프로파일 데이터 프리로딩 시작: ${user.userType}(${user.userId || 'unknown'})`);
+    
+    // 오프라인 모드인 경우 캐시된 데이터 확인
+    if (isOffline) {
+      return await handleOfflinePreload(user, onProgress);
     }
     
-    const cachedKeywords = await cache.get(`${CACHE_KEYS.COMPANY_KEYWORDS}${companyId}`, true);
-    if (cachedKeywords) {
-      fallback.companyKeywords = cachedKeywords;
+    onProgress?.(20, '프로파일 데이터 로딩 중...');
+
+    // 사용자 타입별 프로파일 데이터만 로드
+    let profileResult: PreloadResult;
+    if (user.userType === 'user') {
+      profileResult = await preloadUserProfile(user.userId || '');
+    } else {
+      profileResult = await preloadCompanyProfile(user.userId || '');
     }
+    
+    // 오프라인 데이터 저장
+    onProgress?.(60, '오프라인 데이터 저장 중...');
+    try {
+      if (profileResult.data) {
+        await offlineManager.saveOfflineData(user.userId || '', user.userType, profileResult.data);
+      }
+    } catch (offlineError) {
+      console.warn('오프라인 데이터 저장 실패:', offlineError);
+    }
+
+    onProgress?.(90, '초기화 완료 중...');
+
+    const finalResult = {
+      success: profileResult.success,
+      canProceed: profileResult.canProceed && !!profileResult.data?.profile,
+      data: profileResult.data,
+      errors: profileResult.errors,
+      isOfflineMode: false,
+      networkStatus: offlineManager.getNetworkStatus()
+    };
+    
+    console.log(`✅ 프로파일 프리로딩 완료: 성공=${profileResult.success}`);
+    return finalResult;
+
   } catch (error) {
-    console.warn('폴백 데이터 조회 실패:', error);
+    console.error('프로파일 데이터 프리로딩 실패:', error);
+    
+    // 온라인 모드에서 실패 시 오프라인 데이터로 폴백 시도
+    if (!isOffline) {
+      try {
+        return await handleOfflinePreload(user, onProgress, error);
+      } catch (fallbackError) {
+        console.error('오프라인 폴백도 실패:', fallbackError);
+      }
+    }
+    
+    return {
+      success: false,
+      canProceed: false,
+      errors: [{ operation: 'preloadAppData', message: error instanceof Error ? error.message : '알 수 없는 오류' }],
+      isOfflineMode: isOffline,
+      networkStatus: offlineManager.getNetworkStatus()
+    };
   }
-  
-  return fallback;
 };
 ```
 
-## 💾 캐싱 시스템
-
-### 1. AsyncStorage 캐시 매니저
+### 4. useProfile Hook (개선됨)
 
 ```typescript
-// lib/cache/AsyncStorageCache.ts
+// hooks/useProfile.ts
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useProfileContext } from '@/contexts/ProfileContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from "expo-router";
+import { api } from "@/lib/api";
 
-interface CacheItem<T> {
-  data: T;
-  timestamp: number;
-  ttl: number;
-}
+export const useProfile = () => {
+    const { user } = useAuth();
+    const { preloadedProfile, setPreloadedProfile } = useProfileContext();
+    const [profile, setProfile] = useState(preloadedProfile);
+    const [loading, setLoading] = useState(!preloadedProfile);
+    const [error, setError] = useState<string | null>(null);
 
-export class CacheManager {
-  async set<T>(key: string, data: T, ttlMs: number): Promise<void> {
-    try {
-      const cacheItem: CacheItem<T> = {
-        data,
-        timestamp: Date.now(),
-        ttl: ttlMs
-      };
-      
-      await AsyncStorage.setItem(key, JSON.stringify(cacheItem));
-    } catch (error) {
-      console.warn('캐시 저장 실패:', key, error);
-    }
-  }
+    // 프로필 가져오기 (cache-first 전략)
+    const fetchProfile = async () => {
+        if (!user) {
+            setLoading(false);
+            return;
+        }
 
-  async get<T>(key: string, allowExpired: boolean = false): Promise<T | null> {
-    try {
-      const item = await AsyncStorage.getItem(key);
-      if (!item) return null;
+        // 이미 preloaded 프로필이 있으면 사용
+        if (preloadedProfile) {
+            setProfile(preloadedProfile);
+            setLoading(false);
+            return;
+        }
 
-      const cacheItem: CacheItem<T> = JSON.parse(item);
-      const isExpired = Date.now() - cacheItem.timestamp > cacheItem.ttl;
+        try {
+            setError(null);
+            const response = await api('GET', '/api/profiles');
+            if (!response.success) {
+                if (response.error === '프로필이 존재하지 않습니다.') {
+                    await AsyncStorage.removeItem('authToken');
+                    await AsyncStorage.removeItem('userData');
+                    await AsyncStorage.removeItem('userProfile');
+                    router.replace('/start');
+                    return;
+                }
+                throw new Error(response.error);
+            }
+            
+            const fullProfile = response.data;
+            setProfile(fullProfile);
+            setPreloadedProfile(fullProfile); // Context에도 저장
+            await AsyncStorage.setItem('userProfile', JSON.stringify(fullProfile));
+        } catch (error) {
+            setError('프로필을 불러오는데 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-      if (isExpired && !allowExpired) {
-        await this.remove(key);
-        return null;
-      }
+    // 프로필 업데이트
+    const updateProfile = async (updates: any): Promise<boolean> => {
+        if (!user || !profile) return false;
 
-      return cacheItem.data;
-    } catch (error) {
-      console.warn('캐시 조회 실패:', key, error);
-      return null;
-    }
-  }
+        try {
+            setError(null);
+            const response = await api('PUT', '/api/profiles', updates);
+            if (!response.success) {
+                throw new Error(response.error);
+            }
+            
+            // 프로필 다시 가져오기
+            await fetchProfile();
+            // Context의 preloaded 프로필도 무효화
+            setPreloadedProfile(null);
+            return true;
+        } catch (error) {
+            setError('프로필 업데이트에 실패했습니다.');
+            return false;
+        }
+    };
 
-  async remove(key: string): Promise<void> {
-    try {
-      await AsyncStorage.removeItem(key);
-    } catch (error) {
-      console.warn('캐시 삭제 실패:', key, error);
-    }
-  }
+    // 컴포넌트 마운트 시 프로필 가져오기
+    useEffect(() => {
+        if (user?.userId) {
+            // preloaded 프로필이 있으면 즉시 사용, 없으면 fetch
+            if (preloadedProfile) {
+                setProfile(preloadedProfile);
+                setLoading(false);
+            } else {
+                fetchProfile();
+            }
+        } else {
+            setLoading(false);
+        }
+    }, [user?.userId, preloadedProfile]);
 
-  async clear(): Promise<void> {
-    try {
-      const keys = await AsyncStorage.getAllKeys();
-      const cacheKeys = keys.filter(key => key.startsWith('cache:'));
-      await AsyncStorage.multiRemove(cacheKeys);
-    } catch (error) {
-      console.warn('캐시 전체 삭제 실패:', error);
-    }
-  }
-
-  async getSize(): Promise<number> {
-    try {
-      const keys = await AsyncStorage.getAllKeys();
-      const cacheKeys = keys.filter(key => key.startsWith('cache:'));
-      return cacheKeys.length;
-    } catch (error) {
-      console.warn('캐시 크기 조회 실패:', error);
-      return 0;
-    }
-  }
-}
+    return {
+        profile,
+        loading,
+        error,
+        updateProfile,
+        refreshProfile: () => {
+            setPreloadedProfile(null);
+            fetchProfile();
+        },
+        fetchProfile
+    };
+};
 ```
 
-### 2. 캐시 키 관리
+## 🚀 통합 가이드
+
+### _layout.tsx에 Provider 추가
 
 ```typescript
-// lib/cache/CacheKeys.ts
-export const CACHE_KEYS = {
-  // 공통 데이터
-  KEYWORDS: 'cache:keywords:all',
-  APP_CONFIG: 'cache:app:config',
-  
-  // 사용자별 데이터
-  USER_PROFILE: 'cache:profile:user:',
-  USER_KEYWORDS: 'cache:keywords:user:',
-  USER_APPLICATIONS: 'cache:applications:user:',
-  
-  // 회사별 데이터
-  COMPANY_PROFILE: 'cache:profile:company:',
-  COMPANY_KEYWORDS: 'cache:keywords:company:',
-  COMPANY_JOB_POSTINGS: 'cache:jobpostings:company:',
-  
-  // 임시 데이터
-  TEMP_DATA: 'cache:temp:',
-  
-  // 버전 정보
-  DATA_VERSION: 'cache:version:data'
-} as const;
-
-// 캐시 TTL 설정 (밀리초)
-export const CACHE_TTL = {
-  KEYWORDS: 24 * 60 * 60 * 1000,      // 24시간
-  USER_PROFILE: 60 * 60 * 1000,       // 1시간
-  USER_KEYWORDS: 60 * 60 * 1000,      // 1시간
-  JOB_POSTINGS: 30 * 60 * 1000,       // 30분
-  APP_CONFIG: 6 * 60 * 60 * 1000,     // 6시간
-  TEMP_DATA: 10 * 60 * 1000           // 10분
-} as const;
-```
-
-## 🎨 타입 정의
-
-```typescript
-// lib/preloader/types.ts
-export interface PreloadResult {
-  success: boolean;
-  canProceed: boolean;
-  data?: Record<string, any>;
-  errors?: PreloadError[];
-}
-
-export interface PreloadError {
-  operation: string;
-  message: string;
-  code?: string;
-}
-
-export type ProgressCallback = (progress: number, operation: string) => void;
-
-export interface AppInitializationData {
-  keywords?: any[];
-  keywordsByCategory?: Record<string, any[]>;
-  profile?: any;
-  userKeywords?: any[];
-  companyKeywords?: any[];
-  recentApplications?: any[];
-  activeJobPostings?: any[];
-  appConfig?: any;
-}
-```
-
-## 🔧 _layout.tsx 통합
-
-```typescript
-// app/_layout.tsx 수정
-import {Stack} from "expo-router";
-import "./global.css"
-import {AuthProvider} from "@/contexts/AuthContext";
-import {SafeAreaProvider} from "react-native-safe-area-context";
-import {TranslationProvider} from "@/contexts/TranslationContext";
-import {NotificationProvider} from "@/contexts/NotificationContext";
-import {TabBarProvider} from "@/contexts/TabBarContext";
-import {UpdateManager} from "@/components/shared/update-manager";
-import {AppInitializer} from "@/components/app-initializer/AppInitializer"; // 추가
+// app/_layout.tsx
+import { ProfileProvider } from "@/contexts/ProfileContext";
 
 export default function RootLayout() {
   return (
-      <UpdateManager>
-          <TranslationProvider>
-                <AuthProvider>
-                    <AppInitializer> {/* 추가 */}
-                        <NotificationProvider>
-                            <TabBarProvider>
-                                <SafeAreaProvider>
-                                    <Stack
-                                        screenOptions={{
-                                            headerShown: false,
-                                        }}
-                                    />
-                                </SafeAreaProvider>
-                            </TabBarProvider>
-                        </NotificationProvider>
-                    </AppInitializer> {/* 추가 */}
-                </AuthProvider>
-          </TranslationProvider>
-      </UpdateManager>
+    <UpdateManager>
+      <TranslationProvider>
+        <AuthProvider>
+          <ProfileProvider> {/* 신규 추가 */}
+            <NotificationProvider>
+              <TabBarProvider>
+                <SafeAreaProvider>
+                  <Stack screenOptions={{ headerShown: false }} />
+                </SafeAreaProvider>
+              </TabBarProvider>
+            </NotificationProvider>
+          </ProfileProvider>
+        </AuthProvider>
+      </TranslationProvider>
+    </UpdateManager>
   )
 }
 ```
 
-## 🎯 사용 방법
+## 🎯 주요 개선사항
 
-### 커스텀 훅 활용
+### ✅ 완료된 최적화
+1. **프로필 중심 preloading**: 키워드, 지원내역 등 불필요한 데이터 제거
+2. **Context 기반 전역 상태**: preload된 프로필을 앱 전체에서 활용
+3. **Cache-First 전략**: useProfile hook이 preload된 데이터 우선 사용
+4. **중복 제거**: 같은 프로필 데이터를 두 번 요청하지 않음
+5. **빠른 초기화**: 최소한의 데이터로 앱 시작 시간 단축
 
-```typescript
-// hooks/useAppInitialization.ts
-import { useContext, createContext } from 'react';
+### 💡 핵심 원칙
+- **단일 책임**: 초기화는 프로필만, 나머지는 개별 화면에서 처리
+- **기존 API 활용**: 새로운 서버 엔드포인트 불필요
+- **점진적 개선**: 기존 코드와 호환되면서 성능 개선
 
-interface AppInitializationContextType {
-  isInitialized: boolean;
-  isLoading: boolean;
-  error: string | null;
-  cachedData: any;
-  retryInitialization: () => void;
-}
-
-export const AppInitializationContext = createContext<AppInitializationContextType | undefined>(undefined);
-
-export const useAppInitialization = () => {
-  const context = useContext(AppInitializationContext);
-  if (!context) {
-    throw new Error('useAppInitialization must be used within AppInitializer');
-  }
-  return context;
-};
-```
-
-### 개발 모드 디버깅
-
-```typescript
-// 개발 모드에서만 초기화 상태 로깅
-if (__DEV__) {
-  console.log('초기화 진행률:', progress);
-  console.log('현재 작업:', currentOperation);
-  console.log('캐시 히트:', cacheHits);
-  console.log('네트워크 요청 수:', networkRequests);
-}
-```
-
-이 구현을 통해 kgency 앱은 시작 시 필요한 모든 데이터를 효율적으로 프리로딩하여 사용자에게 훨씬 더 빠른 경험을 제공할 수 있습니다.
+이로써 **프로필 중심의 최적화된 앱 초기화 시스템**이 완성되었습니다. 사용자는 더 빠른 앱 시작을, 개발자는 더 간단한 코드를 얻게 되었습니다.
