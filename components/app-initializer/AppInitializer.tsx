@@ -64,8 +64,8 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({ children }) => {
       }
 
       // 오프라인 상태 확인 및 알림
-      if (isOffline && offlineInfo) {
-        console.log('📱 오프라인 모드 감지:', offlineInfo.message);
+      if (isOffline) {
+        console.log('📱 오프라인 모드 감지');
         
         // 오프라인 데이터 가용성 첫 번째 확인
         const availability = await offlineManager.checkOfflineAvailability(user.userId, user.userType);
@@ -233,7 +233,7 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({ children }) => {
     <ErrorBoundary>
       {children}
       {/* 오프라인 모드 상태 알림 (옵션) */}
-      {state.isOfflineMode && offlineInfo && (
+      {state.isOfflineMode && (
         <View style={{
           position: 'absolute',
           top: 50,
@@ -245,7 +245,7 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({ children }) => {
           zIndex: 1000
         }}>
           <Text style={{ color: 'white', fontSize: 12, textAlign: 'center' }}>
-            📱 {offlineInfo.message}
+            📱 오프라인 모드로 동작 중입니다
           </Text>
         </View>
       )}
