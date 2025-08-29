@@ -17,7 +17,12 @@ export const CACHE_KEYS = {
   TEMP_DATA: 'cache:temp:',
   
   // 버전 정보
-  DATA_VERSION: 'cache:version:data'
+  DATA_VERSION: 'cache:version:data',
+  
+  // 오프라인 모드 관련
+  OFFLINE_DATA: 'cache:offline:',
+  NETWORK_STATUS: 'cache:network:status',
+  SYNC_QUEUE: 'cache:sync:queue'
 } as const;
 
 // 캐시 TTL 설정 (밀리초)
@@ -27,5 +32,7 @@ export const CACHE_TTL = {
   USER_KEYWORDS: 60 * 60 * 1000,      // 1시간
   JOB_POSTINGS: 30 * 60 * 1000,       // 30분
   APP_CONFIG: 6 * 60 * 60 * 1000,     // 6시간
-  TEMP_DATA: 10 * 60 * 1000           // 10분
+  TEMP_DATA: 10 * 60 * 1000,          // 10분
+  OFFLINE_DATA: 7 * 24 * 60 * 60 * 1000, // 7일간 (오프라인 데이터)
+  NETWORK_STATUS: 5 * 60 * 1000       // 5분
 } as const;

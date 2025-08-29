@@ -3,12 +3,17 @@ export interface PreloadResult {
   canProceed: boolean;
   data?: Record<string, any>;
   errors?: PreloadError[];
+  isOfflineMode?: boolean;
+  networkStatus?: any;
+  lastSync?: string;
+  hoursSinceSync?: number;
 }
 
 export interface PreloadError {
   operation: string;
   message: string;
   code?: string;
+  recommendation?: string;
 }
 
 export type ProgressCallback = (progress: number, operation: string) => void;

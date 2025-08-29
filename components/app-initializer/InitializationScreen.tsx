@@ -7,13 +7,24 @@ interface InitializationScreenProps {
   currentOperation: string;
   error: string | null;
   onRetry: () => void;
+  isOfflineMode?: boolean;
+  networkStatus?: any;
+  offlineInfo?: {
+    isOffline: boolean;
+    message: string;
+    canUseCachedData: boolean;
+    lastConnected?: string;
+  } | null;
 }
 
 export const InitializationScreen: React.FC<InitializationScreenProps> = ({
   progress,
   currentOperation,
   error,
-  onRetry
+  onRetry,
+  isOfflineMode = false,
+  networkStatus,
+  offlineInfo
 }) => {
   if (error) {
     return (
@@ -76,9 +87,35 @@ export const InitializationScreen: React.FC<InitializationScreenProps> = ({
         {currentOperation}
       </Text>
       
+      {/* 오프라인 상태 표시 */}
+      {isOfflineMode && offlineInfo && (
+        <View className="bg-orange-50 p-3 rounded-lg mt-4 border border-orange-200">
+          <View className="flex-row items-center justify-center">
+            <Ionicons name="cloud-offline-outline" size={16} color="#f59e0b" />
+            <Text className="text-orange-800 text-sm ml-2">오프라인 모드</Text>
+          </View>
+          <Text className="text-xs text-orange-700 text-center mt-1">
+            캐시된 데이터를 사용 중입니다
+          </Text>
+        </View>
+      )}
+      
+      {/* 네트워크 상태 표시 */}
+      {networkStatus && !networkStatus.isConnected && (
+        <View className="bg-red-50 p-3 rounded-lg mt-4 border border-red-200">
+          <View className="flex-row items-center justify-center">
+            <Ionicons name="wifi-outline" size={16} color="#ef4444" />
+            <Text className="text-red-800 text-sm ml-2">네트워크 연결 없음</Text>
+          </View>
+        </View>
+      )}
+      
       {/* 팁이나 안내 메시지 */}
       <Text className="text-xs text-gray-500 mt-8 text-center">
-        앱을 처음 사용하시면 데이터 준비에 시간이 걸릴 수 있습니다.
+        {isOfflineMode 
+          ? '오프라인 모드에서 제한된 기능을 사용할 수 있습니다.'
+          : '앱을 처음 사용하시면 데이터 준비에 시간이 걸릴 수 있습니다.'
+        }
       </Text>
     </View>
   );
