@@ -1,5 +1,6 @@
 import { View, Text, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from "@/contexts/AuthContext"
 import { useModal } from '@/hooks/useModal'
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
@@ -34,6 +35,7 @@ interface MyJobPostings {
     }[]
 }
 const JobPosting = () => {
+    const insets = useSafeAreaInsets()
     const { user } = useAuth()
     const [postings, setPostings] = useState<MyJobPostings[]>([])
     const [loading, setLoading] = useState(true)
@@ -124,7 +126,7 @@ const JobPosting = () => {
         )
     }
     return (
-        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
+        <View className="flex-1 bg-gray-50" style={{paddingTop: insets.top}}>
             {/* 헤더 */}
             <View className="bg-white px-4 py-3 border-b border-gray-200">
                 <View className="flex-row items-center justify-between">

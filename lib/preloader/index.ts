@@ -13,7 +13,7 @@ export const preloadAppData = async (
   const isOffline = offlineManager.isOffline();
   
   try {
-    console.log(`🚀 앱 데이터 프리로딩 시작: ${user.userType}(${user.userId}) - ${isOffline ? '오프라인' : '온라인'} 모드`);
+    console.log(`🚀 앱 데이터 프리로딩 시작: ${user.userType}(${user.userId || 'unknown'}) - ${isOffline ? '오프라인' : '온라인'} 모드`);
     
     // 오프라인 모드인 경우 캐시된 데이터 확인
     if (isOffline) {
@@ -34,9 +34,9 @@ export const preloadAppData = async (
     
     let userDataResult: PreloadResult;
     if (user.userType === 'user') {
-      userDataResult = await preloadUserData(user.userId);
+      userDataResult = await preloadUserData(user.userId || '');
     } else {
-      userDataResult = await preloadCompanyData(user.userId);
+      userDataResult = await preloadCompanyData(user.userId || '');
     }
     
     results.push(userDataResult);
@@ -46,7 +46,7 @@ export const preloadAppData = async (
     onProgress?.(totalProgress, '오프라인 데이터 저장 중...');
     try {
       const combinedData = results.reduce((acc, result) => ({ ...acc, ...result.data }), {});
-      await offlineManager.saveOfflineData(user.userId, user.userType, combinedData);
+      await offlineManager.saveOfflineData(user.userId || '', user.userType, combinedData);
       console.log('💾 오프라인 데이터 저장 완료');
     } catch (offlineError) {
       console.warn('오프라인 데이터 저장 실패:', offlineError);
@@ -120,7 +120,7 @@ const handleOfflinePreload = async (
   onProgress?.(10, '오프라인 데이터 확인 중...');
   
   // 오프라인 데이터 가용성 확인
-  const availability = await offlineManager.checkOfflineAvailability(user.userId, user.userType);
+  const availability = await offlineManager.checkOfflineAvailability(user.userId || '', user.userType);
   
   if (!availability.available) {
     console.warn('오프라인 데이터 부족:', availability.reason);
@@ -130,8 +130,8 @@ const handleOfflinePreload = async (
       canProceed: false,
       errors: [{
         operation: 'offlinePreload',
-        message: availability.reason,
-        recommendation: availability.recommendation
+        message: availability.reason || '오프라인 데이터를 사용할 수 없습니다.',
+        recommendation: availability.recommendation || '인터넷 연결을 확인해주세요.'
       }],
       isOfflineMode: true,
       networkStatus: offlineManager.getNetworkStatus()

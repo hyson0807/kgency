@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
 import { useTabBarVisibility } from '@/hooks/useTabBarVisibility';
 import { useTabBar } from '@/contexts/TabBarContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // 타입은 hooks/useMatchedJobPostings에서 import
 interface JobPosting {
     id: string
@@ -66,6 +67,7 @@ const Home = () => {
     const { user } = useAuth()
     const { isTabBarVisible, handleScroll } = useTabBarVisibility()
     const { tabBarHeight } = useTabBar()
+    const insets = useSafeAreaInsets()
     // 커스텀 훅에서 모든 데이터와 함수 가져오기
     const {
         matchedPostings,
@@ -110,7 +112,7 @@ const Home = () => {
     //     )
     // }
     return (
-        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
+        <View className="flex-1 bg-gray-50" style={{paddingTop: insets.top}}>
             <Header/>
             <FlatList
                 data={matchedPostings}

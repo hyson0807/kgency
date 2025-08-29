@@ -7,7 +7,7 @@ import {router} from "expo-router";
 import { removePushToken } from '@/lib/notifications';
 import { updateTokenCache } from "@/lib/api"
 // 타입 정의
-interface User {
+export interface User {
     userId: string;
     phone: string;
     userType: 'user' | 'company';

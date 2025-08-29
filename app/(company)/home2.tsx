@@ -1,5 +1,6 @@
 import { View, Text, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from "@/contexts/AuthContext"
 import { api } from "@/lib/api"
 import { Ionicons } from '@expo/vector-icons'
@@ -51,6 +52,7 @@ interface ApiResponse<T> {
     error?: string
 }
 const Home2 = () => {
+    const insets = useSafeAreaInsets()
     const { user } = useAuth()
     const { isTabBarVisible, handleScroll } = useTabBarVisibility()
     const { tabBarHeight } = useTabBar()
@@ -112,7 +114,7 @@ const Home2 = () => {
         )
     }
     return (
-        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
+        <View className="flex-1 bg-gray-50" style={{paddingTop: insets.top}}>
             {/* 헤더 */}
             <Header />
             <FlatList

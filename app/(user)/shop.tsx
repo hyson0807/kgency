@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { AndroidPurchaseData, IOSPurchaseData, PurchaseVerificationRequest } from '@/types/purchase';
 // IAP 라이브러리는 development build에서만 동작
 let RNIap: any = null;
@@ -45,6 +46,7 @@ interface TokenPackage {
 const Shop = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
   const [userTokens, setUserTokens] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const [purchasing, setPurchasing] = useState(false);
@@ -472,7 +474,7 @@ const Shop = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
+    <View className="flex-1 bg-gray-50" style={{paddingTop: insets.top}}>
       <ScrollView className="flex-1">
         <ShopHeader />
         <TokenBalanceCard 

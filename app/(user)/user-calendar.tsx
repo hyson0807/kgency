@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, ScrollView, ActivityIndicator, Linking } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
 import { Calendar, LocaleConfig } from 'react-native-calendars'
 import { Ionicons } from '@expo/vector-icons'
@@ -73,6 +74,7 @@ export default function UserInterviewCalendar() {
     const { user } = useAuth()
     const { showModal, ModalComponent } = useModal()
     const { t, language } = useTranslation()
+    const insets = useSafeAreaInsets()
     // State
     const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
     const [currentMonth, setCurrentMonth] = useState(format(new Date(), 'yyyy-MM'))
@@ -195,7 +197,7 @@ export default function UserInterviewCalendar() {
     }
     if (loading) {
         return (
-            <View className="flex-1 bg-white" style={{paddingTop: 44}}>
+            <View className="flex-1 bg-white" style={{paddingTop: insets.top}}>
                 <View className="flex-1 justify-center items-center">
                     <ActivityIndicator size="large" color="#3b82f6" />
                 </View>
@@ -203,7 +205,7 @@ export default function UserInterviewCalendar() {
         )
     }
     return (
-        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
+        <View className="flex-1 bg-gray-50" style={{paddingTop: insets.top}}>
             {/* 헤더 */}
             <View className="bg-white border-b border-gray-200">
                 <View className="flex-row items-center p-4">

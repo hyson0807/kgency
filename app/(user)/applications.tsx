@@ -8,10 +8,12 @@ import {Empty} from "@/components/user/applications/submitted-applications/Empty
 import {ApplicationItem} from "@/components/user/applications/submitted-applications/ApplicationItem";
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import {useApplications} from "@/hooks/useApplications";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const Applications = () => {
     const { user } = useAuth()
     const [activeFilter, setActiveFilter] = useState<'all' | 'user_initiated' | 'company_invited' | 'user_instant_interview'>('all')
     const { t } = useTranslation()
+    const insets = useSafeAreaInsets()
     //fetching applications
     const {
         applications,
@@ -30,7 +32,7 @@ const Applications = () => {
     )
     if (loading) return <LoadingScreen />
     return (
-        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
+        <View className="flex-1 bg-gray-50" style={{paddingTop: insets.top}}>
             {/* 헤더 */}
             <View className="bg-white border-b border-gray-200">
                 <View className="p-4">

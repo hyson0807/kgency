@@ -1,5 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, Switch, Modal, Linking } from 'react-native'
 import React, { useState } from 'react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from "@/contexts/AuthContext"
 import { useProfile } from "@/hooks/useProfile"
 import { router } from "expo-router"
@@ -14,6 +15,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { removePushToken } from '@/lib/notifications';
 const Settings2 = () => {
+    const insets = useSafeAreaInsets()
     const { logout, user } = useAuth()
     const { profile } = useProfile()
     const { showModal, ModalComponent } = useModal()
@@ -86,7 +88,7 @@ const Settings2 = () => {
         )
     }
     return (
-        <View className="flex-1 bg-gray-50" style={{paddingTop: 44}}>
+        <View className="flex-1 bg-gray-50" style={{paddingTop: insets.top}}>
             {/* 헤더 */}
             <View className="bg-white px-4 py-3 border-b border-gray-200">
                 <Text className="text-2xl font-bold">설정</Text>
