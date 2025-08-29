@@ -59,11 +59,16 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
         await SplashScreen.hideAsync();
       }
     } catch (error) {
-      console.error('Update check failed:', error);
+      // 개발환경에서는 에러 로그를 출력하지 않음
+      if (__DEV__) {
+        console.log('Development mode - update check skipped');
+      } else {
+        console.error('Update check failed:', error);
+      }
       setUpdateState(prev => ({ 
         ...prev, 
         isChecking: false, 
-        updateError: error instanceof Error ? error.message : '업데이트 확인 실패' 
+        updateError: null // 개발환경에서는 에러를 표시하지 않음
       }));
       await SplashScreen.hideAsync();
     }
