@@ -30,14 +30,40 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
 
   const checkForUpdates = async () => {
     try {
-      if (!Updates.isEnabled) {
+      // Development 환경에서만 업데이트 체크를 건너뜀
+      if (__DEV__) {
         console.log('Updates are disabled (development mode)');
         setUpdateState(prev => ({ ...prev, isChecking: false }));
         await SplashScreen.hideAsync();
         return;
       }
 
+      // expo-updates 모듈이 production 빌드에서 활성화되었는지 확인
+      // isEmbeddedLaunch가 true면 OTA 업데이트가 비활성화된 상태
+      console.log('Is embedded launch (OTA disabled):', Updates.isEmbeddedLaunch);
+      console.log('Update channel:', Updates.channel);
+      console.log('Runtime version:', Updates.runtimeVersion);
+      
+      // OTA 업데이트가 비활성화된 경우 (개발 빌드 또는 expo-updates 미포함)
+      if (Updates.isEmbeddedLaunch) {
+        console.log('Running embedded app without OTA updates');
+        setUpdateState(prev => ({ ...prev, isChecking: false }));
+        await SplashScreen.hideAsync();
+        return;
+      }
+      
+      // channel과 runtimeVersion이 설정되지 않은 경우
+      if (!Updates.channel && !Updates.runtimeVersion) {
+        console.log('Updates not configured for this build');
+        setUpdateState(prev => ({ ...prev, isChecking: false }));
+        await SplashScreen.hideAsync();
+        return;
+      }
+
+      // Production 환경에서 업데이트 체크
       console.log('Checking for updates...');
+      console.log('Updates URL:', 'https://u.expo.dev/799fcd12-a237-433c-8a11-aefd308553d3');
+      
       const update = await Updates.checkForUpdateAsync();
       
       if (update.isAvailable) {
