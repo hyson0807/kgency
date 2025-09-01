@@ -9,13 +9,29 @@ export const preloadAppData = async (
   user: User,
   onProgress?: ProgressCallback
 ): Promise<PreloadResult> => {
-  const isOffline = offlineManager.isOffline();
+  // React Native 환경 체크
+  const isReactNative = typeof window !== 'undefined' && !window.location;
+  
+  // 카카오톡 인앱 브라우저 감지 (웹 환경에서만)
+  let isKakaoInApp = false;
+  if (!isReactNative && typeof window !== 'undefined' && window.navigator?.userAgent) {
+    try {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      isKakaoInApp = userAgent.includes('kakaotalk') || userAgent.includes('kakao');
+    } catch (error) {
+      // userAgent 접근 실패 시 무시
+    }
+  }
+  
+  // React Native와 카카오톡 인앱 브라우저에서는 오프라인 체크를 스킵
+  const isOffline = (isReactNative || isKakaoInApp) ? false : offlineManager.isOffline();
   
   try {
-    console.log(`🚀 프로파일 데이터 프리로딩 시작: ${user.userType}(${user.userId || 'unknown'}) - ${isOffline ? '오프라인' : '온라인'} 모드`);
+    const platform = isReactNative ? ' (React Native)' : isKakaoInApp ? ' (카카오톡)' : '';
+    console.log(`🚀 프로파일 데이터 프리로딩 시작: ${user.userType}(${user.userId || 'unknown'}) - ${isOffline ? '오프라인' : '온라인'} 모드${platform}`);
     
-    // 오프라인 모드인 경우 캐시된 데이터 확인
-    if (isOffline) {
+    // 오프라인 모드인 경우 캐시된 데이터 확인 (React Native와 카카오톡은 스킵)
+    if (isOffline && !isReactNative && !isKakaoInApp) {
       return await handleOfflinePreload(user, onProgress);
     }
     

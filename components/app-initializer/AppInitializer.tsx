@@ -65,8 +65,22 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({ children }) => {
         return;
       }
 
-      // 오프라인 상태 확인 및 알림
-      if (isOffline) {
+      // React Native 환경 체크
+      const isReactNative = typeof window !== 'undefined' && !window.location;
+      
+      // 카카오톡 인앱 브라우저 감지 (웹 환경에서만)
+      let isKakaoInApp = false;
+      if (!isReactNative && typeof window !== 'undefined' && window.navigator?.userAgent) {
+        try {
+          const userAgent = window.navigator.userAgent.toLowerCase();
+          isKakaoInApp = userAgent.includes('kakaotalk') || userAgent.includes('kakao');
+        } catch (error) {
+          // userAgent 접근 실패 시 무시
+        }
+      }
+      
+      // 오프라인 상태 확인 및 알림 (React Native와 카카오톡 인앱 브라우저는 스킵)
+      if (isOffline && !isReactNative && !isKakaoInApp) {
         console.log('📱 오프라인 모드 감지');
         
         // 오프라인 데이터 가용성 첫 번째 확인

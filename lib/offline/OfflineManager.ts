@@ -37,6 +37,22 @@ class OfflineManager {
     
     this.initNetworkListener();
   }
+  
+  // 카카오톡 인앱 브라우저 감지
+  private isKakaoInAppBrowser(): boolean {
+    // React Native 환경에서는 카카오톡 체크 스킵
+    if (typeof window === 'undefined' || !window.navigator || !window.navigator.userAgent) {
+      return false;
+    }
+    
+    try {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      return userAgent.includes('kakaotalk') || userAgent.includes('kakao');
+    } catch (error) {
+      // userAgent 접근 실패 시 false 반환
+      return false;
+    }
+  }
 
   // 네트워크 상태 모니터링 시작 (간소화된 버전)
   private initNetworkListener() {
@@ -60,16 +76,75 @@ class OfflineManager {
   // 실제 네트워크 연결 테스트
   private async checkNetworkStatus() {
     try {
+      // React Native 환경 체크
+      const isReactNative = typeof window !== 'undefined' && !window.location;
+      
+      if (isReactNative) {
+        // React Native에서는 기본적으로 온라인으로 가정
+        // 실제 네트워크 상태는 NetInfo 라이브러리를 사용해야 하지만,
+        // 간단하게 처리하기 위해 온라인으로 가정
+        this.networkStatus = {
+          ...this.networkStatus,
+          isConnected: true,
+          isInternetReachable: true,
+          lastConnected: new Date().toISOString()
+        };
+        this.listeners.forEach(listener => listener(this.networkStatus));
+        return;
+      }
+      
+      // 카카오톡 인앱 브라우저 감지
+      const isKakaoInApp = this.isKakaoInAppBrowser();
+      
+      if (isKakaoInApp) {
+        // 카카오톡 인앱 브라우저에서는 네트워크 체크를 스킵하고 온라인으로 가정
+        console.log('📱 카카오톡 인앱 브라우저 감지 - 네트워크 체크 스킵');
+        this.networkStatus = {
+          ...this.networkStatus,
+          isConnected: true,
+          isInternetReachable: true,
+          lastConnected: new Date().toISOString()
+        };
+        this.listeners.forEach(listener => listener(this.networkStatus));
+        return;
+      }
+      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      await fetch('https://www.google.com', {
-        method: 'HEAD',
-        signal: controller.signal,
-        cache: 'no-cache'
-      });
+      // 웹 환경에서만 fetch 테스트 수행
+      const testUrls = [
+        'https://www.google.com',
+        'https://api.supabase.io'
+      ];
+      
+      // window.location이 있을 때만 origin 추가
+      if (window.location && window.location.origin) {
+        testUrls.push(window.location.origin);
+      }
+      
+      let isConnected = false;
+      for (const url of testUrls) {
+        try {
+          await fetch(url, {
+            method: 'HEAD',
+            signal: controller.signal,
+            cache: 'no-cache',
+            mode: 'no-cors' // CORS 이슈 회피
+          });
+          isConnected = true;
+          break;
+        } catch (e) {
+          // 다음 URL 시도
+          continue;
+        }
+      }
       
       clearTimeout(timeoutId);
+      
+      if (!isConnected) {
+        throw new Error('All network tests failed');
+      }
       
       const wasConnected = this.networkStatus.isConnected;
       const isNowConnected = true;
@@ -171,6 +246,17 @@ class OfflineManager {
 
   // 오프라인 모드에서 사용 가능한 데이터 확인
   async checkOfflineAvailability(userId: string, userType: 'user' | 'company') {
+    // 카카오톡 인앱 브라우저에서는 오프라인 체크를 스킵
+    if (this.isKakaoInAppBrowser()) {
+      return {
+        available: true,
+        data: null,
+        lastSync: new Date().toISOString(),
+        hoursSinceSync: 0,
+        isDataFresh: true
+      };
+    }
+    
     const offlineData = await this.getOfflineData(userId, userType);
     
     if (!offlineData) {

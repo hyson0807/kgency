@@ -27,7 +27,7 @@ const Settings2 = () => {
     const [termsModalVisible, setTermsModalVisible] = useState(false)
     const [privacyModalVisible, setPrivacyModalVisible] = useState(false)
     // 앱 정보
-    const APP_VERSION = '1.0.0'
+    const APP_VERSION = '1.0.2'
     // 알림 토글
     const toggleNotification = (key: keyof typeof notificationSettings) => {
         const newSettings = {
