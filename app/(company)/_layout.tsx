@@ -6,7 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 import { useTabBar } from '@/contexts/TabBarContext';
-const company_Layout = () => {
+const CompanyLayout = () => {
     const insets = useSafeAreaInsets();
     const { isTabBarVisible } = useTabBar();
     
@@ -50,6 +50,13 @@ const company_Layout = () => {
                 }}
             />
             <Tabs.Screen
+                name="company-chats"
+                options={{
+                    tabBarLabel: '채팅',
+                    tabBarIcon: ({size, color}) => <Ionicons name="chatbubbles" size={size} color={color} />
+                }}
+            />
+            <Tabs.Screen
                 name="interview-calendar"
                 options={{
                     tabBarLabel: '면접 관리',
@@ -66,4 +73,4 @@ const company_Layout = () => {
         </Tabs>
     )
 }
-export default company_Layout
+export default CompanyLayout

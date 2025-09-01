@@ -149,6 +149,22 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                     if (!applicationResponse.success) {
                         return;
                     }
+                    
+                    // 채팅방 생성
+                    try {
+                        if (user?.userId) {
+                            await api('POST', '/api/chat/create-room', {
+                                application_id: applicationResponse.data.id,
+                                user_id: user.userId,
+                                company_id: companyId,
+                                job_posting_id: jobPostingId
+                            });
+                        }
+                    } catch (chatError) {
+                        console.error('Error creating chat room:', chatError);
+                        // 채팅방 생성 실패는 지원 프로세스에 영향을 주지 않음
+                    }
+                    
                     // 성공 시 스토어 데이터 삭제 후 홈으로 이동
                     resetAllData();
                     router.replace('/(user)/home');

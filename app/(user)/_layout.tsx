@@ -7,7 +7,7 @@ import { useTranslation } from "@/contexts/TranslationContext";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 import { useTabBar } from '@/contexts/TabBarContext';
-const User_Layout = () => {
+const UserLayout = () => {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const { isTabBarVisible } = useTabBar();
@@ -52,6 +52,13 @@ const User_Layout = () => {
                 }}
             />
             <Tabs.Screen
+                name="user-chats"
+                options={{
+                    tabBarLabel: t('tab.chats', '채팅'),
+                    tabBarIcon: ({size, color}) => <Ionicons name="chatbubbles" size={size} color={color} />
+                }}
+            />
+            <Tabs.Screen
                 name="user-calendar"
                 options={{
                     tabBarLabel: t('tab.schedule', '일정'),
@@ -75,4 +82,4 @@ const User_Layout = () => {
         </Tabs>
     )
 }
-export default User_Layout
+export default UserLayout
