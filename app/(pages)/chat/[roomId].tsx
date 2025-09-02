@@ -15,6 +15,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useProfile } from '@/hooks/useProfile';
 import { api } from '@/lib/api';
 import { Ionicons } from '@expo/vector-icons';
+import { useSocket, SocketMessage } from '@/hooks/useSocket';
 
 interface ChatMessage {
   id: string;
@@ -45,18 +46,50 @@ export default function ChatRoom() {
   const [sending, setSending] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
+  // WebSocket 연결
+  const {
+    socket,
+    isConnected,
+    isAuthenticated,
+    isInRoom,
+    sendMessage: sendSocketMessage,
+    error: socketError,
+  } = useSocket({
+    roomId: roomId as string,
+    onMessageReceived: (socketMessage: SocketMessage) => {
+      // 실시간으로 받은 메시지를 ChatMessage 형태로 변환
+      const chatMessage: ChatMessage = {
+        id: socketMessage.id,
+        sender_id: socketMessage.sender_id,
+        message: socketMessage.message,
+        created_at: socketMessage.created_at,
+        is_read: socketMessage.is_read,
+      };
+      
+      console.log('실시간 메시지 수신:', chatMessage);
+      setMessages(prev => [...prev, chatMessage]);
+      
+      // 스크롤을 맨 아래로
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd();
+      }, 100);
+
+      // 메시지 읽음 처리
+      markMessagesAsRead();
+    },
+    onUserJoined: (data) => {
+      console.log('사용자 입장:', data);
+    },
+    onUserLeft: (data) => {
+      console.log('사용자 퇴장:', data);
+    },
+  });
+
   useEffect(() => {
     if (roomId && profile?.id) {
       fetchRoomInfo();
       fetchMessages();
       markMessagesAsRead();
-      
-      // 5초마다 새 메시지 확인을 위한 폴링
-      const interval = setInterval(() => {
-        fetchMessages();
-      }, 5000);
-
-      return () => clearInterval(interval);
     }
   }, [roomId, profile]);
 
@@ -115,21 +148,15 @@ export default function ChatRoom() {
 
     setSending(true);
     try {
-      const response = await api('POST', `/api/chat/room/${roomId}/message`, {
-        message: newMessage.trim()
-      });
-
-      if (response.success) {
+      // WebSocket을 통한 메시지 전송
+      const success = await sendSocketMessage(newMessage.trim());
+      
+      if (success) {
         setNewMessage('');
-        // 새 메시지를 목록에 추가
-        setMessages(prev => [...prev, response.data]);
-        // 스크롤을 맨 아래로
-        setTimeout(() => {
-          flatListRef.current?.scrollToEnd();
-        }, 100);
+        // 메시지는 실시간으로 수신될 때 추가됨 (onMessageReceived)
       } else {
-        console.error('Error sending message:', response.error);
-        Alert.alert('오류', '메시지 전송에 실패했습니다.');
+        console.error('WebSocket 메시지 전송 실패');
+        Alert.alert('오류', socketError || '메시지 전송에 실패했습니다.');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -224,9 +251,28 @@ export default function ChatRoom() {
           <Text className="text-lg font-semibold text-gray-900">
             {otherParty.name}
           </Text>
-          <Text className="text-sm text-gray-500" numberOfLines={1}>
-            {roomInfo.job_postings.title}
-          </Text>
+          <View className="flex-row items-center">
+            <Text className="text-sm text-gray-500" numberOfLines={1}>
+              {roomInfo.job_postings.title}
+            </Text>
+            {/* 연결 상태 표시 */}
+            <View className="ml-2 flex-row items-center">
+              <View 
+                className={`w-2 h-2 rounded-full mr-1 ${
+                  isConnected && isAuthenticated 
+                    ? 'bg-green-500' 
+                    : 'bg-red-500'
+                }`} 
+              />
+              <Text className={`text-xs ${
+                isConnected && isAuthenticated 
+                  ? 'text-green-600' 
+                  : 'text-red-600'
+              }`}>
+                {isConnected && isAuthenticated ? '연결됨' : '연결 중...'}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
 
@@ -261,9 +307,9 @@ export default function ChatRoom() {
             
             <TouchableOpacity
               onPress={sendMessage}
-              disabled={!newMessage.trim() || sending}
+              disabled={!newMessage.trim() || sending || !isConnected || !isAuthenticated}
               className={`w-10 h-10 rounded-full items-center justify-center ${
-                newMessage.trim() && !sending 
+                newMessage.trim() && !sending && isConnected && isAuthenticated
                   ? 'bg-blue-500' 
                   : 'bg-gray-300'
               }`}
@@ -274,7 +320,7 @@ export default function ChatRoom() {
                 <Ionicons 
                   name="send" 
                   size={20} 
-                  color={newMessage.trim() && !sending ? 'white' : '#9ca3af'} 
+                  color={newMessage.trim() && !sending && isConnected && isAuthenticated ? 'white' : '#9ca3af'} 
                 />
               )}
             </TouchableOpacity>
