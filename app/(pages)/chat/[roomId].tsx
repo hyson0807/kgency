@@ -7,11 +7,12 @@ import {
   TouchableOpacity, 
   Alert,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/hooks/useProfile';
 import { api } from '@/lib/api';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -35,7 +36,7 @@ interface ChatRoomInfo {
 
 export default function ChatRoom() {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
-  const { profile } = useAuth();
+  const { profile } = useProfile();
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [roomInfo, setRoomInfo] = useState<ChatRoomInfo | null>(null);
@@ -49,6 +50,13 @@ export default function ChatRoom() {
       fetchRoomInfo();
       fetchMessages();
       markMessagesAsRead();
+      
+      // 5초마다 새 메시지 확인을 위한 폴링
+      const interval = setInterval(() => {
+        fetchMessages();
+      }, 5000);
+
+      return () => clearInterval(interval);
     }
   }, [roomId, profile]);
 
@@ -75,7 +83,13 @@ export default function ChatRoom() {
       const response = await api('GET', `/api/chat/room/${roomId}/messages`);
 
       if (response.success) {
-        setMessages(response.data || []);
+        const newMessages = response.data || [];
+        setMessages(newMessages);
+        
+        // 새로운 메시지가 있으면 읽음 처리
+        if (newMessages.length > 0) {
+          await markMessagesAsRead();
+        }
       } else {
         console.error('Error fetching messages:', response.error);
       }
@@ -127,11 +141,27 @@ export default function ChatRoom() {
 
   const formatMessageTime = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString('ko-KR', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
-    });
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const diffInHours = diff / (1000 * 60 * 60);
+    
+    if (diffInHours < 24) {
+      // 24시간 이내면 시간만 표시
+      return date.toLocaleTimeString('ko-KR', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      });
+    } else {
+      // 24시간 이후면 날짜와 시간 표시
+      return date.toLocaleDateString('ko-KR', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+    }
   };
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {
@@ -161,11 +191,24 @@ export default function ChatRoom() {
     return (
       <SafeAreaView className="flex-1 bg-white">
         <View className="flex-1 items-center justify-center">
-          <Text className="text-gray-500">채팅방을 불러오는 중...</Text>
+          <ActivityIndicator size="large" color="#3B82F6" />
+          <Text className="text-gray-500 mt-4">채팅방을 불러오는 중...</Text>
         </View>
       </SafeAreaView>
     );
   }
+
+  const renderEmptyMessages = () => (
+    <View className="flex-1 items-center justify-center px-8">
+      <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
+      <Text className="text-gray-500 text-center mt-4 text-lg">
+        첫 메시지를 보내보세요
+      </Text>
+      <Text className="text-gray-400 text-center mt-2">
+        {profile?.user_type === 'user' ? '회사' : '구직자'}와 대화를 시작하세요
+      </Text>
+    </View>
+  );
 
   const otherParty = profile?.user_type === 'user' ? roomInfo.company : roomInfo.user;
 
@@ -197,7 +240,8 @@ export default function ChatRoom() {
           data={messages}
           keyExtractor={(item) => item.id}
           renderItem={renderMessage}
-          contentContainerStyle={{ padding: 16 }}
+          ListEmptyComponent={renderEmptyMessages}
+          contentContainerStyle={messages.length === 0 ? { flex: 1, padding: 16 } : { padding: 16 }}
           onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
           showsVerticalScrollIndicator={false}
         />
@@ -224,11 +268,15 @@ export default function ChatRoom() {
                   : 'bg-gray-300'
               }`}
             >
-              <Ionicons 
-                name="send" 
-                size={20} 
-                color={newMessage.trim() && !sending ? 'white' : '#9ca3af'} 
-              />
+              {sending ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Ionicons 
+                  name="send" 
+                  size={20} 
+                  color={newMessage.trim() && !sending ? 'white' : '#9ca3af'} 
+                />
+              )}
             </TouchableOpacity>
           </View>
         </View>
