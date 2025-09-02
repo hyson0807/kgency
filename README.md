@@ -11,7 +11,7 @@ kgency는 React Native Expo 기반의 모바일 애플리케이션으로, AI 기
 - **AI 매칭 시스템**: 키워드 기반 적합도 계산 (0-100점)
 - **이중 역할 시스템**: 구직자/기업 분리된 인터페이스
 - **면접 일정 관리**: 캘린더 기반 면접 스케줄링
-- **실시간 메시징**: 구직자-기업 간 소통
+- **실시간 채팅**: WebSocket(Socket.io) 기반 즉시 메시징 ⚡
 - **다국어 지원**: 12개 언어 지원
 
 ### 🛠 기술 스택
@@ -21,9 +21,11 @@ kgency는 React Native Expo 기반의 모바일 애플리케이션으로, AI 기
 - TypeScript
 - NativeWind (Tailwind CSS)
 - Expo Router
+- Socket.io Client (실시간 채팅)
 
 **Backend**
 - Node.js + Express
+- Socket.io (WebSocket 서버)
 - PostgreSQL (Supabase)
 - JWT Authentication
 - Google Translate API

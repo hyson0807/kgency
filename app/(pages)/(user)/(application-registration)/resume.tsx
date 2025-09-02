@@ -167,7 +167,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                     
                     // 성공 시 스토어 데이터 삭제 후 홈으로 이동
                     resetAllData();
-                    router.replace('/(user)/home');
+                    router.replace('/(user)/user-chats');
                 } catch (error) {
                     // 에러 발생 시에도 알림 없이 처리
                 } finally {
