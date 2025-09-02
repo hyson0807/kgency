@@ -62,7 +62,10 @@ export const api = async <T = any>(
             config.data = data;
         }
 
-        const response = await axios(config);
+        const response = await axios({
+            ...config,
+            timeout: 10000 // 10초 timeout 설정
+        });
         return response.data;
     } catch (error: any) {
         // axios 에러 구조를 유지하면서 throw
