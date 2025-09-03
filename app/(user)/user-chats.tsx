@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
+import { useFocusEffect } from '@react-navigation/native';
+import { socketManager } from '@/lib/socketManager';
 
 interface ChatRoom {
   id: string;
@@ -27,12 +30,45 @@ export default function UserChats() {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { refreshUnreadCount } = useUnreadMessage();
 
   useEffect(() => {
     if (user?.userId) {
       fetchChatRooms();
     }
   }, [user]);
+
+  // singleton 소켓 매니저 이벤트 구독 - 채팅방 업데이트
+  useEffect(() => {
+    const unsubscribe = socketManager.onChatRoomUpdated((data) => {
+      console.log('사용자 채팅방 실시간 업데이트:', data);
+      // 채팅방 목록에서 해당 채팅방 정보 업데이트
+      setChatRooms(prevRooms => 
+        prevRooms.map(room => 
+          room.id === data.roomId 
+            ? { 
+                ...room, 
+                last_message: data.last_message,
+                last_message_at: data.last_message_at,
+                user_unread_count: data.unread_count
+              }
+            : room
+        )
+      );
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // 화면이 포커스될 때마다 채팅방 목록과 안읽은 메시지 카운트 새로고침
+  useFocusEffect(
+    useCallback(() => {
+      if (user?.userId) {
+        fetchChatRooms();
+        refreshUnreadCount();
+      }
+    }, [user?.userId])
+  );
 
   const fetchChatRooms = async () => {
     try {

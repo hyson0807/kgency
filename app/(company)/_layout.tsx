@@ -6,9 +6,12 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 import { useTabBar } from '@/contexts/TabBarContext';
+import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
+import TabIconWithBadge from '@/components/shared/TabIconWithBadge';
 const CompanyLayout = () => {
     const insets = useSafeAreaInsets();
     const { isTabBarVisible } = useTabBar();
+    const { totalUnreadCount } = useUnreadMessage();
     
     const maxHeight = (Platform.OS === 'ios' ? 50 : 60) + insets.bottom;
     const maxPadding = insets.bottom + 10;
@@ -53,7 +56,14 @@ const CompanyLayout = () => {
                 name="company-chats"
                 options={{
                     tabBarLabel: '채팅',
-                    tabBarIcon: ({size, color}) => <Ionicons name="chatbubbles" size={size} color={color} />
+                    tabBarIcon: ({size, color}) => (
+                        <TabIconWithBadge 
+                            name="chatbubbles" 
+                            size={size} 
+                            color={color} 
+                            badgeCount={totalUnreadCount}
+                        />
+                    )
                 }}
             />
             <Tabs.Screen

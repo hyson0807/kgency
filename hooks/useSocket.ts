@@ -22,6 +22,8 @@ export interface UseSocketProps {
   onMessageReceived?: (message: SocketMessage) => void;
   onUserJoined?: (data: { userId: string; userType: string }) => void;
   onUserLeft?: (data: { userId: string; userType: string }) => void;
+  onChatRoomUpdated?: (data: { roomId: string; last_message: string; last_message_at: string; unread_count: number }) => void;
+  onTotalUnreadCountUpdated?: (data: { totalUnreadCount: number }) => void;
 }
 
 export interface UseSocketReturn {
@@ -40,6 +42,8 @@ export const useSocket = ({
   onMessageReceived,
   onUserJoined,
   onUserLeft,
+  onChatRoomUpdated,
+  onTotalUnreadCountUpdated,
 }: UseSocketProps = {}): UseSocketReturn => {
   const [isConnected, setIsConnected] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -143,6 +147,18 @@ export const useSocket = ({
       socket.on('error', (data) => {
         console.error('Socket 에러:', data.message);
         setError(data.message);
+      });
+
+      // 채팅방 업데이트 이벤트
+      socket.on('chat-room-updated', (data) => {
+        console.log('채팅방 업데이트:', data);
+        onChatRoomUpdated?.(data);
+      });
+
+      // 총 안읽은 메시지 카운트 업데이트 이벤트
+      socket.on('total-unread-count-updated', (data) => {
+        console.log('총 안읽은 메시지 카운트 업데이트:', data);
+        onTotalUnreadCountUpdated?.(data);
       });
 
     } catch (error) {

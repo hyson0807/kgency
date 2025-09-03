@@ -15,7 +15,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useProfile } from '@/hooks/useProfile';
 import { api } from '@/lib/api';
 import { Ionicons } from '@expo/vector-icons';
-import { useSocket, SocketMessage } from '@/hooks/useSocket';
+import { socketManager, SocketMessage } from '@/lib/socketManager';
+import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
 
 interface ChatMessage {
   id: string;
@@ -45,18 +46,14 @@ export default function ChatRoom() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const flatListRef = useRef<FlatList>(null);
+  const { refreshUnreadCount } = useUnreadMessage();
 
-  // WebSocket 연결
-  const {
-    socket,
-    isConnected,
-    isAuthenticated,
-    isInRoom,
-    sendMessage: sendSocketMessage,
-    error: socketError,
-  } = useSocket({
-    roomId: roomId as string,
-    onMessageReceived: (socketMessage: SocketMessage) => {
+  const [isConnected, setIsConnected] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // 메시지 수신 이벤트 구독 (한 번만)
+  useEffect(() => {
+    const unsubscribeMessage = socketManager.onMessageReceived((socketMessage: SocketMessage) => {
       // 실시간으로 받은 메시지를 ChatMessage 형태로 변환
       const chatMessage: ChatMessage = {
         id: socketMessage.id,
@@ -74,22 +71,70 @@ export default function ChatRoom() {
         flatListRef.current?.scrollToEnd();
       }, 100);
 
-      // 메시지 읽음 처리
-      markMessagesAsRead();
-    },
-    onUserJoined: (data) => {
-      console.log('사용자 입장:', data);
-    },
-    onUserLeft: (data) => {
-      console.log('사용자 퇴장:', data);
-    },
-  });
+      // 메시지 읽음 처리 및 총 안읽은 메시지 카운트 새로고침
+      markMessagesAsRead().then(() => {
+        refreshUnreadCount();
+      });
+    });
+
+    return () => {
+      unsubscribeMessage();
+    };
+  }, []);
+
+  // 연결 상태 확인 및 채팅방 입장
+  useEffect(() => {
+    let hasJoinedRoom = false;
+    
+    // 초기 연결 상태 확인
+    const { isConnected: connected, isAuthenticated: authenticated } = socketManager.getConnectionStatus();
+    setIsConnected(connected);
+    setIsAuthenticated(authenticated);
+
+    // 초기 연결 시 즉시 입장 시도
+    if (connected && authenticated && roomId && !hasJoinedRoom) {
+      hasJoinedRoom = true;
+      socketManager.joinRoom(roomId as string).then((success) => {
+        if (__DEV__ && success) {
+          console.log('채팅방 입장 성공:', roomId);
+        }
+      });
+    }
+
+    // 주기적으로 연결 상태만 확인 (입장 시도는 하지 않음)
+    const statusCheckInterval = setInterval(() => {
+      const { isConnected: connected, isAuthenticated: authenticated } = socketManager.getConnectionStatus();
+      setIsConnected(connected);
+      setIsAuthenticated(authenticated);
+      
+      // 연결이 끊어졌다가 다시 연결된 경우에만 재입장 시도
+      if (connected && authenticated && roomId && !hasJoinedRoom) {
+        hasJoinedRoom = true;
+        socketManager.joinRoom(roomId as string).then((success) => {
+          if (__DEV__ && success) {
+            console.log('채팅방 재입장 성공:', roomId);
+          }
+        });
+      } else if (!connected || !authenticated) {
+        hasJoinedRoom = false;
+      }
+    }, 5000); // 5초마다 상태만 확인
+
+    return () => {
+      clearInterval(statusCheckInterval);
+      if (roomId) {
+        socketManager.leaveRoom(roomId as string);
+      }
+    };
+  }, [roomId]);
 
   useEffect(() => {
     if (roomId && profile?.id) {
       fetchRoomInfo();
       fetchMessages();
-      markMessagesAsRead();
+      markMessagesAsRead().then(() => {
+        refreshUnreadCount();
+      });
     }
   }, [roomId, profile]);
 
@@ -148,15 +193,15 @@ export default function ChatRoom() {
 
     setSending(true);
     try {
-      // WebSocket을 통한 메시지 전송
-      const success = await sendSocketMessage(newMessage.trim());
+      // singleton 소켓 매니저를 통한 메시지 전송
+      const success = await socketManager.sendMessage(newMessage.trim());
       
       if (success) {
         setNewMessage('');
         // 메시지는 실시간으로 수신될 때 추가됨 (onMessageReceived)
       } else {
         console.error('WebSocket 메시지 전송 실패');
-        Alert.alert('오류', socketError || '메시지 전송에 실패했습니다.');
+        Alert.alert('오류', '메시지 전송에 실패했습니다.');
       }
     } catch (error) {
       console.error('Error:', error);

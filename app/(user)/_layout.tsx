@@ -7,10 +7,13 @@ import { useTranslation } from "@/contexts/TranslationContext";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 import { useTabBar } from '@/contexts/TabBarContext';
+import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
+import TabIconWithBadge from '@/components/shared/TabIconWithBadge';
 const UserLayout = () => {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const { isTabBarVisible } = useTabBar();
+    const { totalUnreadCount } = useUnreadMessage();
     
     const maxHeight = (Platform.OS === 'ios' ? 50 : 60) + insets.bottom;
     const maxPadding = insets.bottom + 10;
@@ -55,7 +58,14 @@ const UserLayout = () => {
                 name="user-chats"
                 options={{
                     tabBarLabel: t('tab.chats', '채팅'),
-                    tabBarIcon: ({size, color}) => <Ionicons name="chatbubbles" size={size} color={color} />
+                    tabBarIcon: ({size, color}) => (
+                        <TabIconWithBadge 
+                            name="chatbubbles" 
+                            size={size} 
+                            color={color} 
+                            badgeCount={totalUnreadCount}
+                        />
+                    )
                 }}
             />
             <Tabs.Screen
