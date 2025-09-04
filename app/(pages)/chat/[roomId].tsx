@@ -194,10 +194,29 @@ export default function ChatRoom() {
 
       if (response.success) {
         setRoomInfo(response.data);
+        // 탈퇴한 사용자가 있는지 체크
+        if (response.hasWithdrawnUser) {
+          console.log('채팅방에 탈퇴한 사용자가 포함되어 있습니다.');
+        }
       } else {
         console.error('Error fetching room info:', response.error);
-        Alert.alert('오류', '채팅방 정보를 불러올 수 없습니다.');
-        router.back();
+        
+        // 채팅방이 존재하지 않는 경우 (상대방 탈퇴 등)
+        if (response.errorType === 'room_not_found') {
+          Alert.alert(
+            '채팅방을 찾을 수 없습니다',
+            '상대방이 탈퇴했거나 채팅방이 삭제되었을 수 있습니다.',
+            [
+              {
+                text: '확인',
+                onPress: () => router.back()
+              }
+            ]
+          );
+        } else {
+          Alert.alert('오류', '채팅방 정보를 불러올 수 없습니다.');
+          router.back();
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -286,7 +305,7 @@ export default function ChatRoom() {
   }
 
   const renderEmptyMessages = () => (
-    <View className="flex-1 items-center justify-center px-8" style={{ transform: [{ scaleY: -1 }] }}>
+    <View className="flex-1 items-center justify-center px-8" style={{ transform: [{ scaleY: -1 }, { scaleX: -1 }] }}>
       <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
       <Text className="text-gray-500 text-center mt-4 text-lg">
         첫 메시지를 보내보세요

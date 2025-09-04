@@ -78,6 +78,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                         const status = JSON.parse(onboardingStatus);
                         setOnboardingCompleted(status.completed || false);
                     }
+                    // Socket 재초기화
+                    console.log('기존 세션 복원 - Socket 재초기화');
+                    await socketManager.reinitialize();
                 }
             }
         } catch (error) {
@@ -115,6 +118,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setAuthToken(token); // 메모리에 토큰 캐시
             updateTokenCache(token); // api.ts 토큰 캐시도 업데이트
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            // Socket 재초기화
+            console.log('로그인 성공 - Socket 재초기화 시작');
+            await socketManager.reinitialize();
+            
             return { success: true };
         } catch (error) {
             return {

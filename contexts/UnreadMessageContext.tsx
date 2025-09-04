@@ -23,17 +23,45 @@ export const UnreadMessageProvider: React.FC<UnreadMessageProviderProps> = ({ ch
   useEffect(() => {
     console.log('UnreadMessageContext: 초기화 시작', { userId: user?.userId });
 
-    const statusInterval = null;
+    if (!user?.userId) {
+      console.log('UnreadMessageContext: 사용자 없음, 소켓 이벤트 구독 건너뜀');
+      return;
+    }
 
     // 총 안읽은 메시지 카운트 업데이트 구독
     const unsubscribeTotalCount = socketManager.onTotalUnreadCountUpdated((data) => {
       console.log('전역 소켓: 총 안읽은 메시지 카운트 업데이트:', data.totalUnreadCount);
       setTotalUnreadCount(data.totalUnreadCount);
     });
+    
+    // 채팅방 업데이트 이벤트도 구독 (실시간 메시지 수신 시)
+    const unsubscribeChatRoom = socketManager.onChatRoomUpdated((data) => {
+      console.log('전역 소켓: 채팅방 업데이트:', data);
+      // 채팅방 업데이트 후 전체 카운트 새로고침
+      refreshUnreadCount();
+    });
+    
+    // 새 메시지 수신 이벤트 구독 (다른 탭에 있을 때 카운트 업데이트)
+    const unsubscribeMessage = socketManager.onMessageReceived((message) => {
+      console.log('전역 소켓: 새 메시지 수신, 카운트 새로고침');
+      // 새 메시지가 오면 카운트 새로고침
+      refreshUnreadCount();
+    });
+
+    // 소켓 연결 상태를 주기적으로 확인하고 카운트 업데이트
+    const statusInterval = setInterval(() => {
+      const status = socketManager.getConnectionStatus();
+      if (status.isConnected && status.isAuthenticated) {
+        // 연결되어 있으면 카운트 새로고침
+        refreshUnreadCount();
+      }
+    }, 10000); // 10초마다 확인
 
     return () => {
       if (statusInterval) clearInterval(statusInterval);
       unsubscribeTotalCount();
+      unsubscribeChatRoom();
+      unsubscribeMessage();
     };
   }, [user?.userId]);
 

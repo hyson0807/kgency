@@ -573,7 +573,10 @@ class SocketManager {
 
   // 이벤트 콜백들
   private messageReceivedCallbacks = new Set<MessageReceivedCallback>();
+  private chatRoomUpdatedCallbacks = new Set<ChatRoomUpdatedCallback>();
   private totalUnreadCountUpdatedCallbacks = new Set<TotalUnreadCountUpdatedCallback>();
+  private userJoinedCallbacks = new Set<UserJoinedCallback>();
+  private userLeftCallbacks = new Set<UserLeftCallback>();
 
   private constructor() {
     this.initializeSocket();
@@ -598,6 +601,19 @@ class SocketManager {
     });
 
     this.setupSocketEventHandlers();
+  }
+
+  // 재초기화 메서드 (로그인/로그아웃 시 사용)
+  public async reinitialize() {
+    console.log('SocketManager: 재초기화 시작');
+    this.destroy();
+    // 상태 초기화
+    this.isConnected = false;
+    this.isAuthenticated = false;
+    this.currentRoomId = null;
+    this.reconnectAttempts = 0;
+    // 소켓 재연결
+    await this.initializeSocket();
   }
 
   // Socket 이벤트 핸들러 설정
@@ -628,6 +644,17 @@ class SocketManager {
       });
     });
 
+    // 채팅방 업데이트
+    this.socket.on('chat-room-updated', (data) => {
+      this.chatRoomUpdatedCallbacks.forEach(callback => {
+        try {
+          callback(data);
+        } catch (error) {
+          console.error('채팅방 업데이트 콜백 오류:', error);
+        }
+      });
+    });
+
     // 실시간 안읽은 카운트 업데이트
     this.socket.on('total-unread-count-updated', (data) => {
       this.totalUnreadCountUpdatedCallbacks.forEach(callback => {
@@ -646,9 +673,31 @@ class SocketManager {
     return () => this.messageReceivedCallbacks.delete(callback);
   }
 
+  public onChatRoomUpdated(callback: ChatRoomUpdatedCallback) {
+    this.chatRoomUpdatedCallbacks.add(callback);
+    return () => this.chatRoomUpdatedCallbacks.delete(callback);
+  }
+
   public onTotalUnreadCountUpdated(callback: TotalUnreadCountUpdatedCallback) {
     this.totalUnreadCountUpdatedCallbacks.add(callback);
     return () => this.totalUnreadCountUpdatedCallbacks.delete(callback);
+  }
+
+  // 정리
+  public destroy() {
+    console.log('SocketManager: 소켓 연결 정리');
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
+    }
+    this.isConnected = false;
+    this.isAuthenticated = false;
+    this.currentRoomId = null;
+    this.messageReceivedCallbacks.clear();
+    this.chatRoomUpdatedCallbacks.clear();
+    this.totalUnreadCountUpdatedCallbacks.clear();
+    this.userJoinedCallbacks.clear();
+    this.userLeftCallbacks.clear();
   }
 }
 
@@ -656,7 +705,7 @@ class SocketManager {
 export const socketManager = SocketManager.getInstance();
 ```
 
-### 2. 글로벌 안읽은 메시지 상태 관리
+### 2. 글로벌 안읽은 메시지 상태 관리 (강화된 실시간 업데이트)
 
 **파일**: `contexts/UnreadMessageContext.tsx`
 
@@ -665,15 +714,59 @@ export const UnreadMessageProvider: React.FC<UnreadMessageProviderProps> = ({ ch
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   const { user } = useAuth();
 
-  // singleton 소켓 매니저를 사용한 전역 웹소켓 연결
+  // singleton 소켓 매니저를 사용한 전역 웹소켓 연결 (강화된 버전)
   useEffect(() => {
-    // 총 안읽은 메시지 카운트 업데이트 구독
-    const unsubscribe = socketManager.onTotalUnreadCountUpdated((data) => {
-      console.log('실시간 안읽은 메시지 카운트 업데이트:', data.totalUnreadCount);
+    if (!user?.userId) {
+      console.log('UnreadMessageContext: 사용자 없음, 소켓 이벤트 구독 건너뜀');
+      return;
+    }
+
+    // 1. 총 안읽은 메시지 카운트 업데이트 구독
+    const unsubscribeTotalCount = socketManager.onTotalUnreadCountUpdated((data) => {
+      console.log('전역 소켓: 총 안읽은 메시지 카운트 업데이트:', data.totalUnreadCount);
       setTotalUnreadCount(data.totalUnreadCount);
     });
+    
+    // 2. 채팅방 업데이트 이벤트도 구독 (실시간 메시지 수신 시)
+    const unsubscribeChatRoom = socketManager.onChatRoomUpdated((data) => {
+      console.log('전역 소켓: 채팅방 업데이트:', data);
+      refreshUnreadCount();
+    });
+    
+    // 3. 새 메시지 수신 이벤트 구독 (다른 탭에 있을 때 카운트 업데이트)
+    const unsubscribeMessage = socketManager.onMessageReceived((message) => {
+      console.log('전역 소켓: 새 메시지 수신, 카운트 새로고침');
+      refreshUnreadCount();
+    });
 
-    return unsubscribe;
+    // 4. 소켓 연결 상태를 주기적으로 확인하고 카운트 업데이트
+    const statusInterval = setInterval(() => {
+      const status = socketManager.getConnectionStatus();
+      if (status.isConnected && status.isAuthenticated) {
+        refreshUnreadCount();
+      }
+    }, 10000); // 10초마다 확인
+
+    return () => {
+      clearInterval(statusInterval);
+      unsubscribeTotalCount();
+      unsubscribeChatRoom();
+      unsubscribeMessage();
+    };
+  }, [user?.userId]);
+
+  // 초기 안읽은 메시지 카운트 조회 및 사용자 변경 감지
+  useEffect(() => {
+    if (user?.userId) {
+      const timer = setTimeout(() => {
+        console.log('사용자 로그인, 초기 안읽은 메시지 카운트 조회');
+        refreshUnreadCount();
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setTotalUnreadCount(0);
+    }
   }, [user?.userId]);
 
   // 초기 안읽은 메시지 카운트 조회
@@ -1054,6 +1147,57 @@ eas build --platform all --profile preview
 - iOS: 24-48시간
 - Android: 2-6시간
 
+## 🛠️ 최근 개선사항 (2025-09-04)
+
+### 1. 탈퇴한 사용자 채팅방 처리
+- **문제**: 상대방이 회원 탈퇴 시 채팅방 접근 시 에러 발생
+- **해결**: 
+  - 서버 API에서 탈퇴한 사용자 감지 및 적절한 에러 메시지 반환
+  - 클라이언트에서 탈퇴한 사용자 시각적 표시 (회색 처리, "(탈퇴)" 라벨)
+  - 채팅방 입장 시 사용자 친화적인 알림 다이얼로그
+
+### 2. 소켓 재연결 메커니즘 강화
+- **문제**: 로그인/로그아웃 시 소켓 연결이 제대로 초기화되지 않음
+- **해결**:
+  - `socketManager.reinitialize()` 메서드 추가
+  - AuthContext에서 로그인/세션 복원 시 자동 소켓 재초기화
+  
+**AuthContext 로그인 시 소켓 재초기화**:
+```typescript
+// contexts/AuthContext.tsx
+const login = async (token: string, userData: User, onboardingStatus: any) => {
+  // ... 로그인 처리
+  
+  // Socket 재초기화
+  console.log('로그인 성공 - Socket 재초기화 시작');
+  await socketManager.reinitialize();
+  
+  return { success: true };
+};
+
+// 세션 복원 시에도 소켓 재초기화
+const checkAuthState = async () => {
+  // ... 세션 확인 로직
+  if (!isExpired && userData) {
+    // ... 상태 복원
+    // Socket 재초기화
+    console.log('기존 세션 복원 - Socket 재초기화');
+    await socketManager.reinitialize();
+  }
+};
+```
+
+### 3. 실시간 안읽은 메시지 업데이트 강화
+- **문제**: 다른 탭에 있을 때 안읽은 메시지 카운트가 업데이트되지 않음
+- **해결**:
+  - 4가지 이벤트 구독으로 완벽한 실시간 업데이트
+  - 주기적인 연결 상태 확인 및 카운트 갱신 (10초마다)
+  - 새 메시지 수신 시 즉시 카운트 업데이트
+
+### 4. UI/UX 개선
+- **채팅방 빈 메시지 표시 수정**: FlatList inverted 모드에서 transform 스타일 수정
+- **연결 상태 표시**: 채팅방 헤더에 실시간 연결 상태 인디케이터 추가
+
 ## 🔄 향후 개선사항
 
 ### ✅ 완료된 기능
@@ -1061,6 +1205,18 @@ eas build --platform all --profile preview
    - 하이브리드 페이지네이션 (페이지 + 커서 기반)
    - 무한 스크롤 구현
    - 85% 성능 개선
+
+2. **✅ 탈퇴 사용자 처리**: 탈퇴한 사용자와의 채팅방 접근 처리 (2025-09-04 완료)
+   - 에러 없는 우아한 처리
+   - 시각적 구분 및 안내 메시지
+
+3. **✅ 소켓 재연결 안정화**: 로그인/로그아웃 시 소켓 연결 관리 (2025-09-04 완료)
+   - 자동 재초기화 메커니즘
+   - 연결 상태 모니터링
+
+4. **✅ 실시간 알림 강화**: 크로스탭 안읽은 메시지 업데이트 (2025-09-04 완료)
+   - 다중 이벤트 구독
+   - 주기적 상태 확인
 
 ### 계획된 기능
 1. **타이핑 인디케이터**: 상대방이 입력 중임을 표시
@@ -1086,6 +1242,21 @@ eas build --platform all --profile preview
 
 ---
 
-**작성일**: 2025-09-04 (메시지 페이지네이션 섹션 추가)  
+## 📝 문서 변경 이력
+
+### 버전 5.0 (2025-09-04 오후)
+- 탈퇴한 사용자 채팅방 처리 로직 추가
+- Socket 재초기화 메커니즘 문서화
+- UnreadMessageContext 강화된 실시간 업데이트 로직 추가
+- AuthContext 소켓 재초기화 코드 추가
+- UI/UX 개선사항 문서화
+
+### 버전 4.0 (2025-09-04 오전)
+- 메시지 페이지네이션 시스템 추가
+- 하이브리드 페이지네이션으로 85% 성능 개선
+
+---
+
+**최종 업데이트**: 2025-09-04  
 **작성자**: Claude (AI Assistant)  
-**문서 버전**: 4.0 (메시지 페이지네이션 시스템 추가 - 하이브리드 페이지네이션으로 85% 성능 개선)
+**문서 버전**: 5.0 (실시간 업데이트 시스템 전면 강화 및 탈퇴 사용자 처리 추가)

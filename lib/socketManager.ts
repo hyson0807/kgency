@@ -364,12 +364,29 @@ class SocketManager {
     return () => this.userLeftCallbacks.delete(callback);
   }
 
+  // 재초기화 메서드 추가
+  public async reinitialize() {
+    console.log('SocketManager: 재초기화 시작');
+    this.destroy();
+    // 상태 초기화
+    this.isConnected = false;
+    this.isAuthenticated = false;
+    this.currentRoomId = null;
+    this.reconnectAttempts = 0;
+    // 소켓 재연결
+    await this.initializeSocket();
+  }
+
   // 정리
   public destroy() {
+    console.log('SocketManager: 소켓 연결 정리');
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
     }
+    this.isConnected = false;
+    this.isAuthenticated = false;
+    this.currentRoomId = null;
     this.messageReceivedCallbacks.clear();
     this.chatRoomUpdatedCallbacks.clear();
     this.totalUnreadCountUpdatedCallbacks.clear();

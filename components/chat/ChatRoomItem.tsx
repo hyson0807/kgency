@@ -23,15 +23,17 @@ export const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, userType }
         name: (chatRoom as UserChatRoom).company.name,
         unreadCount: (chatRoom as UserChatRoom).user_unread_count,
         iconName: 'business' as const,
-        iconColor: '#3b82f6',
-        bgColor: 'bg-blue-100'
+        iconColor: (chatRoom as UserChatRoom).company.name === '탈퇴한 회사' ? '#9ca3af' : '#3b82f6',
+        bgColor: (chatRoom as UserChatRoom).company.name === '탈퇴한 회사' ? 'bg-gray-100' : 'bg-blue-100',
+        isWithdrawn: (chatRoom as UserChatRoom).company.name === '탈퇴한 회사'
       }
     : {
         name: (chatRoom as CompanyChatRoom).user.name || '구직자',
         unreadCount: (chatRoom as CompanyChatRoom).company_unread_count,
         iconName: 'person' as const,
-        iconColor: '#10b981',
-        bgColor: 'bg-green-100'
+        iconColor: (chatRoom as CompanyChatRoom).user.name === '탈퇴한 사용자' ? '#9ca3af' : '#10b981',
+        bgColor: (chatRoom as CompanyChatRoom).user.name === '탈퇴한 사용자' ? 'bg-gray-100' : 'bg-green-100',
+        isWithdrawn: (chatRoom as CompanyChatRoom).user.name === '탈퇴한 사용자'
       };
 
   const handlePress = () => {
@@ -52,10 +54,15 @@ export const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, userType }
       <View className="flex-1">
         {/* 이름과 읽지 않은 메시지 수 */}
         <View className="flex-row items-center justify-between mb-1">
-          <Text className="text-base font-semibold text-gray-900" numberOfLines={1}>
-            {config.name}
-          </Text>
-          {config.unreadCount > 0 && (
+          <View className="flex-row items-center flex-1">
+            <Text className={`text-base font-semibold ${config.isWithdrawn ? 'text-gray-500' : 'text-gray-900'}`} numberOfLines={1}>
+              {config.name}
+            </Text>
+            {config.isWithdrawn && (
+              <Text className="text-xs text-gray-400 ml-2">(탈퇴)</Text>
+            )}
+          </View>
+          {config.unreadCount > 0 && !config.isWithdrawn && (
             <View className="bg-red-500 rounded-full min-w-[20px] h-5 items-center justify-center px-1.5">
               <Text className="text-white text-xs font-bold">
                 {config.unreadCount > 99 ? '99+' : config.unreadCount}
@@ -72,14 +79,19 @@ export const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, userType }
         {/* 마지막 메시지와 시간 */}
         <View className="flex-row items-center justify-between">
           <Text 
-            className="text-sm text-gray-500 flex-1" 
+            className={`text-sm flex-1 ${config.isWithdrawn ? 'text-gray-400' : 'text-gray-500'}`} 
             numberOfLines={1}
           >
-            {chatRoom.last_message || '대화를 시작해보세요'}
+            {config.isWithdrawn 
+              ? '상대방이 탈퇴하여 더 이상 대화할 수 없습니다' 
+              : (chatRoom.last_message || '대화를 시작해보세요')
+            }
           </Text>
-          <Text className="text-xs text-gray-400 ml-2">
-            {formatLastMessageTime(chatRoom.last_message_at)}
-          </Text>
+          {!config.isWithdrawn && (
+            <Text className="text-xs text-gray-400 ml-2">
+              {formatLastMessageTime(chatRoom.last_message_at)}
+            </Text>
+          )}
         </View>
       </View>
     </TouchableOpacity>
