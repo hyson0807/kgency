@@ -23,7 +23,12 @@ import { CHAT_CONFIG, APP_CONFIG } from '@/lib/config';
 import type { ChatMessage, ChatRoomInfo, SocketMessage } from '@/types/chat';
 
 export default function ChatRoom() {
-  const { roomId } = useLocalSearchParams<{ roomId: string }>();
+  const params = useLocalSearchParams<{ 
+    roomId: string; 
+    initialMessage?: string; 
+    messageType?: string; 
+  }>();
+  const { roomId, initialMessage, messageType } = params;
   const { profile } = useProfile();
   const router = useRouter();
   const { refreshUnreadCount } = useUnreadMessage();
@@ -48,6 +53,8 @@ export default function ChatRoom() {
 
   const [isConnected, setIsConnected] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [initialMessageSent, setInitialMessageSent] = useState(false);
+  const [cameFromResumeFlow, setCameFromResumeFlow] = useState(false);
 
   // 메시지 수신 이벤트 구독 (한 번만)
   useEffect(() => {
@@ -136,7 +143,48 @@ export default function ChatRoom() {
         refreshUnreadCount();
       });
     }
-  }, [roomId, profile, loadInitialMessages]);
+    
+    // 이력서 플로우에서 왔는지 확인
+    if (initialMessage && messageType === 'resume') {
+      setCameFromResumeFlow(true);
+    }
+  }, [roomId, profile, loadInitialMessages, initialMessage, messageType]);
+
+  // 초기 메시지 자동 전송
+  useEffect(() => {
+    const sendInitialMessage = async () => {
+      if (
+        initialMessage && 
+        messageType === 'resume' && 
+        !initialMessageSent && 
+        isConnected && 
+        isAuthenticated && 
+        profile?.id &&
+        !initialLoading
+      ) {
+        console.log('이력서 자동 전송 시작');
+        setInitialMessageSent(true);
+        
+        try {
+          const success = await socketManager.sendMessage(initialMessage);
+          if (success) {
+            console.log('이력서 자동 전송 성공');
+            // URL 파라미터 정리 (navigate로 현재 URL에서 파라미터만 제거)
+            router.replace(`/chat/${roomId}`);
+          } else {
+            console.error('이력서 자동 전송 실패');
+          }
+        } catch (error) {
+          console.error('이력서 자동 전송 중 오류:', error);
+        }
+      }
+    };
+
+    // 조건이 충족되면 약간의 딜레이 후 전송 (소켓 연결 안정화)
+    if (initialMessage && messageType === 'resume' && !initialMessageSent && isConnected && isAuthenticated) {
+      setTimeout(sendInitialMessage, 1000);
+    }
+  }, [initialMessage, messageType, initialMessageSent, isConnected, isAuthenticated, profile?.id, initialLoading, roomId, router]);
 
   const fetchRoomInfo = async () => {
     try {
@@ -180,6 +228,7 @@ export default function ChatRoom() {
       setSending(false);
     }
   };
+
 
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {

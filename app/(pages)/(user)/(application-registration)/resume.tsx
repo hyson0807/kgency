@@ -8,7 +8,6 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import {api} from "@/lib/api"
-import { useApplicationFormStore } from '@/stores/applicationFormStore'
 export default function Resume() {
     const params = useLocalSearchParams();
     const jobPostingId = Array.isArray(params.jobPostingId) ? params.jobPostingId[0] : params.jobPostingId;
@@ -19,13 +18,11 @@ export default function Resume() {
     const { user } = useAuth();
     const { t } = useTranslation()
     const { showModal, ModalComponent, hideModal } = useModal()
-    const { resetAllData } = useApplicationFormStore()
     const [resume, setResume] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [isEditing, setIsEditing] = useState(false)
     const [editedResume, setEditedResume] = useState('')
-    const [sending, setSending] = useState(false)
     const [regenerating, setRegenerating] = useState(false)
     // 컴포넌트 마운트 시 AI 이력서 생성
     useEffect(() => {
@@ -114,68 +111,18 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
         }
     };
     const handleSend = async () => {
-        showModal(
-            t('resume.send_modal_title', '이력서 전송'),
-            t('resume.send_modal_message', `${jobTitle || '채용 공고'}에 이력서를 전송하시겠습니까?`, {jobTitle}),
-            'confirm',
-            async () => {
-                hideModal();
-                setSending(true);
-                try {
-                    // 먼저 중복 지원 확인
-                    const checkDuplicateResponse = await api('GET', `/api/applications/check-duplicate?jobPostingId=${jobPostingId}`);
-                    
-                    if (checkDuplicateResponse.isDuplicate) {
-                        // 이미 지원한 경우 스토어 데이터 삭제 후 홈으로 이동
-                        resetAllData();
-                        router.replace('/(user)/home');
-                        return;
-                    }
-                    // 메시지 전송
-                    const messageResponse = await api('POST', '/api/messages', {
-                        receiverId: companyId,
-                        subject: `${jobTitle} 입사 지원서`,
-                        content: isEditing ? editedResume : resume
-                    });
-                    if (!messageResponse.success) {
-                        return;
-                    }
-                    // 지원 내역 저장
-                    const applicationResponse = await api('POST', '/api/applications', {
-                        companyId: companyId,
-                        jobPostingId: jobPostingId,
-                        messageId: messageResponse.data.id
-                    });
-                    if (!applicationResponse.success) {
-                        return;
-                    }
-                    
-                    // 채팅방 생성
-                    try {
-                        if (user?.userId) {
-                            await api('POST', '/api/chat/create-room', {
-                                application_id: applicationResponse.data.id,
-                                user_id: user.userId,
-                                company_id: companyId,
-                                job_posting_id: jobPostingId
-                            });
-                        }
-                    } catch (chatError) {
-                        console.error('Error creating chat room:', chatError);
-                        // 채팅방 생성 실패는 지원 프로세스에 영향을 주지 않음
-                    }
-                    
-                    // 성공 시 스토어 데이터 삭제 후 홈으로 이동
-                    resetAllData();
-                    router.replace('/(user)/user-chats');
-                } catch (error) {
-                    // 에러 발생 시에도 알림 없이 처리
-                } finally {
-                    setSending(false);
-                }
-            },
-            true
-        );
+        // 지원 방식 선택 페이지로 이동
+        router.push({
+            pathname: '/(pages)/(user)/(application-registration)/application-method',
+            params: {
+                resume: resume,
+                editedResume: editedResume,
+                isEditing: isEditing.toString(),
+                companyId: companyId,
+                jobPostingId: jobPostingId,
+                jobTitle: jobTitle || '채용 공고'
+            }
+        });
     };
     const handleEdit = () => {
         if (isEditing) {
@@ -302,13 +249,13 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
             <View className="p-4 border-t border-gray-200">
                 <TouchableOpacity
                     onPress={handleSend}
-                    disabled={sending || isEditing}
+                    disabled={isEditing}
                     className={`py-4 rounded-xl ${
-                        sending || isEditing ? 'bg-gray-400' : 'bg-blue-500'
+                        isEditing ? 'bg-gray-400' : 'bg-blue-500'
                     }`}
                 >
                     <Text className="text-center text-white font-bold text-lg">
-                        {sending ? t('resume.sending', '전송 중...') : isEditing ? t('resume.complete_edit', '편집을 완료하세요') : t('resume.send_resume', '이력서 전송')}
+                        {isEditing ? t('resume.complete_edit', '편집을 완료하세요') : t('resume.send_resume', '이력서 전송')}
                     </Text>
                 </TouchableOpacity>
             </View>
