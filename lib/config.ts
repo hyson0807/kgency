@@ -1,16 +1,55 @@
-// 서버 URL 중앙 설정
-const SERVER_CONFIG = {
-  // 개발 서버 URL (로컬 IP 주소)
-  DEV_SERVER_URL: 'http://192.168.0.15:5004',
+/**
+ * 애플리케이션 전역 설정 상수들
+ */
+
+// 서버 URL 설정
+export const SERVER_CONFIG = {
+  DEV_SERVER_URL: process.env.EXPO_PUBLIC_DEV_SERVER_URL || 'http://192.168.0.15:5004',
+  PROD_SERVER_URL: process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgencyserver-production-45af.up.railway.app',
   
-  // 프로덕션 서버 URL
-  PROD_SERVER_URL: 'https://kgencyserver-production-45af.up.railway.app',
-};
+  get SERVER_URL() {
+    return __DEV__ ? this.DEV_SERVER_URL : this.PROD_SERVER_URL;
+  }
+} as const;
 
-// 현재 환경에 따른 서버 URL 반환
-export const getServerUrl = (): string => {
-  return __DEV__ ? SERVER_CONFIG.DEV_SERVER_URL : SERVER_CONFIG.PROD_SERVER_URL;
-};
+// Socket.io 관련 설정
+export const SOCKET_CONFIG = {
+  TRANSPORTS: ['websocket', 'polling'] as const,
+  TIMEOUT: 20000, // 20초
+  RECONNECTION_DELAY: 1000, // 1초
+  MAX_RECONNECT_ATTEMPTS: 5,
+  ROOM_JOIN_TIMEOUT: 5000, // 5초
+} as const;
 
+// 채팅 관련 설정
+export const CHAT_CONFIG = {
+  MAX_MESSAGE_LENGTH: 500,
+  MESSAGE_FETCH_LIMIT: 50,
+  UNREAD_COUNT_REFRESH_DELAY: 2000, // 2초
+} as const;
 
-export const SERVER_URL = getServerUrl();
+// 날짜/시간 포맷 설정
+export const DATE_CONFIG = {
+  TIME_FORMAT: {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  } as const,
+  
+  DATE_FORMAT: {
+    month: 'short',
+    day: 'numeric'
+  } as const,
+  
+  LOCALE: 'ko-KR'
+} as const;
+
+// 앱 상태 관련 설정
+export const APP_CONFIG = {
+  STATUS_CHECK_INTERVAL: 5000, // 5초
+  BADGE_UPDATE_DELAY: 100, // 0.1초
+} as const;
+
+// 하위 호환성을 위한 기존 함수들
+export const getServerUrl = (): string => SERVER_CONFIG.SERVER_URL;
+export const SERVER_URL = SERVER_CONFIG.SERVER_URL;

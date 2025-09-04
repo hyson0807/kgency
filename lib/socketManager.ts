@@ -1,27 +1,16 @@
 import { io, Socket } from 'socket.io-client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from 'react-native';
-
-// 서버 URL 설정
-const SERVER_URL = __DEV__
-  ? process.env.EXPO_PUBLIC_DEV_SERVER_URL || 'http://192.168.0.15:5004'
-  : process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgencyserver-production-45af.up.railway.app';
-
-export interface SocketMessage {
-  id: string;
-  room_id: string;
-  sender_id: string;
-  message: string;
-  created_at: string;
-  is_read: boolean;
-}
-
-// 이벤트 콜백 타입들
-type MessageReceivedCallback = (message: SocketMessage) => void;
-type ChatRoomUpdatedCallback = (data: { roomId: string; last_message: string; last_message_at: string; unread_count: number }) => void;
-type TotalUnreadCountUpdatedCallback = (data: { totalUnreadCount: number }) => void;
-type UserJoinedCallback = (data: { userId: string; userType: string }) => void;
-type UserLeftCallback = (data: { userId: string; userType: string }) => void;
+import { SERVER_CONFIG, SOCKET_CONFIG, APP_CONFIG } from '@/lib/config';
+import type { 
+  SocketMessage, 
+  SocketConnectionStatus,
+  MessageReceivedCallback,
+  ChatRoomUpdatedCallback,
+  TotalUnreadCountUpdatedCallback,
+  UserJoinedCallback,
+  UserLeftCallback
+} from '@/types/chat';
 
 // Singleton 소켓 매니저 클래스
 class SocketManager {
@@ -31,7 +20,7 @@ class SocketManager {
   private isAuthenticated = false;
   private currentRoomId: string | null = null;
   private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
+  private maxReconnectAttempts = SOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS;
 
   // 이벤트 콜백들
   private messageReceivedCallbacks = new Set<MessageReceivedCallback>();
@@ -55,7 +44,7 @@ class SocketManager {
   // Socket 연결 초기화
   private async initializeSocket() {
     try {
-      console.log('SocketManager: 웹소켓 연결 초기화', { SERVER_URL });
+      console.log('SocketManager: 웹소켓 연결 초기화', { SERVER_URL: SERVER_CONFIG.SERVER_URL });
       
       // 기존 연결 정리
       if (this.socket) {
@@ -64,11 +53,11 @@ class SocketManager {
       }
 
       // 새로운 Socket 연결 생성
-      this.socket = io(SERVER_URL, {
-        transports: ['websocket', 'polling'],
-        timeout: 20000,
+      this.socket = io(SERVER_CONFIG.SERVER_URL, {
+        transports: SOCKET_CONFIG.TRANSPORTS,
+        timeout: SOCKET_CONFIG.TIMEOUT,
         reconnection: true,
-        reconnectionDelay: 1000,
+        reconnectionDelay: SOCKET_CONFIG.RECONNECTION_DELAY,
         reconnectionAttempts: this.maxReconnectAttempts,
       });
 
@@ -214,7 +203,7 @@ class SocketManager {
   }
 
   // 공개 메서드들
-  public getConnectionStatus() {
+  public getConnectionStatus(): SocketConnectionStatus {
     return {
       isConnected: this.isConnected,
       isAuthenticated: this.isAuthenticated,
@@ -258,12 +247,12 @@ class SocketManager {
     console.log('SocketManager: 채팅방 입장 시도:', roomId);
     this.socket.emit('join-room', { roomId });
     
-    // 채팅방 입장 성공을 기다림 (최대 5초)
+    // 채팅방 입장 성공을 기다림 (설정된 타임아웃)
     return new Promise((resolve) => {
       const timeout = setTimeout(() => {
         console.error('SocketManager: 채팅방 입장 타임아웃');
         resolve(false);
-      }, 5000);
+      }, SOCKET_CONFIG.ROOM_JOIN_TIMEOUT);
 
       // joined-room 이벤트를 위한 일회성 리스너 생성
       const onJoinedRoom = (data: any) => {

@@ -15,26 +15,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useProfile } from '@/hooks/useProfile';
 import { api } from '@/lib/api';
 import { Ionicons } from '@expo/vector-icons';
-import { socketManager, SocketMessage } from '@/lib/socketManager';
+import { socketManager } from '@/lib/socketManager';
 import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
-
-interface ChatMessage {
-  id: string;
-  sender_id: string;
-  message: string;
-  created_at: string;
-  is_read: boolean;
-}
-
-interface ChatRoomInfo {
-  id: string;
-  user_id: string;
-  company_id: string;
-  job_posting_id: string;
-  user: { name: string };
-  company: { name: string };
-  job_postings: { title: string };
-}
+import { formatMessageTime } from '@/utils/dateUtils';
+import { CHAT_CONFIG, APP_CONFIG } from '@/lib/config';
+import type { ChatMessage, ChatRoomInfo, SocketMessage } from '@/types/chat';
 
 export default function ChatRoom() {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
@@ -69,7 +54,7 @@ export default function ChatRoom() {
       // 스크롤을 맨 아래로
       setTimeout(() => {
         flatListRef.current?.scrollToEnd();
-      }, 100);
+      }, APP_CONFIG.BADGE_UPDATE_DELAY);
 
       // 메시지 읽음 처리 및 총 안읽은 메시지 카운트 새로고침
       markMessagesAsRead().then(() => {
@@ -118,7 +103,7 @@ export default function ChatRoom() {
       } else if (!connected || !authenticated) {
         hasJoinedRoom = false;
       }
-    }, 5000); // 5초마다 상태만 확인
+    }, APP_CONFIG.STATUS_CHECK_INTERVAL); // 설정된 간격으로 상태 확인
 
     return () => {
       clearInterval(statusCheckInterval);
@@ -211,30 +196,6 @@ export default function ChatRoom() {
     }
   };
 
-  const formatMessageTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const diffInHours = diff / (1000 * 60 * 60);
-    
-    if (diffInHours < 24) {
-      // 24시간 이내면 시간만 표시
-      return date.toLocaleTimeString('ko-KR', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: false 
-      });
-    } else {
-      // 24시간 이후면 날짜와 시간 표시
-      return date.toLocaleDateString('ko-KR', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
-    }
-  };
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {
     const isMyMessage = item.sender_id === profile?.id;
@@ -345,7 +306,7 @@ export default function ChatRoom() {
               onChangeText={setNewMessage}
               placeholder="메시지를 입력하세요..."
               multiline
-              maxLength={500}
+              maxLength={CHAT_CONFIG.MAX_MESSAGE_LENGTH}
               className="flex-1 max-h-24 px-4 py-3 bg-gray-100 rounded-full mr-3"
               style={{ textAlignVertical: 'top' }}
             />

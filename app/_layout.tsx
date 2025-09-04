@@ -8,6 +8,7 @@ import {TabBarProvider} from "@/contexts/TabBarContext";
 import {ProfileProvider} from "@/contexts/ProfileContext";
 import {UnreadMessageProvider} from "@/contexts/UnreadMessageContext";
 import {UpdateManager} from "@/components/shared/update-manager";
+import {AppBadgeManager} from "@/components/shared/AppBadgeManager";
 
 export default function RootLayout() {
   return (
@@ -19,6 +20,7 @@ export default function RootLayout() {
                             <NotificationProvider>
                                 <TabBarProvider>
                                     <SafeAreaProvider>
+                                        <AppBadgeManager />
                                         <Stack
                                             screenOptions={{
                                                 headerShown: false, // ✅ 헤더 숨김
