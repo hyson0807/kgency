@@ -22,12 +22,8 @@ export const UnreadMessageProvider: React.FC<UnreadMessageProviderProps> = ({ ch
   // singleton 소켓 매니저를 사용한 전역 웹소켓 연결
   useEffect(() => {
     console.log('UnreadMessageContext: 초기화 시작', { userId: user?.userId });
-    
-    // 개발 모드에서만 연결 상태 주기적 로깅 (30초마다)
-    const statusInterval = __DEV__ ? setInterval(() => {
-      const status = socketManager.getConnectionStatus();
-      console.log('UnreadMessageContext: 소켓 상태 확인', status);
-    }, 30000) : null;
+
+    const statusInterval = null;
 
     // 총 안읽은 메시지 카운트 업데이트 구독
     const unsubscribeTotalCount = socketManager.onTotalUnreadCountUpdated((data) => {
