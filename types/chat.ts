@@ -8,6 +8,7 @@ export interface SocketMessage {
   room_id: string;
   sender_id: string;
   message: string;
+  message_type?: string; // 메시지 타입 (resume, video_introduction, regular 등)
   created_at: string;
   is_read: boolean;
 }
@@ -17,6 +18,7 @@ export interface ChatMessage {
   id: string;
   sender_id: string;
   message: string;
+  message_type?: string; // 메시지 타입 (resume, video_introduction, regular 등)
   created_at: string;
   is_read: boolean;
 }

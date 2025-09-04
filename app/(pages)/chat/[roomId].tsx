@@ -21,6 +21,7 @@ import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
 import { formatMessageTime } from '@/utils/dateUtils';
 import { CHAT_CONFIG, APP_CONFIG } from '@/lib/config';
 import type { ChatMessage, ChatRoomInfo, SocketMessage } from '@/types/chat';
+import { ResumeMessageCard } from '@/components/chat/ResumeMessageCard';
 
 export default function ChatRoom() {
   const params = useLocalSearchParams<{ 
@@ -64,6 +65,7 @@ export default function ChatRoom() {
         id: socketMessage.id,
         sender_id: socketMessage.sender_id,
         message: socketMessage.message,
+        message_type: socketMessage.message_type,
         created_at: socketMessage.created_at,
         is_read: socketMessage.is_read,
       };
@@ -166,7 +168,7 @@ export default function ChatRoom() {
         setInitialMessageSent(true);
         
         try {
-          const success = await socketManager.sendMessage(initialMessage);
+          const success = await socketManager.sendMessage(initialMessage, 'resume');
           if (success) {
             console.log('이력서 자동 전송 성공');
             // URL 파라미터 정리 (navigate로 현재 URL에서 파라미터만 제거)
@@ -234,6 +236,24 @@ export default function ChatRoom() {
   const renderMessage = ({ item }: { item: ChatMessage }) => {
     const isMyMessage = item.sender_id === profile?.id;
     
+    // 이력서 메시지인지 확인 (messageType이 'resume'이거나 initialMessage와 일치하는 경우)
+    const isResumeMessage = (
+      (initialMessage && item.message === initialMessage && messageType === 'resume') ||
+      item.message_type === 'resume'
+    );
+    
+    // 이력서 메시지면 ResumeMessageCard 컴포넌트 사용
+    if (isResumeMessage) {
+      return (
+        <ResumeMessageCard
+          message={item.message}
+          isMyMessage={isMyMessage}
+          timestamp={formatMessageTime(item.created_at)}
+        />
+      );
+    }
+    
+    // 일반 메시지면 기존 렌더링
     return (
       <View className={`mb-3 ${isMyMessage ? 'items-end' : 'items-start'}`}>
         <View
@@ -266,7 +286,7 @@ export default function ChatRoom() {
   }
 
   const renderEmptyMessages = () => (
-    <View className="flex-1 items-center justify-center px-8">
+    <View className="flex-1 items-center justify-center px-8" style={{ transform: [{ scaleY: -1 }] }}>
       <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
       <Text className="text-gray-500 text-center mt-4 text-lg">
         첫 메시지를 보내보세요

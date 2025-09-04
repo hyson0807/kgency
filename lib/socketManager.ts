@@ -54,7 +54,7 @@ class SocketManager {
 
       // 새로운 Socket 연결 생성
       this.socket = io(SERVER_CONFIG.SERVER_URL, {
-        transports: SOCKET_CONFIG.TRANSPORTS,
+        transports: [...SOCKET_CONFIG.TRANSPORTS],
         timeout: SOCKET_CONFIG.TIMEOUT,
         reconnection: true,
         reconnectionDelay: SOCKET_CONFIG.RECONNECTION_DELAY,
@@ -280,9 +280,10 @@ class SocketManager {
     this.currentRoomId = null;
   }
 
-  public async sendMessage(message: string): Promise<boolean> {
+  public async sendMessage(message: string, messageType?: string): Promise<boolean> {
     console.log('SocketManager: sendMessage 호출:', {
       message: message?.trim(),
+      messageType: messageType,
       isConnected: this.isConnected,
       isAuthenticated: this.isAuthenticated,
       currentRoomId: this.currentRoomId,
@@ -311,13 +312,21 @@ class SocketManager {
 
     console.log('SocketManager: 메시지 전송:', {
       roomId: this.currentRoomId,
-      message: message.trim()
+      message: message.trim(),
+      messageType: messageType
     });
     
-    this.socket.emit('send-message', {
+    const messageData: any = {
       roomId: this.currentRoomId,
       message: message.trim(),
-    });
+    };
+
+    // messageType이 있으면 포함
+    if (messageType) {
+      messageData.messageType = messageType;
+    }
+    
+    this.socket.emit('send-message', messageData);
 
     return true;
   }
