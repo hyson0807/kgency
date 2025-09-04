@@ -17,7 +17,7 @@ import { removePushToken } from '@/lib/notifications';
 const Settings2 = () => {
     const insets = useSafeAreaInsets()
     const { logout, user } = useAuth()
-    const { profile } = useProfile()
+    const { profile, refreshProfile } = useProfile()
     const { showModal, ModalComponent } = useModal()
     const { t } = useTranslation()
     const { notificationSettings, updateNotificationSettings } = useNotification()
@@ -28,6 +28,13 @@ const Settings2 = () => {
     const [privacyModalVisible, setPrivacyModalVisible] = useState(false)
     // 앱 정보
     const APP_VERSION = '1.0.2'
+    
+    // 사용자 변경 시 프로필 새로고침
+    React.useEffect(() => {
+        if (user?.userId) {
+            refreshProfile();
+        }
+    }, [user?.userId])
     // 알림 토글
     const toggleNotification = (key: keyof typeof notificationSettings) => {
         const newSettings = {

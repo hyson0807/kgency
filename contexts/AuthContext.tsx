@@ -87,11 +87,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // 로그인 함수
     const login = async (token: string, userData: User, onboardingStatus: any): Promise<LoginResult> => {
         try {
-            // 🔒 기존 데이터 삭제 (덮어쓰기 대신 명시적으로 클리어)
+            // 🔒 기존 데이터 완전 삭제 (다른 사용자 데이터 제거)
             await AsyncStorage.removeItem('authToken');
             await AsyncStorage.removeItem('userData');
             await AsyncStorage.removeItem('onboardingStatus');
-            await AsyncStorage.removeItem('userProfile'); // 혹시 남아있을 경우 대비
+            await AsyncStorage.removeItem('userProfile'); // 프로필 캐시 삭제
+            // 다른 캐싱 데이터들도 삭제
+            const keys = await AsyncStorage.getAllKeys();
+            const profileRelatedKeys = keys.filter(key => 
+                key.includes('profile') || 
+                key.includes('user_') || 
+                key.includes('company_')
+            );
+            if (profileRelatedKeys.length > 0) {
+                await AsyncStorage.multiRemove(profileRelatedKeys);
+            }
             // ✅ 새로운 로그인 데이터 저장
             await AsyncStorage.setItem('authToken', token);
             await AsyncStorage.setItem('userData', JSON.stringify(userData));

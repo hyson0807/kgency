@@ -18,7 +18,7 @@ import { removePushToken } from '@/lib/notifications';
 import ProfileImageUploader from '@/components/shared/Image/ProfileImageUploader';
 const Settings = () => {
     const { logout, user,checkAuthState } = useAuth()
-    const { profile, updateProfile } = useProfile()
+    const { profile, updateProfile, refreshProfile } = useProfile()
     const { showModal, ModalComponent } = useModal()
     const insets = useSafeAreaInsets()
     const [isJobSeekingActive, setIsJobSeekingActive] = useState(false)
@@ -39,6 +39,13 @@ const Settings = () => {
         checkAuthState()
         setIsJobSeekingActive(profile?.job_seeking_active || true)
     }, [profile])
+    
+    // 사용자 변경 시 프로필 새로고침
+    useEffect(() => {
+        if (user?.userId) {
+            refreshProfile();
+        }
+    }, [user?.userId])
     // 언어 변경 시 selectedLanguage 동기화
     useEffect(() => {
         setSelectedLanguage(language)

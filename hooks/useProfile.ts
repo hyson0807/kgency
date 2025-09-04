@@ -126,20 +126,38 @@ export const useProfile = () => {
             setError('프로필 새로고침에 실패했습니다.');
         }
     };
-    // 컴포넌트 마운트 시 프로필 가져오기
+    // 사용자 변경 감지 및 캐시 초기화
     useEffect(() => {
-        if (user?.userId) {
-            // preloaded 프로필이 있으면 즉시 사용, 없으면 fetch
-            if (preloadedProfile) {
-                setProfile(preloadedProfile);
-                setLoading(false);
+        const checkUserChange = async () => {
+            if (user?.userId) {
+                // 캐시된 프로필 확인
+                const cachedProfile = await AsyncStorage.getItem('userProfile');
+                if (cachedProfile) {
+                    const parsed = JSON.parse(cachedProfile);
+                    // 캐시된 프로필의 사용자 ID가 현재 사용자 ID와 다르면 캐시 삭제
+                    if (parsed.id !== user.userId) {
+                        await AsyncStorage.removeItem('userProfile');
+                        setPreloadedProfile(null); // Context 초기화
+                        setProfile(null); // 현재 프로필 초기화
+                    }
+                }
+                
+                // preloaded 프로필이 있고 사용자 ID가 일치하면 사용
+                if (preloadedProfile && preloadedProfile.id === user.userId) {
+                    setProfile(preloadedProfile);
+                    setLoading(false);
+                } else {
+                    // 프로필 새로 가져오기
+                    fetchProfile();
+                }
             } else {
-                fetchProfile();
+                setProfile(null);
+                setLoading(false);
             }
-        } else {
-            setLoading(false);
-        }
-    }, [user?.userId, preloadedProfile]);
+        };
+        
+        checkUserChange();
+    }, [user?.userId]);
     return {
         profile,
         loading,
