@@ -10,7 +10,9 @@ export const AppBadgeManager: React.FC = () => {
   const { currentBadgeCount } = useAppBadge();
 
   useEffect(() => {
-    console.log('AppBadgeManager: 배지 수 업데이트됨', currentBadgeCount);
+    if (__DEV__) {
+      console.log('AppBadgeManager: 배지 수 업데이트됨', currentBadgeCount);
+    }
   }, [currentBadgeCount]);
 
   // 이 컴포넌트는 UI를 렌더링하지 않고, 백그라운드에서 배지만 관리
