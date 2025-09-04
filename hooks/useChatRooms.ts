@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '@/contexts/AuthContext';
-import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
 import { socketManager } from '@/lib/socketManager';
 import { api } from '@/lib/api';
 import type { UserChatRoom, CompanyChatRoom } from '@/types/chat';
@@ -19,7 +18,6 @@ interface UseChatRoomsOptions {
  */
 export const useChatRooms = <T extends ChatRoom>({ userType }: UseChatRoomsOptions) => {
   const { user } = useAuth();
-  const { refreshUnreadCount } = useUnreadMessage();
   const [chatRooms, setChatRooms] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,10 +59,14 @@ export const useChatRooms = <T extends ChatRoom>({ userType }: UseChatRoomsOptio
   useEffect(() => {
     if (!user?.userId) return;
 
-    console.log(`${userType} 채팅방 실시간 업데이트 구독 시작`);
+    if (__DEV__) {
+      console.log(`${userType} 채팅방 실시간 업데이트 구독 시작`);
+    }
     
     const unsubscribe = socketManager.onChatRoomUpdated((data) => {
-      console.log(`${userType} 채팅방 실시간 업데이트:`, data);
+      if (__DEV__) {
+        console.log(`${userType} 채팅방 실시간 업데이트:`, data);
+      }
       
       setChatRooms(prevRooms => {
         const updatedRooms = prevRooms.map(room => 
@@ -77,13 +79,17 @@ export const useChatRooms = <T extends ChatRoom>({ userType }: UseChatRoomsOptio
               }
             : room
         );
-        console.log(`${userType} 채팅방 목록 업데이트됨:`, updatedRooms.find(r => r.id === data.roomId));
+        if (__DEV__) {
+          console.log(`${userType} 채팅방 목록 업데이트됨:`, updatedRooms.find(r => r.id === data.roomId));
+        }
         return updatedRooms;
       });
     });
 
     return () => {
-      console.log(`${userType} 채팅방 실시간 업데이트 구독 해제`);
+      if (__DEV__) {
+        console.log(`${userType} 채팅방 실시간 업데이트 구독 해제`);
+      }
       unsubscribe();
     };
   }, [userType, unreadCountField, user?.userId]);
@@ -93,9 +99,9 @@ export const useChatRooms = <T extends ChatRoom>({ userType }: UseChatRoomsOptio
     useCallback(() => {
       if (user?.userId) {
         fetchChatRooms();
-        refreshUnreadCount();
+        // refreshUnreadCount() 제거: WebSocket에서 자동으로 실시간 업데이트됨
       }
-    }, [user?.userId, fetchChatRooms, refreshUnreadCount])
+    }, [user?.userId, fetchChatRooms])
   );
 
   return {

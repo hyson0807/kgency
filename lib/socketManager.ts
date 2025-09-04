@@ -118,7 +118,9 @@ class SocketManager {
     });
 
     this.socket.on('new-message', (message: SocketMessage) => {
-      console.log('SocketManager: 새 메시지 수신:', message);
+      if (__DEV__) {
+        console.log('SocketManager: 새 메시지 수신');
+      }
       this.messageReceivedCallbacks.forEach(callback => {
         try {
           callback(message);
@@ -129,7 +131,9 @@ class SocketManager {
     });
 
     this.socket.on('chat-room-updated', (data) => {
-      console.log('SocketManager: 채팅방 업데이트:', data);
+      if (__DEV__) {
+        console.log('SocketManager: 채팅방 업데이트');
+      }
       this.chatRoomUpdatedCallbacks.forEach(callback => {
         try {
           callback(data);
@@ -140,7 +144,9 @@ class SocketManager {
     });
 
     this.socket.on('total-unread-count-updated', (data) => {
-      console.log('SocketManager: 총 안읽은 메시지 카운트 업데이트:', data);
+      if (__DEV__) {
+        console.log('SocketManager: 총 안읽은 메시지 카운트 업데이트:', data.totalUnreadCount);
+      }
       this.totalUnreadCountUpdatedCallbacks.forEach(callback => {
         try {
           callback(data);

@@ -21,47 +21,27 @@ export const UnreadMessageProvider: React.FC<UnreadMessageProviderProps> = ({ ch
 
   // singleton 소켓 매니저를 사용한 전역 웹소켓 연결
   useEffect(() => {
-    console.log('UnreadMessageContext: 초기화 시작', { userId: user?.userId });
+    if (__DEV__) {
+      console.log('UnreadMessageContext: 초기화 시작', { userId: user?.userId });
+    }
 
     if (!user?.userId) {
-      console.log('UnreadMessageContext: 사용자 없음, 소켓 이벤트 구독 건너뜀');
+      if (__DEV__) {
+        console.log('UnreadMessageContext: 사용자 없음, 소켓 이벤트 구독 건너뜀');
+      }
       return;
     }
 
-    // 총 안읽은 메시지 카운트 업데이트 구독
+    // 총 안읽은 메시지 카운트 업데이트 구독 (가장 신뢰할 수 있는 소스)
     const unsubscribeTotalCount = socketManager.onTotalUnreadCountUpdated((data) => {
-      console.log('전역 소켓: 총 안읽은 메시지 카운트 업데이트:', data.totalUnreadCount);
+      if (__DEV__) {
+        console.log('전역 소켓: 총 안읽은 메시지 카운트 업데이트:', data.totalUnreadCount);
+      }
       setTotalUnreadCount(data.totalUnreadCount);
     });
-    
-    // 채팅방 업데이트 이벤트도 구독 (실시간 메시지 수신 시)
-    const unsubscribeChatRoom = socketManager.onChatRoomUpdated((data) => {
-      console.log('전역 소켓: 채팅방 업데이트:', data);
-      // 채팅방 업데이트 후 전체 카운트 새로고침
-      refreshUnreadCount();
-    });
-    
-    // 새 메시지 수신 이벤트 구독 (다른 탭에 있을 때 카운트 업데이트)
-    const unsubscribeMessage = socketManager.onMessageReceived((message) => {
-      console.log('전역 소켓: 새 메시지 수신, 카운트 새로고침');
-      // 새 메시지가 오면 카운트 새로고침
-      refreshUnreadCount();
-    });
-
-    // 소켓 연결 상태를 주기적으로 확인하고 카운트 업데이트
-    const statusInterval = setInterval(() => {
-      const status = socketManager.getConnectionStatus();
-      if (status.isConnected && status.isAuthenticated) {
-        // 연결되어 있으면 카운트 새로고침
-        refreshUnreadCount();
-      }
-    }, 10000); // 10초마다 확인
 
     return () => {
-      if (statusInterval) clearInterval(statusInterval);
       unsubscribeTotalCount();
-      unsubscribeChatRoom();
-      unsubscribeMessage();
     };
   }, [user?.userId]);
 
@@ -92,7 +72,9 @@ export const UnreadMessageProvider: React.FC<UnreadMessageProviderProps> = ({ ch
     if (user?.userId) {
       // 약간의 지연 후 초기 카운트 조회 (웹소켓 인증 대기)
       const timer = setTimeout(() => {
-        console.log('사용자 로그인, 초기 안읽은 메시지 카운트 조회');
+        if (__DEV__) {
+          console.log('사용자 로그인, 초기 안읽은 메시지 카운트 조회');
+        }
         refreshUnreadCount();
       }, 2000);
       

@@ -17,7 +17,6 @@ import { useMessagePagination } from '@/hooks/useMessagePagination';
 import { api } from '@/lib/api';
 import { Ionicons } from '@expo/vector-icons';
 import { socketManager } from '@/lib/socketManager';
-import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
 import { formatMessageTime } from '@/utils/dateUtils';
 import { CHAT_CONFIG, APP_CONFIG } from '@/lib/config';
 import type { ChatMessage, ChatRoomInfo, SocketMessage } from '@/types/chat';
@@ -32,7 +31,6 @@ export default function ChatRoom() {
   const { roomId, initialMessage, messageType } = params;
   const { profile } = useProfile();
   const router = useRouter();
-  const { refreshUnreadCount } = useUnreadMessage();
   
   // 페이지네이션 훅 사용
   const {
@@ -43,8 +41,7 @@ export default function ChatRoom() {
     loadInitialMessages,
     loadOlderMessages,
     addNewMessage,
-    markMessagesAsRead,
-    reset
+    markMessagesAsRead
   } = useMessagePagination(roomId || null);
 
   const [roomInfo, setRoomInfo] = useState<ChatRoomInfo | null>(null);
@@ -55,7 +52,6 @@ export default function ChatRoom() {
   const [isConnected, setIsConnected] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [initialMessageSent, setInitialMessageSent] = useState(false);
-  const [cameFromResumeFlow, setCameFromResumeFlow] = useState(false);
 
   // 메시지 수신 이벤트 구독 (한 번만)
   useEffect(() => {
@@ -80,10 +76,8 @@ export default function ChatRoom() {
         }
       }, APP_CONFIG.BADGE_UPDATE_DELAY);
 
-      // 메시지 읽음 처리 및 총 안읽은 메시지 카운트 새로고침
-      markMessagesAsRead().then(() => {
-        refreshUnreadCount();
-      });
+      // 메시지 읽음 처리 (서버에서 자동으로 WebSocket을 통해 카운트 업데이트됨)
+      markMessagesAsRead();
     });
 
     return () => {
@@ -141,14 +135,7 @@ export default function ChatRoom() {
     if (roomId && profile?.id) {
       fetchRoomInfo();
       loadInitialMessages(); // 페이지네이션 훅의 메서드 사용
-      markMessagesAsRead().then(() => {
-        refreshUnreadCount();
-      });
-    }
-    
-    // 이력서 플로우에서 왔는지 확인
-    if (initialMessage && messageType === 'resume') {
-      setCameFromResumeFlow(true);
+      markMessagesAsRead(); // 서버에서 자동으로 WebSocket을 통해 카운트 업데이트됨
     }
   }, [roomId, profile, loadInitialMessages, initialMessage, messageType]);
 
