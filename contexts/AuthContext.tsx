@@ -5,7 +5,9 @@ import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import {router} from "expo-router";
 import { removePushToken } from '@/lib/notifications';
-import { updateTokenCache } from "@/lib/api"
+import { updateTokenCache } from "@/lib/api";
+import { clearAllUserCaches } from '@/lib/storeUtils';
+import { socketManager } from '@/lib/socketManager';
 // 타입 정의
 export interface User {
     userId: string;
@@ -123,27 +125,67 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
     // 로그아웃 함수
     const logout = async (skipPushTokenRemoval = false): Promise<void> => {
+        console.log('로그아웃 시작...', { userId: user?.userId, userType: user?.userType });
+        
         // Remove push token before logout (unless explicitly skipped)
         if (!skipPushTokenRemoval && user?.userId) {
             try {
                 await removePushToken(user.userId);
             } catch (error) {
                 // Ignore push token removal errors during logout
-                // Push token removal skipped
+                console.log('Push token 제거 무시:', error);
             }
         }
         
-        // 로컬 스토리지만 삭제
+        // 1. Socket 연결 정리
+        try {
+            console.log('Socket 연결 정리 중...');
+            socketManager.destroy();
+        } catch (error) {
+            console.error('Socket 정리 오류:', error);
+        }
+        
+        // 2. 모든 사용자 관련 캐시 정리 (AsyncStorage + Zustand persist)
+        try {
+            console.log('모든 캐시 정리 중...');
+            await clearAllUserCaches();
+        } catch (error) {
+            console.error('캐시 정리 오류:', error);
+        }
+        
+        // 3. 기본 인증 정보 정리
         await AsyncStorage.removeItem('authToken');
         await AsyncStorage.removeItem('userData');
         await AsyncStorage.removeItem('userProfile');
         delete axios.defaults.headers.common['Authorization'];
+        
+        // 4. 상태 초기화
         setUser(null);
         setIsAuthenticated(false);
-        setAuthToken(null); // 메모리 캐시도 클리어
-        updateTokenCache(null); // api.ts 토큰 캐시도 클리어
+        setAuthToken(null);
+        updateTokenCache(null);
+        
+        // 5. Zustand 스토어 메모리 상태 리셋
+        try {
+            console.log('Zustand 스토어 리셋 중...');
+            // 동적 import로 스토어들을 리셋 (순환 참조 방지)
+            const { useJobPostingStore } = await import('@/stores/jobPostingStore');
+            const { useApplicationFormStore } = await import('@/stores/applicationFormStore');
+            const { useUserInfoStore } = await import('@/stores/userInfoStore');
+            const { useCompanyKeywordsStore } = await import('@/stores/companyKeywordsStore');
+            
+            useJobPostingStore.getState().resetAllData();
+            useApplicationFormStore.getState().resetAllData();
+            useUserInfoStore.getState().resetForm();
+            useCompanyKeywordsStore.getState().resetAllData();
+            
+            console.log('모든 스토어 리셋 완료');
+        } catch (error) {
+            console.error('스토어 리셋 오류:', error);
+        }
+        
+        console.log('로그아웃 완료');
         router.replace('/start');
-        // 로그아웃 완료
     };
     // 인증 정보 초기화
     const clearAuth = async (): Promise<void> => {

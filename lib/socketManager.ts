@@ -104,6 +104,13 @@ class SocketManager {
       this.isAuthenticated = false;
     });
 
+    // 강제 연결 해제 이벤트 (다중 로그인 방지)
+    this.socket.on('force-disconnect', (data) => {
+      console.log('SocketManager: 강제 연결 해제:', data.reason);
+      // 강제 연결 해제 시에는 재연결 시도하지 않음
+      this.socket?.disconnect();
+    });
+
     // 채팅 이벤트들
     this.socket.on('joined-room', (data) => {
       console.log('SocketManager: 채팅방 입장 성공:', data.roomId);

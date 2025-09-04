@@ -55,7 +55,7 @@ K-Gency 앱에 구직자와 회사 간의 실시간 채팅 기능을 구현했�
 
 #### 메시지 관리
 - `GET /api/chat/room/:roomId/messages`: 메시지 목록 조회
-- `POST /api/chat/room/:roomId/message`: 메시지 전송
+- ~~`POST /api/chat/room/:roomId/message`: 메시지 전송~~ (Socket.io를 통한 실시간 전송으로 대체)
 - `PATCH /api/chat/room/:roomId/read`: 메시지 읽음 처리
 
 ### 구현된 기능
@@ -322,15 +322,13 @@ const fetchMessages = async () => {
   }
 };
 
-// 메시지 전송
+// 메시지 전송 (Socket.io 사용)
 const sendMessage = async (message: string) => {
   setSending(true);
-  const response = await api('POST', `/api/chat/room/${roomId}/message`, {
-    message: message.trim()
-  });
-  if (response.success) {
-    setMessages(prev => [...prev, response.data]);
+  const success = await socketManager.sendMessage(message.trim());
+  if (success) {
     setNewMessage('');
+    // 메시지는 실시간 이벤트로 수신됨
   }
   setSending(false);
 };

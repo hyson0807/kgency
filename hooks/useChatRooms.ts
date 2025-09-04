@@ -59,11 +59,15 @@ export const useChatRooms = <T extends ChatRoom>({ userType }: UseChatRoomsOptio
 
   // 실시간 채팅방 업데이트 구독
   useEffect(() => {
+    if (!user?.userId) return;
+
+    console.log(`${userType} 채팅방 실시간 업데이트 구독 시작`);
+    
     const unsubscribe = socketManager.onChatRoomUpdated((data) => {
       console.log(`${userType} 채팅방 실시간 업데이트:`, data);
       
-      setChatRooms(prevRooms => 
-        prevRooms.map(room => 
+      setChatRooms(prevRooms => {
+        const updatedRooms = prevRooms.map(room => 
           room.id === data.roomId 
             ? { 
                 ...room, 
@@ -72,12 +76,17 @@ export const useChatRooms = <T extends ChatRoom>({ userType }: UseChatRoomsOptio
                 [unreadCountField]: data.unread_count
               }
             : room
-        )
-      );
+        );
+        console.log(`${userType} 채팅방 목록 업데이트됨:`, updatedRooms.find(r => r.id === data.roomId));
+        return updatedRooms;
+      });
     });
 
-    return unsubscribe;
-  }, [userType, unreadCountField]);
+    return () => {
+      console.log(`${userType} 채팅방 실시간 업데이트 구독 해제`);
+      unsubscribe();
+    };
+  }, [userType, unreadCountField, user?.userId]);
 
   // 화면 포커스 시 새로고침
   useFocusEffect(
