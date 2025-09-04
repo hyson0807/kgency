@@ -108,3 +108,28 @@ export interface SocketConnectionStatus {
   isAuthenticated: boolean;
   currentRoomId: string | null;
 }
+
+// 메시지 페이지네이션 관련 타입들
+export interface MessagePaginationParams {
+  page?: number;
+  limit?: number;
+  before?: string; // 특정 메시지 이전의 메시지들 가져오기 (timestamp)
+  after?: string;  // 특정 메시지 이후의 메시지들 가져오기 (timestamp)
+}
+
+export interface MessagePaginationResponse {
+  messages: ChatMessage[];
+  hasMore: boolean;         // 더 가져올 메시지가 있는지
+  nextCursor?: string;      // 다음 페이지를 위한 커서
+  total?: number;           // 총 메시지 수 (선택사항)
+}
+
+export interface MessagePaginationState {
+  messages: ChatMessage[];
+  hasMoreOlder: boolean;    // 더 오래된 메시지가 있는지
+  hasMoreNewer: boolean;    // 더 새로운 메시지가 있는지 (실시간 메시지 외)
+  loadingOlder: boolean;    // 이전 메시지 로딩 중
+  loadingNewer: boolean;    // 새로운 메시지 로딩 중
+  oldestMessageId?: string; // 가장 오래된 메시지 ID
+  newestMessageId?: string; // 가장 새로운 메시지 ID
+}

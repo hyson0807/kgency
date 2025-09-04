@@ -26,6 +26,13 @@ export const CHAT_CONFIG = {
   MAX_MESSAGE_LENGTH: 500,
   MESSAGE_FETCH_LIMIT: 50,
   UNREAD_COUNT_REFRESH_DELAY: 2000, // 2초
+  
+  // 메시지 페이지네이션 설정
+  INITIAL_MESSAGE_LOAD: 20,        // 초기 로딩 메시지 수
+  MESSAGE_LOAD_MORE: 20,           // 추가 로딩 시 메시지 수  
+  MESSAGE_CACHE_SIZE: 50,          // 캐싱할 메시지 수
+  LOAD_MORE_THRESHOLD: 0.1,        // 무한 스크롤 트리거 지점 (10%)
+  SCROLL_TO_END_DELAY: 100,        // 스크롤 맨 아래로 이동 지연시간
 } as const;
 
 // 날짜/시간 포맷 설정

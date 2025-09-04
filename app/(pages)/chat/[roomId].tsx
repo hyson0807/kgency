@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useProfile } from '@/hooks/useProfile';
+import { useMessagePagination } from '@/hooks/useMessagePagination';
 import { api } from '@/lib/api';
 import { Ionicons } from '@expo/vector-icons';
 import { socketManager } from '@/lib/socketManager';
@@ -25,13 +26,25 @@ export default function ChatRoom() {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const { profile } = useProfile();
   const router = useRouter();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { refreshUnreadCount } = useUnreadMessage();
+  
+  // 페이지네이션 훅 사용
+  const {
+    messages,
+    hasMoreOlder,
+    loadingOlder,
+    initialLoading,
+    loadInitialMessages,
+    loadOlderMessages,
+    addNewMessage,
+    markMessagesAsRead,
+    reset
+  } = useMessagePagination(roomId || null);
+
   const [roomInfo, setRoomInfo] = useState<ChatRoomInfo | null>(null);
   const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const flatListRef = useRef<FlatList>(null);
-  const { refreshUnreadCount } = useUnreadMessage();
 
   const [isConnected, setIsConnected] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -49,11 +62,13 @@ export default function ChatRoom() {
       };
       
       console.log('실시간 메시지 수신:', chatMessage);
-      setMessages(prev => [...prev, chatMessage]);
+      addNewMessage(chatMessage); // 페이지네이션 훅의 메서드 사용
       
-      // 스크롤을 맨 아래로
+      // inverted=true에서는 scrollToIndex(0)으로 최신 메시지로 스크롤
       setTimeout(() => {
-        flatListRef.current?.scrollToEnd();
+        if (messages.length > 0) {
+          flatListRef.current?.scrollToIndex({ index: 0, animated: true });
+        }
       }, APP_CONFIG.BADGE_UPDATE_DELAY);
 
       // 메시지 읽음 처리 및 총 안읽은 메시지 카운트 새로고침
@@ -116,12 +131,12 @@ export default function ChatRoom() {
   useEffect(() => {
     if (roomId && profile?.id) {
       fetchRoomInfo();
-      fetchMessages();
+      loadInitialMessages(); // 페이지네이션 훅의 메서드 사용
       markMessagesAsRead().then(() => {
         refreshUnreadCount();
       });
     }
-  }, [roomId, profile]);
+  }, [roomId, profile, loadInitialMessages]);
 
   const fetchRoomInfo = async () => {
     try {
@@ -141,37 +156,7 @@ export default function ChatRoom() {
     }
   };
 
-  const fetchMessages = async () => {
-    try {
-      const response = await api('GET', `/api/chat/room/${roomId}/messages`);
-
-      if (response.success) {
-        const newMessages = response.data || [];
-        setMessages(newMessages);
-        
-        // 새로운 메시지가 있으면 읽음 처리
-        if (newMessages.length > 0) {
-          await markMessagesAsRead();
-        }
-      } else {
-        console.error('Error fetching messages:', response.error);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const markMessagesAsRead = async () => {
-    if (!profile?.id) return;
-
-    try {
-      await api('PATCH', `/api/chat/room/${roomId}/read`);
-    } catch (error) {
-      console.error('Error marking messages as read:', error);
-    }
-  };
+  // 기존 fetchMessages 함수는 페이지네이션 훅으로 대체되었습니다.
 
   const sendMessage = async () => {
     if (!newMessage.trim() || sending || !profile?.id) return;
@@ -220,7 +205,7 @@ export default function ChatRoom() {
     );
   };
 
-  if (loading || !roomInfo) {
+  if (initialLoading || !roomInfo) {
     return (
       <SafeAreaView className="flex-1 bg-white">
         <View className="flex-1 items-center justify-center">
@@ -242,6 +227,28 @@ export default function ChatRoom() {
       </Text>
     </View>
   );
+
+  // 이전 메시지 로딩을 위한 헤더 컴포넌트
+  const renderLoadMoreHeader = () => {
+    if (!hasMoreOlder && messages.length > 0) {
+      return (
+        <View className="py-4 items-center">
+          <Text className="text-gray-400 text-sm">대화의 시작입니다</Text>
+        </View>
+      );
+    }
+
+    if (loadingOlder) {
+      return (
+        <View className="py-4 items-center">
+          <ActivityIndicator size="small" color="#3B82F6" />
+          <Text className="text-gray-400 text-sm mt-2">이전 메시지를 불러오는 중...</Text>
+        </View>
+      );
+    }
+
+    return null;
+  };
 
   const otherParty = profile?.user_type === 'user' ? roomInfo.company : roomInfo.user;
 
@@ -293,9 +300,18 @@ export default function ChatRoom() {
           keyExtractor={(item) => item.id}
           renderItem={renderMessage}
           ListEmptyComponent={renderEmptyMessages}
+          ListFooterComponent={renderLoadMoreHeader} // inverted=true 시 Footer가 상단에 표시됨
           contentContainerStyle={messages.length === 0 ? { flex: 1, padding: 16 } : { padding: 16 }}
-          onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
           showsVerticalScrollIndicator={false}
+          inverted // 리스트를 뒤집어서 최신 메시지가 아래쪽에 표시
+          // 역방향 무한 스크롤 설정 (inverted=true 시 onEndReached는 맨 위 스크롤을 감지)
+          onEndReached={() => {
+            // inverted=true에서 onEndReached는 맨 위로 스크롤했을 때 호출됨
+            if (hasMoreOlder && !loadingOlder) {
+              loadOlderMessages();
+            }
+          }}
+          onEndReachedThreshold={CHAT_CONFIG.LOAD_MORE_THRESHOLD} // 10% 지점에서 트리거
         />
 
         {/* Input */}
