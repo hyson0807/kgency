@@ -173,7 +173,6 @@ export default function ApplicationMethodScreen() {
                 }
 
                 if (roomId) {
-                    // 홈으로 이동한 후 채팅방으로 자동 이동 (네비게이션 스택 정리)
                     resetAllData();
                     router.replace({
                         pathname: '/chat/[roomId]',

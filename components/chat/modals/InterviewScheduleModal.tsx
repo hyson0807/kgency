@@ -90,7 +90,7 @@ export function InterviewScheduleModal({ visible, onClose, onSendSchedule }: Int
               {/* Date Selection */}
               <View>
                 <Text className="text-sm font-medium text-gray-700 mb-3">날짜 선택</Text>
-                <View className="flex-row space-x-2">
+                <View className="flex-row gap-2 mb-3">
                   {dateOptions.map((option, index) => (
                     <TouchableOpacity
                       key={index}
@@ -115,7 +115,7 @@ export function InterviewScheduleModal({ visible, onClose, onSendSchedule }: Int
               {/* Time Selection */}
               <View>
                 <Text className="text-sm font-medium text-gray-700 mb-3">시간 선택</Text>
-                <View className="flex-row flex-wrap gap-2">
+                <View className="flex-row flex-wrap gap-2 mb-3">
                   {timeOptions.map((option, index) => (
                     <TouchableOpacity
                       key={index}
@@ -152,7 +152,7 @@ export function InterviewScheduleModal({ visible, onClose, onSendSchedule }: Int
               <TouchableOpacity
                 onPress={handleSendSchedule}
                 disabled={!selectedDate || !selectedTime || sending}
-                className={`p-4 rounded-xl items-center ${
+                className={`p-4 my-5 rounded-xl items-center ${
                   selectedDate && selectedTime && !sending
                     ? 'bg-blue-500'
                     : 'bg-gray-300'

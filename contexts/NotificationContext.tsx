@@ -34,6 +34,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const { user } = useAuth();
   const notificationListener = useRef<any>(null);
   const responseListener = useRef<any>(null);
+  const lastProcessedNotificationId = useRef<string | null>(null);
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
     interviewProposal: true,
     interviewScheduleConfirmed: true,
@@ -179,22 +180,45 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     notificationListener.current = addNotificationReceivedListener(notification => {
       // Notification received
     });
-    // Handle notification when user taps on it
+
+    // Handle notification when user taps on it (while app is running)
     responseListener.current = addNotificationResponseReceivedListener(response => {
       // Notification response received
+      const notificationId = response.notification.request.identifier;
       
+      // Prevent duplicate processing (already handled by getLastNotificationResponseAsync)
+      if (lastProcessedNotificationId.current === notificationId) {
+        console.log('이미 처리된 알림 (실시간), 건너뜀');
+        return;
+      }
+      
+      lastProcessedNotificationId.current = notificationId;
       const data = response.notification.request.content.data;
       
-      // Check if user is properly loaded with retry mechanism
+      // Check if user is properly loaded with enhanced retry mechanism
       if (!user || !user.userType) {
-        // User not loaded yet, retrying navigation in 1 second
-        setTimeout(() => {
-          if (user && user.userType) {
-            handleNotificationNavigation(data, user);
-          } else {
-            // User still not loaded after retry, skipping navigation
+        // User not loaded yet, implementing multiple retries for app cold start
+        const retryNavigation = (retryCount: number = 0) => {
+          const maxRetries = 10; // 최대 10회 재시도 (총 5초)
+          const retryDelay = 500; // 0.5초 간격
+          
+          if (retryCount >= maxRetries) {
+            console.log('알림 라우팅: 최대 재시도 횟수 초과, 라우팅 취소');
+            return;
           }
-        }, 1000);
+          
+          setTimeout(() => {
+            if (user && user.userType) {
+              console.log(`알림 라우팅: 재시도 ${retryCount + 1}회 성공, 사용자 유형:`, user.userType);
+              handleNotificationNavigation(data, user);
+            } else {
+              console.log(`알림 라우팅: 재시도 ${retryCount + 1}/${maxRetries}, 사용자 정보 대기 중...`);
+              retryNavigation(retryCount + 1);
+            }
+          }, retryDelay);
+        };
+        
+        retryNavigation();
         return;
       }
       
@@ -271,7 +295,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         else if (data.type === 'chat_message') {
           // Navigate to chat room when chat notification is tapped
           if (data.roomId) {
-            targetRoute = `/(pages)/chat/${data.roomId}`;
+            targetRoute = `/(pages)/chat/${data.roomId}?fromNotification=true`;
           }
         }
         else {
@@ -310,7 +334,85 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         responseListener.current.remove();
       }
     };
+  }, []); // user 의존성 제거하여 웹소켓 연결이 재시작되지 않도록 함
+
+  // 별도 useEffect로 초기 알림 확인 (user가 로드된 후)
+  useEffect(() => {
+    const checkInitialNotification = async () => {
+      // Only check when user is available
+      if (!user || !user.userType) {
+        return;
+      }
+      
+      try {
+        const response = await Notifications.getLastNotificationResponseAsync();
+        if (response?.notification) {
+          const notificationId = response.notification.request.identifier;
+          console.log('앱 시작 시 초기 알림 감지:', response.notification.request.content.data);
+          
+          // Prevent duplicate processing
+          if (lastProcessedNotificationId.current === notificationId) {
+            console.log('이미 처리된 알림, 건너뜸');
+            return;
+          }
+          
+          lastProcessedNotificationId.current = notificationId;
+          const data = response.notification.request.content.data;
+          
+          console.log('초기 알림 라우팅: 사용자 정보 확인됨, 처리 시작');
+          
+          // handleNotificationNavigation 함수를 여기서 직접 구현 (의존성 문제 해결)
+          if (!data?.type) return;
+          if (data.type !== 'chat_message' && !data?.applicationId) return;
+          if (!user?.userType) return;
+          
+          let targetRoute = null;
+          
+          if (data.type === 'chat_message' && data.roomId) {
+            targetRoute = `/(pages)/chat/${data.roomId}?fromNotification=true`;
+          } else if (data.type === 'interview_proposal') {
+            targetRoute = user.userType === 'user' ? '/(user)/applications' : '/(company)/interview-calendar';
+          } else if (data.type === 'interview_schedule_confirmed') {
+            targetRoute = user.userType === 'company' ? '/(company)/interview-calendar' : '/(user)/user-calendar';
+          } else if (data.type === 'interview_cancelled') {
+            targetRoute = user.userType === 'user' ? '/(user)/applications' : '/(company)/interview-calendar';
+          } else if (data.type === 'new_application') {
+            if (user.userType === 'company') targetRoute = '/(company)/myJobPostings';
+          } else if (data.type === 'interview_request_accepted') {
+            if (user.userType === 'company') targetRoute = '/(company)/interview-calendar';
+          } else if (data.type === 'job_posting_interview_proposal') {
+            if (user.userType === 'user') targetRoute = '/(user)/applications';
+          } else if (data.type === 'instant_interview_cancelled') {
+            if (user.userType === 'user') targetRoute = '/(user)/applications';
+          } else if (data.type === 'regular_application_cancelled') {
+            if (user.userType === 'user') targetRoute = '/(user)/applications';
+          }
+          
+          if (targetRoute) {
+            setTimeout(() => {
+              try {
+                router.replace(targetRoute as any);
+              } catch (navError) {
+                try {
+                  router.push(targetRoute as any);
+                } catch (pushError) {
+                  console.error('알림 라우팅 실패:', pushError);
+                }
+              }
+            }, 100);
+          }
+        }
+      } catch (error) {
+        console.error('초기 알림 확인 오류:', error);
+      }
+    };
+
+    // Check for initial notification when user becomes available
+    if (user && user.userType) {
+      checkInitialNotification();
+    }
   }, [user]);
+
   const value: NotificationContextType = {
     notificationSettings,
     updateNotificationSettings,

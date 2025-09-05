@@ -52,7 +52,7 @@ export function ChatActionButtons({ onSendMessage, disabled = false }: ChatActio
 
   return (
     <View className="bg-white border-t border-gray-200 px-4 py-3">
-      <View className="flex-row space-x-2">
+      <View className="flex-row gap-2">
         <TouchableOpacity
           onPress={() => setQuestionModalVisible(true)}
           disabled={disabled}

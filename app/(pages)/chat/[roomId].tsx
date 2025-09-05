@@ -3,8 +3,6 @@ import {
   View, 
   Text, 
   FlatList, 
-  TextInput, 
-  TouchableOpacity, 
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -16,13 +14,17 @@ import { useNavigation } from '@react-navigation/native';
 import { useProfile } from '@/hooks/useProfile';
 import { useMessagePagination } from '@/hooks/useMessagePagination';
 import { api } from '@/lib/api';
-import { Ionicons } from '@expo/vector-icons';
 import { socketManager } from '@/lib/socketManager';
 import { formatMessageTime } from '@/utils/dateUtils';
-import { CHAT_CONFIG, APP_CONFIG } from '@/lib/config';
+import { APP_CONFIG } from '@/lib/config';
 import type { ChatMessage, ChatRoomInfo, SocketMessage } from '@/types/chat';
 import { ResumeMessageCard } from '@/components/chat/ResumeMessageCard';
 import { ChatActionButtons } from '@/components/chat/ChatActionButtons';
+import { ChatHeader } from '@/components/chat/room/ChatHeader';
+import { ChatMessages } from '@/components/chat/room/ChatMessages';
+import { ChatInput } from '@/components/chat/room/ChatInput';
+import { EmptyMessages } from '@/components/chat/room/EmptyMessages';
+import { LoadMoreHeader } from '@/components/chat/room/LoadMoreHeader';
 
 export default function ChatRoom() {
   const params = useLocalSearchParams<{ 
@@ -30,8 +32,9 @@ export default function ChatRoom() {
     initialMessage?: string; 
     messageType?: string;
     fromApplication?: string;
+    fromNotification?: string;
   }>();
-  const { roomId, initialMessage, messageType, fromApplication } = params;
+  const { roomId, initialMessage, messageType, fromApplication, fromNotification } = params;
   const { profile } = useProfile();
   const router = useRouter();
   const navigation = useNavigation();
@@ -109,21 +112,65 @@ export default function ChatRoom() {
   // 연결 상태 확인 및 채팅방 입장
   useEffect(() => {
     let hasJoinedRoom = false;
+    let connectionRetryAttempts = 0;
+    const maxRetryAttempts = 3;
     
-    // 초기 연결 상태 확인
-    const { isConnected: connected, isAuthenticated: authenticated } = socketManager.getConnectionStatus();
-    setIsConnected(connected);
-    setIsAuthenticated(authenticated);
-
-    // 초기 연결 시 즉시 입장 시도
-    if (connected && authenticated && roomId && !hasJoinedRoom) {
-      hasJoinedRoom = true;
-      socketManager.joinRoom(roomId as string).then((success) => {
-        if (__DEV__ && success) {
-          console.log('채팅방 입장 성공:', roomId);
+    // 웹소켓 연결 재시도 함수
+    const retryConnection = async () => {
+      if (connectionRetryAttempts >= maxRetryAttempts) {
+        console.log('웹소켓 연결 재시도 횟수 초과, 포기');
+        return false;
+      }
+      
+      connectionRetryAttempts++;
+      console.log(`웹소켓 연결 재시도 ${connectionRetryAttempts}/${maxRetryAttempts}`);
+      
+      try {
+        await socketManager.reinitialize();
+        // 재초기화 후 잠시 기다림
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const { isConnected: connected, isAuthenticated: authenticated } = socketManager.getConnectionStatus();
+        setIsConnected(connected);
+        setIsAuthenticated(authenticated);
+        
+        return connected && authenticated;
+      } catch (error) {
+        console.error('웹소켓 재연결 실패:', error);
+        return false;
+      }
+    };
+    
+    // 초기 연결 상태 확인 및 재시도
+    const initializeConnection = async () => {
+      let { isConnected: connected, isAuthenticated: authenticated } = socketManager.getConnectionStatus();
+      setIsConnected(connected);
+      setIsAuthenticated(authenticated);
+      
+      // 연결이 안되어있으면 재시도
+      if (!connected || !authenticated) {
+        console.log('웹소켓 연결 상태 불량, 재시도 시작');
+        const retrySuccess = await retryConnection();
+        if (retrySuccess) {
+          const status = socketManager.getConnectionStatus();
+          connected = status.isConnected;
+          authenticated = status.isAuthenticated;
         }
-      });
-    }
+      }
+      
+      // 연결 성공 시 채팅방 입장
+      if (connected && authenticated && roomId && !hasJoinedRoom) {
+        hasJoinedRoom = true;
+        socketManager.joinRoom(roomId as string).then((success) => {
+          if (__DEV__ && success) {
+            console.log('채팅방 입장 성공:', roomId);
+          }
+        });
+      }
+    };
+    
+    // 초기 연결 확인 실행
+    initializeConnection();
 
     // 주기적으로 연결 상태만 확인 (입장 시도는 하지 않음)
     const statusCheckInterval = setInterval(() => {
@@ -259,8 +306,7 @@ export default function ChatRoom() {
 
   const handleActionMessage = async (message: string): Promise<boolean> => {
     try {
-      const success = await socketManager.sendMessage(message);
-      return success;
+      return await socketManager.sendMessage(message);
     } catch (error) {
       console.error('Action message send error:', error);
       Alert.alert('오류', '메시지 전송에 실패했습니다.');
@@ -323,110 +369,44 @@ export default function ChatRoom() {
   }
 
   const renderEmptyMessages = () => (
-    <View className="flex-1 items-center justify-center px-8" style={{ transform: [{ scaleY: -1 }, { scaleX: -1 }] }}>
-      <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
-      <Text className="text-gray-500 text-center mt-4 text-lg">
-        첫 메시지를 보내보세요
-      </Text>
-      <Text className="text-gray-400 text-center mt-2">
-        {profile?.user_type === 'user' ? '회사' : '구직자'}와 대화를 시작하세요
-      </Text>
-    </View>
+    <EmptyMessages userType={profile?.user_type || 'user'} />
   );
 
-  // 이전 메시지 로딩을 위한 헤더 컴포넌트
-  const renderLoadMoreHeader = () => {
-    if (!hasMoreOlder && messages.length > 0) {
-      return (
-        <View className="py-4 items-center">
-          <Text className="text-gray-400 text-sm">대화의 시작입니다</Text>
-        </View>
-      );
-    }
-
-    if (loadingOlder) {
-      return (
-        <View className="py-4 items-center">
-          <ActivityIndicator size="small" color="#3B82F6" />
-          <Text className="text-gray-400 text-sm mt-2">이전 메시지를 불러오는 중...</Text>
-        </View>
-      );
-    }
-
-    return null;
-  };
+  const renderLoadMoreHeader = () => (
+    <LoadMoreHeader 
+      hasMoreOlder={hasMoreOlder}
+      loadingOlder={loadingOlder}
+      messagesLength={messages.length}
+    />
+  );
 
   const otherParty = profile?.user_type === 'user' ? roomInfo.company : roomInfo.user;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* Header */}
-      <View className="bg-white border-b border-gray-200 px-4 py-3 flex-row items-center">
-        <TouchableOpacity onPress={() => {
-          if (fromApplication === 'true') {
-            // 채팅 지원에서 온 경우 채팅 탭으로 이동
-            const chatRoute = profile?.user_type === 'user' ? '/(user)/user-chats' : '/(company)/company-chats';
-            router.push(chatRoute);
-          } else {
-            // 일반적인 경우 뒤로가기
-            router.back();
-          }
-        }} className="mr-3">
-          <Ionicons name="arrow-back" size={24} color="#374151" />
-        </TouchableOpacity>
-        
-        <View className="flex-1">
-          <Text className="text-lg font-semibold text-gray-900">
-            {otherParty.name}
-          </Text>
-          <View className="flex-row items-center">
-            <Text className="text-sm text-gray-500" numberOfLines={1}>
-              {roomInfo.job_postings.title}
-            </Text>
-            {/* 연결 상태 표시 */}
-            <View className="ml-2 flex-row items-center">
-              <View 
-                className={`w-2 h-2 rounded-full mr-1 ${
-                  isConnected && isAuthenticated 
-                    ? 'bg-green-500' 
-                    : 'bg-red-500'
-                }`} 
-              />
-              <Text className={`text-xs ${
-                isConnected && isAuthenticated 
-                  ? 'text-green-600' 
-                  : 'text-red-600'
-              }`}>
-                {isConnected && isAuthenticated ? '연결됨' : '연결 중...'}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
+      <ChatHeader
+        roomInfo={roomInfo}
+        otherPartyName={otherParty.name}
+        fromApplication={fromApplication}
+        fromNotification={fromNotification}
+        userType={profile?.user_type || 'user'}
+        isConnected={isConnected}
+        isAuthenticated={isAuthenticated}
+      />
 
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        {/* Messages */}
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={(item) => item.id}
-          renderItem={renderMessage}
-          ListEmptyComponent={renderEmptyMessages}
-          ListFooterComponent={renderLoadMoreHeader} // inverted=true 시 Footer가 상단에 표시됨
-          contentContainerStyle={messages.length === 0 ? { flex: 1, padding: 16 } : { padding: 16 }}
-          showsVerticalScrollIndicator={false}
-          inverted // 리스트를 뒤집어서 최신 메시지가 아래쪽에 표시
-          // 역방향 무한 스크롤 설정 (inverted=true 시 onEndReached는 맨 위 스크롤을 감지)
-          onEndReached={() => {
-            // inverted=true에서 onEndReached는 맨 위로 스크롤했을 때 호출됨
-            if (hasMoreOlder && !loadingOlder) {
-              loadOlderMessages();
-            }
-          }}
-          onEndReachedThreshold={CHAT_CONFIG.LOAD_MORE_THRESHOLD} // 10% 지점에서 트리거
+        <ChatMessages
+          messages={messages}
+          hasMoreOlder={hasMoreOlder}
+          loadingOlder={loadingOlder}
+          flatListRef={flatListRef}
+          renderMessage={renderMessage}
+          renderEmptyMessages={renderEmptyMessages}
+          renderLoadMoreHeader={renderLoadMoreHeader}
+          onLoadOlderMessages={loadOlderMessages}
         />
 
         {/* Action Buttons - 회사 계정만 표시 */}
@@ -437,40 +417,14 @@ export default function ChatRoom() {
             />
         )}
 
-        {/* Input */}
-        <View className="bg-white border-t border-gray-200 px-4 py-3">
-          <View className="flex-row items-center">
-            <TextInput
-              value={newMessage}
-              onChangeText={setNewMessage}
-              placeholder="메시지를 입력하세요..."
-              multiline
-              maxLength={CHAT_CONFIG.MAX_MESSAGE_LENGTH}
-              className="flex-1 max-h-24 px-4 py-3 bg-gray-100 rounded-full mr-3"
-              style={{ textAlignVertical: 'top' }}
-            />
-            
-            <TouchableOpacity
-              onPress={sendMessage}
-              disabled={!newMessage.trim() || sending || !isConnected || !isAuthenticated}
-              className={`w-10 h-10 rounded-full items-center justify-center ${
-                newMessage.trim() && !sending && isConnected && isAuthenticated
-                  ? 'bg-blue-500' 
-                  : 'bg-gray-300'
-              }`}
-            >
-              {sending ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <Ionicons 
-                  name="send" 
-                  size={20} 
-                  color={newMessage.trim() && !sending && isConnected && isAuthenticated ? 'white' : '#9ca3af'} 
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
+        <ChatInput
+          newMessage={newMessage}
+          sending={sending}
+          isConnected={isConnected}
+          isAuthenticated={isAuthenticated}
+          onChangeText={setNewMessage}
+          onSendMessage={sendMessage}
+        />
 
 
       </KeyboardAvoidingView>

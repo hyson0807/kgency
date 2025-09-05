@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { initializeUserProfile } from '@/lib/initialization';
 import { InitializationScreen } from '@/components/app-initializer/InitializationScreen';
+import * as Notifications from 'expo-notifications';
 
 // Reanimated 경고 비활성화
 configureReanimatedLogger({
@@ -47,7 +48,16 @@ export default function Index() {
 
         setInitState(prev => ({ ...prev, progress: 90, currentOperation: '완료 중...' }));
         
-        // 라우팅
+        // 알림으로 시작되었는지 확인
+        const response = await Notifications.getLastNotificationResponseAsync();
+        if (response?.notification) {
+          console.log('알림으로 앱 시작됨, NotificationContext에서 처리하도록 기다림');
+          // NotificationContext에서 처리하도록 하고 여기서는 라우팅하지 않음
+          setInitState(prev => ({ ...prev, isLoading: false, progress: 100, currentOperation: '알림 처리 중...' }));
+          return;
+        }
+        
+        // 일반적인 라우팅 (알림이 없는 경우)
         setTimeout(() => {
           if (user.userType === 'user') {
             router.replace('/(user)/home');

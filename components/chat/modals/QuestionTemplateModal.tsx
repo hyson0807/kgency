@@ -70,7 +70,7 @@ export function QuestionTemplateModal({ visible, onClose, onSendQuestion }: Ques
 
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             {/* Template Questions */}
-            <View className="p-4 space-y-2">
+            <View className="p-4 gap-2  mb-20">
               <Text className="text-sm font-medium text-gray-700 mb-3">자주 묻는 질문</Text>
               {questionTemplates.map((question, index) => (
                 <TouchableOpacity
