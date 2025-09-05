@@ -13,6 +13,7 @@ interface NotificationSettings {
   jobPostingInterviewProposal?: boolean;
   instantInterviewCancelled?: boolean;
   regularApplicationCancelled?: boolean;
+  chatMessage?: boolean;
 }
 interface NotificationContextType {
   notificationSettings: NotificationSettings;
@@ -41,7 +42,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     interviewRequestAccepted: true,
     jobPostingInterviewProposal: true,
     instantInterviewCancelled: true,
-    regularApplicationCancelled: true
+    regularApplicationCancelled: true,
+    chatMessage: true
   });
   // Configure notification handler
   useEffect(() => {
@@ -130,6 +132,16 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           };
         }
         
+        if (data?.type === 'chat_message' && !notificationSettings.chatMessage) {
+          return {
+            shouldShowAlert: false,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+        
         return {
           shouldShowAlert: true,
           shouldPlaySound: true,
@@ -192,10 +204,17 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       try {
         // Handling notification navigation
         // Validate required data
-        if (!data?.type || !data?.applicationId) {
-          // Missing required notification data
+        if (!data?.type) {
+          // Missing notification type
           return;
         }
+        
+        // Chat messages don't require applicationId
+        if (data.type !== 'chat_message' && !data?.applicationId) {
+          // Missing required notification data for non-chat notifications
+          return;
+        }
+        
         if (!user?.userType) {
           // User type not available
           return;
@@ -247,6 +266,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         else if (data.type === 'regular_application_cancelled') {
           if (user.userType === 'user') {
             targetRoute = '/(user)/applications';
+          }
+        }
+        else if (data.type === 'chat_message') {
+          // Navigate to chat room when chat notification is tapped
+          if (data.roomId) {
+            targetRoute = `/(pages)/chat/${data.roomId}`;
           }
         }
         else {
