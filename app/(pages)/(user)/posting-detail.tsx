@@ -261,33 +261,33 @@ export default function PostingDetail() {
                 ) : (
                     <>
                         {/* 면접 즉시 확정 버튼 - suitability가 perfect일 때만 표시 */}
-                        {suitability === 'perfect' && (
-                            <Animated.View
-                                style={scaleStyle}
-                                className="mx-4 mb-3"
-                            >
-                                <TouchableOpacity
-                                    className="bg-gradient-to-r from-purple-600 to-pink-600 py-4 web:py-3 rounded-xl items-center shadow-lg"
-                                    style={{
-                                        backgroundColor: '#8b5cf6',
-                                        shadowColor: '#8b5cf6',
-                                        shadowOffset: { width: 0, height: 4 },
-                                        shadowOpacity: 0.3,
-                                        shadowRadius: 8,
-                                        elevation: 8,
-                                    }}
-                                    onPress={handleInstantInterview}
-                                    activeOpacity={0.8}
-                                >
-                                    <View className="flex-row items-center">
-                                        <Ionicons name="flash" size={24} color="white" />
-                                        <Text className="text-white text-lg font-bold ml-2">
-                                            {t('posting_detail.instant_interview', '면접 즉시 확정')}
-                                        </Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </Animated.View>
-                        )}
+                        {/*{suitability === 'perfect' && (*/}
+                        {/*    <Animated.View*/}
+                        {/*        style={scaleStyle}*/}
+                        {/*        className="mx-4 mb-3"*/}
+                        {/*    >*/}
+                        {/*        <TouchableOpacity*/}
+                        {/*            className="bg-gradient-to-r from-purple-600 to-pink-600 py-4 web:py-3 rounded-xl items-center shadow-lg"*/}
+                        {/*            style={{*/}
+                        {/*                backgroundColor: '#8b5cf6',*/}
+                        {/*                shadowColor: '#8b5cf6',*/}
+                        {/*                shadowOffset: { width: 0, height: 4 },*/}
+                        {/*                shadowOpacity: 0.3,*/}
+                        {/*                shadowRadius: 8,*/}
+                        {/*                elevation: 8,*/}
+                        {/*            }}*/}
+                        {/*            onPress={handleInstantInterview}*/}
+                        {/*            activeOpacity={0.8}*/}
+                        {/*        >*/}
+                        {/*            <View className="flex-row items-center">*/}
+                        {/*                <Ionicons name="flash" size={24} color="white" />*/}
+                        {/*                <Text className="text-white text-lg font-bold ml-2">*/}
+                        {/*                    {t('posting_detail.instant_interview', '면접 즉시 확정')}*/}
+                        {/*                </Text>*/}
+                        {/*            </View>*/}
+                        {/*        </TouchableOpacity>*/}
+                        {/*    </Animated.View>*/}
+                        {/*)}*/}
                         {/* 일반 지원하기 버튼 */}
                         <TouchableOpacity
                             className="bg-blue-500 py-4 web:py-3 rounded-xl items-center mx-4 my-2"

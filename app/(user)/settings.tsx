@@ -299,6 +299,25 @@ const Settings = () => {
                         </View>
                     </TouchableOpacity>
                 </View>
+                {/* 상점 섹션 */}
+                <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
+                    <TouchableOpacity
+                        onPress={() => router.push('/(pages)/(user)/(shop)/shop')}
+                        className="flex-row items-center justify-between"
+                    >
+                        <View className="flex-row items-center">
+                            <View className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full items-center justify-center">
+                                <Ionicons name="diamond" size={20} color="white" />
+                            </View>
+                            <View className="ml-3 flex-1">
+                                <Text className="text-base font-semibold">{t('settings.shop', '토큰 상점')}</Text>
+                                <Text className="text-xs text-gray-600 mt-0.5">{t('settings.shop_desc', '토큰 충전 및 이용내역 확인')}</Text>
+                            </View>
+                        </View>
+                        <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+                    </TouchableOpacity>
+                </View>
+
                 {/* 정보 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
                     <Text className="text-lg font-bold mb-4">{t('settings.information', '정보')}</Text>

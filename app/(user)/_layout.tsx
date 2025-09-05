@@ -76,13 +76,6 @@ const UserLayout = () => {
                 }}
             />
             <Tabs.Screen
-                name="shop"
-                options={{
-                    tabBarLabel: t('tab.shop', '상점'),
-                    tabBarIcon: ({size, color}) => <Ionicons name="storefront" size={size} color={color} />
-                }}
-            />
-            <Tabs.Screen
                 name="settings"
                 options={{
                     tabBarLabel: t('tab.settings', '설정'),
