@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTabBar } from '@/contexts/TabBarContext';
 import type { ChatRoomInfo } from '@/types/chat';
 
 interface ChatHeaderProps {
@@ -24,18 +25,21 @@ export function ChatHeader({
   isAuthenticated
 }: ChatHeaderProps) {
   const router = useRouter();
+  const { setIsTabBarVisible } = useTabBar();
 
   const handleBackPress = () => {
     if (fromApplication === 'true') {
-      // 채팅 지원에서 온 경우 채팅 탭으로 이동
+      // 탭바 복원 후 채팅 지원에서 온 경우 채팅 탭으로 이동
+      setIsTabBarVisible(true);
       const chatRoute = userType === 'user' ? '/(user)/user-chats' : '/(company)/company-chats';
-      router.push(chatRoute);
+      router.replace(chatRoute);
     } else if (fromNotification === 'true') {
-      // 알림에서 온 경우 적절한 채팅 탭으로 이동
+      // 탭바 복원 후 알림에서 온 경우 적절한 채팅 탭으로 이동
+      setIsTabBarVisible(true);
       const chatRoute = userType === 'user' ? '/(user)/user-chats' : '/(company)/company-chats';
-      router.push(chatRoute);
+      router.replace(chatRoute);
     } else {
-      // 일반적인 경우 뒤로가기
+      // 일반적인 경우 뒤로가기 (탭바는 useFocusEffect의 cleanup에서 처리됨)
       router.back();
     }
   };

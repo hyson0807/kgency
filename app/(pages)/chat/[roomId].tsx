@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useProfile } from '@/hooks/useProfile';
+import { useTabBar } from '@/contexts/TabBarContext';
 import { useMessagePagination } from '@/hooks/useMessagePagination';
 import { api } from '@/lib/api';
 import { socketManager } from '@/lib/socketManager';
@@ -38,6 +39,7 @@ export default function ChatRoom() {
   const { profile } = useProfile();
   const router = useRouter();
   const navigation = useNavigation();
+  const { setIsTabBarVisible } = useTabBar();
   
   // 페이지네이션 훅 사용
   const {
@@ -60,9 +62,12 @@ export default function ChatRoom() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [initialMessageSent, setInitialMessageSent] = useState(false);
 
-  // 채팅 지원에서 온 경우 스와이프 비활성화 및 네비게이션 옵션 설정
+  // 채팅방 진입 시 탭바 숨기기 및 스와이프 설정
   useFocusEffect(
     React.useCallback(() => {
+      // 채팅방 진입 시 탭바 숨기기
+      setIsTabBarVisible(false);
+      
       if (fromApplication === 'true') {
         // 스와이프 뒤로가기 비활성화
         navigation.setOptions({
@@ -74,7 +79,12 @@ export default function ChatRoom() {
           gestureEnabled: true,
         });
       }
-    }, [navigation, fromApplication])
+      
+      // 컴포넌트 언마운트 시 탭바 복원
+      return () => {
+        setIsTabBarVisible(true);
+      };
+    }, [navigation, fromApplication, setIsTabBarVisible])
   );
 
   // 메시지 수신 이벤트 구독 (한 번만)
