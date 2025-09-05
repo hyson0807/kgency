@@ -22,6 +22,7 @@ import { formatMessageTime } from '@/utils/dateUtils';
 import { CHAT_CONFIG, APP_CONFIG } from '@/lib/config';
 import type { ChatMessage, ChatRoomInfo, SocketMessage } from '@/types/chat';
 import { ResumeMessageCard } from '@/components/chat/ResumeMessageCard';
+import { ChatActionButtons } from '@/components/chat/ChatActionButtons';
 
 export default function ChatRoom() {
   const params = useLocalSearchParams<{ 
@@ -256,6 +257,17 @@ export default function ChatRoom() {
     }
   };
 
+  const handleActionMessage = async (message: string): Promise<boolean> => {
+    try {
+      const success = await socketManager.sendMessage(message);
+      return success;
+    } catch (error) {
+      console.error('Action message send error:', error);
+      Alert.alert('오류', '메시지 전송에 실패했습니다.');
+      return false;
+    }
+  };
+
 
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {
@@ -417,6 +429,14 @@ export default function ChatRoom() {
           onEndReachedThreshold={CHAT_CONFIG.LOAD_MORE_THRESHOLD} // 10% 지점에서 트리거
         />
 
+        {/* Action Buttons - 회사 계정만 표시 */}
+        {profile?.user_type === 'company' && (
+            <ChatActionButtons
+                onSendMessage={handleActionMessage}
+                disabled={!isConnected || !isAuthenticated}
+            />
+        )}
+
         {/* Input */}
         <View className="bg-white border-t border-gray-200 px-4 py-3">
           <View className="flex-row items-center">
@@ -451,6 +471,8 @@ export default function ChatRoom() {
             </TouchableOpacity>
           </View>
         </View>
+
+
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
