@@ -175,21 +175,16 @@ export default function ApplicationMethodScreen() {
                 if (roomId) {
                     // 홈으로 이동한 후 채팅방으로 자동 이동 (네비게이션 스택 정리)
                     resetAllData();
-                    
-                    // 먼저 홈으로 이동
-                    router.replace('/(user)/home');
-                    
-                    // 잠시 후 채팅방으로 이동
-                    setTimeout(() => {
-                        router.push({
-                            pathname: '/chat/[roomId]',
-                            params: { 
-                                roomId: roomId,
-                                initialMessage: isEditing === 'true' ? editedResume : resume,
-                                messageType: 'resume'
-                            }
-                        });
-                    }, 500); // 홈 화면이 로드된 후 채팅방으로 이동
+                    router.replace({
+                        pathname: '/chat/[roomId]',
+                        params: {
+                            roomId: roomId,
+                            initialMessage: isEditing === 'true' ? editedResume : resume,
+                            messageType: 'resume',
+                            fromApplication: 'true'
+                        }
+                    })
+
                 } else {
                     Alert.alert(t('common.error', '오류'), t('chat.room_access_failed', '채팅방 접근에 실패했습니다.'));
                 }

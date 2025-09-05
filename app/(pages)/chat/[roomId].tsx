@@ -11,7 +11,8 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { useProfile } from '@/hooks/useProfile';
 import { useMessagePagination } from '@/hooks/useMessagePagination';
 import { api } from '@/lib/api';
@@ -26,11 +27,13 @@ export default function ChatRoom() {
   const params = useLocalSearchParams<{ 
     roomId: string; 
     initialMessage?: string; 
-    messageType?: string; 
+    messageType?: string;
+    fromApplication?: string;
   }>();
-  const { roomId, initialMessage, messageType } = params;
+  const { roomId, initialMessage, messageType, fromApplication } = params;
   const { profile } = useProfile();
   const router = useRouter();
+  const navigation = useNavigation();
   
   // 페이지네이션 훅 사용
   const {
@@ -52,6 +55,23 @@ export default function ChatRoom() {
   const [isConnected, setIsConnected] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [initialMessageSent, setInitialMessageSent] = useState(false);
+
+  // 채팅 지원에서 온 경우 스와이프 비활성화 및 네비게이션 옵션 설정
+  useFocusEffect(
+    React.useCallback(() => {
+      if (fromApplication === 'true') {
+        // 스와이프 뒤로가기 비활성화
+        navigation.setOptions({
+          gestureEnabled: false,
+        });
+      } else {
+        // 일반적인 경우 스와이프 활성화
+        navigation.setOptions({
+          gestureEnabled: true,
+        });
+      }
+    }, [navigation, fromApplication])
+  );
 
   // 메시지 수신 이벤트 구독 (한 번만)
   useEffect(() => {
@@ -158,8 +178,7 @@ export default function ChatRoom() {
           const success = await socketManager.sendMessage(initialMessage, 'resume');
           if (success) {
             console.log('이력서 자동 전송 성공');
-            // URL 파라미터 정리 (navigate로 현재 URL에서 파라미터만 제거)
-            router.replace(`/chat/${roomId}`);
+            // URL 파라미터 정리하지 않고 그대로 유지 (화면 깜빡임 방지)
           } else {
             console.error('이력서 자동 전송 실패');
           }
@@ -173,7 +192,7 @@ export default function ChatRoom() {
     if (initialMessage && messageType === 'resume' && !initialMessageSent && isConnected && isAuthenticated) {
       setTimeout(sendInitialMessage, 1000);
     }
-  }, [initialMessage, messageType, initialMessageSent, isConnected, isAuthenticated, profile?.id, initialLoading, roomId, router]);
+  }, [initialMessage, messageType, initialMessageSent, isConnected, isAuthenticated, profile?.id, initialLoading, roomId]);
 
   const fetchRoomInfo = async () => {
     try {
@@ -331,7 +350,16 @@ export default function ChatRoom() {
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
       <View className="bg-white border-b border-gray-200 px-4 py-3 flex-row items-center">
-        <TouchableOpacity onPress={() => router.back()} className="mr-3">
+        <TouchableOpacity onPress={() => {
+          if (fromApplication === 'true') {
+            // 채팅 지원에서 온 경우 채팅 탭으로 이동
+            const chatRoute = profile?.user_type === 'user' ? '/(user)/user-chats' : '/(company)/company-chats';
+            router.push(chatRoute);
+          } else {
+            // 일반적인 경우 뒤로가기
+            router.back();
+          }
+        }} className="mr-3">
           <Ionicons name="arrow-back" size={24} color="#374151" />
         </TouchableOpacity>
         
