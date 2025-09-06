@@ -63,10 +63,13 @@ kgency 앱의 실시간 배지 업데이트 성능을 **WhatsApp/Instagram 수�
 
 ### 서버 환경 변수
 ```bash
-# kgency_server/.env
-REDIS_HOST=localhost
-REDIS_PORT=6379
-BADGE_DEBOUNCE_DELAY=300
+# kgency_server/.env.local (실제 환경변수)
+REDIS_PASSWORD=your_actual_redis_password
+REDIS_URL=redis://default:your_password@your_host:port
+
+# kgency_server/.env (템플릿 - Git에 커밋됨)  
+REDIS_PASSWORD=your_redis_password_here
+REDIS_URL=redis://default:your_redis_password@your_redis_host:port
 ```
 
 ### 의존성 설치
@@ -74,6 +77,11 @@ BADGE_DEBOUNCE_DELAY=300
 cd ../kgency_server
 npm install redis
 ```
+
+### Railway 배포 시 Redis 설정
+1. Railway 대시보드에서 Redis 애드온 추가
+2. 환경변수 자동 설정됨 (`REDIS_PASSWORD`, `REDIS_URL`)
+3. 추가 설정 불필요
 
 ## 📊 예상 성능 개선 효과
 
