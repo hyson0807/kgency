@@ -1,26 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { AndroidPurchaseData, IOSPurchaseData, PurchaseVerificationRequest } from '@/types/purchase';
-// IAP 라이브러리는 development build에서만 동작
-let RNIap: any = null;
-let isIAPAvailable = false;
-try {
-  const iap = require('react-native-iap');
-  RNIap = iap.default || iap;
-  // IAP가 제대로 로드되었는지 확인
-  if (RNIap && typeof RNIap.initConnection === 'function') {
-    isIAPAvailable = true;
-  } else {
-    RNIap = null;
-  }
-} catch (error) {
-  RNIap = null;
-}
-import { api } from "@/lib/api"
+import { api } from "@/lib/api";
 import { useTranslation } from '@/contexts/TranslationContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { useModal } from '@/hooks/useModal';
+import { useIAP } from '@/lib/iap/useIAP';
+import { getProductId, TokenPackage } from '@/lib/types/iap';
 import {
   // Token components
   TokenBalanceCard,
@@ -36,132 +21,47 @@ import {
   DevModeNotice,
   ContactSection
 } from '@/components/user/shop';
-interface TokenPackage {
-  id: string;
-  tokens: number;
-  price: number;
-  originalPrice?: number;
-  isPopular?: boolean;
-}
+
 const Shop = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
   const insets = useSafeAreaInsets();
-  const [userTokens, setUserTokens] = useState(0);
-  const [products, setProducts] = useState<any[]>([]);
-  const [purchasing, setPurchasing] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [yatraModalVisible, setYatraModalVisible] = useState(false);
   const [emailModalVisible, setEmailModalVisible] = useState(false);
   const [yatraEmail, setYatraEmail] = useState('');
   const { showModal, ModalComponent } = useModal();
 
-  // 야트라 패키지 출시 플래그 - 앱스토어 심사 후 true로 변경
+  // 야트라 패키지 출시 플래그
   const YATRA_PACKAGE_AVAILABLE = true;
+  
+  // 토큰 패키지 정의
   const tokenPackages: TokenPackage[] = [
     {
-      id: Platform.OS === 'android' ? 'token_5_pack_android' : 'token_5_pack',
+      id: getProductId('token_5_pack'),
       tokens: 5,
       price: 5500,
       isPopular: true
     }
   ];
-  useEffect(() => {
-    initIAP();
-    fetchTokenBalance();
-    
-    return () => {
-      if (isIAPAvailable && RNIap && typeof RNIap.endConnection === 'function') {
-        try {
-          RNIap.endConnection();
-        } catch (error) {
-        }
-      }
-    };
-  }, []);
 
-  const initIAP = async () => {
-    setLoading(true);
-    
-    try {
-      if (!isIAPAvailable) {
-        return;
-      }
-      
-      await RNIap.initConnection();
-      
-      // 앱 시작 시 미소비 구매 확인 및 처리 (Android용)
-      if (Platform.OS === 'android') {
-        try {
-          const purchases = await RNIap.getAvailablePurchases();
-          
-          if (purchases && purchases.length > 0) {
-            
-            for (const purchase of purchases) {
-              if ((purchase.productId === 'token_5_pack' || purchase.productId === 'token_5_pack_android') && purchase.purchaseToken) {
-                try {
-                  await RNIap.consumePurchaseAndroid({
-                    purchaseToken: purchase.purchaseToken,
-                    developerPayload: ''
-                  });
-                } catch (consumeError) {
-                }
-              }
-            }
-          }
-        } catch (error) {
-        }
-      }
-      
-      const productIds = [
-        Platform.OS === 'android' ? 'token_5_pack_android' : 'token_5_pack',
-        'yatra_package_1'
-      ];
-      const products = await RNIap.getProducts({ skus: productIds });
-      setProducts(products);
-      
-      if (products && products.length > 0) {
-      } else {
-      }
-      
-    } catch (error) {
-      
-      // 개발 환경에서는 에러 메시지를 표시하지 않음
-      if (!__DEV__) {
-        showModal(
-          t('shop.error', '오류'),
-          t('shop.errorInit', '결제 시스템 초기화에 실패했습니다.'),
-          'warning'
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-  const fetchTokenBalance = async () => {
-    if (!user) {
-      return;
-    }
-    
-    try {
-      const response = await api('GET', '/api/purchase/tokens/balance');
-      
-      if (response?.success) {
-        setUserTokens(response.balance || 0);
-      } else {
-        // 기본값 0으로 설정
-        setUserTokens(0);
-      }
-    } catch (error: any) {
-      
-      // Network error인 경우 사용자에게 알림
-      if (error?.message?.includes('Network Error') && __DEV__) {
-      }
-      
-      // 기본값 0으로 설정
-      setUserTokens(0);
-    }
-  };
+  // IAP Hook 사용
+  const {
+    products,
+    userTokens,
+    isIAPAvailable,
+    loading,
+    purchasing,
+    purchaseProduct,
+    fetchTokenBalance,
+    isUserCancellation,
+  } = useIAP({
+    productIds: [
+      getProductId('token_5_pack'),
+      'yatra_package_1'
+    ],
+    autoInit: true,
+  });
+
+  // 토큰 구매 처리
   const handlePurchase = async (packageItem: TokenPackage) => {
     if (purchasing) return;
     
@@ -179,10 +79,11 @@ const Shop = () => {
       t('shop.cancel', '취소')
     );
   };
+
+  // 실제 구매 프로세스
   const processPurchase = async (packageItem: TokenPackage) => {
     if (purchasing) return;
     
-    setPurchasing(true);
     try {
       if (!isIAPAvailable) {
         // 개발 환경에서는 모의 구매 처리
@@ -194,29 +95,8 @@ const Shop = () => {
         return;
       }
       
-      
-      let purchase: any;
-      
-      // iOS와 Android 통합 처리 - 동일한 방식 사용
-      
-      if (Platform.OS === 'android') {
-        // Android: skus 배열로 전달
-        purchase = await RNIap.requestPurchase({ 
-          skus: [packageItem.id]
-        });
-      } else {
-        // iOS: sku 단일 값으로 전달
-        purchase = await RNIap.requestPurchase({ 
-          sku: packageItem.id 
-        });
-      }
-      
-      if (!purchase) {
-        throw new Error('Purchase object not received');
-      }
-      
-      // 서버에 영수증 전송
-      await verifyPurchaseWithServer(purchase);
+      // 실제 구매 진행
+      await purchaseProduct(packageItem.id);
       
       // 성공 후 잔액 새로고침
       await fetchTokenBalance();
@@ -227,29 +107,12 @@ const Shop = () => {
         'info'
       );
     } catch (error: any) {
-      // 사용자가 취소한 경우 - iOS와 Android 공통 처리
-      const isUserCancellation = 
-        error.code === 'E_USER_CANCELLED' || 
-        error.code === 'E_DEFERRED' ||
-        error.code === 'E_ALREADY_OWNED' ||
-        error.userCancelled === true ||
-        (error.message && (
-          error.message.includes('cancelled') ||
-          error.message.includes('canceled') ||
-          error.message.includes('User canceled') ||
-          error.message.includes('User cancelled') ||
-          error.message.includes('already owned') ||
-          error.message.includes('SKErrorDomain error 2') // iOS 취소 에러
-        ));
-      if (isUserCancellation) {
-        return; // 에러 메시지를 표시하지 않음
+      if (isUserCancellation(error)) {
+        return; // 사용자 취소는 조용히 처리
       }
-      
-      // 취소가 아닌 실제 에러인 경우만 에러 로그 출력
       
       let errorMessage = t('shop.errorGeneral', '결제 처리 중 오류가 발생했습니다.');
       
-      // 플랫폼별 에러 메시지 처리
       if (error.message) {
         if (error.message.includes('already processed')) {
           errorMessage = t('shop.errorAlreadyProcessed', '이미 처리된 구매입니다.');
@@ -267,59 +130,10 @@ const Shop = () => {
         errorMessage,
         'warning'
       );
-    } finally {
-      setPurchasing(false);
     }
   };
-  const verifyPurchaseWithServer = async (purchase: AndroidPurchaseData | IOSPurchaseData) => {
-    const platform = Platform.OS as 'ios' | 'android';
-    const payload: PurchaseVerificationRequest = { platform };
-    
-    // Android 구매 객체 디버깅
-    
-    // 플랫폼별 데이터 설정 (타입 안전성 강화)
-    if (platform === 'ios') {
-      const iosPurchase = purchase as IOSPurchaseData;
-      payload.receiptData = iosPurchase.transactionReceipt;
-    } else {
-      const androidPurchase = purchase as AndroidPurchaseData;
-      // Android - purchaseToken 확인
-      const androidToken = androidPurchase.purchaseToken;
-      
-      if (!androidToken) {
-        // 토큰이 없으면 에러 발생
-        throw new Error('구매 토큰을 찾을 수 없습니다. 구매 정보가 올바르지 않습니다.');
-      }
-      
-      payload.purchaseToken = androidToken;
-    }
-    
-    const response = await api('POST', '/api/purchase/verify', payload);
-    
-    
-    if (!response.success) {
-      throw new Error('Purchase verification failed: ' + response.error);
-    }
-    
-    // 구매 완료 처리
-    if (isIAPAvailable && RNIap && typeof RNIap.finishTransaction === 'function') {
-      await RNIap.finishTransaction({ purchase, isConsumable: true });
-      
-      // Android에서는 추가로 consumePurchase 호출 필요
-      if (Platform.OS === 'android') {
-        const androidPurchase = purchase as AndroidPurchaseData;
-        if (androidPurchase.purchaseToken) {
-          try {
-            await RNIap.consumePurchaseAndroid({ 
-              purchaseToken: androidPurchase.purchaseToken,
-              developerPayload: ''
-            });
-          } catch (error) {
-          }
-        }
-      }
-    }
-  };
+
+  // 야트라 구매 처리
   const handleYatraPurchase = async () => {
     if (purchasing || !yatraEmail || !yatraEmail.includes('@')) return;
     
@@ -336,10 +150,11 @@ const Shop = () => {
       t('shop.cancel', '취소')
     );
   };
+
+  // 야트라 구매 프로세스
   const processYatraPurchase = async () => {
     if (purchasing) return;
     
-    setPurchasing(true);
     try {
       if (!isIAPAvailable) {
         // 개발 환경에서는 모의 구매 처리
@@ -352,24 +167,8 @@ const Shop = () => {
         return;
       }
       
-      let purchase: any;
-      
-      if (Platform.OS === 'android') {
-        purchase = await RNIap.requestPurchase({ 
-          skus: ['yatra_package_1']
-        });
-      } else {
-        purchase = await RNIap.requestPurchase({ 
-          sku: 'yatra_package_1'
-        });
-      }
-      
-      if (!purchase) {
-        throw new Error('Purchase object not received');
-      }
-      
-      // 서버에 영수증 전송 (이메일 포함)
-      await verifyYatraPurchaseWithServer(purchase, yatraEmail);
+      // 야트라 구매는 별도 검증 로직 필요
+      await purchaseYatraWithEmail('yatra_package_1', yatraEmail);
       
       // 성공 후 잔액 새로고침
       await fetchTokenBalance();
@@ -382,22 +181,7 @@ const Shop = () => {
       
       setYatraEmail('');
     } catch (error: any) {
-      // 사용자가 취소한 경우
-      const isUserCancellation = 
-        error.code === 'E_USER_CANCELLED' || 
-        error.code === 'E_DEFERRED' ||
-        error.code === 'E_ALREADY_OWNED' ||
-        error.userCancelled === true ||
-        (error.message && (
-          error.message.includes('cancelled') ||
-          error.message.includes('canceled') ||
-          error.message.includes('User canceled') ||
-          error.message.includes('User cancelled') ||
-          error.message.includes('already owned') ||
-          error.message.includes('SKErrorDomain error 2')
-        ));
-      
-      if (isUserCancellation) {
+      if (isUserCancellation(error)) {
         setYatraEmail('');
         return;
       }
@@ -421,11 +205,58 @@ const Shop = () => {
       );
       
       setYatraEmail('');
-    } finally {
-      setPurchasing(false);
     }
   };
-  const verifyYatraPurchaseWithServer = async (purchase: AndroidPurchaseData | IOSPurchaseData, email: string) => {
+
+  // 야트라 구매 (이메일 포함)
+  const purchaseYatraWithEmail = async (productId: string, email: string) => {
+    // IAP 라이브러리 동적 로드 체크
+    let RNIap: any = null;
+    try {
+      const iap = require('react-native-iap');
+      RNIap = iap.default || iap;
+    } catch {
+      throw new Error('IAP not available');
+    }
+
+    let purchase: any;
+    
+    if (Platform.OS === 'android') {
+      purchase = await RNIap.requestPurchase({ 
+        skus: [productId]
+      });
+    } else {
+      purchase = await RNIap.requestPurchase({ 
+        sku: productId
+      });
+    }
+    
+    if (!purchase) {
+      throw new Error('Purchase object not received');
+    }
+    
+    // 서버에 영수증 전송 (이메일 포함)
+    await verifyYatraPurchaseWithServer(purchase, email);
+    
+    // 트랜잭션 완료 처리
+    if (RNIap && typeof RNIap.finishTransaction === 'function') {
+      await RNIap.finishTransaction({ purchase, isConsumable: true });
+      
+      if (Platform.OS === 'android' && purchase.purchaseToken) {
+        try {
+          await RNIap.consumePurchaseAndroid({ 
+            purchaseToken: purchase.purchaseToken,
+            developerPayload: ''
+          });
+        } catch (error) {
+          console.error('Android consume error:', error);
+        }
+      }
+    }
+  };
+
+  // 야트라 구매 검증
+  const verifyYatraPurchaseWithServer = async (purchase: any, email: string) => {
     const platform = Platform.OS as 'ios' | 'android';
     const payload: any = { 
       platform,
@@ -434,16 +265,12 @@ const Shop = () => {
     };
     
     if (platform === 'ios') {
-      const iosPurchase = purchase as IOSPurchaseData;
-      payload.receiptData = iosPurchase.transactionReceipt;
+      payload.receiptData = purchase.transactionReceipt;
     } else {
-      const androidPurchase = purchase as AndroidPurchaseData;
-      const androidToken = androidPurchase.purchaseToken;
-      
+      const androidToken = purchase.purchaseToken;
       if (!androidToken) {
         throw new Error('구매 토큰을 찾을 수 없습니다.');
       }
-      
       payload.purchaseToken = androidToken;
     }
     
@@ -451,25 +278,6 @@ const Shop = () => {
     
     if (!response.success) {
       throw new Error('Purchase verification failed: ' + response.error);
-    }
-    
-    // 구매 완료 처리
-    if (isIAPAvailable && RNIap && typeof RNIap.finishTransaction === 'function') {
-      await RNIap.finishTransaction({ purchase, isConsumable: true });
-      
-      if (Platform.OS === 'android') {
-        const androidPurchase = purchase as AndroidPurchaseData;
-        if (androidPurchase.purchaseToken) {
-          try {
-            await RNIap.consumePurchaseAndroid({ 
-              purchaseToken: androidPurchase.purchaseToken,
-              developerPayload: ''
-            });
-          } catch (error) {
-            console.error('Android consume error:', error);
-          }
-        }
-      }
     }
   };
 
@@ -491,7 +299,6 @@ const Shop = () => {
           onPurchase={handlePurchase}
         />
 
-
         <YatraPackageCard
           products={products}
           isIAPAvailable={isIAPAvailable}
@@ -501,9 +308,7 @@ const Shop = () => {
         />
 
         <TokenUsageGuide />
-
         <ContactSection />
-
       </ScrollView>
 
       <YatraDetailModal
@@ -527,10 +332,9 @@ const Shop = () => {
         YATRA_PACKAGE_AVAILABLE={YATRA_PACKAGE_AVAILABLE}
       />
 
-
-
       <ModalComponent />
     </View>
   );
 };
+
 export default Shop;
