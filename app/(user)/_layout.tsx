@@ -71,13 +71,6 @@ const UserLayout = () => {
                 }}
             />
             <Tabs.Screen
-                name="user-calendar"
-                options={{
-                    tabBarLabel: t('tab.schedule', '일정'),
-                    tabBarIcon: ({size, color}) => <Ionicons name="calendar" size={size} color={color} />
-                }}
-            />
-            <Tabs.Screen
                 name="settings"
                 options={{
                     tabBarLabel: t('tab.settings', '설정'),

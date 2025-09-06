@@ -3,7 +3,6 @@ import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
 import { api } from "@/lib/api"
-import {InterviewDetailModal} from "@/components/user/applications/submitted-applications/InterviewDetailModal";
 interface InterviewProposal {
     id: string
     application_id: string
@@ -44,8 +43,6 @@ interface ApplicationItemProps {
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
 }
 export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
-    const [showDetailModal, setShowDetailModal] = useState(false)
-    const [interviewDetails, setInterviewDetails] = useState<any>(null)
     const handleViewPosting = (application: Application) => {
         if (application.job_posting) {
             router.push({
@@ -87,38 +84,8 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
             })
         }
     }
-    const handleInterviewSelection = () => {
-        if (!item.interviewProposal) return;
-        router.push({
-            pathname: '/(pages)/(user)/(interview-management)/interview-selection',
-            params: {
-                applicationId: item.id,
-                companyId: item.interviewProposal.company_id,
-                proposalId: item.interviewProposal.id,
-                companyName: item.job_posting.company.name,
-                jobTitle: item.job_posting.title,
-                proposalLocation: item.interviewProposal.location
-            }
-        })
-    }
-    const fetchInterviewDetails = async () => {
-        try {
-            // 면접 예약 정보 조회 API 호출
-            const response = await api('GET', `/api/interview-schedules/by-proposal/${item.interviewProposal?.id}`)
-            if (response?.success && response.data) {
-                setInterviewDetails(response.data)
-                setShowDetailModal(true)
-            }
-        } catch (error) {
-            // Failed to fetch interview details
-        }
-    }
-    const handleShowInterviewDetails = () => {
-        fetchInterviewDetails()
-    }
     return (
-        <>
-            <TouchableOpacity
+        <TouchableOpacity
                 onPress={() => handleViewPosting(item)}
                 className={`bg-white mx-4 my-2 p-4 rounded-2xl shadow-sm ${
                     item.type === 'user_instant_interview' ? 'border-2 border-purple-500' : ''
@@ -168,18 +135,12 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                 ) : (
                     /* 면접 확정 표시 - 면접이 확정된 경우 최우선 표시 */
                     item.interviewProposal && item.interviewProposal.status === 'scheduled' ? (
-                        <TouchableOpacity
-                            onPress={(e) => {
-                                e.stopPropagation()
-                                handleShowInterviewDetails()
-                            }}
-                            className="mt-2 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
-                        >
+                        <View className="mt-2 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg">
                             <Ionicons name="checkmark-circle" size={16} color="#3b82f6" />
                             <Text className="text-blue-600 text-sm font-medium ml-1">
                                 {t('applications.interview_confirmed', '면접 확정')}
                             </Text>
-                        </TouchableOpacity>
+                        </View>
                     ) : (
                     <>
                         {/* 삭제된 공고 체크 */}
@@ -193,23 +154,7 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                         ) : (
                             <>
                                 {/* 활성 상태 체크 */}
-                                {item.job_posting.is_active ? (
-                                    /* 면접 시간 선택 버튼 - proposal이 존재하고 pending 상태일 때 표시 */
-                                    item.interviewProposal && item.interviewProposal.status === 'pending' && (
-                                        <TouchableOpacity
-                                            onPress={(e) => {
-                                                e.stopPropagation()
-                                                handleInterviewSelection()
-                                            }}
-                                            className="mt-2 flex-row items-center justify-center bg-green-50 py-2 rounded-lg"
-                                        >
-                                            <Ionicons name="calendar-outline" size={16} color="#10b981" />
-                                            <Text className="text-green-600 text-sm font-medium ml-1">
-                                                {t('applications.select_interview_time', '면접 시간 선택하기')}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )
-                                ) : (
+                                {!item.job_posting.is_active && (
                                     /* 마감된 공고 */
                                     <View className="mt-2 flex-row items-center justify-center bg-gray-100 py-2 rounded-lg">
                                         <Ionicons name="close-circle-outline" size={16} color="#6b7280" />
@@ -223,20 +168,6 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                     </>
                     )
                 )}
-            </TouchableOpacity>
-            {/* 면접 상세 모달 */}
-            <InterviewDetailModal
-                visible={showDetailModal}
-                onClose={() => setShowDetailModal(false)}
-                details={interviewDetails ? {
-                    companyName: item.job_posting.company.name,
-                    jobTitle: item.job_posting.title,
-                    location: interviewDetails.location || item.interviewProposal?.location,
-                    dateTime: interviewDetails.interview_slot?.start_time,
-                    interviewType: interviewDetails.interview_slot?.interview_type
-                } : null}
-                t={t}
-            />
-        </>
+        </TouchableOpacity>
     )
 }

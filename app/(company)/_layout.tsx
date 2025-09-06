@@ -69,13 +69,6 @@ const CompanyLayout = () => {
                 }}
             />
             <Tabs.Screen
-                name="interview-calendar"
-                options={{
-                    tabBarLabel: '면접 관리',
-                    tabBarIcon: ({size, color}) => <Ionicons name="calendar" size={size} color={color} />
-                }}
-            />
-            <Tabs.Screen
                 name="settings2"
                 options={{
                     tabBarLabel: '설정',

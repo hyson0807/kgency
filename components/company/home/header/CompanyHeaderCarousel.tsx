@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, Dimensions } from 'react-native';
 import { TalentMatchCard } from './cards/TalentMatchCard';
 import { QuickHireCard } from './cards/QuickHireCard';
-import { InterviewScheduleCard } from './cards/InterviewScheduleCard';
 
 const { width } = Dimensions.get('window');
 
@@ -11,7 +10,7 @@ export const CompanyHeaderCarousel = () => {
   const scrollViewRef = useRef<ScrollView>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
-  const originalCards = [TalentMatchCard, QuickHireCard, InterviewScheduleCard];
+  const originalCards = [TalentMatchCard, QuickHireCard];
   // 무한 스크롤을 위해 앞뒤로 복사본 추가
   const cards = [
     originalCards[originalCards.length - 1], // 마지막 카드 복사본

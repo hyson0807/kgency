@@ -7,7 +7,6 @@ interface userType {
 }
 interface useApplicationsProps {
     user: userType | null;
-    activeFilter: 'all' | 'user_initiated' | 'company_invited' | 'user_instant_interview';
 }
 interface InterviewProposal {
     id: string
@@ -52,7 +51,7 @@ interface UseApplicationsReturn {
     refreshing: boolean;
     onRefresh: () => Promise<void>;
 }
-export const useApplications = ({ user, activeFilter }: useApplicationsProps): UseApplicationsReturn => {
+export const useApplications = ({ user }: useApplicationsProps): UseApplicationsReturn => {
     const [applications, setApplications] = useState<Application[]>([])
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -104,17 +103,9 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
                 setApplications([])
                 return
             }
-            let filteredData = response.data || []
-            // 클라이언트 사이드 필터링 - type 기반
-            if (activeFilter === 'user_initiated') {
-                filteredData = filteredData.filter((app: Application) => app.type === 'user_initiated')
-            } else if (activeFilter === 'company_invited') {
-                filteredData = filteredData.filter((app: Application) => app.type === 'company_invited')
-            } else if (activeFilter === 'user_instant_interview') {
-                filteredData = filteredData.filter((app: Application) => app.type === 'user_instant_interview')
-            }
+            const allData = response.data || []
             // 면접 상태 확인
-            const applicationsWithInterview = await checkInterviewStatuses(filteredData)
+            const applicationsWithInterview = await checkInterviewStatuses(allData)
             setApplications(applicationsWithInterview)
         } catch (error) {
             // 지원 내역 조회 실패
@@ -122,7 +113,7 @@ export const useApplications = ({ user, activeFilter }: useApplicationsProps): U
         } finally {
             setLoading(false)
         }
-    }, [user?.userId, activeFilter])
+    }, [user?.userId])
     const onRefresh = useCallback(async () => {
         setRefreshing(true)
         await fetchApplications()

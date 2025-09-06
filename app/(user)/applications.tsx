@@ -1,9 +1,8 @@
 import {View, Text, FlatList, RefreshControl} from 'react-native'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback} from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import { useAuth } from "@/contexts/AuthContext"
 import { useTranslation } from "@/contexts/TranslationContext";
-import {Tap} from "@/components/user/applications/submitted-applications/Tap";
 import {Empty} from "@/components/user/applications/submitted-applications/Empty";
 import {ApplicationItem} from "@/components/user/applications/submitted-applications/ApplicationItem";
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
@@ -11,7 +10,6 @@ import {useApplications} from "@/lib/features/applications/hooks/useApplications
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const Applications = () => {
     const { user } = useAuth()
-    const [activeFilter, setActiveFilter] = useState<'all' | 'user_initiated' | 'company_invited' | 'user_instant_interview'>('all')
     const { t } = useTranslation()
     const insets = useSafeAreaInsets()
     //fetching applications
@@ -21,7 +19,7 @@ const Applications = () => {
         refreshing,
         onRefresh,
         fetchApplications
-    } = useApplications({ user, activeFilter })
+    } = useApplications({ user })
     // 페이지 포커스 시 데이터 새로고침 (면접 선택 후 돌아올 때 상태 업데이트)
     useFocusEffect(
         useCallback(() => {
@@ -45,8 +43,6 @@ const Applications = () => {
                         </View>
                     </View>
                 </View>
-                {/* 필터 탭 */}
-                <Tap setActiveFilter={setActiveFilter} activeFilter={activeFilter} t={t} />
             </View>
             {/* 지원 내역 리스트 */}
             <FlatList
@@ -64,7 +60,7 @@ const Applications = () => {
                     />
                 }
                 ListEmptyComponent={
-                    <Empty activeFilter={activeFilter} t={t} />
+                    <Empty t={t} />
                 }
             />
         </View>
