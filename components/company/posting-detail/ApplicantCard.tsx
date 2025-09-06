@@ -1,8 +1,9 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useModal } from "@/lib/shared/ui/hooks/useModal";
 import { router } from "expo-router";
 import { useMatchedJobPostings } from "@/lib/features/jobs/hooks/useMatchedJobPostings";
+import { useUserProfileImage } from "@/lib/features/profile/hooks/useUserProfileImage";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { api } from "@/lib/api"
 import { SuitabilityResult } from "@/lib/features/jobs/matching/types";
@@ -49,6 +50,7 @@ interface ApplicantCardProps {
 export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStatusChange }: ApplicantCardProps) => {
     const { showModal, ModalComponent } = useModal();
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings();
+    const { profileImage } = useUserProfileImage(item.user.id);
     const [matchedKeywords, setMatchedKeywords] = useState<{ id: number; keyword: string; category: string }[]>([]);
     const [isDeleting, setIsDeleting] = useState(false);
     const [suitabilityResult, setSuitabilityResult] = useState<SuitabilityResult | null>(null);
@@ -232,9 +234,17 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                     </View>
                 )}
                 <View className="flex-row items-center gap-5">
-                    <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
-                        <Text className="text-2xl font-bold">{item.user.name.charAt(0)}</Text>
-                    </View>
+                    {profileImage ? (
+                        <Image 
+                            source={{ uri: profileImage }} 
+                            className="w-14 h-14 rounded-full bg-gray-100"
+                            resizeMode="cover"
+                        />
+                    ) : (
+                        <View className="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full">
+                            <Text className="text-2xl font-bold">{item.user.name.charAt(0)}</Text>
+                        </View>
+                    )}
                     <View className="flex-1">
                         <View className="flex-row items-center gap-2">
                             <Text className="text-lg font-bold">{item.user.name}</Text>
@@ -310,7 +320,7 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                         </View>
                     )}
                 </View>
-            </TouchableOpacity>
+        </TouchableOpacity>
             <ModalComponent />
         </>
     )

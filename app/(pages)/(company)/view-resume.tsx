@@ -1,5 +1,5 @@
 // app/(pages)/(company)/view-resume.tsx
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
@@ -10,6 +10,7 @@ import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { ActivityIndicator } from 'react-native'
 import {api} from "@/lib/api"
 import { useChatRoomNavigation } from '@/lib/features/chat/hooks/useChatRoomNavigation'
+import { useUserProfileImage } from '@/lib/features/profile/hooks/useUserProfileImage'
 export default function ViewResume() {
     const { showModal, ModalComponent } = useModal()
     const { createAndNavigateToChat } = useChatRoomNavigation()
@@ -18,7 +19,6 @@ export default function ViewResume() {
         applicationId,
         messageId,
         userName,
-        userPhone,
         resume,
         subject,
         createdAt,
@@ -29,11 +29,13 @@ export default function ViewResume() {
     const [translatedResume, setTranslatedResume] = useState<string | null>(null)
     const [isTranslated, setIsTranslated] = useState(false)
     const [isTranslating, setIsTranslating] = useState(false)
+    const { profileImage: userProfileImage } = useUserProfileImage(userId)
     useEffect(() => {
         if (messageId) {
             markAsRead()
         }
     }, [messageId])
+    
     const markAsRead = async () => {
         if (!messageId) return
         try {
@@ -77,24 +79,7 @@ export default function ViewResume() {
             setIsTranslating(false)
         }
     }
-    const handleContact = () => {
-        const phone = Array.isArray(userPhone) ? userPhone[0] : userPhone
-        const name = Array.isArray(userName) ? userName[0] : userName
-        if (phone) {
-            showModal(
-                '지원자 연락처',
-                `${name}님의 연락처:\n${phone}`,
-                'info',
-                () => {
-                    // 실제 앱에서는 Clipboard API 사용
-                    showModal('알림', '전화번호가 복사되었습니다.')
-                },
-                true  // showCancel true로 설정
-            )
-        } else {
-            showModal('알림', '연락처 정보가 없습니다.')
-        }
-    }
+
     const handleSaveResume = () => {
         showModal('알림', '이력서가 저장되었습니다.')
     }
@@ -148,21 +133,36 @@ export default function ViewResume() {
             {/* 지원자 정보 */}
             <View className="bg-blue-50 mx-4 mt-4 p-4 rounded-xl">
                 <View className="flex-row items-center justify-between">
-                    <View>
-                        <Text className="text-sm text-gray-600">지원자</Text>
-                        <Text className="text-lg font-bold text-blue-900">
-                            {Array.isArray(userName) ? userName[0] : userName}
-                        </Text>
-                        {subject && (
-                            <Text className="text-sm text-gray-600 mt-1">
-                                {Array.isArray(subject) ? subject[0] : subject}
-                            </Text>
+                    <View className="flex-row items-center gap-3">
+                        {userProfileImage ? (
+                            <Image 
+                                source={{ uri: userProfileImage }} 
+                                className="w-16 h-16 rounded-full bg-gray-100"
+                                resizeMode="cover"
+                            />
+                        ) : (
+                            <View className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full">
+                                <Text className="text-2xl font-bold text-gray-600">
+                                    {Array.isArray(userName) ? userName[0]?.charAt(0) || '?' : userName?.charAt(0) || '?'}
+                                </Text>
+                            </View>
                         )}
-                        {createdAt && (
-                            <Text className="text-xs text-gray-500 mt-1">
-                                수신일: {formatDate(createdAt)}
+                        <View>
+                            <Text className="text-sm text-gray-600">지원자</Text>
+                            <Text className="text-lg font-bold text-blue-900">
+                                {Array.isArray(userName) ? userName[0] : userName}
                             </Text>
-                        )}
+                            {subject && (
+                                <Text className="text-sm text-gray-600 mt-1">
+                                    {Array.isArray(subject) ? subject[0] : subject}
+                                </Text>
+                            )}
+                            {createdAt && (
+                                <Text className="text-xs text-gray-500 mt-1">
+                                    수신일: {formatDate(createdAt)}
+                                </Text>
+                            )}
+                        </View>
                     </View>
                 </View>
             </View>
