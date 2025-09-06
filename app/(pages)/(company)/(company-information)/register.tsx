@@ -1,6 +1,7 @@
-import {View, Text, TextInput, TouchableOpacity, ScrollView} from 'react-native'
+import {View, Text, TextInput, TouchableOpacity} from 'react-native'
 import React, {useEffect, useState} from 'react'
-import {SafeAreaView} from "react-native-safe-area-context";
+import {SafeAreaView} from "react-native-safe-area-context"
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {useProfile} from "@/lib/features/profile/hooks/useProfile";
 import {router} from "expo-router";
 import { useModal } from '@/lib/shared/ui/hooks/useModal'
@@ -40,8 +41,18 @@ const Register = () => {
     }
     return (
         <SafeAreaView className="flex-1">
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                <View className="flex-1 justify-start p-6">
+            <View className="flex-1">
+                <KeyboardAwareScrollView 
+                    className="flex-1" 
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    extraScrollHeight={100}
+                    enableOnAndroid={true}
+                    enableAutomaticScroll={true}
+                    keyboardOpeningTime={0}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                >
+                    <View className="flex-1 justify-start p-6">
                     {/* 회사 정보 섹션 */}
                     <Text className="text-xl font-bold mb-4">회사 정보</Text>
                     <View className="mb-4">
@@ -62,18 +73,19 @@ const Register = () => {
                             onChangeText={setAddress}
                         />
                     </View>
+                    </View>
+                </KeyboardAwareScrollView>
+                {/* 하단 버튼 - flex 사용 */}
+                <View className="bg-white border-t border-gray-200 p-4">
+                    <TouchableOpacity
+                        onPress={handleSave}
+                        className="bg-blue-500 py-4 rounded-xl items-center"
+                    >
+                        <Text className="text-center text-white font-bold text-lg">
+                            회사 정보 입력
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-            </ScrollView>
-            {/* 하단 버튼 */}
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-                <TouchableOpacity
-                    onPress={handleSave}
-                    className="bg-blue-500 py-4 rounded-xl items-center mx-4 mb-4"
-                >
-                    <Text className="text-center text-white font-bold text-lg">
-                        회사 정보 입력
-                    </Text>
-                </TouchableOpacity>
             </View>
             <ModalComponent />
         </SafeAreaView>

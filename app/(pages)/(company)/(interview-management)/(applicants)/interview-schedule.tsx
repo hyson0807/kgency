@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useModal } from '@/lib/shared/ui/hooks/useModal'
@@ -32,7 +32,11 @@ export default function InterviewSchedule() {
                 <Back />
                 <Text className="text-lg font-bold ml-4">면접 일정 제안</Text>
             </View>
-            <ScrollView className="flex-1">
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1"
+            >
+                <ScrollView className="flex-1">
                 {/* 지원자 정보 (선택사항) */}
                 {applicantInfo && (
                     <View className="p-4 bg-gray-50">
@@ -79,7 +83,8 @@ export default function InterviewSchedule() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </ScrollView>
+                </ScrollView>
+            </KeyboardAvoidingView>
             <ModalComponent />
         </SafeAreaView>
     )

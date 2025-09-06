@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from '@expo/vector-icons'
@@ -189,7 +189,11 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                     </TouchableOpacity>
                 </View>
             </View>
-            <ScrollView className="flex-1">
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1"
+            >
+                <ScrollView className="flex-1">
                 {/* 공고 정보 */}
                 <View className="bg-blue-50 mx-4 mt-4 p-4 rounded-xl">
                     <View className="flex-row items-center">
@@ -244,9 +248,9 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                         </View>
                     </View>
                 </View>
-            </ScrollView>
-            {/* 하단 버튼 */}
-            <View className="p-4 border-t border-gray-200">
+                </ScrollView>
+                {/* 하단 버튼 */}
+                <View className="p-4 border-t border-gray-200">
                 <TouchableOpacity
                     onPress={handleSend}
                     disabled={isEditing}
@@ -258,7 +262,8 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                         {isEditing ? t('resume.complete_edit', '편집을 완료하세요') : t('resume.send_resume', '이력서 전송')}
                     </Text>
                 </TouchableOpacity>
-            </View>
+                </View>
+            </KeyboardAvoidingView>
             {/* useModal로 생성되는 모달 */}
             <ModalComponent />
         </SafeAreaView>
