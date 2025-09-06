@@ -165,7 +165,7 @@ const Settings = () => {
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 20 }}
+                contentContainerStyle={{ paddingBottom: 100 }}
             >
                 {/* 프로필 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
