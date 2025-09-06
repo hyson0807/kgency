@@ -1,6 +1,8 @@
-import {Text, View} from "react-native";
+import {Text, View, Image, TouchableOpacity} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
+import { useUserProfileImage } from '@/lib/features/profile/hooks/useUserProfileImage';
+import { ProfileImageModal } from '@/components/shared/modals/ProfileImageModal';
 interface UserInfo {
     age?: number
     gender?: string
@@ -35,22 +37,48 @@ interface InfoProps {
 export const Info = ({
     jobSeeker,
                      }: InfoProps) => {
+    const { profileImage } = useUserProfileImage(jobSeeker.id);
+    const [profileImageModalVisible, setProfileImageModalVisible] = useState(false);
+    
     return (
         <View className="p-6 border-b border-gray-100">
             <View className="flex-row items-center justify-between mb-4">
-                <View>
-                    <Text className="text-2xl font-bold text-gray-800">
-                        {jobSeeker.name || '이름 미등록'}
-                    </Text>
-                    <View className="flex-row items-center mt-2">
-                        <View className={`px-2 py-1 rounded-full ${
-                            jobSeeker.job_seeking_active ? 'bg-green-100' : 'bg-gray-100'
-                        }`}>
-                            <Text className={`text-xs font-medium ${
-                                jobSeeker.job_seeking_active ? 'text-green-600' : 'text-gray-600'
+                <View className="flex-row items-center flex-1">
+                    {/* 프로필 이미지 */}
+                    <TouchableOpacity 
+                        className="mr-4"
+                        onPress={() => setProfileImageModalVisible(true)}
+                    >
+                        {profileImage ? (
+                            <Image 
+                                source={{ uri: profileImage }} 
+                                className="w-16 h-16 rounded-full bg-gray-100"
+                                resizeMode="cover"
+                            />
+                        ) : (
+                            <View className="w-16 h-16 bg-gray-100 rounded-full items-center justify-center">
+                                <Text className="text-2xl font-bold text-gray-600">
+                                    {jobSeeker.name?.charAt(0) || '?'}
+                                </Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                    
+                    {/* 이름과 상태 */}
+                    <View className="flex-1">
+                        <Text className="text-2xl font-bold text-gray-800">
+                            {jobSeeker.name || '이름 미등록'}
+                        </Text>
+                        <View className="flex-row items-center mt-2">
+                            <View className={`px-2 py-1 rounded-full ${
+                                jobSeeker.job_seeking_active ? 'bg-green-100' : 'bg-gray-100'
                             }`}>
-                                {jobSeeker.job_seeking_active ? '구직중' : '구직중지'}
-                            </Text>
+                                <Text className={`text-xs font-medium ${
+                                    jobSeeker.job_seeking_active ? 'text-green-600' : 'text-gray-600'
+                                }`}>
+                                    {jobSeeker.job_seeking_active ? '구직중' : '구직중지'}
+                                </Text>
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -187,6 +215,14 @@ export const Info = ({
                     )}
                 </View>
             )}
+            
+            {/* Profile Image Modal */}
+            <ProfileImageModal
+                visible={profileImageModalVisible}
+                imageUrl={profileImage}
+                userName={jobSeeker.name}
+                onClose={() => setProfileImageModalVisible(false)}
+            />
         </View>
     )
 }

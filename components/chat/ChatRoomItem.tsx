@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { formatLastMessageTime } from '@/utils/dateUtils';
+import { useUserProfileImage } from '@/lib/features/profile/hooks/useUserProfileImage';
 import type { UserChatRoom, CompanyChatRoom } from '@/types/chat';
 
 interface ChatRoomItemProps {
@@ -16,6 +17,13 @@ interface ChatRoomItemProps {
  */
 export const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, userType }) => {
   const router = useRouter();
+
+  // 상대방 ID 추출
+  const partnerId = userType === 'user' 
+    ? (chatRoom as UserChatRoom).company_id 
+    : (chatRoom as CompanyChatRoom).user_id;
+
+  const { profileImage } = useUserProfileImage(partnerId);
 
   // 타입에 따른 설정
   const config = userType === 'user' 
@@ -46,8 +54,18 @@ export const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, userType }
       onPress={handlePress}
     >
       {/* 아바타 */}
-      <View className={`w-12 h-12 ${config.bgColor} rounded-full items-center justify-center mr-3`}>
-        <Ionicons name={config.iconName} size={24} color={config.iconColor} />
+      <View className="w-12 h-12 mr-3">
+        {profileImage ? (
+          <Image 
+            source={{ uri: profileImage }} 
+            className="w-12 h-12 rounded-full bg-gray-100"
+            resizeMode="cover"
+          />
+        ) : (
+          <View className={`w-12 h-12 ${config.bgColor} rounded-full items-center justify-center`}>
+            <Ionicons name={config.iconName} size={24} color={config.iconColor} />
+          </View>
+        )}
       </View>
       
       {/* 채팅방 정보 */}
