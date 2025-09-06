@@ -2,10 +2,12 @@ import { router } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { initializeUserProfile } from '@/lib/core/initialization';
 import { InitializationScreen } from '@/components/app-initializer/InitializationScreen';
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Reanimated 경고 비활성화
 configureReanimatedLogger({
@@ -33,7 +35,13 @@ export default function Index() {
 
         // 비로그인 사용자
         if (!isAuthenticated || !user) {
-          router.replace('/start');
+          // 플랫폼별 라우팅
+          if (Platform.OS === 'web') {
+            router.replace('/start');
+          } else {
+            // 모바일/앱의 경우 항상 언어 선택 페이지부터 시작
+            router.replace('/language-selection');
+          }
           return;
         }
 

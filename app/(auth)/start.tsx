@@ -193,15 +193,29 @@ const Start = () => {
                         </LinearGradient>
                         <Text className="text-gray-600 text-sm font-medium mt-1">{t('start.logo_subtitle', 'AI로 찾는 완벽한 매칭')}</Text>
                     </Animated.View>
+
+
+                    {/* Language selector - 웹에서만 표시 */}
+                    {Platform.OS === 'web' && (
+                        <TouchableOpacity
+                            className="mb-6 self-center"
+                            onPress={() => setLanguageModalVisible(true)}
+                            style={styles.languageButton}
+                        >
+                            <Text className="text-2xl mr-2">🌐</Text>
+                            <Text className="text-white font-medium">{t('start.language', 'Language')}</Text>
+                        </TouchableOpacity>
+                    )}
+
                     {/* Title section */}
-                    <View className="items-center mb-6">
-                        <Text className="text-2xl font-bold text-gray-800 text-center mb-2">
-                            {t('start.main_title', '100% 확정 면접을 원하시나요?')}
-                        </Text>
-                        <Text className="text-base text-gray-600 text-center leading-6">
-                            {t('start.main_subtitle', '답장 걱정 없는 매칭과\n시간 낭비 없는 채용의 시작')}
-                        </Text>
-                    </View>
+                    {/*<View className="items-center mb-6">*/}
+                    {/*    <Text className="text-2xl font-bold text-gray-800 text-center mb-2">*/}
+                    {/*        {t('start.main_title', '100% 확정 면접을 원하시나요?')}*/}
+                    {/*    </Text>*/}
+                    {/*    <Text className="text-base text-gray-600 text-center leading-6">*/}
+                    {/*        {t('start.main_subtitle', '답장 걱정 없는 매칭과\n시간 낭비 없는 채용의 시작')}*/}
+                    {/*    </Text>*/}
+                    {/*</View>*/}
                     {/* Option cards */}
                     <View className="gap-4">
                         {/* Job seeker card */}
@@ -260,15 +274,7 @@ const Start = () => {
                             </View>
                         </TouchableOpacity>
                     </View>
-                    {/* Language selector */}
-                    <TouchableOpacity
-                        className="mt-6 self-center"
-                        onPress={() => setLanguageModalVisible(true)}
-                        style={styles.languageButton}
-                    >
-                        <Text className="text-2xl mr-2">🌐</Text>
-                        <Text className="text-gray-600 font-medium">{t('start.language', 'Language')}</Text>
-                    </TouchableOpacity>
+
                 </Animated.View>
                     </View>
                 </View>
@@ -517,32 +523,34 @@ const Start = () => {
                     </LinearGradient>
                 </View>
             </ScrollView>
-            {/* Language modal */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={languageModalVisible}
-                onRequestClose={() => setLanguageModalVisible(false)}
-            >
-                <View className="flex-1 bg-black/50 justify-end">
-                    <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10 max-h-[500px]">
-                        <View className="flex-row items-center justify-between mb-6">
-                            <Text className="text-xl font-bold">{t('start.language', 'Language')}</Text>
-                            <TouchableOpacity onPress={() => setLanguageModalVisible(false)}>
-                                <Ionicons name="close" size={24} color="#6b7280" />
-                            </TouchableOpacity>
+            {/* Language modal - 웹에서만 표시 */}
+            {Platform.OS === 'web' && (
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={languageModalVisible}
+                    onRequestClose={() => setLanguageModalVisible(false)}
+                >
+                    <View className="flex-1 bg-black/50 justify-end">
+                        <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10 max-h-[500px]">
+                            <View className="flex-row items-center justify-between mb-6">
+                                <Text className="text-xl font-bold">{t('start.language', 'Language')}</Text>
+                                <TouchableOpacity onPress={() => setLanguageModalVisible(false)}>
+                                    <Ionicons name="close" size={24} color="#6b7280" />
+                                </TouchableOpacity>
+                            </View>
+                            <FlatList
+                                data={[...languages]}
+                                renderItem={renderLanguageItem}
+                                keyExtractor={(item) => item.code}
+                                showsVerticalScrollIndicator={true}
+                                style={{ flexGrow: 0 }}
+                                contentContainerStyle={{ paddingBottom: 10 }}
+                            />
                         </View>
-                        <FlatList
-                            data={[...languages]}
-                            renderItem={renderLanguageItem}
-                            keyExtractor={(item) => item.code}
-                            showsVerticalScrollIndicator={true}
-                            style={{ flexGrow: 0 }}
-                            contentContainerStyle={{ paddingBottom: 10 }}
-                        />
                     </View>
-                </View>
-            </Modal>
+                </Modal>
+            )}
         </View>
     )
 }
@@ -614,7 +622,7 @@ const styles = StyleSheet.create({
     languageButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.6)',
+        backgroundColor: 'rgba(74, 144, 226, 0.9)',
         paddingHorizontal: 24,
         paddingVertical: 12,
         borderRadius: 30,

@@ -186,7 +186,9 @@ class SocketManager {
     try {
       const token = await AsyncStorage.getItem('authToken');
       if (!token) {
-        console.error('SocketManager: 인증 토큰이 없습니다.');
+        if (__DEV__) {
+          console.log('SocketManager: 인증 토큰이 없음 (미로그인 상태)');
+        }
         return;
       }
 
