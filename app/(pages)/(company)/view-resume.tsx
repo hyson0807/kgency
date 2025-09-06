@@ -11,6 +11,7 @@ import { ActivityIndicator } from 'react-native'
 import {api} from "@/lib/api"
 import { useChatRoomNavigation } from '@/lib/features/chat/hooks/useChatRoomNavigation'
 import { useUserProfileImage } from '@/lib/features/profile/hooks/useUserProfileImage'
+import { ProfileImageModal } from '@/components/shared/modals/ProfileImageModal'
 export default function ViewResume() {
     const { showModal, ModalComponent } = useModal()
     const { createAndNavigateToChat } = useChatRoomNavigation()
@@ -29,6 +30,7 @@ export default function ViewResume() {
     const [translatedResume, setTranslatedResume] = useState<string | null>(null)
     const [isTranslated, setIsTranslated] = useState(false)
     const [isTranslating, setIsTranslating] = useState(false)
+    const [profileImageModalVisible, setProfileImageModalVisible] = useState(false)
     const { profileImage: userProfileImage } = useUserProfileImage(userId)
     useEffect(() => {
         if (messageId) {
@@ -134,19 +136,21 @@ export default function ViewResume() {
             <View className="bg-blue-50 mx-4 mt-4 p-4 rounded-xl">
                 <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center gap-3">
-                        {userProfileImage ? (
-                            <Image 
-                                source={{ uri: userProfileImage }} 
-                                className="w-16 h-16 rounded-full bg-gray-100"
-                                resizeMode="cover"
-                            />
-                        ) : (
-                            <View className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full">
-                                <Text className="text-2xl font-bold text-gray-600">
-                                    {Array.isArray(userName) ? userName[0]?.charAt(0) || '?' : userName?.charAt(0) || '?'}
-                                </Text>
-                            </View>
-                        )}
+                        <TouchableOpacity onPress={() => setProfileImageModalVisible(true)}>
+                            {userProfileImage ? (
+                                <Image 
+                                    source={{ uri: userProfileImage }} 
+                                    className="w-16 h-16 rounded-full bg-gray-100"
+                                    resizeMode="cover"
+                                />
+                            ) : (
+                                <View className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full">
+                                    <Text className="text-2xl font-bold text-gray-600">
+                                        {Array.isArray(userName) ? userName[0]?.charAt(0) || '?' : userName?.charAt(0) || '?'}
+                                    </Text>
+                                </View>
+                            )}
+                        </TouchableOpacity>
                         <View>
                             <Text className="text-sm text-gray-600">지원자</Text>
                             <Text className="text-lg font-bold text-blue-900">
@@ -198,6 +202,14 @@ export default function ViewResume() {
                 )}
             </View>
             <ModalComponent />
+            
+            {/* Profile Image Modal */}
+            <ProfileImageModal
+                visible={profileImageModalVisible}
+                imageUrl={userProfileImage}
+                userName={Array.isArray(userName) ? userName[0] : userName}
+                onClose={() => setProfileImageModalVisible(false)}
+            />
         </SafeAreaView>
     )
 }
