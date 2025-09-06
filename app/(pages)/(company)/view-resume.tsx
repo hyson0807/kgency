@@ -9,8 +9,10 @@ import Back from '@/components/shared/common/back'
 import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { ActivityIndicator } from 'react-native'
 import {api} from "@/lib/api"
+import { useChatRoomNavigation } from '@/lib/features/chat/hooks/useChatRoomNavigation'
 export default function ViewResume() {
     const { showModal, ModalComponent } = useModal()
+    const { createAndNavigateToChat } = useChatRoomNavigation()
     const params = useLocalSearchParams()
     const {
         applicationId,
@@ -96,6 +98,20 @@ export default function ViewResume() {
     const handleSaveResume = () => {
         showModal('알림', '이력서가 저장되었습니다.')
     }
+
+    const handleStartChat = async () => {
+        const userIdParam = Array.isArray(userId) ? userId[0] : userId
+        const postingIdParam = Array.isArray(postingId) ? postingId[0] : postingId
+        const applicationIdParam = Array.isArray(applicationId) ? applicationId[0] : applicationId
+
+        await createAndNavigateToChat({
+            companyId: '', // 훅 내부에서 현재 사용자가 회사인지 구직자인지 판단하므로 빈 값도 가능
+            userId: userIdParam,
+            jobPostingId: postingIdParam,
+            applicationId: applicationIdParam,
+            fromApplication: true
+        })
+    }
     const formatDate = (dateString: string | string[]) => {
         const date = new Date(Array.isArray(dateString) ? dateString[0] : dateString)
         return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
@@ -173,21 +189,11 @@ export default function ViewResume() {
             <View className="px-4 pb-4">
                 {(!proposalStatus || proposalStatus === 'none') && applicationId && userId && postingId && (
                     <TouchableOpacity
-                        onPress={() => {
-                            router.push({
-                                pathname: '/(pages)/(company)/(interview-management)/(applicants)/interview-schedule',
-                                params: {
-                                    applicationId: Array.isArray(applicationId) ? applicationId[0] : applicationId,
-                                    userId: Array.isArray(userId) ? userId[0] : userId,
-                                    postingId: Array.isArray(postingId) ? postingId[0] : postingId,
-                                    onComplete: 'refresh'
-                                }
-                            })
-                        }}
+                        onPress={handleStartChat}
                         className="bg-blue-500 py-3 rounded-xl flex-row items-center justify-center"
                     >
-                        <AntDesign name="calendar" size={18} color="white" />
-                        <Text className="text-white font-medium ml-2">면접 제안하기</Text>
+                        <AntDesign name="message1" size={18} color="white" />
+                        <Text className="text-white font-medium ml-2">채팅으로 대화하기</Text>
                     </TouchableOpacity>
                 )}
             </View>

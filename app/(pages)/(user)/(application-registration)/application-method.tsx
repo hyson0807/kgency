@@ -15,6 +15,7 @@ import { ApplicationMethodCard } from '@/components/user/application-registratio
 import ChatApplicationPromotionModal from '@/components/user/application-registration/ChatApplicationPromotionModal';
 import TokenPurchaseModal from '@/components/user/application-registration/TokenPurchaseModal';
 import { useModal } from '@/lib/shared/ui/hooks/useModal';
+import { useChatRoomNavigation } from '@/lib/features/chat/hooks/useChatRoomNavigation';
 
 export default function ApplicationMethodScreen() {
     const router = useRouter();
@@ -45,6 +46,7 @@ export default function ApplicationMethodScreen() {
     const [showPromotionModal, setShowPromotionModal] = React.useState(false);
     const [showTokenPurchaseModal, setShowTokenPurchaseModal] = React.useState(false);
     const { showModal, ModalComponent } = useModal();
+    const { createAndNavigateToChat } = useChatRoomNavigation();
 
     // IAP Hook 사용
     const {
@@ -285,7 +287,7 @@ export default function ApplicationMethodScreen() {
             }
 
             // 채팅방 생성 및 이동
-            await createAndNavigateToChatRoom(applicationResponse.data.id);
+            await navigateToChatRoom(applicationResponse.data.id);
 
         } catch (error: any) {
             console.error('모의 채팅 지원 에러:', error);
@@ -382,7 +384,7 @@ export default function ApplicationMethodScreen() {
             }
 
             // 채팅방 생성 및 이동
-            await createAndNavigateToChatRoom(applicationResponse.data.id);
+            await navigateToChatRoom(applicationResponse.data.id);
 
         } catch (error: any) {
             console.error('채팅 지원 에러:', error);
@@ -399,53 +401,19 @@ export default function ApplicationMethodScreen() {
         }
     };
 
-    // 채팅방 생성 및 이동 공통 함수
-    const createAndNavigateToChatRoom = async (applicationId: string) => {
-        if (!user?.userId) return;
-
-        // 먼저 동일한 회사와의 기존 채팅방이 있는지 확인
-        const existingRoomResponse = await api('GET', `/api/chat/find-existing-room?user_id=${user.userId}&company_id=${companyId}`);
+    // 채팅방 생성 및 이동을 위한 래퍼 함수
+    const navigateToChatRoom = async (applicationId: string) => {
+        resetAllData();
         
-        let roomId = null;
-        
-        if (existingRoomResponse.success && existingRoomResponse.data?.roomId) {
-            // 기존 채팅방이 있으면 재사용
-            roomId = existingRoomResponse.data.roomId;
-            console.log('기존 채팅방 재사용:', roomId);
-        } else {
-            // 기존 채팅방이 없으면 새로 생성
-            const chatRoomResponse = await api('POST', '/api/chat/create-room', {
-                application_id: applicationId,
-                user_id: user.userId,
-                company_id: companyId,
-                job_posting_id: jobPostingId
-            });
-            
-            if (chatRoomResponse.success && chatRoomResponse.data?.id) {
-                roomId = chatRoomResponse.data.id;
-                console.log('새 채팅방 생성:', roomId);
-            }
-        }
-
-        if (roomId) {
-            console.log('✅ 채팅방 이동 준비:', roomId);
-            resetAllData();
-            
-            // 바로 채팅방으로 이동
-            router.replace({
-                pathname: '/chat/[roomId]',
-                params: {
-                    roomId: roomId,
-                    initialMessage: isEditing === 'true' ? editedResume : resume,
-                    messageType: 'resume',
-                    fromApplication: 'true'
-                }
-            });
-            
-            console.log('🚀 채팅방 이동 실행됨');
-        } else {
-            showModal(t('common.error', '오류'), t('chat.room_access_failed', '채팅방 접근에 실패했습니다.'), 'warning');
-        }
+        await createAndNavigateToChat({
+            companyId: companyId,
+            userId: user?.userId || '',
+            jobPostingId: jobPostingId,
+            applicationId: applicationId,
+            initialMessage: isEditing === 'true' ? editedResume : resume,
+            messageType: 'resume',
+            fromApplication: true
+        });
     };
 
     return (

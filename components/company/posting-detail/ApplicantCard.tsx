@@ -1,5 +1,4 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { useModal } from "@/lib/shared/ui/hooks/useModal";
 import { router } from "expo-router";
@@ -219,15 +218,7 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
     return (
         <>
             <TouchableOpacity
-                onPress={() => {
-                    router.push({
-                        pathname: '/(pages)/(company)/job-seeker-detail',
-                        params: {
-                            userId: item.user.id,
-                            hideInterviewButton: 'true'  // 면접 제안하기 버튼 숨기기
-                        }
-                    })
-                }}
+                onPress={() => handleViewResume(item)}
                 activeOpacity={0.9}
                 className="bg-white mx-4 my-2 p-4 rounded-xl shadow-sm gap-3 relative">
                 {/* 적합도 배지 - 우상단 */}
@@ -293,15 +284,7 @@ export const ApplicantCard = ({ item, postingId, proposalStatus = 'none', onStat
                         <View className="flex-1 bg-purple-100 py-3 px-1 rounded-lg flex-row items-center justify-center">
                             <Text className="font-medium ml-2 text-purple-600 text-center flex-shrink">즉시 면접 유저입니다</Text>
                         </View>
-                    ) : (
-                        <TouchableOpacity
-                            onPress={() => handleViewResume(item)}
-                            className="flex-1 bg-gray-100 py-3 rounded-lg flex-row items-center justify-center"
-                        >
-                            <Ionicons name="document-text-outline" size={18} color="black" />
-                            <Text className="font-medium ml-2">이력서 보기</Text>
-                        </TouchableOpacity>
-                    )}
+                    ) : null}
                     {proposalStatus === 'pending' && (
                         <View className="flex-1 gap-2">
                             <View className="bg-orange-100 py-3 rounded-lg flex-row items-center justify-center">

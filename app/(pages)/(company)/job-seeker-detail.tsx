@@ -2,14 +2,15 @@
 import {View, Text, ScrollView, TouchableOpacity} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import {router, useLocalSearchParams} from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+import { useLocalSearchParams} from 'expo-router'
 import Back from '@/components/shared/common/back'
 import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import {Info} from "@/components/shared/job-seeker-detail/Info";
 import {UserKeywords} from "@/components/shared/job-seeker-detail/UserKeywords";
 import { api } from "@/lib/api"
+import { useChatRoomNavigation } from '@/lib/features/chat/hooks/useChatRoomNavigation'
+import AntDesign from '@expo/vector-icons/AntDesign'
 interface UserInfo {
     age?: number
     gender?: string
@@ -54,6 +55,7 @@ export default function JobSeekerDetail() {
     const params = useLocalSearchParams()
     const { userId, hideInterviewButton } = params
     const { showModal, ModalComponent } = useModal()
+    const { createAndNavigateToChat } = useChatRoomNavigation()
     const [jobSeeker, setJobSeeker] = useState<JobSeekerDetail | null>(null)
     const [loading, setLoading] = useState(true)
     const [groupedKeywords, setGroupedKeywords] = useState<GroupedKeywords>({
@@ -140,6 +142,17 @@ export default function JobSeekerDetail() {
             setLoading(false)
         }
     }
+
+    const handleStartChat = async () => {
+        const userIdParam = Array.isArray(userId) ? userId[0] : userId
+
+        await createAndNavigateToChat({
+            companyId: '', // 훅 내부에서 현재 사용자가 회사인지 구직자인지 판단하므로 빈 값도 가능
+            userId: userIdParam,
+            jobPostingId: '', // job-seeker-detail에서는 특정 공고 없이 일반 채팅
+            fromApplication: false
+        })
+    }
     if (loading) {
         return (
             <LoadingScreen />
@@ -179,19 +192,12 @@ export default function JobSeekerDetail() {
             {hideInterviewButton !== 'true' && (
                 <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                     <TouchableOpacity
-                        onPress={() => {
-                            router.push({
-                                pathname: '/interview-request',
-                                params: {
-                                    userId: userId
-                                }
-                            })
-                        }}
+                        onPress={handleStartChat}
                         className="bg-blue-500 py-4 rounded-xl mx-4 my-2"
                     >
                         <View className="flex-row items-center justify-center">
-                            <Ionicons name="calendar" size={20} color="white" />
-                            <Text className="text-white font-bold text-lg ml-2">면접 제안하기</Text>
+                            <AntDesign name="message1" size={20} color="white" />
+                            <Text className="text-white font-bold text-lg ml-2">채팅으로 대화하기</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
