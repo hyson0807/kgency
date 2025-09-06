@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode, useRef } from 'react';
-import { Animated, LayoutAnimation, Platform } from 'react-native';
+import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from 'react';
+import { Animated, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
@@ -21,27 +21,15 @@ export const TabBarProvider: React.FC<TabBarProviderProps> = ({ children }) => {
     const tabBarHeight = (Platform.OS === 'ios' ? 50 : 60) + insets.bottom + 10;
     const translateY = useRef(new Animated.Value(0)).current;
     const setIsTabBarVisibleWithAnimation = (visible: boolean) => {
-        if (Platform.OS === 'ios') {
-            // iOS: LayoutAnimation 사용 (부드러운 애니메이션)
-            LayoutAnimation.configureNext({
-                duration: 300,
-                create: {
-                    type: LayoutAnimation.Types.easeInEaseOut,
-                    property: LayoutAnimation.Properties.opacity,
-                },
-                update: {
-                    type: LayoutAnimation.Types.easeInEaseOut,
-                },
-                delete: {
-                    type: LayoutAnimation.Types.easeInEaseOut,
-                    property: LayoutAnimation.Properties.opacity,
-                },
-            });
-            setIsTabBarVisible(visible);
-        } else {
-            // Android: 즉시 변경 (빈 공간 문제 방지)
-            setIsTabBarVisible(visible);
-        }
+        // 부드러운 애니메이션으로 탭바를 올리고 내림
+        Animated.timing(translateY, {
+            toValue: visible ? 0 : tabBarHeight, // 보일 때는 0, 숨길 때는 탭바 높이만큼 아래로
+            duration: 250,
+            useNativeDriver: true,
+        }).start();
+        
+        // 상태는 즉시 업데이트 (애니메이션과 독립적으로)
+        setIsTabBarVisible(visible);
     };
     return (
         <TabBarContext.Provider value={{ 

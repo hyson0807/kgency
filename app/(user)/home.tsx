@@ -123,7 +123,7 @@ const Home = () => {
                 style={{ flex: 1 }}
                 contentContainerStyle={{ 
                     paddingTop: 2,
-                    paddingBottom: isTabBarVisible ? 0 : tabBarHeight 
+                    paddingBottom: tabBarHeight
                 }}
                 showsVerticalScrollIndicator={false}
                 onScroll={handleScroll}

@@ -4,13 +4,13 @@ import { Ionicons } from "@expo/vector-icons"
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Platform } from 'react-native';
+import { Platform, Animated } from 'react-native';
 import { useTabBar } from '@/contexts/TabBarContext';
 import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
 import TabIconWithBadge from '@/components/shared/TabIconWithBadge';
 const CompanyLayout = () => {
     const insets = useSafeAreaInsets();
-    const { isTabBarVisible } = useTabBar();
+    const { isTabBarVisible, translateY } = useTabBar();
     const { totalUnreadCount } = useUnreadMessage();
     
     const maxHeight = (Platform.OS === 'ios' ? 50 : 60) + insets.bottom;
@@ -19,22 +19,24 @@ const CompanyLayout = () => {
         <Tabs
             screenOptions={{
                 headerShown: false,
-                tabBarActiveTintColor: 'blue',
+                tabBarActiveTintColor: '#10b981',
                 tabBarInactiveTintColor: 'gray',
-                tabBarStyle: Platform.OS === 'ios' ? {
+                tabBarStyle: {
                     backgroundColor: 'white',
-                    borderTopWidth: 1,
-                    height: isTabBarVisible ? maxHeight : 0,
-                    paddingBottom: isTabBarVisible ? maxPadding : 0,
-                    overflow: 'hidden',
-                    position: isTabBarVisible ? 'relative' : 'absolute',
-                    bottom: isTabBarVisible ? 0 : -maxHeight,
-                } : {
-                    backgroundColor: 'white',
-                    borderTopWidth: 1,
-                    height: isTabBarVisible ? maxHeight : 0,
-                    paddingBottom: isTabBarVisible ? maxPadding : 0,
-                    overflow: 'hidden',
+                    height: maxHeight,
+                    paddingBottom: maxPadding,
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    transform: [{ translateY }],
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: -2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                    elevation: 5,
                 },
             }}
         >
