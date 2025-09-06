@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import {router, useLocalSearchParams} from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/shared/common/back'
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import {Info} from "@/components/shared/job-seeker-detail/Info";
 import {UserKeywords} from "@/components/shared/job-seeker-detail/UserKeywords";

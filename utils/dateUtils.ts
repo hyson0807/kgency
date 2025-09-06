@@ -1,4 +1,4 @@
-import { DATE_CONFIG } from '@/lib/config';
+import { DATE_CONFIG } from '@/lib/core/config';
 
 /**
  * 날짜/시간 관련 유틸리티 함수들

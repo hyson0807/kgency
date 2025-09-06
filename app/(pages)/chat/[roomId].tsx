@@ -11,13 +11,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfile } from '@/lib/features/profile/hooks/useProfile';
 import { useTabBar } from '@/contexts/TabBarContext';
-import { useMessagePagination } from '@/hooks/useMessagePagination';
+import { useMessagePagination } from '@/lib/features/chat/hooks/useMessagePagination';
 import { api } from '@/lib/api';
-import { socketManager } from '@/lib/socketManager';
+import { socketManager } from '@/lib/features/chat/services/socketManager';
 import { formatMessageTime } from '@/utils/dateUtils';
-import { APP_CONFIG } from '@/lib/config';
+import { APP_CONFIG } from '@/lib/core/config';
 import type { ChatMessage, ChatRoomInfo, SocketMessage } from '@/types/chat';
 import { ResumeMessageCard } from '@/components/chat/ResumeMessageCard';
 import { ChatActionButtons } from '@/components/chat/ChatActionButtons';

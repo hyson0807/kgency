@@ -3,8 +3,8 @@ import React, { useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from "expo-router"
 import Back from '@/components/shared/common/back'
-import { useProfile } from '@/hooks/useProfile'
-import { useModal } from '@/hooks/useModal'
+import { useProfile } from '@/lib/features/profile/hooks/useProfile'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import { useApplicationFormStore } from '@/stores/applicationFormStore'
 // Step 3: 한국어 실력 및 질문 입력 페이지

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { router } from 'expo-router';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfile } from '@/lib/features/profile/hooks/useProfile';
 import { useUserInfoStore } from '@/stores/userInfoStore';
 import LoadingScreen from '@/components/shared/common/LoadingScreen';
 const Info = () => {

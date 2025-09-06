@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useAppBadge } from '@/hooks/useAppBadge';
+import { useAppBadge } from '@/lib/shared/ui/hooks/useAppBadge';
 
 /**
  * 앱 배지 관리 컴포넌트

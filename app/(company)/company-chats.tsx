@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useChatRooms } from '@/hooks/useChatRooms';
+import { useChatRooms } from '@/lib/features/chat/hooks/useChatRooms';
 import { ChatRoomItem } from '@/components/chat/ChatRoomItem';
 import type { CompanyChatRoom } from '@/types/chat';
 

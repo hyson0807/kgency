@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from 'react-native';
-import { SERVER_CONFIG, SOCKET_CONFIG, APP_CONFIG } from '@/lib/config';
+import { SERVER_CONFIG, SOCKET_CONFIG, APP_CONFIG } from '@/lib/core/config';
 import type { 
   SocketMessage, 
   SocketConnectionStatus,

@@ -12,10 +12,10 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import Back from '@/components/shared/common/back'
-import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
+import { useMatchedJobPostings } from '@/lib/features/jobs/hooks/useMatchedJobPostings'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from "@/contexts/TranslationContext";
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import HiringFields from "@/components/user/posting-detail/HiringFields";
 import Header from "@/components/user/posting-detail/Header";
 import {WorkCondition} from "@/components/user/posting-detail/WorkCondition";

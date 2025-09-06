@@ -7,7 +7,7 @@ import {Tap} from "@/components/user/applications/submitted-applications/Tap";
 import {Empty} from "@/components/user/applications/submitted-applications/Empty";
 import {ApplicationItem} from "@/components/user/applications/submitted-applications/ApplicationItem";
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
-import {useApplications} from "@/hooks/useApplications";
+import {useApplications} from "@/lib/features/applications/hooks/useApplications";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const Applications = () => {
     const { user } = useAuth()

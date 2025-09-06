@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Dropdown } from 'react-native-element-dropdown'
 import { Ionicons } from '@expo/vector-icons'
-import { useKeywordSelection } from '@/hooks/useKeywordSelection'
+import { useKeywordSelection } from '@/lib/shared/ui/hooks/useKeywordSelection'
 interface Keyword {
     id: number
     keyword: string

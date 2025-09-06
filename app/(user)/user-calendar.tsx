@@ -19,10 +19,10 @@ import { UserInterviewCard } from '@/components/shared/interview-calendar/user/c
 // Hooks & Utils
 import { api } from "@/lib/api"
 import { useAuth } from '@/contexts/AuthContext'
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { useTranslation } from '@/contexts/TranslationContext'
 import { getCalendarConfig } from '@/lib/translations/locales'
-import { groupByDate } from '@/lib/dateUtils'
+import { groupByDate } from '@/lib/shared/utils/dates'
 // Date-fns locale mapping
 const dateFnsLocaleMap: Record<string, any> = {
     ko: ko,

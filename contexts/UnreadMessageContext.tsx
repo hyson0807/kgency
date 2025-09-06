@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { socketManager } from '@/lib/socketManager';
+import { socketManager } from '@/lib/features/chat/services/socketManager';
 
 interface UnreadMessageContextType {
   totalUnreadCount: number;

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, ReactNode, useState } from 'react';
 import { router } from 'expo-router';
 import { useAuth } from './AuthContext';
-import { addNotificationResponseReceivedListener, addNotificationReceivedListener } from '@/lib/notifications';
+import { addNotificationResponseReceivedListener, addNotificationReceivedListener } from '@/lib/shared/services/notifications';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 interface NotificationSettings {

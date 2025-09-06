@@ -4,8 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
 import { api } from "@/lib/api"
 import Back from '@/components/shared/common/back'
-import { useModal } from "@/hooks/useModal";
-import { useUserKeywords } from '@/hooks/useUserKeywords'
+import { useModal } from "@/lib/shared/ui/hooks/useModal";
+import { useUserKeywords } from '@/lib/features/profile/hooks/useUserKeywords'
 import { WorkLocationForm } from '@/components/company/job-postings/forms/WorkLocationForm'
 import { WorkScheduleForm } from '@/components/company/job-postings/forms/WorkScheduleForm'
 import { SalaryInfoForm } from '@/components/company/job-postings/forms/SalaryInfoForm'

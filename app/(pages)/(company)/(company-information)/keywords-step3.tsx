@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { api } from "@/lib/api"
 import { router } from 'expo-router'
 import Back from '@/components/shared/common/back'
-import { useModal } from "@/hooks/useModal"
+import { useModal } from "@/lib/shared/ui/hooks/useModal"
 import { KoreanLevelSelector } from "@/components/company/profile/keywords/KoreanLevelSelector"
 import { WorkDaySelector } from "@/components/company/profile/keywords/WorkDaySelector"
 import { useCompanyKeywordsStore } from '@/stores/companyKeywordsStore'

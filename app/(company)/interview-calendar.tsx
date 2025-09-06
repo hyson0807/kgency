@@ -7,7 +7,7 @@ import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
-import { getLocalDateString, getLocalTimeString, groupByDate } from '@/lib/dateUtils'
+import { getLocalDateString, getLocalTimeString, groupByDate } from '@/lib/shared/utils/dates'
 // Components
 import { InterviewScheduleTab } from '@/components/shared/interview-calendar/company/schedule/InterviewScheduleTab'
 import { InterviewSlotsTab } from '@/components/shared/interview-calendar/company/schedule/InterviewSlotsTab'
@@ -15,7 +15,7 @@ import { setupCalendarLocale } from '@/components/shared/interview-calendar/shar
 // Hooks & Utils
 import { api } from "@/lib/api"
 import { useAuth } from '@/contexts/AuthContext'
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 // 한국어 캘린더 설정
 setupCalendarLocale()
 // Types

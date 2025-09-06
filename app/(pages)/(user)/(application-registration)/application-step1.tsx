@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from "expo-router"
 import Back from '@/components/shared/common/back'
-import { useProfile } from '@/hooks/useProfile'
-import { useModal } from '@/hooks/useModal'
+import { useProfile } from '@/lib/features/profile/hooks/useProfile'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import { PersonalInformation } from "@/components/user/application-form/Personal-Information"
 import { useApplicationFormStore } from '@/stores/applicationFormStore'
 import { api } from "@/lib/api"
 import CustomModal from '@/components/shared/modal/CustomModal'
-import { useUserKeywords } from '@/hooks/useUserKeywords'
+import { useUserKeywords } from '@/lib/features/profile/hooks/useUserKeywords'
 // Step 1: 기본 정보 입력 페이지
 export default function ApplicationStep1() {
     const params = useLocalSearchParams()

@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useLocalSearchParams, router } from 'expo-router'
 import Back from "@/components/shared/common/back"
-import { useModal } from "@/hooks/useModal"
+import { useModal } from "@/lib/shared/ui/hooks/useModal"
 import { useTranslation } from "@/contexts/TranslationContext"
 import { CareerInformation } from "@/components/user/profile/keywords/CareerInformation"
-import { useProfile } from "@/hooks/useProfile"
+import { useProfile } from "@/lib/features/profile/hooks/useProfile"
 import LoadingScreen from "@/components/shared/common/LoadingScreen"
 const InstantInterviewCareer = () => {
     const params = useLocalSearchParams()

@@ -8,13 +8,13 @@ import { useApplicationFormStore } from '@/stores/applicationFormStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '@/lib/api';
-import { useIAP } from '@/lib/iap/useIAP';
-import { getProductId } from '@/lib/types/iap';
+import { useIAP } from '@/lib/features/payments/hooks/useIAP';
+import { getProductId } from '@/lib/features/payments/types';
 
 import { ApplicationMethodCard } from '@/components/user/application-registration';
 import ChatApplicationPromotionModal from '@/components/user/application-registration/ChatApplicationPromotionModal';
 import TokenPurchaseModal from '@/components/user/application-registration/TokenPurchaseModal';
-import { useModal } from '@/hooks/useModal';
+import { useModal } from '@/lib/shared/ui/hooks/useModal';
 
 export default function ApplicationMethodScreen() {
     const router = useRouter();

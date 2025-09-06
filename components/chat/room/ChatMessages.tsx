@@ -1,6 +1,6 @@
 import React, { RefObject } from 'react';
 import { FlatList } from 'react-native';
-import { CHAT_CONFIG } from '@/lib/config';
+import { CHAT_CONFIG } from '@/lib/core/config';
 import type { ChatMessage } from '@/types/chat';
 
 interface ChatMessagesProps {

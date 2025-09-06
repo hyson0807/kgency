@@ -9,11 +9,11 @@ import { Country } from '@/components/user/profile/keywords/Country';
 import JobPreferencesSelector from '@/components/shared/keyword/JobPreferencesSelector';
 import WorkConditionsSelector from '@/components/shared/keyword/WorkConditionsSelector';
 import { useUserInfoStore } from '@/stores/userInfoStore';
-import { useProfile } from '@/hooks/useProfile';
-import { useUserKeywords } from '@/hooks/useUserKeywords';
-import { useKeywordSelection } from '@/hooks/useKeywordSelection';
-import { useModal } from '@/hooks/useModal';
-import { KeywordMapper } from "@/lib/utils/keywords";
+import { useProfile } from '@/lib/features/profile/hooks/useProfile';
+import { useUserKeywords } from '@/lib/features/profile/hooks/useUserKeywords';
+import { useKeywordSelection } from '@/lib/shared/ui/hooks/useKeywordSelection';
+import { useModal } from '@/lib/shared/ui/hooks/useModal';
+import { KeywordMapper } from "@/lib/features/jobs/keywords";
 import LoadingScreen from '@/components/shared/common/LoadingScreen';
 const OthersPage = () => {
   const { t } = useTranslation();

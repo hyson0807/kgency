@@ -10,8 +10,8 @@ import { PostingDetail } from "@/components/company/posting-detail/PostingDetail
 import { ApplicantCard } from "@/components/company/posting-detail/ApplicantCard"
 // Hooks & Utils
 import { api } from "@/lib/api"
-import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
-import { useModal } from '@/hooks/useModal'
+import { useMatchedJobPostings } from '@/lib/features/jobs/hooks/useMatchedJobPostings'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 // Types
 interface Application {

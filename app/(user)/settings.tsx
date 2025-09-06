@@ -2,11 +2,11 @@ import { View, Text, ScrollView, TouchableOpacity, Switch, Modal } from 'react-n
 import React, { useState, useEffect } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from "@/contexts/AuthContext"
-import { useProfile } from "@/hooks/useProfile"
+import { useProfile } from "@/lib/features/profile/hooks/useProfile"
 import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useNotification } from "@/contexts/NotificationContext";
 import { authAPI } from "@/lib/api/auth"
@@ -14,7 +14,7 @@ import AccountManagementModal from '@/components/shared/common/AccountManagement
 import TermsOfService from '@/components/shared/common/TermsOfService';
 import PrivacyPolicy from '@/components/shared/common/PrivacyPolicy';
 import { languages } from '@/lib/constants/languages';
-import { removePushToken } from '@/lib/notifications';
+import { removePushToken } from '@/lib/shared/services/notifications';
 import ProfileImageUploader from '@/components/shared/Image/ProfileImageUploader';
 const Settings = () => {
     const { logout, user,checkAuthState } = useAuth()

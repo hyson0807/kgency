@@ -8,8 +8,8 @@ import { api } from "@/lib/api"
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from '@/contexts/TranslationContext'
 import Back from '@/components/shared/common/back'
-import { useModal } from '@/hooks/useModal'
-import { groupByDate, formatTime24 } from '@/lib/dateUtils'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
+import { groupByDate, formatTime24 } from '@/lib/shared/utils/dates'
 interface TimeSlot {
     id: string
     start_time: string

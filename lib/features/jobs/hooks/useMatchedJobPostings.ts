@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import {api} from "@/lib/api"
-import { SuitabilityResult } from '@/lib/suitability';
+import { SuitabilityResult } from '@/lib/features/jobs/matching';
 interface JobPosting {
     id: string;
     title: string;

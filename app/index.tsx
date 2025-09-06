@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import { useEffect, useState } from "react";
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
-import { initializeUserProfile } from '@/lib/initialization';
+import { initializeUserProfile } from '@/lib/core/initialization';
 import { InitializationScreen } from '@/components/app-initializer/InitializationScreen';
 import * as Notifications from 'expo-notifications';
 

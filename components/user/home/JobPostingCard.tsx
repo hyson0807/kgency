@@ -2,9 +2,9 @@ import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import React, { useState } from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
-import { SuitabilityResult } from '@/lib/suitability';
+import { SuitabilityResult } from '@/lib/features/jobs/matching';
 import {router} from "expo-router";
-import { sortMatchedKeywords } from "@/lib/utils/keywords";
+import { sortMatchedKeywords } from "@/lib/features/jobs/keywords";
 interface Company {
     id: string;
     name: string;

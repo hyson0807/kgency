@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { router, useLocalSearchParams } from 'expo-router'
 import Back from '@/components/shared/common/back'
 import { useAuth } from '@/contexts/AuthContext'
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import {api} from "@/lib/api"
 export default function Resume() {

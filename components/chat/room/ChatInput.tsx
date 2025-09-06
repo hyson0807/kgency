@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { CHAT_CONFIG } from '@/lib/config';
+import { CHAT_CONFIG } from '@/lib/core/config';
 
 interface ChatInputProps {
   newMessage: string;

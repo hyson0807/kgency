@@ -1,7 +1,7 @@
 import {Text, View} from "react-native";
 import React from "react";
 import {useTranslation} from "@/contexts/TranslationContext";
-import {SuitabilityResult} from "@/lib/suitability";
+import {SuitabilityResult} from "@/lib/features/jobs/matching";
 import { HeaderCarousel } from './HeaderCarousel';
 import { EventBanner } from '../EventBanner';
 interface JobPosting {

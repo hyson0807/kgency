@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { Alert } from 'react-native';
 import { api } from '@/lib/api';
-import { CHAT_CONFIG } from '@/lib/config';
+import { CHAT_CONFIG } from '@/lib/core/config';
 import type { 
   ChatMessage, 
   MessagePaginationState, 

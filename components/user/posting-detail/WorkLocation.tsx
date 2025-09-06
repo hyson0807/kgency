@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import openNaverMap from '@/lib/functions/openNaverMap'
-import { useModal } from '@/hooks/useModal';
+import openNaverMap from '@/lib/features/maps/services/openNaverMap'
+import { useModal } from '@/lib/shared/ui/hooks/useModal';
 interface WorkLocationComponentProps {
     posting: {
         job_address?: string;

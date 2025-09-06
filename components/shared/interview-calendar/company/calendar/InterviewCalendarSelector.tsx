@@ -4,7 +4,7 @@ import { Calendar } from 'react-native-calendars'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { api } from "@/lib/api"
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { TimeSlot, InterviewCalendarSelectorProps } from '../../shared/types'
 import { TimeSlotSelector } from './TimeSlotSelector'
 import { InterviewSlotsSummary } from '../slots/InterviewSlotsSummary'

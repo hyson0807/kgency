@@ -6,8 +6,8 @@ import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { api } from "@/lib/api"
 import Back from '@/components/shared/common/back'
-import { useModal } from '@/hooks/useModal'
-import { groupByDate, formatTime24 } from '@/lib/dateUtils'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
+import { groupByDate, formatTime24 } from '@/lib/shared/utils/dates'
 interface TimeSlot {
     id: string
     start_time: string

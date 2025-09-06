@@ -1,12 +1,12 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { useModal } from "@/hooks/useModal";
+import { useModal } from "@/lib/shared/ui/hooks/useModal";
 import { router } from "expo-router";
-import { useMatchedJobPostings } from "@/hooks/useMatchedJobPostings";
+import { useMatchedJobPostings } from "@/lib/features/jobs/hooks/useMatchedJobPostings";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { api } from "@/lib/api"
-import { SuitabilityResult } from "@/lib/suitability/types";
+import { SuitabilityResult } from "@/lib/features/jobs/matching/types";
 interface Application {
     id: string
     applied_at: string

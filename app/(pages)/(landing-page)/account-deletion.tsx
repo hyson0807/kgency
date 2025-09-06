@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useModal } from '@/hooks/useModal';
+import { useModal } from '@/lib/shared/ui/hooks/useModal';
 const AccountDeletion = () => {
     const { showModal, ModalComponent } = useModal();
     const [formData, setFormData] = useState({

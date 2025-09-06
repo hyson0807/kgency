@@ -6,9 +6,9 @@ import Back from '@/components/shared/common/back';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { Profile } from '@/components/user/profile/keywords/Profile';
 import { useUserInfoStore } from '@/stores/userInfoStore';
-import { useProfile } from '@/hooks/useProfile';
-import { useUserKeywords } from '@/hooks/useUserKeywords';
-import { useModal } from '@/hooks/useModal';
+import { useProfile } from '@/lib/features/profile/hooks/useProfile';
+import { useUserKeywords } from '@/lib/features/profile/hooks/useUserKeywords';
+import { useModal } from '@/lib/shared/ui/hooks/useModal';
 import LoadingScreen from '@/components/shared/common/LoadingScreen';
 const ProfilePage = () => {
   const { t } = useTranslation();

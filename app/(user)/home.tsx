@@ -4,14 +4,14 @@ import { router } from "expo-router"
 import { Ionicons } from '@expo/vector-icons'
 import { useTranslation } from "@/contexts/TranslationContext"
 import { JobPostingCard } from "@/components/user/home/JobPostingCard"
-import { useMatchedJobPostings } from '@/hooks/useMatchedJobPostings'
+import { useMatchedJobPostings } from '@/lib/features/jobs/hooks/useMatchedJobPostings'
 import {Header} from "@/components/shared/common/Header";
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
-import { SuitabilityResult } from '@/lib/suitability';
+import { SuitabilityResult } from '@/lib/features/jobs/matching';
 import {Header_Home} from "@/components/user/home/header/Header";
 import { useAuth } from "@/contexts/AuthContext";
-import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
-import { useTabBarVisibility } from '@/hooks/useTabBarVisibility';
+import { registerForPushNotificationsAsync, savePushToken } from '@/lib/shared/services/notifications';
+import { useTabBarVisibility } from '@/lib/shared/ui/hooks/useTabBarVisibility';
 import { useTabBar } from '@/contexts/TabBarContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // 타입은 hooks/useMatchedJobPostings에서 import

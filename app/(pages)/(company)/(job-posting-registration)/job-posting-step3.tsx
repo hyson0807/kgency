@@ -4,12 +4,12 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
 import { api } from "@/lib/api"
 import Back from '@/components/shared/common/back'
-import { useModal } from "@/hooks/useModal";
-import { useUserKeywords } from '@/hooks/useUserKeywords'
+import { useModal } from "@/lib/shared/ui/hooks/useModal";
+import { useUserKeywords } from '@/lib/features/profile/hooks/useUserKeywords'
 import JobPreferencesSelector from '@/components/shared/keyword/JobPreferencesSelector'
 import WorkConditionsSelector from '@/components/shared/keyword/WorkConditionsSelector'
 import { BaseKeywordSelector } from '@/components/shared/common/BaseKeywordSelector';
-import { useKeywordSelection } from '@/hooks/useKeywordSelection';
+import { useKeywordSelection } from '@/lib/shared/ui/hooks/useKeywordSelection';
 import { useJobPostingStore } from '@/stores/jobPostingStore'
 // Step 3: 인재 선호 정보 입력 및 최종 저장 페이지
 const JobPostingStep3 = () => {

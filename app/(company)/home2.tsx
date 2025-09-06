@@ -9,9 +9,9 @@ import {SecondHeader} from "@/components/company/home/header/SecondHeader";
 import {Header} from "@/components/shared/common/Header";
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import {UserCard} from "@/components/company/home/UserCard";
-import { SuitabilityResult } from '@/lib/suitability/types'
-import { registerForPushNotificationsAsync, savePushToken } from '@/lib/notifications';
-import { useTabBarVisibility } from '@/hooks/useTabBarVisibility';
+import { SuitabilityResult } from '@/lib/features/jobs/matching/types'
+import { registerForPushNotificationsAsync, savePushToken } from '@/lib/shared/services/notifications';
+import { useTabBarVisibility } from '@/lib/shared/ui/hooks/useTabBarVisibility';
 import { useTabBar } from '@/contexts/TabBarContext';
 interface UserKeyword {
     keyword: {

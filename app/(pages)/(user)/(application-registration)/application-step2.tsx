@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from "expo-router"
 import Back from '@/components/shared/common/back'
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import { WorkExperienceInformation } from "@/components/user/application-form/WorkExperience-Information"
 import { useApplicationFormStore } from '@/stores/applicationFormStore'

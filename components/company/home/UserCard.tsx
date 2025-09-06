@@ -1,8 +1,8 @@
 import { Text, TouchableOpacity, View, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { SuitabilityResult } from '@/lib/suitability/types';
-import { sortMatchedKeywords } from "@/lib/utils/keywords";
+import { SuitabilityResult } from '@/lib/features/jobs/matching/types';
+import { sortMatchedKeywords } from "@/lib/features/jobs/keywords";
 interface UserKeyword {
     keyword: {
         id: number;

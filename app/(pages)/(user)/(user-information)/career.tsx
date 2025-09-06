@@ -7,7 +7,7 @@ import Back from '@/components/shared/common/back';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { CareerInformation } from '@/components/user/profile/keywords/CareerInformation';
 import { useUserInfoStore } from '@/stores/userInfoStore';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfile } from '@/lib/features/profile/hooks/useProfile';
 import LoadingScreen from '@/components/shared/common/LoadingScreen';
 const CareerPage = () => {
   const { t } = useTranslation();

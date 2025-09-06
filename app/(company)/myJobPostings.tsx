@@ -2,7 +2,7 @@ import { View, Text, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from "@/contexts/AuthContext"
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import {PostingCard} from "@/components/company/job-postings/management/PostingCard";
 import {FloatingButton} from "@/components/company/job-postings/management/FloatingButton";

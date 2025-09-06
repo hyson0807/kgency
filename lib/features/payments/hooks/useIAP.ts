@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import { api } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
-import { IAPErrorCode } from '@/lib/types/iap';
+import { IAPErrorCode } from '@/lib/features/payments/types';
 import type {
   Product,
   AndroidPurchaseData,
@@ -10,7 +10,7 @@ import type {
   PurchaseVerificationRequest,
   UseIAPConfig,
   UseIAPReturn,
-} from '@/lib/types/iap';
+} from '@/lib/features/payments/types';
 
 // IAP 라이브러리 동적 로드
 let RNIap: any = null;

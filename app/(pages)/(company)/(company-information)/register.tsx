@@ -1,9 +1,9 @@
 import {View, Text, TextInput, TouchableOpacity, ScrollView} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
-import {useProfile} from "@/hooks/useProfile";
+import {useProfile} from "@/lib/features/profile/hooks/useProfile";
 import {router} from "expo-router";
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 const Register = () => {
     const { showModal, ModalComponent } = useModal()
     const { profile, updateProfile } = useProfile()

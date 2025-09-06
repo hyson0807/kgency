@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from "expo-router"
 import { api } from "@/lib/api"
 import Back from '@/components/shared/common/back'
-import { useModal } from "@/hooks/useModal";
+import { useModal } from "@/lib/shared/ui/hooks/useModal";
 import CustomModal from '@/components/shared/modal/CustomModal'
 import { JobBasicInfoForm } from '@/components/company/job-postings/forms/JobBasicInfoForm'
 import { useJobPostingStore } from '@/stores/jobPostingStore'

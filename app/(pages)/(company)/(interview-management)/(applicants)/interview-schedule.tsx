@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import Back from '@/components/shared/common/back'
 export default function InterviewSchedule() {
     const { applicationId, userId, postingId } = useLocalSearchParams()

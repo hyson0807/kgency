@@ -6,7 +6,7 @@ import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Back from '@/components/shared/common/back'
-import { useModal } from '@/hooks/useModal'
+import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { ActivityIndicator } from 'react-native'
 import {api} from "@/lib/api"
 export default function ViewResume() {
