@@ -52,7 +52,7 @@ This is **kgency**, a React Native Expo job matching mobile application that con
 - **Extensively used throughout the app** for direct database operations
 - Used for: Profiles, keywords, applications, messages, job postings, interview data
 - **Key files with direct DB access**: 
-  - `hooks/useProfile.ts`, `hooks/useUserKeywords.ts`, `hooks/useApplications.ts`
+  - `lib/features/profile/hooks/useProfile.ts`, `lib/features/profile/hooks/useUserKeywords.ts`, `lib/features/applications/hooks/useApplications.ts`
   - `app/(company)/myJobPostings.tsx`, `app/(company)/home2.tsx`
   - `app/(pages)/(user)/(application-registration)/resume.tsx`
   - `app/(pages)/(user)/(user-information)/info.tsx`
@@ -109,7 +109,7 @@ This is **kgency**, a React Native Expo job matching mobile application that con
 
 ### Core Business Logic
 
-#### Job Suitability System (`lib/suitability/`)
+#### Job Suitability System (`lib/features/jobs/matching/`)
 - Sophisticated matching algorithm calculating compatibility scores (0-100)
 - Five levels: 'perfect', 'excellent', 'good', 'fair', 'low'
 - Category-based scoring with weighted calculations
@@ -128,7 +128,12 @@ This is **kgency**, a React Native Expo job matching mobile application that con
 ### Code Conventions
 
 #### Import Patterns
-- Use path aliases: `@/components`, `@/contexts`, `@/lib`, `@/hooks`
+- Use path aliases: `@/components`, `@/contexts`, `@/lib`
+- **NEW LIB STRUCTURE**: Use feature-based imports from reorganized lib folder
+  - `@/lib/features/profile/hooks/useProfile` - Profile management
+  - `@/lib/features/applications/hooks/useApplications` - Application tracking
+  - `@/lib/features/chat/hooks/useChatRooms` - Chat functionality
+  - `@/lib/shared/ui/hooks/useModal` - Shared UI hooks
 - Expo Router imports: `expo-router` for navigation
 - Icon libraries: `@expo/vector-icons` with specific icon sets
 
@@ -419,12 +424,90 @@ const applications = await supabase
   .eq('user_id', userId);
 ```
 
+### Reorganized Library Structure (lib/)
+
+**The lib folder has been reorganized into a feature-based architecture for better scalability and maintainability:**
+
+```
+lib/
+├── core/                           # Core infrastructure
+│   ├── api/                       # API client and configurations
+│   ├── cache/                     # Caching utilities and managers
+│   ├── config/                    # App configuration and settings
+│   └── initialization/            # App initialization logic
+├── features/                       # Business feature modules
+│   ├── applications/              # Job application management
+│   │   └── hooks/                 # useApplications
+│   ├── chat/                      # Real-time messaging system
+│   │   ├── hooks/                 # useChatRooms, useMessagePagination, useSocket
+│   │   └── services/              # socketManager
+│   ├── profile/                   # User and company profiles
+│   │   └── hooks/                 # useProfile, useUserKeywords
+│   ├── jobs/                      # Job matching and posting
+│   │   ├── hooks/                 # useMatchedJobPostings
+│   │   ├── matching/              # Job suitability algorithms
+│   │   └── keywords/              # Keyword utilities and mapping
+│   ├── payments/                  # Payment and IAP system
+│   │   ├── hooks/                 # useIAP
+│   │   └── types/                 # Payment-related types
+│   └── maps/                      # Location and mapping services
+│       └── services/              # openNaverMap
+├── shared/                        # Shared utilities and components
+│   ├── ui/                        # Common UI hooks and utilities
+│   │   └── hooks/                 # useModal, useAppBadge, useTabBarVisibility, useKeywordSelection
+│   ├── utils/                     # General utility functions
+│   │   ├── dates/                 # Date manipulation utilities
+│   │   └── storage/               # Storage and persistence utils
+│   └── services/                  # Shared services
+│       └── notifications/         # Push notification handling
+├── constants/                     # App-wide constants
+├── translations/                  # Multi-language support
+├── types/                         # Global type definitions
+└── index.ts                       # Barrel exports for clean imports
+```
+
+#### Adding New Hooks - IMPORTANT GUIDELINES
+
+**When creating new hooks, follow the organized lib structure:**
+
+1. **Feature-specific hooks** → Place in `lib/features/{feature}/hooks/`
+   - Profile-related: `lib/features/profile/hooks/`
+   - Chat-related: `lib/features/chat/hooks/`
+   - Job-related: `lib/features/jobs/hooks/`
+   - Application-related: `lib/features/applications/hooks/`
+   - Payment-related: `lib/features/payments/hooks/`
+
+2. **Shared/common hooks** → Place in `lib/shared/ui/hooks/`
+   - UI state management: modals, visibility, badges
+   - General utility hooks that can be used across features
+
+3. **Core infrastructure hooks** → Place in `lib/core/` (rare)
+   - Only for hooks that manage core app functionality
+
+**Import patterns for new hooks:**
+```typescript
+// Feature-specific imports
+import { useProfile } from '@/lib/features/profile/hooks/useProfile';
+import { useApplications } from '@/lib/features/applications/hooks/useApplications';
+
+// Shared UI imports  
+import { useModal } from '@/lib/shared/ui/hooks/useModal';
+
+// Barrel imports (when available)
+import { useProfile, useApplications } from '@/lib/features';
+```
+
+**Create index.ts barrel exports:**
+- Add exports to the appropriate `hooks/index.ts` file
+- Update the parent feature's `index.ts` to re-export
+- This enables cleaner imports: `import { useNewHook } from '@/lib/features/profile';`
+
 ### Key Files to Understand
 
 #### Mobile App Core
 - `contexts/AuthContext.tsx` - Authentication system and API client
-- `lib/suitability/` - Job matching algorithm implementation  
-- `lib/api.ts` - API configuration and helper functions
+- `lib/features/jobs/matching/` - Job matching algorithm implementation  
+- `lib/api/` - API configuration and helper functions
 - `lib/supabase.ts` - Direct database client configuration
 - `app/_layout.tsx` - Root providers and navigation setup
 - `app/(user)/_layout.tsx` and `app/(company)/_layout.tsx` - Role-specific navigation
@@ -436,9 +519,12 @@ const applications = await supabase
 - `contexts/TranslationContext.tsx` - Internationalization (Context API)
 
 #### Data Management Hooks
-- `hooks/useProfile.ts` - User/company profile management
-- `hooks/useUserKeywords.ts` - Keyword selection and management
-- `hooks/useApplications.ts` - Job application tracking
+- `lib/features/profile/hooks/useProfile.ts` - User/company profile management
+- `lib/features/profile/hooks/useUserKeywords.ts` - Keyword selection and management
+- `lib/features/applications/hooks/useApplications.ts` - Job application tracking
+- `lib/features/chat/hooks/useChatRooms.ts` - Chat room management
+- `lib/features/jobs/hooks/useMatchedJobPostings.ts` - Job matching and recommendations
+- `lib/features/payments/hooks/useIAP.ts` - In-app purchase handling
 
 #### Component Architecture
 - `components/register_jobPosting(info2)/` - Modular job posting forms
@@ -463,4 +549,4 @@ const applications = await supabase
 - `src/controllers/auth.controller.js` - OTP authentication logic
 - `src/services/auth.service.js` - JWT token management and validation
 - `src/config/database.js` - Supabase client configuration
-- `src/middlewares/auth.js` - JWT authentication middleware
+- `src/middlewares/auth.js` - JWT authentication middlewares
