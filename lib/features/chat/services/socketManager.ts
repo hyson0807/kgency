@@ -53,10 +53,8 @@ class SocketManager {
       }
 
       // 새로운 Socket 연결 생성
-      // 배포 환경에서는 polling을 우선 사용 (Railway 등의 플랫폼 호환성)
-      const transports = __DEV__ 
-        ? [...SOCKET_CONFIG.TRANSPORTS] 
-        : ['polling', 'websocket']; // 배포환경: polling 우선
+      // 배포 환경에서도 websocket 우선 시도, polling은 fallback으로
+      const transports = [...SOCKET_CONFIG.TRANSPORTS]; // websocket 우선, polling fallback
         
       this.socket = io(SERVER_CONFIG.SERVER_URL, {
         transports,
@@ -64,9 +62,13 @@ class SocketManager {
         reconnection: true,
         reconnectionDelay: SOCKET_CONFIG.RECONNECTION_DELAY,
         reconnectionAttempts: this.maxReconnectAttempts,
-        // 배포 환경 추가 설정
-        upgrade: !__DEV__, // 배포 환경에서만 업그레이드 시도
+        // 배포 환경 최적화 설정
+        upgrade: true, // polling에서 websocket으로 자동 업그레이드 시도
         rememberUpgrade: true,
+        // Railway 환경 최적화
+        path: '/socket.io/',
+        withCredentials: false,
+        autoConnect: true,
       });
 
       console.log('SocketManager: Socket 객체 생성됨:', !!this.socket);
@@ -83,11 +85,19 @@ class SocketManager {
 
     // 연결 이벤트
     this.socket.on('connect', async () => {
+      const transportName = this.socket?.io?.engine?.transport?.name;
       console.log('SocketManager: Socket.io 연결됨:', {
         socketId: this.socket?.id,
-        transport: this.socket?.io?.engine?.transport?.name, // 현재 전송 방식 로깅
-        serverUrl: SERVER_CONFIG.SERVER_URL
+        transport: transportName, // 현재 전송 방식 로깅
+        serverUrl: SERVER_CONFIG.SERVER_URL,
+        isDev: __DEV__
       });
+      
+      // 배포 환경에서 polling만 사용 중이면 경고
+      if (!__DEV__ && transportName === 'polling') {
+        console.warn('SocketManager: 배포 환경에서 polling 사용 중. 실시간 업데이트가 지연될 수 있습니다.');
+      }
+      
       this.isConnected = true;
       this.reconnectAttempts = 0;
       await this.authenticateSocket();
@@ -162,9 +172,13 @@ class SocketManager {
     });
 
     this.socket.on('total-unread-count-updated', (data) => {
-      if (__DEV__) {
-        console.log('SocketManager: 총 안읽은 메시지 카운트 업데이트:', data.totalUnreadCount);
-      }
+      // 배포 환경에서도 로깅하여 이벤트 수신 확인
+      console.log('SocketManager: 총 안읽은 메시지 카운트 업데이트:', {
+        totalUnreadCount: data.totalUnreadCount,
+        transport: this.socket?.io?.engine?.transport?.name,
+        isDev: __DEV__
+      });
+      
       this.totalUnreadCountUpdatedCallbacks.forEach(callback => {
         try {
           callback(data);

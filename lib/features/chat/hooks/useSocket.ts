@@ -6,7 +6,7 @@ import { AppState } from 'react-native';
 // 서버 URL 설정
 const SERVER_URL = __DEV__
   ? process.env.EXPO_PUBLIC_DEV_SERVER_URL || 'http://192.168.0.15:5004'
-  : process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgencyserver-production-45af.up.railway.app';
+  : process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgency-server.onrender.com';
 
 export interface SocketMessage {
   id: string;

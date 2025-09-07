@@ -5,7 +5,7 @@
 // 서버 URL 설정
 export const SERVER_CONFIG = {
   DEV_SERVER_URL: process.env.EXPO_PUBLIC_DEV_SERVER_URL || 'http://192.168.0.15:5004',
-  PROD_SERVER_URL: process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgencyserver-production-45af.up.railway.app',
+  PROD_SERVER_URL: process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgency-server.onrender.com',
   
   get SERVER_URL() {
     return __DEV__ ? this.DEV_SERVER_URL : this.PROD_SERVER_URL;

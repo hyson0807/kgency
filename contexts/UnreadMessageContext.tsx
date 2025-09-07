@@ -34,9 +34,12 @@ export const UnreadMessageProvider: React.FC<UnreadMessageProviderProps> = ({ ch
 
     // 총 안읽은 메시지 카운트 업데이트 구독 (가장 신뢰할 수 있는 소스)
     const unsubscribeTotalCount = socketManager.onTotalUnreadCountUpdated((data) => {
-      if (__DEV__) {
-        console.log('전역 소켓: 총 안읽은 메시지 카운트 업데이트:', data.totalUnreadCount);
-      }
+      // 배포 환경에서도 로깅하여 이벤트 수신 확인
+      console.log('전역 소켓: 총 안읽은 메시지 카운트 업데이트:', {
+        totalUnreadCount: data.totalUnreadCount,
+        timestamp: new Date().toISOString(),
+        isDev: __DEV__
+      });
       setTotalUnreadCount(data.totalUnreadCount);
     });
 
@@ -70,13 +73,15 @@ export const UnreadMessageProvider: React.FC<UnreadMessageProviderProps> = ({ ch
   // 사용자가 변경될 때 안읽은 메시지 카운트 초기화
   useEffect(() => {
     if (user?.userId) {
-      // 약간의 지연 후 초기 카운트 조회 (웹소켓 인증 대기)
+      // 즉시 초기 카운트 조회
+      console.log('사용자 로그인, 초기 안읽은 메시지 카운트 조회', { userId: user.userId });
+      refreshUnreadCount();
+      
+      // 추가로 지연 후 다시 한번 조회 (웹소켓 연결 확실히 하기 위해)
       const timer = setTimeout(() => {
-        if (__DEV__) {
-          console.log('사용자 로그인, 초기 안읽은 메시지 카운트 조회');
-        }
+        console.log('지연 후 안읽은 메시지 카운트 재조회');
         refreshUnreadCount();
-      }, 2000);
+      }, 3000);
       
       return () => clearTimeout(timer);
     } else {
