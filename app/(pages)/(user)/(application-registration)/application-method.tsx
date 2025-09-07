@@ -14,6 +14,7 @@ import { getProductId } from '@/lib/features/payments/types';
 import { ApplicationMethodCard } from '@/components/user/application-registration';
 import ChatApplicationPromotionModal from '@/components/user/application-registration/ChatApplicationPromotionModal';
 import TokenPurchaseModal from '@/components/user/application-registration/TokenPurchaseModal';
+import RegularApplicationConfirmModal from '@/components/user/application-registration/RegularApplicationConfirmModal';
 import { useModal } from '@/lib/shared/ui/hooks/useModal';
 import { useChatRoomNavigation } from '@/lib/features/chat/hooks/useChatRoomNavigation';
 
@@ -99,7 +100,7 @@ export default function ApplicationMethodScreen() {
 
     // 일반 지원 처리
     const handleRegularApplication = async () => {
-        setShowPromotionModal(false);
+        // 프로모션 모달은 이미 닫혀있으므로 여기서 닫지 않음
         setLoading(true);
         try {
             // 중복 지원 확인
