@@ -53,12 +53,20 @@ class SocketManager {
       }
 
       // 새로운 Socket 연결 생성
+      // 배포 환경에서는 polling을 우선 사용 (Railway 등의 플랫폼 호환성)
+      const transports = __DEV__ 
+        ? [...SOCKET_CONFIG.TRANSPORTS] 
+        : ['polling', 'websocket']; // 배포환경: polling 우선
+        
       this.socket = io(SERVER_CONFIG.SERVER_URL, {
-        transports: [...SOCKET_CONFIG.TRANSPORTS],
+        transports,
         timeout: SOCKET_CONFIG.TIMEOUT,
         reconnection: true,
         reconnectionDelay: SOCKET_CONFIG.RECONNECTION_DELAY,
         reconnectionAttempts: this.maxReconnectAttempts,
+        // 배포 환경 추가 설정
+        upgrade: !__DEV__, // 배포 환경에서만 업그레이드 시도
+        rememberUpgrade: true,
       });
 
       console.log('SocketManager: Socket 객체 생성됨:', !!this.socket);
@@ -75,7 +83,11 @@ class SocketManager {
 
     // 연결 이벤트
     this.socket.on('connect', async () => {
-      console.log('SocketManager: Socket.io 연결됨:', this.socket?.id);
+      console.log('SocketManager: Socket.io 연결됨:', {
+        socketId: this.socket?.id,
+        transport: this.socket?.io?.engine?.transport?.name, // 현재 전송 방식 로깅
+        serverUrl: SERVER_CONFIG.SERVER_URL
+      });
       this.isConnected = true;
       this.reconnectAttempts = 0;
       await this.authenticateSocket();
@@ -88,8 +100,14 @@ class SocketManager {
       this.currentRoomId = null;
     });
 
-    this.socket.on('connect_error', (err) => {
-      console.error('SocketManager: Socket.io 연결 오류:', err);
+    this.socket.on('connect_error', (err: any) => {
+      console.error('SocketManager: Socket.io 연결 오류:', {
+        message: err.message,
+        type: err.type || 'unknown',
+        transport: this.socket?.io?.engine?.transport?.name,
+        serverUrl: SERVER_CONFIG.SERVER_URL,
+        attempt: this.reconnectAttempts + 1
+      });
       this.reconnectAttempts++;
     });
 
