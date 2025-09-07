@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { RecommendationBadge, ApplicationMethodStats } from '../ui';
@@ -8,6 +8,7 @@ interface ApplicationMethodCardProps {
   type: 'regular' | 'chat';
   onPress: () => void;
   disabled?: boolean;
+  loading?: boolean;
   userTokens?: number;
 }
 
@@ -15,6 +16,7 @@ const ApplicationMethodCard: React.FC<ApplicationMethodCardProps> = ({
   type, 
   onPress, 
   disabled = false,
+  loading = false,
   userTokens = 0 
 }) => {
   const { t } = useTranslation();
@@ -48,9 +50,9 @@ const ApplicationMethodCard: React.FC<ApplicationMethodCardProps> = ({
       {isPremium && <RecommendationBadge />}
       
       <TouchableOpacity
-        className={`${cardStyle} rounded-xl p-5 mb-4 ${gradientStyle}`}
+        className={`${cardStyle} rounded-xl p-5 mb-4 ${gradientStyle} ${disabled || loading ? 'opacity-60' : ''}`}
         onPress={onPress}
-        disabled={disabled}
+        disabled={disabled || loading}
         activeOpacity={0.7}
       >
         <View className="flex-row items-start">
@@ -89,7 +91,11 @@ const ApplicationMethodCard: React.FC<ApplicationMethodCardProps> = ({
           </View>
           
           <View className="ml-2 mt-1">
-            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            {loading ? (
+              <ActivityIndicator size="small" color="#9CA3AF" />
+            ) : (
+              <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            )}
           </View>
         </View>
       </TouchableOpacity>

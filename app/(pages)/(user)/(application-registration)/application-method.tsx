@@ -133,17 +133,16 @@ export default function ApplicationMethodScreen() {
                 return;
             }
 
+            // 즉시 네비게이션 실행
+            resetAllData();
+            setIsTabBarVisible(true);
+            router.replace('/(user)/applications');
+            
+            // 간단한 성공 알림 (선택사항)
             showModal(
                 t('application.success_title', '지원 완료'),
                 t('application.success_message', '지원서가 성공적으로 전송되었습니다.'),
-                'info',
-                () => {
-                    resetAllData();
-                    setIsTabBarVisible(true);
-                    router.replace('/(user)/applications');
-                },
-                false,
-                t('common.confirm', '확인')
+                'info'
             );
 
         } catch (error) {
