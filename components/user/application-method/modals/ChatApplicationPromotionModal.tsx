@@ -94,7 +94,7 @@ const ChatApplicationPromotionModal: React.FC<ChatApplicationPromotionModalProps
             </View>
 
             {/* Benefits */}
-            <View className="space-y-3 mb-6">
+            <View className="gap-3 mb-6">
               <View className="flex-row items-center">
                 <View className="w-8 h-8 bg-green-100 rounded-full items-center justify-center mr-3">
                   <Ionicons name="flash" size={16} color="#10B981" />
@@ -140,13 +140,15 @@ const ChatApplicationPromotionModal: React.FC<ChatApplicationPromotionModalProps
                 onPress={onChatApplication}
                 activeOpacity={0.8}
               >
-                <View className="flex-row items-center justify-center">
-                  <Ionicons name="chatbubbles" size={20} color="white" />
-                  <Text className="text-white font-bold text-base ml-2">
-                    {t('application.choose_chat', '채팅 지원하기')}
-                  </Text>
-                  <View className="bg-white/20 px-2 py-1 rounded-md ml-2">
-                    <Text className="text-white text-xs font-medium">
+                <View className="items-center justify-center">
+                  <View className="flex-row items-center justify-center mb-1">
+                    <Ionicons name="chatbubbles" size={20} color="white" />
+                    <Text className="text-white font-bold text-base ml-2">
+                      {t('application.choose_chat', '채팅 지원하기')}
+                    </Text>
+                  </View>
+                  <View className="bg-white/20 px-2 py-1 rounded-md">
+                    <Text className="text-white text-xs font-medium text-center">
                       {t('application.recommended', '추천')}
                     </Text>
                   </View>

@@ -136,11 +136,7 @@ const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
                   </Text>
                 </View>
               </View>
-              <View className="bg-blue-500 px-3 py-1 rounded-full">
-                <Text className="text-white text-sm font-bold">
-                  {t('token.best_value', '추천')}
-                </Text>
-              </View>
+
             </View>
 
             {/* Price and Purchase Button Combined */}
@@ -158,7 +154,7 @@ const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
                     <Ionicons name="card" size={20} color="white" />
                     <Text className="text-white font-bold text-base ml-2">
                       {isIAPAvailable 
-                        ? `${displayPrice} 결제하기`
+                        ? `${displayPrice} ${t('token.purchase_button', '결제하기')}`
                         : t('token.dev_mode', '개발 모드')
                       }
                     </Text>

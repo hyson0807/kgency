@@ -61,7 +61,7 @@ export default function ApplicationStep2() {
                 }
             })
         } catch (error) {
-            showModal('오류', '다음 단계로 이동 중 문제가 발생했습니다.', 'warning')
+            showModal(t('common.error', '오류'), t('application.step_error', '다음 단계로 이동 중 문제가 발생했습니다.'), 'warning')
         } finally {
             setLoading(false)
         }
@@ -107,8 +107,8 @@ export default function ApplicationStep2() {
                 >
                 <View className="bg-white">
                     <View className="p-6">
-                        <Text className="text-xl font-bold mb-2">경력 및 추가 정보를 입력해주세요</Text>
-                        <Text className="text-gray-600 mb-6">더 나은 매칭을 위한 상세 정보를 작성해주세요.</Text>
+                        <Text className="text-xl font-bold mb-2">{t('application.step2_title', '경력 및 추가 정보를 입력해주세요')}</Text>
+                        <Text className="text-gray-600 mb-6">{t('application.step2_subtitle', '더 나은 매칭을 위한 상세 정보를 작성해주세요.')}</Text>
                     </View>
                     {/* 지원 공고 정보 */}
                     <View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">
@@ -153,7 +153,7 @@ export default function ApplicationStep2() {
                         }`}
                     >
                         <Text className="text-center text-white font-bold text-lg">
-                            {loading ? '다음...' : '다음 단계'}
+                            {loading ? t('application.next_loading', '다음...') : t('application.next_step', '다음 단계')}
                         </Text>
                     </TouchableOpacity>
                 </View>

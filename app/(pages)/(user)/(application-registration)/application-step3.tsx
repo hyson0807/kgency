@@ -133,8 +133,8 @@ export default function ApplicationStep3() {
                 >
                 <View className="bg-white">
                     <View className="p-6">
-                        <Text className="text-xl font-bold mb-2">한국어 실력과 질문을 입력해주세요</Text>
-                        <Text className="text-gray-600 mb-6">마지막 단계입니다. 한국어 실력과 궁금한 점을 작성해주세요.</Text>
+                        <Text className="text-xl font-bold mb-2">{t('application.step3_title', '한국어 실력과 질문을 입력해주세요')}</Text>
+                        <Text className="text-gray-600 mb-6">{t('application.step3_subtitle', '마지막 단계입니다. 한국어 실력과 궁금한 점을 작성해주세요.')}</Text>
                     </View>
                     {/* 지원 공고 정보 */}
                     <View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">

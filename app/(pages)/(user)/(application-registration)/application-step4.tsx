@@ -52,24 +52,24 @@ export default function ApplicationStep4() {
             if (selectedDays && selectedDays.trim()) {
                 workDaysString = selectedDays;
                 if (daysNegotiable === 'true') {
-                    workDaysString += ' (협의가능)';
+                    workDaysString += ` (${t('apply.negotiable', '협의가능')})`;
                 }
             } else if (daysNegotiable === 'true') {
-                workDaysString = '협의가능';
+                workDaysString = t('apply.negotiable', '협의가능');
             } else {
-                workDaysString = '없음';
+                workDaysString = t('common.none', '없음');
             }
             // 시간대 문자열 생성
             let workTimesString = '';
             if (selectedTimes && selectedTimes.trim()) {
                 workTimesString = selectedTimes;
                 if (timesNegotiable === 'true') {
-                    workTimesString += ' (협의가능)';
+                    workTimesString += ` (${t('apply.negotiable', '협의가능')})`;
                 }
             } else if (timesNegotiable === 'true') {
-                workTimesString = '협의가능';
+                workTimesString = t('apply.negotiable', '협의가능');
             } else {
-                workTimesString = '없음';
+                workTimesString = t('common.none', '없음');
             }
             
             const response = await api('POST', '/api/ai/generate-resume', {
@@ -88,22 +88,22 @@ export default function ApplicationStep4() {
                 setError(errorMessage);
                 
                 // 오류 발생 시 기본 이력서 템플릿 제공
-                const fallbackResume = `안녕하세요, ${companyName} 채용 담당자님
+                const fallbackResume = t('resume.fallback_template', `안녕하세요, ${companyName} 채용 담당자님
 ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
 저는 성실하고 책임감 있는 지원자로서, 귀사에서 열심히 일할 준비가 되어 있습니다.
 주어진 업무를 성실히 수행하며, 동료들과 협력하여 회사의 발전에 기여하고 싶습니다.
-감사합니다.`;
+감사합니다.`);
                 setResume(fallbackResume);
                 setEditedResume(fallbackResume);
             }
         } catch (error: any) {
             setError(error.response?.error || error.message || t('resume.ai_generation_error', 'AI 이력서 생성 중 오류가 발생했습니다.'));
             // 오류 발생 시 기본 이력서 템플릿 제공
-            const fallbackResume = `안녕하세요, ${companyName} 채용 담당자님
+            const fallbackResume = t('resume.fallback_template', `안녕하세요, ${companyName} 채용 담당자님
 ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
 저는 성실하고 책임감 있는 지원자로서, 귀사에서 열심히 일할 준비가 되어 있습니다.
 주어진 업무를 성실히 수행하며, 동료들과 협력하여 회사의 발전에 기여하고 싶습니다.
-감사합니다.`;
+감사합니다.`);
             setResume(fallbackResume);
             setEditedResume(fallbackResume);
         } finally {
@@ -120,7 +120,7 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                 isEditing: isEditing.toString(),
                 companyId: companyId,
                 jobPostingId: jobPostingId,
-                jobTitle: jobTitle || '채용 공고'
+                jobTitle: jobTitle || t('apply.job_posting', '채용 공고')
             }
         });
     };

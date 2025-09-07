@@ -56,7 +56,7 @@ const RegularApplicationConfirmModal: React.FC<RegularApplicationConfirmModalPro
             <Text className="text-sm font-bold text-red-900 mb-3">
               {t('application.regular_disadvantages_title', '일반 지원의 단점')}
             </Text>
-            <View className="space-y-2">
+            <View className="gap-2">
               <View className="flex-row items-start">
                 <Ionicons name="close-circle" size={16} color="#DC2626" className="mt-0.5" />
                 <View className="ml-2 flex-1">

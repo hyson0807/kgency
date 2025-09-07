@@ -92,7 +92,7 @@ export default function ApplicationStep1() {
                 }
             })
         } catch (error) {
-            showModal('오류', '다음 단계로 이동 중 문제가 발생했습니다.', 'warning')
+            showModal(t('common.error', '오류'), t('application.step_error', '다음 단계로 이동 중 문제가 발생했습니다.'), 'warning')
         } finally {
             setLoading(false)
         }
@@ -111,8 +111,8 @@ export default function ApplicationStep1() {
                 <Back onPress={() => {
                     if (!isDataEmpty()) {
                         showModal(
-                            '확인',
-                            '작성 중인 내용이 삭제됩니다. 정말 나가시겠습니까?',
+                            t('common.confirm', '확인'),
+                            t('application.draft_warning', '작성 중인 내용이 삭제됩니다. 정말 나가시겠습니까?'),
                             'confirm',
                             () => {
                                 resetAllData()
@@ -151,8 +151,8 @@ export default function ApplicationStep1() {
             >
                 <View className="bg-white">
                     <View className="p-6">
-                        <Text className="text-xl font-bold mb-2">기본 정보를 입력해주세요</Text>
-                        <Text className="text-gray-600 mb-6">지원자의 기본적인 정보를 작성해주세요.</Text>
+                        <Text className="text-xl font-bold mb-2">{t('application.step1_title', '기본 정보를 입력해주세요')}</Text>
+                        <Text className="text-gray-600 mb-6">{t('application.step1_subtitle', '지원자의 기본적인 정보를 작성해주세요.')}</Text>
                     </View>
                     {/* 지원 공고 정보 */}
                     <View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">
@@ -161,7 +161,7 @@ export default function ApplicationStep1() {
                         <Text className="text-sm text-gray-600 mt-1">{companyName}</Text>
                         {hasApplied && (
                             <Text className="text-sm text-orange-600 mt-2">
-                                ⚠️ {t('apply.already_applied_warning', '이미 지원한 공고입니다')}
+                                ⚠️ {t('application.already_applied', '이미 지원한 공고입니다')}
                             </Text>
                         )}
                     </View>
@@ -191,7 +191,7 @@ export default function ApplicationStep1() {
                     }`}
                 >
                     <Text className="text-center text-white font-bold text-lg">
-                        {loading ? '다음...' : '다음 단계'}
+                        {loading ? t('application.next_loading', '다음...') : t('application.next_step', '다음 단계')}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -205,16 +205,16 @@ export default function ApplicationStep1() {
                     resetAllData()
                     setShowDraftModal(false)
                 }}
-                title="기존 작성 데이터"
-                message="기존에 작성중인 지원서가 존재합니다. 이어서 작성하시겠습니까?"
+                title={t('application.draft_modal_title', '기존 작성 데이터')}
+                message={t('application.draft_modal_message', '기존에 작성중인 지원서가 존재합니다. 이어서 작성하시겠습니까?')}
                 type="confirm"
                 onConfirm={() => {
                     // 확인 버튼 누르면 기존 데이터 유지
                     setShowDraftModal(false)
                 }}
                 showCancel={true}
-                confirmText="예"
-                cancelText="아니요"
+                confirmText={t('common.yes', '예')}
+                cancelText={t('common.no', '아니요')}
             />
         </SafeAreaView>
     )

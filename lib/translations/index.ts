@@ -13,6 +13,7 @@ import { interviewTranslations } from './pages/interview';
 import { suitabilityTranslations } from './pages/suitability';
 import { shopTranslations } from './pages/shop';
 import { usageHistoryTranslations } from './pages/usage-history';
+import { applicationMethodTranslations } from './pages/application-method';
 import { commonTranslations } from './common';
 import { tabTranslations } from './components/tabs';
 import { jobDetailModalTranslations } from './components/jobDetailModal';
@@ -35,5 +36,6 @@ export const translations: TranslationData = {
     ...suitabilityTranslations,
     ...shopTranslations,
     ...usageHistoryTranslations,
+    ...applicationMethodTranslations,
     ...jobDetailModalTranslations,
 };
