@@ -132,31 +132,7 @@ export default function PostingDetail() {
             }
         })
     }
-    const handleInstantInterview = () => {
-        showModal(
-            t('posting_detail.instant_interview_title', '면접 즉시 확정'),
-            t('posting_detail.instant_interview_message', '완벽한 매칭입니다! 면접 일정을 즉시 확정하시겠습니까?'),
-            'confirm', // type
-            () => {
-                // onConfirm 콜백 - 경력 정보 입력 페이지로 이동
-                router.push({
-                    pathname: '/instant-interview-career',
-                    params: {
-                        jobPostingId: postingId,
-                        companyId: posting?.company.id || companyId,
-                        companyName: posting?.company.name || companyName,
-                        jobTitle: posting?.title,
-                        jobAddress: posting?.job_address || '',
-                        interviewLocation: posting?.interview_location || '',
-                        specialNotes: posting?.special_notes || ''
-                    }
-                })
-            },
-            true, // showCancel
-            t('posting_detail.confirm', '확정'), // confirmText
-            t('posting_detail.cancel', '취소') // cancelText
-        )
-    }
+
     const handleTranslate = async () => {
         if (!posting) return
         // 토글 기능

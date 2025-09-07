@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
 import {api} from "@/lib/api"
-export default function Resume() {
+export default function ApplicationStep4() {
     const params = useLocalSearchParams();
     const jobPostingId = Array.isArray(params.jobPostingId) ? params.jobPostingId[0] : params.jobPostingId;
     const companyId = Array.isArray(params.companyId) ? params.companyId[0] : params.companyId;

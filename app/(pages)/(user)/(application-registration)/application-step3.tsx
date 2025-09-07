@@ -66,9 +66,9 @@ export default function ApplicationStep3() {
                 userInfo: userInfoData
             })
             if (updated) {
-                // Resume 페이지로 이동
+                // ApplicationStep4 페이지로 이동
                 router.push({
-                    pathname: '/resume',
+                    pathname: '/application-step4',
                     params: {
                         jobPostingId: String(jobPostingId),
                         companyId: String(companyId),

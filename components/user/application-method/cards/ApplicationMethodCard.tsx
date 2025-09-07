@@ -2,8 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '@/contexts/TranslationContext';
-import RecommendationBadge from './RecommendationBadge';
-import ApplicationMethodStats from './ApplicationMethodStats';
+import { RecommendationBadge, ApplicationMethodStats } from '../ui';
 
 interface ApplicationMethodCardProps {
   type: 'regular' | 'chat';

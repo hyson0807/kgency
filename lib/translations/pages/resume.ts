@@ -1,8 +1,8 @@
 import {TranslationData} from "@/lib/translations/types";
 export const resumeTranslations: TranslationData = {
-    // Resume 페이지
+    // ApplicationStep4 페이지
     'resume.title': {
-        en: 'Resume',
+        en: 'ApplicationStep4',
         ja: '履歴書',
         zh: '简历',
         vi: 'Hồ sơ',
@@ -114,7 +114,7 @@ export const resumeTranslations: TranslationData = {
         mn: 'Ажлын зар'
     },
     'resume.customized_resume': {
-        en: 'Customized Resume',
+        en: 'Customized ApplicationStep4',
         ja: 'カスタマイズ履歴書',
         zh: '定制简历',
         vi: 'Hồ sơ tùy chỉnh',
@@ -198,7 +198,7 @@ export const resumeTranslations: TranslationData = {
         mn: 'Эхлээд засварлалтыг дуусгана уу'
     },
     'resume.send_resume': {
-        en: 'Send Resume',
+        en: 'Send ApplicationStep4',
         ja: '履歴書を送信',
         zh: '发送简历',
         vi: 'Gửi hồ sơ',
@@ -212,7 +212,7 @@ export const resumeTranslations: TranslationData = {
         mn: 'Намтар илгээх'
     },
     'resume.send_modal_title': {
-        en: 'Send Resume',
+        en: 'Send ApplicationStep4',
         ja: '履歴書送信',
         zh: '发送简历',
         vi: 'Gửi hồ sơ',
@@ -240,7 +240,7 @@ export const resumeTranslations: TranslationData = {
         mn: '{{jobTitle}} рүү намтраа илгээх үү?'
     },
     'resume.regenerate_modal_title': {
-        en: 'Regenerate Resume',
+        en: 'Regenerate ApplicationStep4',
         ja: '履歴書再生成',
         zh: '重新生成简历',
         vi: 'Tạo lại hồ sơ',

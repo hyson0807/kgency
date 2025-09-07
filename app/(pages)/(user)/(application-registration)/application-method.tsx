@@ -11,10 +11,12 @@ import { api } from '@/lib/api';
 import { useIAP } from '@/lib/features/payments/hooks/useIAP';
 import { getProductId } from '@/lib/features/payments/types';
 
-import { ApplicationMethodCard } from '@/components/user/application-registration';
-import ChatApplicationPromotionModal from '@/components/user/application-registration/ChatApplicationPromotionModal';
-import TokenPurchaseModal from '@/components/user/application-registration/TokenPurchaseModal';
-import RegularApplicationConfirmModal from '@/components/user/application-registration/RegularApplicationConfirmModal';
+import { 
+    ApplicationMethodCard,
+    ChatApplicationPromotionModal,
+    TokenPurchaseModal,
+    RegularApplicationConfirmModal
+} from '@/components/user/application-method';
 import { useModal } from '@/lib/shared/ui/hooks/useModal';
 import { useChatRoomNavigation } from '@/lib/features/chat/hooks/useChatRoomNavigation';
 

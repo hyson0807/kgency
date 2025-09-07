@@ -338,7 +338,7 @@ export const applyTranslations: TranslationData = {
         mn: 'Хадгалж байна...'
     },
     'apply.create_resume': {
-        en: 'Auto-create Resume!',
+        en: 'Auto-create ApplicationStep4!',
         ja: '履歴書を自動作成します！',
         zh: '自动生成简历！',
         vi: 'Tự động tạo hồ sơ!',

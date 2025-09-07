@@ -1,4 +1,4 @@
-// app/(pages)/(company)/view-resume.tsx
+// app/(pages)/(company)/view-application-step4.tsx
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'

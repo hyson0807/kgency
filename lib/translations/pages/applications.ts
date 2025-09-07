@@ -156,7 +156,7 @@ export const applicationsTranslations: TranslationData = {
         mn: 'Хаагдсан'
     },
     'applications.view_resume': {
-        en: 'View Submitted Resume',
+        en: 'View Submitted ApplicationStep4',
         ja: '提出した履歴書を見る',
         zh: '查看提交的简历',
         vi: 'Xem hồ sơ đã nộp',
