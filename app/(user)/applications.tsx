@@ -49,7 +49,7 @@ const Applications = () => {
                 data={applications}
                 keyExtractor={(item) => item.id}
                 renderItem={({item}) => <ApplicationItem item={item} t={t} />}
-                contentContainerStyle={applications.length === 0 ? { flex: 1 } : { paddingVertical: 8 }}
+                contentContainerStyle={applications.length === 0 ? { flex: 1 } : { paddingVertical: 8, paddingBottom: insets.bottom + 100 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl

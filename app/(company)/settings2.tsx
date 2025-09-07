@@ -27,7 +27,7 @@ const Settings2 = () => {
     const [termsModalVisible, setTermsModalVisible] = useState(false)
     const [privacyModalVisible, setPrivacyModalVisible] = useState(false)
     // 앱 정보
-    const APP_VERSION = '1.0.2'
+    const APP_VERSION = '1.0.4'
     
     // 사용자 변경 시 프로필 새로고침
     React.useEffect(() => {

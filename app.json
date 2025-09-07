@@ -2,7 +2,7 @@
   "expo": {
     "name": "kgency",
     "slug": "welkit-kgency",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/kgency_logo.png",
     "scheme": "kgency",
