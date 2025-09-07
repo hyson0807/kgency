@@ -87,10 +87,10 @@ const YatraDetailModal: React.FC<YatraDetailModalProps> = ({
                   </View>
                   <View className="flex-1">
                     <Text className="text-gray-900 font-semibold mb-1">
-                      {t('shop.tokenBonus', '토큰 20개')}
+                      {t('shop.tokenBonus', '토큰 10개')}
                     </Text>
                     <Text className="text-gray-600 text-sm">
-                      {t('shop.tokenBonusDesc', '22,000원 상당의 토큰을 즉시 지급')}
+                      {t('shop.tokenBonusDesc', '11,000원 상당의 토큰을 즉시 지급')}
                     </Text>
                   </View>
                 </View>
@@ -123,7 +123,7 @@ const YatraDetailModal: React.FC<YatraDetailModalProps> = ({
                     <Text className="text-white font-bold">3</Text>
                   </View>
                   <Text className="text-gray-700 flex-1">
-                    {t('shop.step3', '이메일로 PDF 파일 전송 + 토큰 20개 자동 충전')}
+                    {t('shop.step3', '이메일로 PDF 파일 전송 + 토큰 10개 자동 충전')}
                   </Text>
                 </View>
                 <View className="flex-row items-center">

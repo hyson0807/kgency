@@ -43,7 +43,7 @@ const YatraPackageCard: React.FC<YatraPackageCardProps> = ({
               {t('shop.yatraPackageTitle', '야트라 스페셜 패키지')}
             </Text>
             <Text className="text-purple-700 text-sm mt-1">
-              {t('shop.yatraPackageSubtitle', '구직 확정권 + PDF 가이드 + 토큰 20개')}
+              {t('shop.yatraPackageSubtitle', '구직 확정권 + PDF 가이드 + 토큰 10개')}
             </Text>
           </View>
           <View className="bg-purple-100 p-3 rounded-full">
@@ -69,7 +69,7 @@ const YatraPackageCard: React.FC<YatraPackageCardProps> = ({
             </View>
             <View className="flex-row items-center">
               <Ionicons name="checkmark-circle" size={16} color="#7C3AED" />
-              <Text className="text-gray-600 ml-2 text-sm">{t('shop.yatraTokens', '토큰 20개 (22,000원 상당)')}</Text>
+              <Text className="text-gray-600 ml-2 text-sm">{t('shop.yatraTokens', '토큰 10개 (11,000원 상당)')}</Text>
             </View>
           </View>
         </View>

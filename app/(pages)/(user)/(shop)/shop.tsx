@@ -16,6 +16,7 @@ import {
   // Modal components
   YatraDetailModal,
   EmailInputModal,
+  YatraConfirmModal,
   // Common components
   ShopHeader,
   DevModeNotice,
@@ -27,6 +28,7 @@ const Shop = () => {
   const insets = useSafeAreaInsets();
   const [yatraModalVisible, setYatraModalVisible] = useState(false);
   const [emailModalVisible, setEmailModalVisible] = useState(false);
+  const [yatraConfirmModalVisible, setYatraConfirmModalVisible] = useState(false);
   const [yatraEmail, setYatraEmail] = useState('');
   const { showModal, ModalComponent } = useModal();
 
@@ -138,22 +140,14 @@ const Shop = () => {
     if (purchasing || !yatraEmail || !yatraEmail.includes('@')) return;
     
     setEmailModalVisible(false);
-    
-    // 야트라 패키지 구매 확인
-    showModal(
-      t('shop.purchaseYatra', '야트라 패키지 구매'),
-      t('shop.purchaseYatraConfirm', '야트라 스페셜 패키지를 ₩55,000에 구매하시겠습니까?\n\n포함 내용:\n• PDF 가이드북\n• 야트라 전용 구직 확정권\n• 토큰 20개 (22,000원 상당)'),
-      'confirm',
-      () => processYatraPurchase(),
-      true,
-      t('shop.purchaseBtn', '구매'),
-      t('shop.cancel', '취소')
-    );
+    setYatraConfirmModalVisible(true);
   };
 
   // 야트라 구매 프로세스
   const processYatraPurchase = async () => {
     if (purchasing) return;
+    
+    setYatraConfirmModalVisible(false);
     
     try {
       if (!isIAPAvailable) {
@@ -175,7 +169,7 @@ const Shop = () => {
       
       showModal(
         t('shop.yatraPurchaseComplete', '야트라 패키지 구매 완료'),
-        t('shop.yatraPurchaseSuccess', '야트라 패키지 구매가 완료되었습니다!\n\n• 토큰 20개가 즉시 충전되었습니다\n• PDF 파일과 구직 확정권은 1-2일 내로 이메일로 전송됩니다\n• 감사합니다!'),
+        t('shop.yatraPurchaseSuccess', '야트라 패키지 구매가 완료되었습니다!\n\n• 토큰 10개가 즉시 충전되었습니다\n• PDF 파일과 구직 확정권은 1-2일 내로 이메일로 전송됩니다\n• 감사합니다!'),
         'info'
       );
       
@@ -329,6 +323,15 @@ const Shop = () => {
         onConfirm={handleYatraPurchase}
         email={yatraEmail}
         onEmailChange={setYatraEmail}
+        YATRA_PACKAGE_AVAILABLE={YATRA_PACKAGE_AVAILABLE}
+      />
+
+      <YatraConfirmModal
+        visible={yatraConfirmModalVisible}
+        onClose={() => setYatraConfirmModalVisible(false)}
+        onConfirm={processYatraPurchase}
+        email={yatraEmail}
+        purchasing={purchasing}
         YATRA_PACKAGE_AVAILABLE={YATRA_PACKAGE_AVAILABLE}
       />
 

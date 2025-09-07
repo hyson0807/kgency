@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Modal, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, TextInput, Platform } from 'react-native';
 import { useTranslation } from '@/contexts/TranslationContext';
 
 interface EmailInputModalProps {
@@ -45,7 +45,12 @@ const EmailInputModal: React.FC<EmailInputModalProps> = ({
           </Text>
 
           <TextInput
-            className="border border-gray-300 rounded-lg px-4 py-3 text-base mb-6 text-center"
+            className="border border-gray-300 rounded-lg px-4 text-base mb-6 text-center"
+            style={{ 
+              height: 48, 
+              textAlignVertical: 'center',
+              ...(Platform.OS === 'android' && { includeFontPadding: false })
+            }}
             placeholder={t('shop.emailPlaceholder', 'example@email.com')}
             value={email}
             onChangeText={onEmailChange}

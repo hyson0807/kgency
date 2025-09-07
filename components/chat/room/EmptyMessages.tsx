@@ -10,7 +10,7 @@ export function EmptyMessages({ userType }: EmptyMessagesProps) {
   return (
     <View 
       className="flex-1 items-center justify-center px-8" 
-      style={{ transform: [{ scaleY: -1 }, { scaleX: -1 }] }}
+      style={{ transform: [{ scaleY: -1 } ] }}
     >
       <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
       <Text className="text-gray-500 text-center mt-4 text-lg">
