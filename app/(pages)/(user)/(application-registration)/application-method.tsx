@@ -109,8 +109,8 @@ export default function ApplicationMethodScreen() {
             const isDuplicate = await checkDuplicateApplication();
             if (isDuplicate) return;
 
-            // 메시지 전송
-            const messageResponse = await api('POST', '/api/messages', {
+            // 이력서 저장
+            const messageResponse = await api('POST', '/api/resume/save', {
                 receiverId: companyId,
                 subject: `${jobTitle} 입사 지원서`,
                 content: isEditing === 'true' ? editedResume : resume
@@ -263,8 +263,8 @@ export default function ApplicationMethodScreen() {
             const isDuplicate = await checkDuplicateApplication();
             if (isDuplicate) return;
 
-            // 메시지 전송 (이력서 전송)
-            const messageResponse = await api('POST', '/api/messages', {
+            // 이력서 저장 (이력서 전송)
+            const messageResponse = await api('POST', '/api/resume/save', {
                 receiverId: companyId,
                 subject: `${jobTitle} 입사 지원서`,
                 content: isEditing === 'true' ? editedResume : resume
@@ -343,8 +343,8 @@ export default function ApplicationMethodScreen() {
             const isDuplicate = await checkDuplicateApplication();
             if (isDuplicate) return;
 
-            // 메시지 전송 (이력서 전송)
-            const messageResponse = await api('POST', '/api/messages', {
+            // 이력서 저장 (이력서 전송)
+            const messageResponse = await api('POST', '/api/resume/save', {
                 receiverId: companyId,
                 subject: `${jobTitle} 입사 지원서`,
                 content: isEditing === 'true' ? editedResume : resume

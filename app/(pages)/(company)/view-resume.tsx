@@ -32,19 +32,7 @@ export default function ViewResume() {
     const [isTranslating, setIsTranslating] = useState(false)
     const [profileImageModalVisible, setProfileImageModalVisible] = useState(false)
     const { profileImage: userProfileImage } = useUserProfileImage(userId)
-    useEffect(() => {
-        if (messageId) {
-            markAsRead()
-        }
-    }, [messageId])
-    
-    const markAsRead = async () => {
-        if (!messageId) return
-        try {
-            await api('PUT', `/api/messages/${messageId}/read`);
-        } catch (error) {
-        }
-    }
+
     const handleTranslate = async () => {
         const resumeText = Array.isArray(resume) ? resume[0] : resume
         if (!resumeText) return

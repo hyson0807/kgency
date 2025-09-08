@@ -72,7 +72,7 @@ export default function ApplicationStep4() {
                 workTimesString = t('common.none', '없음');
             }
             
-            const response = await api('POST', '/api/ai/generate-resume', {
+            const response = await api('POST', '/api/resume/generate', {
                 user_id: user?.userId,
                 job_posting_id: jobPostingId,
                 company_id: companyId,
