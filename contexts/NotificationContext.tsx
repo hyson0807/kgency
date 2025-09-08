@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, ReactNode, useState } from 'react';
+import { Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from './AuthContext';
 import { addNotificationResponseReceivedListener, addNotificationReceivedListener } from '@/lib/shared/services/notifications';
@@ -345,6 +346,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       }
       
       try {
+        // 웹에서는 알림 기능이 지원되지 않으므로 건너뛰기
+        if (Platform.OS === 'web') {
+          console.log('웹 환경에서는 초기 알림 체크를 건너뜁니다.');
+          return;
+        }
+        
         const response = await Notifications.getLastNotificationResponseAsync();
         if (response?.notification) {
           const notificationId = response.notification.request.identifier;

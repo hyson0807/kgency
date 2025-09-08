@@ -6,6 +6,13 @@ import { api } from '@/lib/api';
 // Notification handler is now managed in NotificationContext.tsx to avoid conflicts
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
   let token: string | null = null;
+  
+  // 웹에서는 푸시 알림이 지원되지 않음
+  if (Platform.OS === 'web') {
+    console.log('웹 환경에서는 푸시 알림이 지원되지 않습니다.');
+    return null;
+  }
+  
   // Check if we're on a physical device
   if (!Device.isDevice) {
     // Must use physical device for Push Notifications
@@ -75,11 +82,23 @@ export async function removePushToken(userId: string): Promise<boolean> {
 export function addNotificationResponseReceivedListener(
   listener: (response: Notifications.NotificationResponse) => void
 ) {
+  // 웹에서는 알림 리스너가 지원되지 않음
+  if (Platform.OS === 'web') {
+    console.log('웹 환경에서는 알림 응답 리스너가 지원되지 않습니다.');
+    return { remove: () => {} }; // Mock subscription object
+  }
+  
   return Notifications.addNotificationResponseReceivedListener(listener);
 }
 // Notification received handler (when app receives notification)
 export function addNotificationReceivedListener(
   listener: (notification: Notifications.Notification) => void
 ) {
+  // 웹에서는 알림 리스너가 지원되지 않음
+  if (Platform.OS === 'web') {
+    console.log('웹 환경에서는 알림 수신 리스너가 지원되지 않습니다.');
+    return { remove: () => {} }; // Mock subscription object
+  }
+  
   return Notifications.addNotificationReceivedListener(listener);
 }

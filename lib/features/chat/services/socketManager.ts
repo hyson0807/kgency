@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppState } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import { SERVER_CONFIG, SOCKET_CONFIG, APP_CONFIG } from '@/lib/core/config';
 import type { 
   SocketMessage, 
@@ -216,6 +216,12 @@ class SocketManager {
   // JWT 토큰으로 소켓 인증
   private async authenticateSocket() {
     try {
+      // 웹에서는 AsyncStorage가 지원되지 않으므로 건너뛰기
+      if (Platform.OS === 'web') {
+        console.log('SocketManager: 웹 환경에서는 소켓 인증을 건너뜁니다.');
+        return;
+      }
+      
       const token = await AsyncStorage.getItem('authToken');
       if (!token) {
         if (__DEV__) {

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { AppState } from 'react-native';
+import { AppState, Platform, AppStateStatus } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { useUnreadMessage } from '@/contexts/UnreadMessageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export const useAppBadge = () => {
   const { totalUnreadCount, refreshUnreadCount } = useUnreadMessage();
   const { user } = useAuth();
-  const appState = useRef(AppState.currentState);
+  const appState = useRef<AppStateStatus>(AppState.currentState as AppStateStatus);
   const lastUpdatedCount = useRef<number | null>(null);
   const updateInProgress = useRef(false);
 
@@ -25,6 +25,12 @@ export const useAppBadge = () => {
     updateInProgress.current = true;
     
     try {
+      // 웹에서는 배지 기능이 지원되지 않으므로 건너뛰기
+      if (Platform.OS === 'web') {
+        console.log(`웹 환경에서는 배지 업데이트를 건너뜁니다: ${count} (${reason})`);
+        return;
+      }
+      
       if (user) {
         await Notifications.setBadgeCountAsync(count);
         lastUpdatedCount.current = count;
@@ -48,7 +54,7 @@ export const useAppBadge = () => {
 
   // 앱 상태 변화 감지 (포그라운드/백그라운드)
   useEffect(() => {
-    const handleAppStateChange = (nextAppState: string) => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
       console.log(`앱 상태 변경: ${appState.current} -> ${nextAppState}`);
 
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
@@ -75,6 +81,11 @@ export const useAppBadge = () => {
 
   // 수동으로 배지 숫자 설정하는 함수
   const setBadgeCount = async (count: number) => {
+    if (Platform.OS === 'web') {
+      console.log(`웹 환경에서는 배지 설정을 건너뜁니다: ${count}`);
+      return;
+    }
+    
     try {
       await Notifications.setBadgeCountAsync(count);
     } catch (error) {
@@ -84,6 +95,11 @@ export const useAppBadge = () => {
 
   // 배지 초기화 함수
   const clearBadge = async () => {
+    if (Platform.OS === 'web') {
+      console.log('웹 환경에서는 배지 초기화를 건너뜁니다');
+      return;
+    }
+    
     try {
       await Notifications.setBadgeCountAsync(0);
     } catch (error) {
@@ -93,6 +109,11 @@ export const useAppBadge = () => {
 
   // 현재 배지 수 가져오기
   const getBadgeCount = async (): Promise<number> => {
+    if (Platform.OS === 'web') {
+      console.log('웹 환경에서는 배지 수 조회를 건너뜁니다');
+      return 0;
+    }
+    
     try {
       return await Notifications.getBadgeCountAsync();
     } catch (error) {
