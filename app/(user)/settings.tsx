@@ -33,7 +33,7 @@ const Settings = () => {
     const [termsModalVisible, setTermsModalVisible] = useState(false)
     const [privacyModalVisible, setPrivacyModalVisible] = useState(false)
     // 앱 정보
-    const APP_VERSION = '1.0.4'
+    const APP_VERSION = '1.0.4(업데이트버전)'
     // 초기 설정 로드
     useEffect(() => {
         checkAuthState()

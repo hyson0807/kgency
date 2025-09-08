@@ -1,106 +1,95 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, Image } from 'react-native';
-import * as Updates from 'expo-updates';
 import * as SplashScreen from 'expo-splash-screen';
 
-SplashScreen.preventAutoHideAsync();
+import { useAppUpdate, StoreUpdateModal } from '@/lib/features/updates';
+
+SplashScreen.preventAutoHideAsync().catch(() => {
+  // 이미 숨겨진 경우 무시
+});
 
 interface UpdateManagerProps {
   children: React.ReactNode;
 }
 
-interface UpdateState {
-  isChecking: boolean;
-  isDownloading: boolean;
-  isUpdateAvailable: boolean;
-  updateError: string | null;
-}
-
 export default function UpdateManager({ children }: UpdateManagerProps) {
-  const [updateState, setUpdateState] = useState<UpdateState>({
-    isChecking: true,
-    isDownloading: false,
-    isUpdateAvailable: false,
-    updateError: null
+  const [showStoreUpdateModal, setShowStoreUpdateModal] = useState(false);
+  
+  const {
+    isChecking,
+    ota,
+    store,
+    updateType,
+    shouldForceUpdate,
+    openStore,
+    skipVersion,
+    isVersionSkipped,
+  } = useAppUpdate({
+    forceUpdateVersions: ['1.0.0', '1.0.1', '1.0.2'], // 강제 업데이트가 필요한 버전들
+    skipVersionCheckInDev: true,
+    autoCheck: true,
   });
 
+  // 스플래시 화면 처리
   useEffect(() => {
-    checkForUpdates();
-  }, []);
+    const hideSplashScreen = async () => {
+      if (!isChecking && !ota.isDownloading) {
+        try {
+          await SplashScreen.hideAsync();
+        } catch (error) {
+          // 이미 숨겨진 경우 무시
+          console.log('SplashScreen already hidden:', error);
+        }
+      }
+    };
+    
+    hideSplashScreen().catch(console.error);
+  }, [isChecking, ota.isDownloading]);
 
-  const checkForUpdates = async () => {
-    try {
-      // Development 환경에서만 업데이트 체크를 건너뜀
-      if (__DEV__) {
-        console.log('Updates are disabled (development mode)');
-        setUpdateState(prev => ({ ...prev, isChecking: false }));
-        await SplashScreen.hideAsync();
-        return;
+  // 스토어 업데이트 모달 표시 로직
+  useEffect(() => {
+    const showStoreModal = async () => {
+      if (store.needsUpdate && !ota.isAvailable && !isChecking) {
+        // 강제 업데이트이거나, 건너뛴 버전이 아닌 경우 모달 표시
+        if (shouldForceUpdate) {
+          setShowStoreUpdateModal(true);
+        } else {
+          // 건너뛴 버전인지 확인
+          const skipped = await isVersionSkipped();
+          if (!skipped) {
+            setShowStoreUpdateModal(true);
+          }
+        }
       }
+    };
 
-      // expo-updates 모듈이 production 빌드에서 활성화되었는지 확인
-      // isEmbeddedLaunch가 true면 OTA 업데이트가 비활성화된 상태
-      console.log('Is embedded launch (OTA disabled):', Updates.isEmbeddedLaunch);
-      console.log('Update channel:', Updates.channel);
-      console.log('Runtime version:', Updates.runtimeVersion);
-      
-      // OTA 업데이트가 비활성화된 경우 (개발 빌드 또는 expo-updates 미포함)
-      if (Updates.isEmbeddedLaunch) {
-        console.log('Running embedded app without OTA updates');
-        setUpdateState(prev => ({ ...prev, isChecking: false }));
-        await SplashScreen.hideAsync();
-        return;
-      }
-      
-      // channel과 runtimeVersion이 설정되지 않은 경우
-      if (!Updates.channel && !Updates.runtimeVersion) {
-        console.log('Updates not configured for this build');
-        setUpdateState(prev => ({ ...prev, isChecking: false }));
-        await SplashScreen.hideAsync();
-        return;
-      }
+    showStoreModal().catch(console.error);
+  }, [store.needsUpdate, ota.isAvailable, isChecking, shouldForceUpdate, isVersionSkipped]);
 
-      // Production 환경에서 업데이트 체크
-      console.log('Checking for updates...');
-      console.log('Updates URL:', 'https://u.expo.dev/799fcd12-a237-433c-8a11-aefd308553d3');
-      
-      const update = await Updates.checkForUpdateAsync();
-      
-      if (update.isAvailable) {
-        console.log('Update available, downloading...');
-        setUpdateState(prev => ({ 
-          ...prev, 
-          isUpdateAvailable: true, 
-          isDownloading: true 
-        }));
-        
-        const updateResult = await Updates.fetchUpdateAsync();
-        console.log('Update downloaded:', updateResult);
-        
-        console.log('Reloading app with new update...');
-        await Updates.reloadAsync();
-      } else {
-        console.log('No updates available');
-        setUpdateState(prev => ({ ...prev, isChecking: false }));
-        await SplashScreen.hideAsync();
-      }
-    } catch (error) {
-      // 개발환경에서는 에러 로그를 출력하지 않음
-      if (__DEV__) {
-        console.log('Development mode - update check skipped');
-      } else {
-        console.error('Update check failed:', error);
-      }
-      setUpdateState(prev => ({ 
-        ...prev, 
-        isChecking: false, 
-        updateError: null // 개발환경에서는 에러를 표시하지 않음
-      }));
-      await SplashScreen.hideAsync();
+  const handleStoreUpdate = async () => {
+    setShowStoreUpdateModal(false);
+    await openStore();
+  };
+
+  const handleSkipUpdate = async () => {
+    setShowStoreUpdateModal(false);
+    await skipVersion();
+  };
+
+  const handleCloseModal = () => {
+    if (!shouldForceUpdate) {
+      setShowStoreUpdateModal(false);
     }
   };
 
-  if (updateState.isChecking || updateState.isDownloading) {
+  // 로딩 화면 (OTA 업데이트 또는 초기 체크 중)
+  if (isChecking || ota.isDownloading) {
+    const loadingText = ota.isDownloading 
+      ? '업데이트 다운로드 중...' 
+      : isChecking 
+        ? '업데이트 확인 중...' 
+        : '로딩 중...';
+
     return (
       <View className="flex-1 justify-center items-center bg-white">
         <View className="items-center">
@@ -111,15 +100,41 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
           />
           <ActivityIndicator size="large" color="#3B82F6" />
           <Text className="mt-4 text-lg font-medium text-gray-800">
-            {updateState.isChecking ? '업데이트 확인 중...' : '업데이트 다운로드 중...'}
+            {loadingText}
           </Text>
           <Text className="mt-2 text-sm text-gray-500">
             잠시만 기다려 주세요
           </Text>
+          
+          {/* 디버그 정보 (개발 환경에서만) */}
+          {__DEV__ && (
+            <View className="mt-4 p-3 bg-gray-100 rounded-lg">
+              <Text className="text-xs text-gray-600">
+                Debug: {JSON.stringify({ 
+                  updateType, 
+                  storeUpdate: store.needsUpdate,
+                  forced: shouldForceUpdate 
+                }, null, 2)}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      
+      {/* 스토어 업데이트 모달 */}
+      <StoreUpdateModal
+        visible={showStoreUpdateModal}
+        updateState={{ isChecking, ota, store, error: null }}
+        onUpdate={handleStoreUpdate}
+        onSkip={shouldForceUpdate ? undefined : handleSkipUpdate}
+        onClose={shouldForceUpdate ? undefined : handleCloseModal}
+      />
+    </>
+  );
 }
