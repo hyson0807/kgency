@@ -33,9 +33,37 @@ export class StoreVersionService {
    */
   private static async getIOSStoreVersion(): Promise<string | null> {
     const bundleId = Constants.expoConfig?.ios?.bundleIdentifier || this.BUNDLE_ID;
-    const response = await fetch(`https://itunes.apple.com/lookup?bundleId=${bundleId}`);
-    const data: StoreVersionResponse = await response.json();
-    return data.results?.[0]?.version || null;
+    
+    // 5초 타임아웃 설정
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    try {
+      const response = await fetch(`https://itunes.apple.com/lookup?bundleId=${bundleId}`, {
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        console.log('iTunes API response not ok:', response.status);
+        return null;
+      }
+      
+      const data: StoreVersionResponse = await response.json();
+      return data.results?.[0]?.version || null;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('iTunes API request timeout');
+      } else {
+        console.error('iTunes API request failed:', error);
+      }
+      return null;
+    }
   }
 
   /**

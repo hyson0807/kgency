@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, Image } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 
-import { useAppUpdate, StoreUpdateModal } from '@/lib/features/updates';
+import { useAppUpdate, StoreUpdateModal, UPDATE_CONFIG } from '@/lib/features/updates';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // 이미 숨겨진 경우 무시
@@ -25,8 +25,7 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
     skipVersion,
     isVersionSkipped,
   } = useAppUpdate({
-    forceUpdateVersions: ['1.0.0', '1.0.1', '1.0.2'], // 강제 업데이트가 필요한 버전들
-    skipVersionCheckInDev: true,
+    ...UPDATE_CONFIG, // config에서 설정 가져오기
     autoCheck: true,
   });
 

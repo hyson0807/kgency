@@ -18,6 +18,7 @@ export const useAppUpdate = (options: UseAppUpdateOptions = {}) => {
   const {
     forceUpdateVersions = [],
     skipVersionCheckInDev = true,
+    disableStoreVersionCheck = false,
     checkInterval = 60 * 60 * 1000, // 1시간
     autoCheck = true,
   } = options;
@@ -25,7 +26,7 @@ export const useAppUpdate = (options: UseAppUpdateOptions = {}) => {
   const currentVersion = Constants.expoConfig?.version || '1.0.0';
 
   const [updateState, setUpdateState] = useState<UpdateState>({
-    isChecking: true,
+    isChecking: false,  // 🔵 초기값을 false로 변경!
     ota: {
       isAvailable: false,
       isDownloading: false,
@@ -52,7 +53,17 @@ export const useAppUpdate = (options: UseAppUpdateOptions = {}) => {
       }
 
       console.log('Checking for OTA updates...');
-      const update = await Updates.checkForUpdateAsync();
+      
+      // OTA 체크도 타임아웃 설정 (10초)
+      const otaCheckPromise = Updates.checkForUpdateAsync();
+      const timeoutPromise = new Promise<typeof Updates.UpdateCheckResult>((_, reject) => 
+        setTimeout(() => reject(new Error('OTA check timeout')), 10000)
+      );
+      
+      const update = await Promise.race([otaCheckPromise, timeoutPromise]).catch(err => {
+        console.log('OTA check failed or timeout:', err);
+        return { isAvailable: false };
+      });
       
       if (update.isAvailable) {
         console.log('OTA update available, downloading...');
@@ -140,8 +151,12 @@ export const useAppUpdate = (options: UseAppUpdateOptions = {}) => {
         return; // OTA 업데이트가 있으면 앱이 재시작되므로 여기서 종료
       }
 
-      // 2. 스토어 버전 체크
-      await checkStoreVersion();
+      // 2. 스토어 버전 체크 (긴급 비활성화 가능)
+      if (!disableStoreVersionCheck) {
+        await checkStoreVersion();
+      } else {
+        console.log('Store version check disabled');
+      }
 
       // 3. 캐시 정리 (버전 업데이트 후 초기화 실패 방지)
       const storedVersion = await CacheResetService.getStoredVersion();
@@ -158,7 +173,7 @@ export const useAppUpdate = (options: UseAppUpdateOptions = {}) => {
     } finally {
       setUpdateState(prev => ({ ...prev, isChecking: false }));
     }
-  }, [checkOTAUpdate, checkStoreVersion, currentVersion, skipVersionCheckInDev]);
+  }, [checkOTAUpdate, checkStoreVersion, currentVersion, skipVersionCheckInDev, disableStoreVersionCheck]);
 
   /**
    * 스토어로 이동

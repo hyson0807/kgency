@@ -25,4 +25,5 @@ export interface UpdateConfig {
   playStorePackageName?: string;
   forceUpdateVersions?: string[]; // 강제 업데이트가 필요한 버전들
   skipVersionCheckInDev?: boolean;
+  disableStoreVersionCheck?: boolean; // 🚨 긴급 비활성화용
 }

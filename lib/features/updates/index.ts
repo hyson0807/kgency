@@ -9,6 +9,9 @@ export { StoreVersionService } from './services/storeVersionService';
 export { StoreNavigationService } from './services/storeNavigationService';
 export { CacheResetService } from './services/cacheResetService';
 
+// Config
+export { UPDATE_CONFIG } from './config';
+
 // Types
 export type {
   StoreVersionInfo,

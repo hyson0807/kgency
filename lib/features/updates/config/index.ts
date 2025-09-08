@@ -19,6 +19,12 @@ export const UPDATE_CONFIG: UpdateConfig = {
   
   // 개발 환경에서 버전 체크 건너뛰기
   skipVersionCheckInDev: true,
+  
+  // 🚨 긴급 비활성화 - 앱 출시 초기 iTunes API 문제 해결용
+  disableStoreVersionCheck: false, // false로 변경 - 스토어 버전 체크 활성화!
+  
+  // 🔧 안전 모드 - iTunes API 호출시 더 짧은 타임아웃 (3초)
+  safeMode: true, // iTunes API 응답이 불안정할 때 사용
 };
 
 /**
