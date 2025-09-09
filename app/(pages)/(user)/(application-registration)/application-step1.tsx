@@ -144,44 +144,38 @@ export default function ApplicationStep1() {
                     </View>
                 </View>
             </View>
-            <ScrollView
-                className="flex-1"
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 100 }}
-            >
-                <View className="bg-white">
-                    <View className="p-6">
-                        <Text className="text-xl font-bold mb-2">{t('application.step1_title', '기본 정보를 입력해주세요')}</Text>
-                        <Text className="text-gray-600 mb-6">{t('application.step1_subtitle', '지원자의 기본적인 정보를 작성해주세요.')}</Text>
-                    </View>
-                    {/* 지원 공고 정보 */}
-                    <View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">
-                        <Text className="text-sm text-gray-600">{t('apply.applying_to', '지원 공고')}</Text>
-                        <Text className="text-lg font-bold text-blue-600">{jobTitle || t('apply.job_posting', '채용 공고')}</Text>
-                        <Text className="text-sm text-gray-600 mt-1">{companyName}</Text>
-                        {hasApplied && (
-                            <Text className="text-sm text-orange-600 mt-2">
-                                ⚠️ {t('application.already_applied', '이미 지원한 공고입니다')}
-                            </Text>
-                        )}
-                    </View>
-                    
-                    {/* 기본 정보 입력 폼 */}
-                    <PersonalInformation
-                        t={t}
-                        translateDB={translateDB}
-                        name={step1Data.name}
-                        setName={setName}
-                        age={step1Data.age}
-                        setAge={setAge}
-                        gender={step1Data.gender}
-                        setGender={setGender}
-                        visa={step1Data.visa}
-                        setVisa={setVisa}
-                        keywords={keywords}
-                    />
+            <View className="flex-1 bg-white">
+                <View className="p-6">
+                    <Text className="text-xl font-bold mb-2">{t('application.step1_title', '기본 정보를 입력해주세요')}</Text>
+                    <Text className="text-gray-600 mb-6">{t('application.step1_subtitle', '지원자의 기본적인 정보를 작성해주세요.')}</Text>
                 </View>
-            </ScrollView>
+                {/* 지원 공고 정보 */}
+                <View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">
+                    <Text className="text-sm text-gray-600">{t('apply.applying_to', '지원 공고')}</Text>
+                    <Text className="text-lg font-bold text-blue-600">{jobTitle || t('apply.job_posting', '채용 공고')}</Text>
+                    <Text className="text-sm text-gray-600 mt-1">{companyName}</Text>
+                    {hasApplied && (
+                        <Text className="text-sm text-orange-600 mt-2">
+                            ⚠️ {t('application.already_applied', '이미 지원한 공고입니다')}
+                        </Text>
+                    )}
+                </View>
+                
+                {/* 기본 정보 입력 폼 */}
+                <PersonalInformation
+                    t={t}
+                    translateDB={translateDB}
+                    name={step1Data.name}
+                    setName={setName}
+                    age={step1Data.age}
+                    setAge={setAge}
+                    gender={step1Data.gender}
+                    setGender={setGender}
+                    visa={step1Data.visa}
+                    setVisa={setVisa}
+                    keywords={keywords}
+                />
+            </View>
             {/* 하단 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity

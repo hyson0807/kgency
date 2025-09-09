@@ -1,5 +1,5 @@
-import React from "react";
-import {Text, TextInput, View} from "react-native";
+import React, { useRef } from "react";
+import {Text, TextInput, View, ScrollView} from "react-native";
 import {Dropdown} from "react-native-element-dropdown";
 interface Keyword {
     id: number;
@@ -32,6 +32,37 @@ export const PersonalInformation = ({
     setVisa,
     keywords = []
 }: PersonalInformationProps) => {
+    const scrollViewRef = useRef<ScrollView>(null)
+    
+    const handleInputFocus = (inputName: string) => {
+        // 각 입력창에 대한 대략적인 Y 위치 설정
+        const approximatePositions: {[key: string]: number} = {
+            'name': 50,
+            'age': 150,
+            'gender': 150, // age와 같은 줄
+            'visa': 300 // 드롭다운 리스트를 고려해서 더 아래로
+        }
+        
+        // 드롭다운의 경우 더 긴 지연시간을 줘서 리스트가 완전히 열린 후 스크롤
+        const delay = inputName === 'visa' || inputName === 'gender' ? 300 : 100
+        
+        setTimeout(() => {
+            if (scrollViewRef.current) {
+                // 비자 드롭다운의 경우 끝까지 스크롤
+                if (inputName === 'visa') {
+                    scrollViewRef.current.scrollToEnd({ animated: true })
+                } else {
+                    const targetY = approximatePositions[inputName] || 0
+                    scrollViewRef.current.scrollTo({
+                        x: 0,
+                        y: targetY,
+                        animated: true
+                    })
+                }
+            }
+        }, delay)
+    }
+    
     // DB에서 카테고리별 키워드 필터링
     const genderKeywords = keywords.filter(k => k.category === '성별' && k.keyword !== '상관없음')
     const anyGenderKeyword = keywords.find(k => k.category === '성별' && k.keyword === '상관없음')
@@ -64,17 +95,26 @@ export const PersonalInformation = ({
             }))
     ];
     return (
-    <View className="mb-6 p-6">
-        <Text className="text-lg font-bold mb-4">{t('apply.basic_info', '기본 정보')}</Text>
-        <View className="mb-4">
-            <Text className="text-gray-700 mb-2">{t('apply.name', '이름')} *</Text>
-            <TextInput
-                className="border border-gray-300 rounded-lg p-3 h-[50px]"
-                placeholder={t('apply.enter_name', '한국 이름을 입력해주세요')}
-                placeholderTextColor="#6B7280"
-                value={name}
-                onChangeText={setName}
-            />
+        <ScrollView 
+            ref={scrollViewRef}
+            className="flex-1"
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 200 }}
+            automaticallyAdjustKeyboardInsets={true}
+        >
+            <View className="mb-6 p-6">
+                <Text className="text-lg font-bold mb-4">{t('apply.basic_info', '기본 정보')}</Text>
+                <View className="mb-4">
+                    <Text className="text-gray-700 mb-2">{t('apply.name', '이름')} *</Text>
+                    <TextInput
+                        className="border border-gray-300 rounded-lg p-3 h-[50px]"
+                        placeholder={t('apply.enter_name', '한국 이름을 입력해주세요')}
+                        placeholderTextColor="#6B7280"
+                        value={name}
+                        onChangeText={setName}
+                        onFocus={() => handleInputFocus('name')}
+                    />
         </View>
         <View className="flex-row gap-4 mb-4">
             <View className="flex-1">
@@ -86,6 +126,7 @@ export const PersonalInformation = ({
                     value={age}
                     onChangeText={setAge}
                     keyboardType="numeric"
+                    onFocus={() => handleInputFocus('age')}
                 />
             </View>
             <View className="flex-1">
@@ -130,5 +171,6 @@ export const PersonalInformation = ({
             />
         </View>
     </View>
+        </ScrollView>
     )
 }
