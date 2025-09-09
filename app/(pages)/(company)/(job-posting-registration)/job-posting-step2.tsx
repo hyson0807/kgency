@@ -177,7 +177,7 @@ const JobPostingStep2 = () => {
                             />
                         )}
                         {step2Data.selectedLocation && 
-                         step2Data.workingHours.trim() && 
+                         (step2Data.workingHours.trim() || step2Data.workingHoursNegotiable) && 
                          step2Data.workingDays.length > 0 && (
                             <SalaryInfoForm
                                 salaryType={step2Data.salaryType}

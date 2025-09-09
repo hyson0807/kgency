@@ -19,7 +19,6 @@ const JobPostingStep1 = () => {
         setJobDescription,
         setHiringCount,
         setJobAddress,
-        setInterviewLocation,
         setSpecialNotes,
         setEditMode,
         resetAllData,
@@ -81,7 +80,6 @@ const JobPostingStep1 = () => {
                 setJobDescription(posting.description || '')
                 setHiringCount(posting.hiring_count?.toString() || '1')
                 setJobAddress(posting.job_address || '')
-                setInterviewLocation(posting.interview_location || '')
                 setSpecialNotes(posting.special_notes || '')
             } else {
                 throw new Error('공고 정보를 찾을 수 없습니다.')
@@ -171,8 +169,6 @@ const JobPostingStep1 = () => {
                         setJobAddress={setJobAddress}
                         hiringCount={step1Data.hiringCount}
                         setHiringCount={setHiringCount}
-                        interviewLocation={step1Data.interviewLocation}
-                        setInterviewLocation={setInterviewLocation}
                         specialNotes={step1Data.specialNotes}
                         setSpecialNotes={setSpecialNotes}
                     />

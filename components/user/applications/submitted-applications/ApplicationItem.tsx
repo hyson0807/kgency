@@ -3,6 +3,8 @@ import {Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
 import { api } from "@/lib/api"
+import { useAuth } from "@/contexts/AuthContext"
+import { useModal } from "@/lib/shared/ui/hooks/useModal"
 interface InterviewProposal {
     id: string
     application_id: string
@@ -43,6 +45,8 @@ interface ApplicationItemProps {
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
 }
 export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
+    const { user } = useAuth()
+    const { showModal } = useModal()
     const handleViewPosting = (application: Application) => {
         if (application.job_posting) {
             router.push({
@@ -84,6 +88,34 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
             })
         }
     }
+
+    const handleGoToChat = async (application: Application) => {
+        if (!user?.userId) return;
+        
+        try {
+            // 기존 채팅방이 있는지 확인
+            const response = await api('GET', `/api/chat/find-existing-room?user_id=${user.userId}&company_id=${application.job_posting.company.id}`);
+            
+            if (response.success && response.data?.roomId) {
+                // 기존 채팅방이 있으면 해당 방으로 이동
+                router.push(`/(pages)/chat/${response.data.roomId}`);
+            } else {
+                // 채팅방이 없으면 알림 표시
+                showModal(
+                    '채팅방을 찾을 수 없습니다',
+                    '존재하지 않는 채팅방입니다.',
+                    'warning'
+                );
+            }
+        } catch (error) {
+            console.error('채팅방 이동 오류:', error);
+            showModal(
+                '오류',
+                '채팅방에 접근할 수 없습니다.',
+                'warning'
+            );
+        }
+    }
     return (
         <TouchableOpacity
                 onPress={() => handleViewPosting(item)}
@@ -109,18 +141,35 @@ export const ApplicationItem = ({ item, t }: ApplicationItemProps) => {
                         {t('applications.applied_date', '지원일')}: {formatDate(item.applied_at)}
                     </Text>
                 </View>
-                {/* 이력서 보기 버튼 */}
-                {item.message && (
+                {/* 지원 타입에 따른 버튼 표시 */}
+                {item.type === 'user_initiated' ? (
+                    /* 일반지원: 제출한 이력서 보기 버튼 */
+                    item.message && (
+                        <TouchableOpacity
+                            onPress={(e) => {
+                                e.stopPropagation()
+                                handleViewResume(item)
+                            }}
+                            className="mt-2 flex-row items-center justify-center bg-gray-50 py-2 rounded-lg"
+                        >
+                            <Ionicons name="document-text-outline" size={16} color="black" />
+                            <Text className="text-sm font-medium ml-1">
+                                {t('applications.view_resume', '제출한 이력서 보기')}
+                            </Text>
+                        </TouchableOpacity>
+                    )
+                ) : (
+                    /* 채팅지원: 채팅으로 가기 버튼 */
                     <TouchableOpacity
                         onPress={(e) => {
                             e.stopPropagation()
-                            handleViewResume(item)
+                            handleGoToChat(item)
                         }}
-                        className="mt-2 flex-row items-center justify-center bg-gray-50 py-2 rounded-lg"
+                        className="mt-2 flex-row items-center justify-center bg-blue-50 py-2 rounded-lg"
                     >
-                        <Ionicons name="document-text-outline" size={16} color="black" />
-                        <Text className="text-sm font-medium ml-1">
-                            {t('applications.view_resume', '제출한 이력서 보기')}
+                        <Ionicons name="chatbubble-outline" size={16} color="#3b82f6" />
+                        <Text className="text-blue-600 text-sm font-medium ml-1">
+                            {t('applications.go_to_chat', '채팅으로 가기')}
                         </Text>
                     </TouchableOpacity>
                 )}

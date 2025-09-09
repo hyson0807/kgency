@@ -23,8 +23,6 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
     setJobAddress,
     hiringCount,
     setHiringCount,
-    interviewLocation,
-    setInterviewLocation,
     specialNotes,
     setSpecialNotes
 }) => {
@@ -71,15 +69,7 @@ export const JobBasicInfoForm: React.FC<JobBasicInfoFormProps> = ({
                     keyboardType="numeric"
                 />
             </View>
-            <View className="mb-4">
-                <Text className="text-gray-700 mb-2">면접 장소</Text>
-                <TextInput
-                    className="border border-gray-300 rounded-lg p-3"
-                    placeholder="면접 장소를 입력하세요 (미입력 시 가게 주소)"
-                    value={interviewLocation || ''}
-                    onChangeText={setInterviewLocation}
-                />
-            </View>
+
             <View className="mb-4">
                 <Text className="text-gray-700 mb-2">특이사항</Text>
                 <TextInput

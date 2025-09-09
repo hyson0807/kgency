@@ -34,19 +34,21 @@ const JobPostingStep3 = () => {
     const [loading, setLoading] = useState(false)
     const { showModal, ModalComponent, hideModal } = useModal()
     // 카테고리별 키워드 필터링
-    const countryKeywords = keywords.filter(k => k.category === '국가' && k.keyword !== '상관없음')
-    const anyCountryKeyword = keywords.find(k => k.category === '국가' && k.keyword === '상관없음')
+    const countryKeywords = keywords.filter(k => k.category === '국가')
     const jobKeywords = keywords.filter(k => k.category === '직종')
     const conditionKeywords = keywords.filter(k => k.category === '근무조건')
-    const ageRangeKeywords = keywords.filter(k => k.category === '나이대' && k.keyword !== '상관없음')
-    const anyAgeKeyword = keywords.find(k => k.category === '나이대' && k.keyword === '상관없음')
-    const visaKeywords = keywords.filter(k => k.category === '비자' && k.keyword !== '상관없음')
-    const anyVisaKeyword = keywords.find(k => k.category === '비자' && k.keyword === '상관없음')
-    const genderKeywords = keywords.filter(k => k.category === '성별' && k.keyword !== '상관없음')
-    const anyGenderKeyword = keywords.find(k => k.category === '성별' && k.keyword === '상관없음')
-    const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준' && k.keyword !== '상관없음')
-    const anyKoreanLevelKeyword = keywords.find(k => k.category === '한국어수준' && k.keyword === '상관없음')
+    const ageRangeKeywords = keywords.filter(k => k.category === '나이대')
+    const visaKeywords = keywords.filter(k => k.category === '비자')
+    const genderKeywords = keywords.filter(k => k.category === '성별')
+    const koreanLevelKeywords = keywords.filter(k => k.category === '한국어수준')
     const workDayKeywords = keywords.filter(k => k.category === '근무요일')
+    
+    // 상관없음 키워드 찾기
+    const anyCountryKeyword = keywords.find(k => k.category === '국가' && k.keyword === '상관없음')
+    const anyAgeKeyword = keywords.find(k => k.category === '나이대' && k.keyword === '상관없음')
+    const anyVisaKeyword = keywords.find(k => k.category === '비자' && k.keyword === '상관없음')
+    const anyGenderKeyword = keywords.find(k => k.category === '성별' && k.keyword === '상관없음')
+    const anyKoreanLevelKeyword = keywords.find(k => k.category === '한국어수준' && k.keyword === '상관없음')
     // 커스텀 훅을 사용한 키워드 선택 로직 (기존 핸들러들을 대체)
     const { handleToggle: toggleJob } = useKeywordSelection({
         keywords: jobKeywords,
@@ -89,9 +91,7 @@ const JobPostingStep3 = () => {
                     
                     switch (keyword.category) {
                         case '국가':
-                            if (keyword.keyword !== '상관없음') {
-                                countries.push(jk.keyword_id)
-                            }
+                            countries.push(jk.keyword_id)
                             break
                         case '직종':
                             jobs.push(jk.keyword_id)
@@ -100,24 +100,16 @@ const JobPostingStep3 = () => {
                             conditions.push(jk.keyword_id)
                             break
                         case '나이대':
-                            if (keyword.keyword !== '상관없음') {
-                                ageRanges.push(jk.keyword_id)
-                            }
+                            ageRanges.push(jk.keyword_id)
                             break
                         case '성별':
-                            if (keyword.keyword !== '상관없음') {
-                                genders.push(jk.keyword_id)
-                            }
+                            genders.push(jk.keyword_id)
                             break
                         case '비자':
-                            if (keyword.keyword !== '상관없음') {
-                                visas.push(jk.keyword_id)
-                            }
+                            visas.push(jk.keyword_id)
                             break
                         case '한국어수준':
-                            if (keyword.keyword !== '상관없음') {
-                                koreanLevels.push(jk.keyword_id)
-                            }
+                            koreanLevels.push(jk.keyword_id)
                             break
                     }
                 })
@@ -229,12 +221,12 @@ const JobPostingStep3 = () => {
             // 저장된 데이터 정리
             resetAllData()
             showModal(
-                '"정해둔 시간에만 면접신청이 들어옵니다"',
-                '적합도 90% 이상 인재들이 사장님의 일정에 맞춰 신청합니다. 시간을 미리 선택해주세요',
+                '"공고 등록 완료"',
+                '공고가 정상적으로 등록 완료되었습니다',
                 'confirm',
                 () => {
                     hideModal()
-                    router.replace('/(company)/interview-calendar?tab=slots')
+                    router.replace('/(company)/myJobPostings')
                 }
             )
         } catch (error) {
@@ -302,7 +294,7 @@ const JobPostingStep3 = () => {
                         selectedIds={step3Data.selectedCountries}
                         onSelectionChange={setSelectedCountries}
                         emptyText="선택된 국가가 없습니다 (저장 시 '상관없음'으로 설정됩니다)"
-                        showNoPreferenceOption={false}
+                        showNoPreferenceOption={true}
                         enableSearch={true}
                         required={false}
                     />
@@ -314,7 +306,7 @@ const JobPostingStep3 = () => {
                         selectedIds={step3Data.selectedAgeRanges}
                         onSelectionChange={setSelectedAgeRanges}
                         emptyText="선택된 나이대가 없습니다 (저장 시 '상관없음'으로 설정됩니다)"
-                        showNoPreferenceOption={false}
+                        showNoPreferenceOption={true}
                         enableSearch={true}
                     />
                     {/* 3. 선호 성별 */}
@@ -325,7 +317,7 @@ const JobPostingStep3 = () => {
                         selectedIds={step3Data.selectedGenders}
                         onSelectionChange={setSelectedGenders}
                         emptyText="선택된 성별이 없습니다 (저장 시 '상관없음'으로 설정됩니다)"
-                        showNoPreferenceOption={false}
+                        showNoPreferenceOption={true}
                         enableSearch={false}
                     />
                     {/* 4. 선호 비자 */}
@@ -336,7 +328,7 @@ const JobPostingStep3 = () => {
                         selectedIds={step3Data.selectedVisas}
                         onSelectionChange={setSelectedVisas}
                         emptyText="선택된 비자가 없습니다 (저장 시 '상관없음'으로 설정됩니다)"
-                        showNoPreferenceOption={false}
+                        showNoPreferenceOption={true}
                         enableSearch={true}
                     />
                     {/* 5. 선호 한국어 수준 */}
@@ -347,7 +339,7 @@ const JobPostingStep3 = () => {
                         selectedIds={step3Data.selectedKoreanLevels}
                         onSelectionChange={setSelectedKoreanLevels}
                         emptyText="선택된 한국어 수준이 없습니다 (저장 시 '상관없음'으로 설정됩니다)"
-                        showNoPreferenceOption={false}
+                        showNoPreferenceOption={true}
                         enableSearch={true}
                     />
                     {/* 7. 근무조건 선택 */}

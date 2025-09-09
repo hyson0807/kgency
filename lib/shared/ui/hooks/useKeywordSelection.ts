@@ -25,10 +25,24 @@ export const useKeywordSelection = ({
             handleSelectAll()
         } else {
             if (!selectedIds.includes(item.value)) {
-                onSelectionChange([...selectedIds, item.value])
+                const selectedKeyword = keywords.find(k => k.id === item.value)
+                const anyKeyword = keywords.find(k => k.keyword === '상관없음')
+                
+                let newIds = [...selectedIds, item.value]
+                
+                // "상관없음"을 선택한 경우: 다른 모든 선택을 제거
+                if (selectedKeyword?.keyword === '상관없음') {
+                    newIds = [item.value]
+                } 
+                // 다른 옵션을 선택한 경우: "상관없음"이 선택되어 있다면 제거
+                else if (anyKeyword && selectedIds.includes(anyKeyword.id)) {
+                    newIds = selectedIds.filter(id => id !== anyKeyword.id).concat(item.value)
+                }
+                
+                onSelectionChange(newIds)
             }
         }
-    }, [selectedIds, onSelectionChange, handleSelectAll])
+    }, [selectedIds, onSelectionChange, handleSelectAll, keywords])
     // 개별 제거 핸들러
     const handleRemove = useCallback((id: number) => {
         onSelectionChange(selectedIds.filter(selectedId => selectedId !== id))
