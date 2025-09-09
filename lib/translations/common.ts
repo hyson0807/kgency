@@ -245,5 +245,19 @@ export const commonTranslations: TranslationData = {
         ky: 'Жок',
         ha: 'A\'a',
         mn: 'Үгүй'
+    },
+    'common.confirm': {
+        en: 'Confirm',
+        ja: '確認',
+        zh: '确认',
+        vi: 'Xác nhận',
+        hi: 'पुष्टि करें',
+        si: 'තහවුරු කරන්න',
+        ar: 'تأكيد',
+        tr: 'Onayla',
+        my: 'အတည်ပြုပါ',
+        ky: 'Ырастоо',
+        ha: 'Tabbatar',
+        mn: 'Баталгаажуулах'
     }
 };
