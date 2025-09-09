@@ -114,7 +114,7 @@ export const Profile = ({ formData, handler, keywords }:ProfileProps) => {
                 <Text className="text-sm font-medium text-gray-700 mb-2">{t('info.name', '이름')} *</Text>
                 <TextInput
                     className="border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
-                    placeholder={t('info.enter_name', '이름을 입력하세요')}
+                    placeholder={t('info.enter_name', '한국 이름을 입력해주세요')}
                     placeholderTextColor="#9ca3af"
                     value={name}
                     onChangeText={setName}

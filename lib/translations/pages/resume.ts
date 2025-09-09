@@ -267,6 +267,48 @@ export const resumeTranslations: TranslationData = {
         ha: 'Abun ciki na yanzu zai ɓace. Ka ci gaba?',
         mn: 'Одоогийн агуулга алдагдана. Үргэлжлүүлэх үү?'
     },
+    'resume.grammar_check': {
+        en: 'It may not be grammatically perfect, so please check and you can edit.',
+        ja: '文法的に完璧でない場合があります。確認して修正可能です。',
+        zh: '可能语法不够完美，请检查并可以修改。',
+        vi: 'Có thể không hoàn hảo về ngữ pháp, vui lòng kiểm tra và có thể chỉnh sửa.',
+        hi: 'व्याकरण की दृष्टि से पूर्ण नहीं हो सकता है, कृपया जांचें और संपादित कर सकते हैं।',
+        si: 'ව්‍යාකරණ දෘෂ්ටියෙන් පරිපූර්ණ නොවිය හැක, කරුණාකර පරීක්ෂා කර සංස්කරණය කරන්න.',
+        ar: 'قد لا تكون مثالية نحوياً، يرجى المراجعة ويمكن التعديل.',
+        tr: 'Dilbilgisi açısından mükemmel olmayabilir, lütfen kontrol edin ve düzenleyebilirsiniz.',
+        my: 'သဒ္ဒါအရ ပြီးပြည့်စုံမှုမရှိနိုင်ပါ။ စစ်ဆေးပြီး တည်းဖြတ်နိုင်ပါသည်။',
+        ky: 'Грамматика жагынан кемчиликтүү болушу мүмкүн, текшерип, түзөтө аласыз.',
+        ha: 'Maiyuwa ba zai zama cikakke a nahawu ba, don Allah ku duba kuma za ku iya gyarawa.',
+        mn: 'Дүрмийн хувьд төгс биш байж магадгүй, шалгаад засаж болно.'
+    },
+    'resume.edit_resume': {
+        en: 'Edit Resume',
+        ja: '履歴書を編集',
+        zh: '编辑简历',
+        vi: 'Chỉnh sửa hồ sơ',
+        hi: 'रिज्यूमे संपादित करें',
+        si: 'ජීව දත්ත පත්‍රිකාව සංස්කරණය කරන්න',
+        ar: 'تعديل السيرة الذاتية',
+        tr: 'Özgeçmişi Düzenle',
+        my: 'ကိုယ်ရေးအကျဉ်း တည်းဖြတ်ရန်',
+        ky: 'Резюмени түзөтүү',
+        ha: 'Gyara Tarihin Rayuwa',
+        mn: 'Намтар засварлах'
+    },
+    'resume.save_edit': {
+        en: 'Save Edit',
+        ja: '編集を保存',
+        zh: '保存编辑',
+        vi: 'Lưu chỉnh sửa',
+        hi: 'संपादन सहेजें',
+        si: 'සංස්කරණය සුරකින්න',
+        ar: 'حفظ التعديل',
+        tr: 'Düzenlemeyi Kaydet',
+        my: 'တည်းဖြတ်မှုကို သိမ်းမည်',
+        ky: 'Түзөтүүнү сактоо',
+        ha: 'Ajiye Gyare-gyare',
+        mn: 'Засварлалтыг хадгалах'
+    },
     'resume.application_subject': {
         en: '[{{job}}] Job Application',
         ja: '[{{job}}] 入社志願書',

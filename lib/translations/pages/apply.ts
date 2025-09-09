@@ -86,18 +86,18 @@ export const applyTranslations: TranslationData = {
         mn: 'Нэр'
     },
     'apply.enter_name': {
-        en: 'Enter your name',
-        ja: '名前を入力してください',
-        zh: '请输入姓名',
-        vi: 'Nhập họ tên',
-        hi: 'अपना नाम दर्ज करें',
-        si: 'ඔබේ නම ඇතුළත් කරන්න',
-        ar: 'أدخل اسمك',
-        tr: 'Adınızı girin',
-        my: 'သင့်အမည်ကို ရိုက်ထည့်ပါ',
-        ky: 'Атыңызды киргизиңиз',
-        ha: 'Shigar da sunanka',
-        mn: 'Нэрээ оруулна уу'
+        en: 'Please enter your Korean name',
+        ja: '韓国名を入力してください',
+        zh: '请输入韩文名字',
+        vi: 'Vui lòng nhập tên tiếng Hàn',
+        hi: 'कृपया अपना कोरियाई नाम दर्ज करें',
+        si: 'කරුණාකර ඔබේ කොරියානු නම ඇතුළත් කරන්න',
+        ar: 'يرجى إدخال اسمك الكوري',
+        tr: 'Lütfen Korece adınızı girin',
+        my: 'ကျေးဇူးပြု၍ သင့်ကိုရီးယားအမည်ကို ရိုက်ထည့်ပါ',
+        ky: 'Корей атыңызды киргизиңиз',
+        ha: 'Da fatan za a shigar da sunan ku na Koriya',
+        mn: 'Солонгос нэрээ оруулна уу'
     },
     'apply.age': {
         en: 'Age',
@@ -254,18 +254,18 @@ export const applyTranslations: TranslationData = {
         mn: 'Туршлагын дэлгэрэнгүй'
     },
     'apply.enter_experience': {
-        en: 'Enter brief work experience',
-        ja: '簡単な経歴内容を入力してください',
-        zh: '请输入简要工作经历',
-        vi: 'Nhập kinh nghiệm làm việc ngắn gọn',
-        hi: 'संक्षिप्त कार्य अनुभव दर्ज करें',
-        si: 'කෙටි වැඩ අත්දැකීම ඇතුළත් කරන්න',
-        ar: 'أدخل خبرة العمل المختصرة',
-        tr: 'Kısa iş deneyimi girin',
-        my: 'အလုပ်အတွေ့အကြုံကို အတိုချုံး ရိုက်ထည့်ပါ',
-        ky: 'Кыска жумуш тажрыйбасын киргизиңиз',
-        ha: 'Shigar da takaitaccen gogewa na aiki',
-        mn: 'Ажлын туршлагаа товч бичнэ үү'
+        en: 'You can write about your experience in your country or in Korea! The more you write about your experience, the better!',
+        ja: 'あなたの国または韓国での経験をどちらも書いても大丈夫です！経歴内容はたくさん書くほど有利です！',
+        zh: '您可以写在您的国家或韩国的经历！经历内容写得越多越有利！',
+        vi: 'Bạn có thể viết về kinh nghiệm ở đất nước của bạn hoặc ở Hàn Quốc! Viết càng nhiều về kinh nghiệm càng có lợi!',
+        hi: 'आप अपने देश या कोरिया में अपने अनुभव के बारे में लिख सकते हैं! अनुभव के बारे में जितना अधिक लिखेंगे, उतना ही फायदेमंद होगा!',
+        si: 'ඔබට ඔබේ රටේ හෝ කොරියාවේ අත්දැකීම් ගැන ලිවිය හැකිය! අත්දැකීම් ගැන වැඩිපුර ලියන තරමට වාසිදායකයි!',
+        ar: 'يمكنك الكتابة عن تجربتك في بلدك أو في كوريا! كلما كتبت أكثر عن تجربتك، كان ذلك أفضل!',
+        tr: 'Ülkenizdeki veya Kore\'deki deneyiminizi yazabilirsiniz! Deneyiminiz hakkında ne kadar çok yazarsanız o kadar avantajlı!',
+        my: 'သင့်နိုင်ငံ သို့မဟုတ် ကိုရီးယားတွင် အတွေ့အကြုံကို ရေးနိုင်ပါသည်! အတွေ့အကြုံကို များများရေးလေ အကျိုးရှိလေပါ!',
+        ky: 'Өз өлкөңүздөгү же Кореядагы тажрыйбаңызды жаза аласыз! Тажрыйба жөнүндө канчалык көп жазсаңыз, ошончолук пайдалуу!',
+        ha: 'Kuna iya rubuta game da gogewarku a ƙasarku ko a Koriya! Yawan rubutun gogewa yana da fa\'ida!',
+        mn: 'Та өөрийн улс эсвэл Солонгост туршлагаа бичиж болно! Туршлагаа олон бичих тусам ашигтай!'
     },
     'apply.korean_level': {
         en: 'Korean Level',

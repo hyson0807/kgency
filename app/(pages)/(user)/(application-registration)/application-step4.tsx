@@ -177,16 +177,6 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                             color={regenerating ? "#9ca3af" : "#374151"}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={handleEdit}
-                        className={`px-3 py-1 rounded-lg ${isEditing ? 'bg-blue-500' : 'bg-gray-100'}`}
-                    >
-                        <Ionicons
-                            name={isEditing ? "checkmark" : "create"}
-                            size={20}
-                            color={isEditing ? "white" : "#374151"}
-                        />
-                    </TouchableOpacity>
                 </View>
             </View>
             <KeyboardAvoidingView
@@ -243,10 +233,26 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
                                 {t('resume.ai_info', '입력하신 정보에 기반하여 작성된 이력서입니다')}
                             </Text>
                             <Text className="text-xs text-amber-700 mt-1">
-                                {t('resume.edit_info', '내용을 검토하고 필요시 수정할 수 있습니다. 수정하려면 상단의 편집 버튼을 누르세요.')}
+                                {t('resume.grammar_check', '문법적으로 완벽하지 않을 수도 있으니 확인해 보시고 수정 가능합니다.')}
                             </Text>
                         </View>
                     </View>
+                </View>
+                
+                {/* 수정하기 버튼 */}
+                <View className="px-4 mb-4">
+                    <TouchableOpacity
+                        onPress={handleEdit}
+                        className={`py-3 rounded-xl border ${
+                            isEditing ? 'bg-blue-500 border-blue-500' : 'bg-white border-gray-300'
+                        }`}
+                    >
+                        <Text className={`text-center font-medium ${
+                            isEditing ? 'text-white' : 'text-gray-700'
+                        }`}>
+                            {isEditing ? t('resume.save_edit', '수정 완료') : t('resume.edit_resume', '이력서 수정하기')}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
                 </ScrollView>
                 {/* 하단 버튼 */}

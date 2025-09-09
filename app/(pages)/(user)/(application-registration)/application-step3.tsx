@@ -36,9 +36,12 @@ export default function ApplicationStep3() {
     ]
     
     const topicOptions = [
-        { label: t('apply.topik_1', '1급'), value: '1급' },
-        { label: t('apply.topik_2', '2급'), value: '2급' },
-        { label: t('apply.topik_3plus', '3급이상'), value: '3급이상' }
+        { label: 'TOPIK 1', value: 'TOPIK 1' },
+        { label: 'TOPIK 2', value: 'TOPIK 2' },
+        { label: 'TOPIK 3', value: 'TOPIK 3' },
+        { label: 'TOPIK 4', value: 'TOPIK 4' },
+        { label: 'TOPIK 5', value: 'TOPIK 5' },
+        { label: 'TOPIK 6', value: 'TOPIK 6' }
     ]
     const handleSubmit = async () => {
         setLoading(true)
@@ -169,18 +172,19 @@ export default function ApplicationStep3() {
                         {/* 토픽 급수 */}
                         <View className="mb-6">
                             <Text className="text-lg font-bold mb-4">{t('apply.topik_level', '토픽 급수')}</Text>
-                            <View className="flex-row gap-2">
+                            <View className="flex-row gap-2 flex-wrap justify-start">
                                 {topicOptions.map((grade) => (
                                     <TouchableOpacity
                                         key={grade.value}
                                         onPress={() => setTopic(step3Data.topic === grade.value ? null : grade.value)}
-                                        className={`flex-1 py-3 rounded-lg border items-center ${
+                                        className={`px-4 py-3 rounded-lg border items-center justify-center ${
                                             step3Data.topic === grade.value
                                                 ? 'bg-blue-500 border-blue-500'
                                                 : 'bg-white border-gray-300'
                                         }`}
+                                        style={{ minWidth: 80 }}
                                     >
-                                        <Text className={`font-medium ${
+                                        <Text className={`font-medium text-center ${
                                             step3Data.topic === grade.value ? 'text-white' : 'text-gray-700'
                                         }`}>{grade.label}</Text>
                                     </TouchableOpacity>

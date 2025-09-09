@@ -44,18 +44,18 @@ export const infoTranslations: TranslationData = {
         mn: 'Байршил сонгох'
     },
     'info.country': {
-        en: 'Country',
-        ja: '国',
-        zh: '国家',
-        vi: 'Quốc gia',
-        hi: 'देश',
-        si: 'රට',
-        ar: 'البلد',
-        tr: 'Ülke',
-        my: 'နိုင်ငံ',
-        ky: 'Өлкө',
-        ha: 'Ƙasa',
-        mn: 'Улс'
+        en: 'Country of Origin',
+        ja: '出身国',
+        zh: '出身国家',
+        vi: 'Quốc gia xuất thân',
+        hi: 'मूल देश',
+        si: 'උපන් රට',
+        ar: 'بلد المنشأ',
+        tr: 'Menşe Ülke',
+        my: 'မွေးရပ်နိုင်ငံ',
+        ky: 'Туулган өлкө',
+        ha: 'Ƙasar Asali',
+        mn: 'Эх орон'
     },
     'info.select_country': {
         en: 'Select country',
@@ -172,18 +172,18 @@ export const infoTranslations: TranslationData = {
         mn: 'Нэр'
     },
     'info.enter_name': {
-        en: 'Enter your name',
-        ja: '名前を入力してください',
-        zh: '请输入姓名',
-        vi: 'Nhập họ tên',
-        hi: 'अपना नाम दर्ज करें',
-        si: 'ඔබේ නම ඇතුළත් කරන්න',
-        ar: 'أدخل اسمك',
-        tr: 'Adınızı girin',
-        my: 'သင့်အမည်ကို ရိုက်ထည့်ပါ',
-        ky: 'Атыңызды киргизиңиз',
-        ha: 'Shigar da sunanka',
-        mn: 'Нэрээ оруулна уу'
+        en: 'Please enter your Korean name',
+        ja: '韓国名を入力してください',
+        zh: '请输入韩文名字',
+        vi: 'Vui lòng nhập tên tiếng Hàn',
+        hi: 'कृपया अपना कोरियाई नाम दर्ज करें',
+        si: 'කරුණාකර ඔබේ කොරියානු නම ඇතුළත් කරන්න',
+        ar: 'يرجى إدخال اسمك الكوري',
+        tr: 'Lütfen Korece adınızı girin',
+        my: 'ကျေးဇူးပြု၍ သင့်ကိုရီးယားအမည်ကို ရိုက်ထည့်ပါ',
+        ky: 'Корей атыңызды киргизиңиз',
+        ha: 'Da fatan za a shigar da sunan ku na Koriya',
+        mn: 'Солонгос нэрээ оруулна уу'
     },
     'info.age': {
         en: 'Age',
@@ -492,5 +492,19 @@ export const infoTranslations: TranslationData = {
         ky: 'Муну аткаруу жумушка орношуу мүмкүнчүлүгүн жогорулатат жана арыздарды автоматтык түрдө толтурат',
         ha: 'Kammala wannan yana kara damar samun aiki kuma yana cika aikace-aikacen ku kai tsaye',
         mn: 'Үүнийг бөглөх нь таны ажилд орох боломжийг нэмэгдүүлж, өргөдлүүдийг автоматаар бөглөнө'
+    },
+    'info.nationwide_moveable': {
+        en: 'I can move anywhere nationwide!',
+        ja: '全国どこでも移動可能です！',
+        zh: '全国各地都可以移动！',
+        vi: 'Tôi có thể di chuyển khắp cả nước!',
+        hi: 'मैं देशभर में कहीं भी जा सकता हूं!',
+        si: 'මට රට පුරා ඕනෑම තැනකට යා හැකිය!',
+        ar: 'يمكنني الانتقال إلى أي مكان في جميع أنحاء البلاد!',
+        tr: 'Ülke genelinde her yere taşınabilirim!',
+        my: 'တစ်နိုင်ငံလုံး မည်သည့်နေရာကိုမဆို သွားနိုင်ပါသည်!',
+        ky: 'Мен өлкө боюнча каалаган жерге бара алам!',
+        ha: 'Zan iya matsawa ko\'ina a cikin ƙasa!',
+        mn: 'Би улс даяар хаана ч очиж болно!'
     }
 }

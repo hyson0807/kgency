@@ -217,7 +217,7 @@ export const WorkExperienceInformation = ({
                 <Text className="text-gray-700 mb-2">{t('apply.experience_detail', '경력 내용')}</Text>
                 <TextInput
                     className="border border-gray-300 rounded-lg p-3 h-24"
-                    placeholder={t('apply.enter_experience', '간단한 경력 내용을 입력하세요')}
+                    placeholder={t('apply.enter_experience', '당신의 나라 혹은 한국에서의 경험 둘 다 적어도 됩니다! 경력내용은 많이 쓸 수록 유리해요!')}
                     value={experienceContent}
                     onChangeText={setExperienceContent}
                     multiline

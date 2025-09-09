@@ -143,7 +143,7 @@ const JobPosting = () => {
                 data={postings}
                 keyExtractor={(item) => item.id}
                 renderItem={({item}) => <PostingCard item={item} onToggleActive={handleToggleActive} onDelete={handleDelete} /> }
-                contentContainerStyle={postings.length === 0 ? { flex: 1 } : { paddingVertical: 8 }}
+                contentContainerStyle={postings.length === 0 ? { flex: 1 } : { paddingVertical: 8, paddingBottom: 100 }}
                 ListEmptyComponent={ <Empty/> }
                 refreshControl={
                     <RefreshControl

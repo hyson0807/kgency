@@ -161,14 +161,14 @@ const MoveableToggle: React.FC<MoveableToggleProps> = ({
                                                            isSelected,
                                                            onToggle,
                                                        }) => {
-    const { translateDB } = useTranslation();
+    const { t } = useTranslation();
     return (
         <TouchableOpacity
             onPress={onToggle}
             className="mt-4 flex-row items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200"
         >
             <Text className="text-sm text-gray-700">
-                {translateDB('keyword', 'keyword', moveableKeyword.id.toString(), moveableKeyword.keyword)}
+                {t('info.nationwide_moveable', '전국 다 이동 가능해요!')}
             </Text>
             <View className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
                 isSelected

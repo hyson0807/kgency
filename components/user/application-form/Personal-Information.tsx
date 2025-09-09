@@ -67,8 +67,8 @@ export const PersonalInformation = ({
         <View className="mb-4">
             <Text className="text-gray-700 mb-2">{t('apply.name', '이름')} *</Text>
             <TextInput
-                className="border border-gray-300 rounded-lg p-3"
-                placeholder={t('apply.enter_name', '이름을 입력하세요')}
+                className="border border-gray-300 rounded-lg p-3 h-[50px]"
+                placeholder={t('apply.enter_name', '한국 이름을 입력해주세요')}
                 value={name}
                 onChangeText={setName}
             />
@@ -77,7 +77,7 @@ export const PersonalInformation = ({
             <View className="flex-1">
                 <Text className="text-gray-700 mb-2">{t('apply.age', '나이')}</Text>
                 <TextInput
-                    className="border border-gray-300 rounded-lg p-3"
+                    className="border border-gray-300 rounded-lg p-3 h-[50px]"
                     placeholder={t('apply.age', '나이')}
                     value={age}
                     onChangeText={setAge}
