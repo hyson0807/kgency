@@ -25,7 +25,8 @@ interface NotificationProviderProps {
   children: ReactNode;
 }
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
-  const { user } = useAuth();
+  const authContext = useAuth();
+  const { user } = authContext;
   const notificationListener = useRef<any>(null);
   const responseListener = useRef<any>(null);
   const lastProcessedNotificationId = useRef<string | null>(null);
@@ -114,28 +115,100 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       
       // Check if user is properly loaded with enhanced retry mechanism
       if (!user || !user.userType) {
-        // User not loaded yet, implementing multiple retries for app cold start
-        const retryNavigation = (retryCount: number = 0) => {
-          const maxRetries = 10; // 최대 10회 재시도 (총 5초)
-          const retryDelay = 500; // 0.5초 간격
-          
-          if (retryCount >= maxRetries) {
-            console.log('알림 라우팅: 최대 재시도 횟수 초과, 라우팅 취소');
-            return;
+        console.log('🔄 사용자 정보 로딩 대기 중, AsyncStorage에서 직접 확인 시도');
+        
+        // AsyncStorage에서 직접 사용자 정보 확인
+        AsyncStorage.getItem('authToken').then(token => {
+          if (token) {
+            AsyncStorage.getItem('userData').then(userData => {
+              if (userData) {
+                try {
+                  const parsedUser = JSON.parse(userData);
+                  console.log('💾 AsyncStorage에서 사용자 정보 발견:', { 
+                    userId: parsedUser.userId, 
+                    userType: parsedUser.userType 
+                  });
+                  
+                  // AsyncStorage에서 가져온 사용자 정보로 바로 처리
+                  handleNotificationNavigation(data, parsedUser);
+                  return;
+                } catch (parseError) {
+                  console.log('❌ 사용자 데이터 파싱 실패:', parseError);
+                }
+              }
+              
+              // AsyncStorage에서도 실패한 경우 재시도 로직 실행
+              startRetryLogic();
+            }).catch(error => {
+              console.log('❌ userData 가져오기 실패:', error);
+              startRetryLogic();
+            });
+          } else {
+            console.log('❌ authToken이 없음');
+            startRetryLogic();
           }
+        }).catch(error => {
+          console.log('❌ authToken 가져오기 실패:', error);
+          startRetryLogic();
+        });
+        
+        const startRetryLogic = () => {
+          console.log('🔄 AsyncStorage에서도 사용자 정보 없음, 재시도 로직 시작');
           
-          setTimeout(() => {
-            if (user && user.userType) {
-              console.log(`알림 라우팅: 재시도 ${retryCount + 1}회 성공, 사용자 유형:`, user.userType);
-              handleNotificationNavigation(data, user);
-            } else {
-              console.log(`알림 라우팅: 재시도 ${retryCount + 1}/${maxRetries}, 사용자 정보 대기 중...`);
-              retryNavigation(retryCount + 1);
+          // User not loaded yet, implementing multiple retries for app cold start
+          const retryNavigation = (retryCount: number = 0) => {
+            const maxRetries = 20; // 최대 20회 재시도 (총 10초)
+            const retryDelay = 500; // 0.5초 간격
+            
+            if (retryCount >= maxRetries) {
+              console.log('❌ 알림 라우팅: 최대 재시도 횟수 초과, 라우팅 취소');
+              
+              // 마지막 시도: 사용자 정보를 강제로 다시 로드
+              console.log('🔄 사용자 정보 강제 재로드 시도');
+              
+              // AuthContext의 checkAuthState 메서드 호출
+              authContext.checkAuthState().then(() => {
+                console.log('✅ 사용자 정보 재로드 완료');
+                
+                // 재로드 후 한번 더 시도
+                setTimeout(() => {
+                  const reloadedUser = authContext.user;
+                  if (reloadedUser && reloadedUser.userType) {
+                    console.log('🎉 재로드 후 알림 처리 재시도 성공:', reloadedUser.userType);
+                    handleNotificationNavigation(data, reloadedUser);
+                  } else {
+                    console.log('❌ 재로드 후에도 사용자 정보 없음');
+                  }
+                }, 1000);
+              }).catch((error: any) => {
+                console.log('❌ 사용자 정보 재로드 실패:', error);
+              });
+              return;
             }
-          }, retryDelay);
+            
+            setTimeout(() => {
+              // 현재 AuthContext에서 사용자 정보를 다시 확인
+              const currentUser = authContext.user;
+              console.log(`🔍 재시도 ${retryCount + 1}/${maxRetries} - AuthContext 상태:`, {
+                user: currentUser ? { userId: currentUser.userId, userType: currentUser.userType } : null,
+                isLoading: authContext.isLoading,
+                isAuthenticated: authContext.isAuthenticated,
+                authToken: authContext.authToken ? 'exists' : 'null'
+              });
+              
+              if (currentUser && currentUser.userType) {
+                console.log(`✅ 알림 라우팅: 재시도 ${retryCount + 1}회 성공, 사용자 유형:`, currentUser.userType);
+                handleNotificationNavigation(data, currentUser);
+              } else {
+                console.log(`🔄 알림 라우팅: 재시도 ${retryCount + 1}/${maxRetries}, 사용자 정보 대기 중...`);
+                retryNavigation(retryCount + 1);
+              }
+            }, retryDelay);
+          };
+        
+          retryNavigation();
         };
         
-        retryNavigation();
         return;
       }
       
@@ -143,23 +216,25 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     });
     const handleNotificationNavigation = (data: any, user: any) => {
       try {
-        // Handling notification navigation
+        console.log('🔔 알림 네비게이션 시작:', { data, userType: user?.userType });
+        
         // Validate required data
         if (!data?.type) {
-          // Missing notification type
+          console.log('❌ 알림 타입이 없음');
           return;
         }
         
         // Chat messages don't require applicationId
         if (data.type !== 'chat_message' && !data?.applicationId) {
-          // Missing required notification data for non-chat notifications
+          console.log('❌ applicationId 없음 (chat_message가 아닌 알림)');
           return;
         }
         
         if (!user?.userType) {
-          // User type not available
+          console.log('❌ 사용자 타입 없음');
           return;
         }
+        
         // Navigate based on notification type with proper route replacement
         let targetRoute = null;
         
@@ -167,39 +242,43 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           if (user.userType === 'company') {
             targetRoute = '/(company)/myJobPostings';
           }
+          console.log('📋 새로운 지원 알림:', { targetRoute });
         }
         else if (data.type === 'chat_message') {
           // Navigate to chat room when chat notification is tapped
           if (data.roomId) {
             targetRoute = `/(pages)/chat/${data.roomId}?fromNotification=true`;
           }
+          console.log('💬 채팅 메시지 알림:', { roomId: data.roomId, targetRoute });
         }
         else {
-          // Unknown notification type
+          console.log('❓ 알 수 없는 알림 타입:', data.type);
           return;
         }
+        
         if (targetRoute) {
-          // Navigating to target route
+          console.log('🚀 네비게이션 시작:', targetRoute);
           
           // Use a small delay to ensure the app is ready for navigation
           setTimeout(() => {
             try {
               router.replace(targetRoute as any);
-              // Successfully navigated
+              console.log('✅ 네비게이션 성공 (replace):', targetRoute);
             } catch (navError) {
-              // Navigation error, retrying with push navigation
+              console.log('⚠️ replace 실패, push 시도:', navError);
               try {
                 router.push(targetRoute as any);
+                console.log('✅ 네비게이션 성공 (push):', targetRoute);
               } catch (pushError) {
-                // Push navigation also failed
+                console.log('❌ push도 실패:', pushError);
               }
             }
           }, 100);
         } else {
-          // No target route determined
+          console.log('❌ targetRoute가 null');
         }
       } catch (error) {
-        // Error in notification navigation handler
+        console.log('❌ 알림 네비게이션 에러:', error);
       }
     };
     return () => {
@@ -216,7 +295,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   useEffect(() => {
     const checkInitialNotification = async () => {
       // Only check when user is available
-      if (!user || !user.userType) {
+      if (!authContext.user || !authContext.user.userType) {
         return;
       }
       
@@ -246,25 +325,31 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           // handleNotificationNavigation 함수를 여기서 직접 구현 (의존성 문제 해결)
           if (!data?.type) return;
           if (data.type !== 'chat_message' && !data?.applicationId) return;
-          if (!user?.userType) return;
+          if (!authContext.user?.userType) return;
           
           let targetRoute = null;
+          
+          console.log('🔄 초기 알림 처리:', { type: data.type, roomId: data.roomId, userType: authContext.user.userType });
           
           if (data.type === 'chat_message' && data.roomId) {
             targetRoute = `/(pages)/chat/${data.roomId}?fromNotification=true`;
           } else if (data.type === 'new_application') {
-            if (user.userType === 'company') targetRoute = '/(company)/myJobPostings';
+            if (authContext.user.userType === 'company') targetRoute = '/(company)/myJobPostings';
           }
+          
+          console.log('🎯 초기 알림 타겟 라우트:', targetRoute);
           
           if (targetRoute) {
             setTimeout(() => {
               try {
+                console.log('🚀 초기 알림 네비게이션 (replace):', targetRoute);
                 router.replace(targetRoute as any);
               } catch (navError) {
                 try {
+                  console.log('🚀 초기 알림 네비게이션 (push):', targetRoute);
                   router.push(targetRoute as any);
                 } catch (pushError) {
-                  console.error('알림 라우팅 실패:', pushError);
+                  console.error('❌ 초기 알림 라우팅 실패:', pushError);
                 }
               }
             }, 100);
@@ -276,10 +361,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     };
 
     // Check for initial notification when user becomes available
-    if (user && user.userType) {
+    if (authContext.user && authContext.user.userType) {
       checkInitialNotification();
     }
-  }, [user]);
+  }, [authContext.user]);
 
   const value: NotificationContextType = {
     notificationSettings,
