@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router } from "expo-router"
 import { api } from "@/lib/api"
@@ -13,6 +13,7 @@ import { useJobPostingStore } from '@/stores/jobPostingStore'
 // Step 2: 근무 정보 입력 페이지
 const JobPostingStep2 = () => {
     const { keywords, loading: keywordsLoading } = useUserKeywords()
+    const scrollViewRef = useRef<ScrollView>(null)
     
     // Zustand store 사용
     const step1Data = useJobPostingStore(state => state.step1)
@@ -32,6 +33,20 @@ const JobPostingStep2 = () => {
     
     const [loading, setLoading] = useState(false)
     const { showModal, ModalComponent } = useModal()
+    
+    // 급여 입력창으로 스크롤하는 함수
+    const scrollToSalarySection = () => {
+        setTimeout(() => {
+            if (scrollViewRef.current) {
+                // 급여 섹션의 대략적인 위치로 스크롤
+                scrollViewRef.current.scrollTo({
+                    x: 0,
+                    y: 400, // 급여 섹션의 대략적인 Y 위치
+                    animated: true
+                })
+            }
+        }, 100)
+    }
     // 지역 옵션
     const locationOptions = keywords
         .filter(k => k.category === '지역')
@@ -147,9 +162,11 @@ const JobPostingStep2 = () => {
                 </View>
             </View>
             <ScrollView
+                ref={scrollViewRef}
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 120 }}
+                contentContainerStyle={{ paddingBottom: 100 }}
+                automaticallyAdjustKeyboardInsets={true}
             >
                 <View className="bg-white">
                     <View className="p-6">
@@ -190,6 +207,7 @@ const JobPostingStep2 = () => {
                                 setPayDay={setPayDay}
                                 payDayNegotiable={step2Data.payDayNegotiable}
                                 setPayDayNegotiable={setPayDayNegotiable}
+                                onFocusSalary={scrollToSalarySection}
                             />
                         )}
                     </View>

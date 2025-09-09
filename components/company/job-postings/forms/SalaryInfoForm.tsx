@@ -11,6 +11,7 @@ interface SalaryInfoFormProps {
     setPayDay: (value: string) => void
     payDayNegotiable: boolean
     setPayDayNegotiable: (value: boolean) => void
+    onFocusSalary?: () => void
 }
 export const SalaryInfoForm: React.FC<SalaryInfoFormProps> = ({
     salaryType,
@@ -22,7 +23,8 @@ export const SalaryInfoForm: React.FC<SalaryInfoFormProps> = ({
     payDay,
     setPayDay,
     payDayNegotiable,
-    setPayDayNegotiable
+    setPayDayNegotiable,
+    onFocusSalary
 }) => {
     const salaryTypes = [
         { label: '시급', value: '시급' },
@@ -75,8 +77,11 @@ export const SalaryInfoForm: React.FC<SalaryInfoFormProps> = ({
                     placeholder="예: 200-250만원"
                     value={salaryRange}
                     onChangeText={setSalaryRange}
+                    onFocus={onFocusSalary}
                 />
             </View>
+            {/* 추가 여백 - 급여 입력 시 충분한 공간 확보 */}
+            <View style={{ height: 100 }} />
         </>
     )
 }

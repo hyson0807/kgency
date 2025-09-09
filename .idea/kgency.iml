@@ -10,5 +10,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="kgency_server" />
     <orderEntry type="module" module-name="kgency_shop" />
+    <orderEntry type="module" module-name="kgency_landingPage" />
   </component>
 </module>

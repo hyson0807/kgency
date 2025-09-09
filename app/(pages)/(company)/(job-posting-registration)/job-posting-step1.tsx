@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from "expo-router"
@@ -149,31 +149,18 @@ const JobPostingStep1 = () => {
                     </View>
                 </View>
             </View>
-            <ScrollView
-                className="flex-1"
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 100 }}
-            >
-                <View className="bg-white">
-                    <View className="p-6">
-                        <Text className="text-xl font-bold mb-2">기본 정보를 입력해주세요</Text>
-                        <Text className="text-gray-600 mb-6">채용공고의 기본적인 정보를 작성해주세요.</Text>
-                    </View>
-                    
-                    <JobBasicInfoForm
-                        jobTitle={step1Data.jobTitle}
-                        setJobTitle={setJobTitle}
-                        jobDescription={step1Data.jobDescription}
-                        setJobDescription={setJobDescription}
-                        jobAddress={step1Data.jobAddress}
-                        setJobAddress={setJobAddress}
-                        hiringCount={step1Data.hiringCount}
-                        setHiringCount={setHiringCount}
-                        specialNotes={step1Data.specialNotes}
-                        setSpecialNotes={setSpecialNotes}
-                    />
-                </View>
-            </ScrollView>
+            <JobBasicInfoForm
+                jobTitle={step1Data.jobTitle}
+                setJobTitle={setJobTitle}
+                jobDescription={step1Data.jobDescription}
+                setJobDescription={setJobDescription}
+                jobAddress={step1Data.jobAddress}
+                setJobAddress={setJobAddress}
+                hiringCount={step1Data.hiringCount}
+                setHiringCount={setHiringCount}
+                specialNotes={step1Data.specialNotes}
+                setSpecialNotes={setSpecialNotes}
+            />
             {/* 하단 버튼 */}
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
                 <TouchableOpacity
