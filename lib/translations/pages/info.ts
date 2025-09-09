@@ -99,6 +99,20 @@ export const infoTranslations: TranslationData = {
         ha: 'Adana',
         mn: 'Хадгалах'
     },
+    'info.next': {
+        en: 'Next',
+        ja: '次へ',
+        zh: '下一步',
+        vi: 'Tiếp theo',
+        hi: 'अगला',
+        si: 'ඊළඟ',
+        ar: 'التالي',
+        tr: 'İleri',
+        my: 'နောက်သို့',
+        ky: 'Кийинки',
+        ha: 'Na gaba',
+        mn: 'Дараах'
+    },
     'info.select_location_required': {
         en: 'Please select a location',
         ja: '地域を選択してください',
@@ -156,6 +170,34 @@ export const infoTranslations: TranslationData = {
         ky: 'Профиль маалыматы',
         ha: 'Bayanan Martaba',
         mn: 'Хувийн мэдээлэл'
+    },
+    'info.profile_image': {
+        en: 'Profile Image',
+        ja: 'プロフィール画像',
+        zh: '头像',
+        vi: 'Ảnh hồ sơ',
+        hi: 'प्रोफ़ाइल चित्र',
+        si: 'පැතිකඩ රූපය',
+        ar: 'صورة الملف الشخصي',
+        tr: 'Profil Resmi',
+        my: 'ပရိုဖိုင်ပုံ',
+        ky: 'Профиль сүрөтү',
+        ha: 'Hoton Martaba',
+        mn: 'Профайл зураг'
+    },
+    'info.upload_clean_photo': {
+        en: 'Please upload a clean face photo',
+        ja: 'きれいな顔写真をアップロードしてください',
+        zh: '请上传清晰的面部照片',
+        vi: 'Vui lòng tải lên một bức ảnh khuôn mặt rõ ràng',
+        hi: 'कृपया एक साफ चेहरे की तस्वीर अपलोड करें',
+        si: 'කරුණාකර පැහැදිලි මුහුණේ ඡායාරූපයක් උඩුගත කරන්න',
+        ar: 'يرجى رفع صورة وجه واضحة',
+        tr: 'Lütfen temiz bir yüz fotoğrafı yükleyin',
+        my: 'ကျေးဇူးပြု၍ ရှင်းလင်းသော မျက်နှာဓာတ်ပုံတစ်ခု တင်ပါ',
+        ky: 'Таза жүз сүрөтүн жүктөңүз',
+        ha: 'Da fatan za a loda hoton fuska mai tsabta',
+        mn: 'Тод царай зураг оруулна уу'
     },
     'info.name': {
         en: 'Name',
