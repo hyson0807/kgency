@@ -150,16 +150,16 @@ export default function ApplicationStep1() {
                     <Text className="text-gray-600 mb-6">{t('application.step1_subtitle', '지원자의 기본적인 정보를 작성해주세요.')}</Text>
                 </View>
                 {/* 지원 공고 정보 */}
-                <View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">
-                    <Text className="text-sm text-gray-600">{t('apply.applying_to', '지원 공고')}</Text>
-                    <Text className="text-lg font-bold text-blue-600">{jobTitle || t('apply.job_posting', '채용 공고')}</Text>
-                    <Text className="text-sm text-gray-600 mt-1">{companyName}</Text>
-                    {hasApplied && (
-                        <Text className="text-sm text-orange-600 mt-2">
-                            ⚠️ {t('application.already_applied', '이미 지원한 공고입니다')}
-                        </Text>
-                    )}
-                </View>
+                {/*<View className="mx-6 mb-6 p-4 bg-blue-50 rounded-xl">*/}
+                {/*    <Text className="text-sm text-gray-600">{t('apply.applying_to', '지원 공고')}</Text>*/}
+                {/*    <Text className="text-lg font-bold text-blue-600">{jobTitle || t('apply.job_posting', '채용 공고')}</Text>*/}
+                {/*    <Text className="text-sm text-gray-600 mt-1">{companyName}</Text>*/}
+                {/*    {hasApplied && (*/}
+                {/*        <Text className="text-sm text-orange-600 mt-2">*/}
+                {/*            ⚠️ {t('application.already_applied', '이미 지원한 공고입니다')}*/}
+                {/*        </Text>*/}
+                {/*    )}*/}
+                {/*</View>*/}
                 
                 {/* 기본 정보 입력 폼 */}
                 <PersonalInformation

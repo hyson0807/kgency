@@ -241,7 +241,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         if (data.type === 'new_application') {
           if (user.userType === 'company') {
             if (data.jobPostingId) {
-              targetRoute = `/(pages)/(company)/posting-detail2?id=${data.jobPostingId}&tab=applicants`;
+              targetRoute = `/(pages)/(company)/posting-detail2?postingId=${data.jobPostingId}&tab=applicants`;
             } else {
               targetRoute = '/(company)/myJobPostings';
             }
@@ -340,7 +340,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           } else if (data.type === 'new_application') {
             if (authContext.user.userType === 'company') {
               if (data.jobPostingId) {
-                targetRoute = `/(pages)/(company)/posting-detail2?id=${data.jobPostingId}&tab=applicants`;
+                targetRoute = `/(pages)/(company)/posting-detail2?postingId=${data.jobPostingId}&tab=applicants`;
               } else {
                 targetRoute = '/(company)/myJobPostings';
               }
