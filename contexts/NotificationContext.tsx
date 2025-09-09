@@ -6,14 +6,7 @@ import { addNotificationResponseReceivedListener, addNotificationReceivedListene
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 interface NotificationSettings {
-  interviewProposal: boolean;
-  interviewScheduleConfirmed?: boolean;
-  interviewCancelled?: boolean;
   newApplication?: boolean;
-  interviewRequestAccepted?: boolean;
-  jobPostingInterviewProposal?: boolean;
-  instantInterviewCancelled?: boolean;
-  regularApplicationCancelled?: boolean;
   chatMessage?: boolean;
 }
 interface NotificationContextType {
@@ -37,14 +30,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const responseListener = useRef<any>(null);
   const lastProcessedNotificationId = useRef<string | null>(null);
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
-    interviewProposal: true,
-    interviewScheduleConfirmed: true,
-    interviewCancelled: true,
     newApplication: true,
-    interviewRequestAccepted: true,
-    jobPostingInterviewProposal: true,
-    instantInterviewCancelled: true,
-    regularApplicationCancelled: true,
     chatMessage: true
   });
   // Configure notification handler
@@ -54,77 +40,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         const data = notification.request.content.data;
         
         // Check notification settings based on type
-        if (data?.type === 'interview_proposal' && !notificationSettings.interviewProposal) {
-          return {
-            shouldShowAlert: false,
-            shouldPlaySound: false,
-            shouldSetBadge: false,
-            shouldShowBanner: false,
-            shouldShowList: false,
-          };
-        }
-        
-        if (data?.type === 'interview_schedule_confirmed' && !notificationSettings.interviewScheduleConfirmed) {
-          return {
-            shouldShowAlert: false,
-            shouldPlaySound: false,
-            shouldSetBadge: false,
-            shouldShowBanner: false,
-            shouldShowList: false,
-          };
-        }
-        
-        if (data?.type === 'interview_cancelled' && !notificationSettings.interviewCancelled) {
-          return {
-            shouldShowAlert: false,
-            shouldPlaySound: false,
-            shouldSetBadge: false,
-            shouldShowBanner: false,
-            shouldShowList: false,
-          };
-        }
-        
         if (data?.type === 'new_application' && !notificationSettings.newApplication) {
-          return {
-            shouldShowAlert: false,
-            shouldPlaySound: false,
-            shouldSetBadge: false,
-            shouldShowBanner: false,
-            shouldShowList: false,
-          };
-        }
-        
-        if (data?.type === 'interview_request_accepted' && !notificationSettings.interviewRequestAccepted) {
-          return {
-            shouldShowAlert: false,
-            shouldPlaySound: false,
-            shouldSetBadge: false,
-            shouldShowBanner: false,
-            shouldShowList: false,
-          };
-        }
-        
-        if (data?.type === 'job_posting_interview_proposal' && !notificationSettings.jobPostingInterviewProposal) {
-          return {
-            shouldShowAlert: false,
-            shouldPlaySound: false,
-            shouldSetBadge: false,
-            shouldShowBanner: false,
-            shouldShowList: false,
-          };
-        }
-        
-        if (data?.type === 'instant_interview_cancelled' && !notificationSettings.instantInterviewCancelled) {
-          return {
-            shouldShowAlert: false,
-            shouldPlaySound: false,
-            shouldSetBadge: false,
-            shouldShowBanner: false,
-            shouldShowList: false,
-          };
-        }
-        
-        if (data?.type === 'regular_application_cancelled' && !notificationSettings.regularApplicationCancelled) {
           return {
             shouldShowAlert: false,
             shouldPlaySound: false,
@@ -247,50 +163,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         // Navigate based on notification type with proper route replacement
         let targetRoute = null;
         
-        if (data.type === 'interview_proposal') {
-          if (user.userType === 'user') {
-            targetRoute = '/(user)/applications';
-          } else if (user.userType === 'company') {
-            targetRoute = '/(company)/interview-calendar';
-          }
-        }
-        else if (data.type === 'interview_schedule_confirmed') {
-          if (user.userType === 'company') {
-            targetRoute = '/(company)/interview-calendar';
-          } else if (user.userType === 'user') {
-            targetRoute = '/(user)/user-calendar';
-          }
-        }
-        else if (data.type === 'interview_cancelled') {
-          if (user.userType === 'user') {
-            targetRoute = '/(user)/applications';
-          } else if (user.userType === 'company') {
-            targetRoute = '/(company)/interview-calendar';
-          }
-        }
-        else if (data.type === 'new_application') {
+        if (data.type === 'new_application') {
           if (user.userType === 'company') {
             targetRoute = '/(company)/myJobPostings';
-          }
-        }
-        else if (data.type === 'interview_request_accepted') {
-          if (user.userType === 'company') {
-            targetRoute = '/(company)/interview-calendar';
-          }
-        }
-        else if (data.type === 'job_posting_interview_proposal') {
-          if (user.userType === 'user') {
-            targetRoute = '/(user)/applications';
-          }
-        }
-        else if (data.type === 'instant_interview_cancelled') {
-          if (user.userType === 'user') {
-            targetRoute = '/(user)/applications';
-          }
-        }
-        else if (data.type === 'regular_application_cancelled') {
-          if (user.userType === 'user') {
-            targetRoute = '/(user)/applications';
           }
         }
         else if (data.type === 'chat_message') {
@@ -377,22 +252,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           
           if (data.type === 'chat_message' && data.roomId) {
             targetRoute = `/(pages)/chat/${data.roomId}?fromNotification=true`;
-          } else if (data.type === 'interview_proposal') {
-            targetRoute = user.userType === 'user' ? '/(user)/applications' : '/(company)/interview-calendar';
-          } else if (data.type === 'interview_schedule_confirmed') {
-            targetRoute = user.userType === 'company' ? '/(company)/interview-calendar' : '/(user)/user-calendar';
-          } else if (data.type === 'interview_cancelled') {
-            targetRoute = user.userType === 'user' ? '/(user)/applications' : '/(company)/interview-calendar';
           } else if (data.type === 'new_application') {
             if (user.userType === 'company') targetRoute = '/(company)/myJobPostings';
-          } else if (data.type === 'interview_request_accepted') {
-            if (user.userType === 'company') targetRoute = '/(company)/interview-calendar';
-          } else if (data.type === 'job_posting_interview_proposal') {
-            if (user.userType === 'user') targetRoute = '/(user)/applications';
-          } else if (data.type === 'instant_interview_cancelled') {
-            if (user.userType === 'user') targetRoute = '/(user)/applications';
-          } else if (data.type === 'regular_application_cancelled') {
-            if (user.userType === 'user') targetRoute = '/(user)/applications';
           }
           
           if (targetRoute) {

@@ -155,24 +155,11 @@ React.useEffect(() => {
                     <View className="space-y-4">
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">{t('settings.interview_schedule_confirmed', '면접 일정 확정 알림')}</Text>
-                                <Text className="text-sm text-gray-600">{t('settings.interview_schedule_confirmed_description', '지원자가 면접 일정을 확정했을 때 알림')}</Text>
-                            </View>
-                            <Switch
-                                value={notificationSettings.interviewScheduleConfirmed || false}
-                                onValueChange={() => toggleNotification('interviewScheduleConfirmed')}
-                                trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={notificationSettings.interviewScheduleConfirmed ? '#ffffff' : '#f3f4f6'}
-                            />
-                        </View>
-                        
-                        <View className="flex-row items-center justify-between">
-                            <View className="flex-1">
                                 <Text className="font-medium">새로운 지원자 알림</Text>
-                                <Text className="text-sm text-gray-600">지원자가 즉시면접이나 일반 지원을 했을 때 알림</Text>
+                                <Text className="text-sm text-gray-600">지원자가 일반 지원을 했을 때 알림</Text>
                             </View>
                             <Switch
-                                value={notificationSettings.newApplication || false}
+                                value={notificationSettings.newApplication || true}
                                 onValueChange={() => toggleNotification('newApplication')}
                                 trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
                                 thumbColor={notificationSettings.newApplication ? '#ffffff' : '#f3f4f6'}
@@ -181,14 +168,14 @@ React.useEffect(() => {
                         
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
-                                <Text className="font-medium">면접 요청 수락 알림</Text>
-                                <Text className="text-sm text-gray-600">지원자가 면접 요청을 수락했을 때 알림</Text>
+                                <Text className="font-medium">{t('settings.chat_message_notification', '채팅 메시지 알림')}</Text>
+                                <Text className="text-sm text-gray-600">{t('settings.chat_message_description', '새로운 채팅 메시지를 받을 때 알림')}</Text>
                             </View>
                             <Switch
-                                value={notificationSettings.interviewRequestAccepted || false}
-                                onValueChange={() => toggleNotification('interviewRequestAccepted')}
+                                value={notificationSettings.chatMessage || true}
+                                onValueChange={() => toggleNotification('chatMessage')}
                                 trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-                                thumbColor={notificationSettings.interviewRequestAccepted ? '#ffffff' : '#f3f4f6'}
+                                thumbColor={notificationSettings.chatMessage ? '#ffffff' : '#f3f4f6'}
                             />
                         </View>
                     </View>
