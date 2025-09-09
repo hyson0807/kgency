@@ -50,14 +50,14 @@ interface Application {
 export default function CompanyPostingDetail() {
     // ==================== Hooks ====================
     const params = useLocalSearchParams()
-    const { postingId, refresh } = params
+    const { postingId, refresh, tab } = params
     const { fetchPostingById, getPostingKeywords } = useMatchedJobPostings()
     const { showModal, ModalComponent } = useModal()
     // ==================== State ====================
     const [posting, setPosting] = useState<any>(null)
     const [applications, setApplications] = useState<Application[]>([])
     const [proposalStatuses, setProposalStatuses] = useState<Record<string, string>>({})
-    const [activeTab, setActiveTab] = useState<'info' | 'applicants'>('info')
+    const [activeTab, setActiveTab] = useState<'info' | 'applicants'>(tab === 'applicants' ? 'applicants' : 'info')
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
     // ==================== Effects ====================

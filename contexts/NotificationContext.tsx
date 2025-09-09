@@ -240,9 +240,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         
         if (data.type === 'new_application') {
           if (user.userType === 'company') {
-            targetRoute = '/(company)/myJobPostings';
+            if (data.jobPostingId) {
+              targetRoute = `/(pages)/(company)/posting-detail2?id=${data.jobPostingId}&tab=applicants`;
+            } else {
+              targetRoute = '/(company)/myJobPostings';
+            }
           }
-          console.log('📋 새로운 지원 알림:', { targetRoute });
+          console.log('📋 새로운 지원 알림:', { targetRoute, jobPostingId: data.jobPostingId });
         }
         else if (data.type === 'chat_message') {
           // Navigate to chat room when chat notification is tapped
@@ -334,7 +338,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           if (data.type === 'chat_message' && data.roomId) {
             targetRoute = `/(pages)/chat/${data.roomId}?fromNotification=true`;
           } else if (data.type === 'new_application') {
-            if (authContext.user.userType === 'company') targetRoute = '/(company)/myJobPostings';
+            if (authContext.user.userType === 'company') {
+              if (data.jobPostingId) {
+                targetRoute = `/(pages)/(company)/posting-detail2?id=${data.jobPostingId}&tab=applicants`;
+              } else {
+                targetRoute = '/(company)/myJobPostings';
+              }
+            }
           }
           
           console.log('🎯 초기 알림 타겟 라우트:', targetRoute);
