@@ -100,7 +100,7 @@ export const PersonalInformation = ({
             className="flex-1"
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 200 }}
+            contentContainerStyle={{ paddingBottom: 500 }}
             automaticallyAdjustKeyboardInsets={true}
         >
             <View className="mb-6 p-6">
