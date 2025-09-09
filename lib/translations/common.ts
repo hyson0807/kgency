@@ -215,5 +215,35 @@ export const commonTranslations: TranslationData = {
         ky: 'Башка',
         ha: 'Wani',
         mn: 'Бусад'
+    },
+    
+    // 확인/취소 (Confirmation)
+    'common.yes': {
+        en: 'Yes',
+        ja: 'はい',
+        zh: '是的',
+        vi: 'Có',
+        hi: 'हाँ',
+        si: 'ඔව්',
+        ar: 'نعم',
+        tr: 'Evet',
+        my: 'ဟုတ်ကဲ့',
+        ky: 'Ооба',
+        ha: 'I',
+        mn: 'Тийм'
+    },
+    'common.no': {
+        en: 'No',
+        ja: 'いいえ',
+        zh: '不',
+        vi: 'Không',
+        hi: 'नहीं',
+        si: 'නැහැ',
+        ar: 'لا',
+        tr: 'Hayır',
+        my: 'မဟုတ်ဘူး',
+        ky: 'Жок',
+        ha: 'A\'a',
+        mn: 'Үгүй'
     }
 };

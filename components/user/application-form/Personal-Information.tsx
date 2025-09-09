@@ -8,6 +8,7 @@ interface Keyword {
 }
 interface PersonalInformationProps {
     t: (key: string, defaultText: string, variables?: { [key: string]: string | number }) => string;
+    translateDB: (tableName: string, columnName: string, rowId: string, defaultText: string) => string;
     name: string ,
     setName: (name: string) => void,
     age: string | '',
@@ -20,6 +21,7 @@ interface PersonalInformationProps {
 }
 export const PersonalInformation = ({
     t,
+    translateDB,
     name,
     setName,
     age,
@@ -41,13 +43,13 @@ export const PersonalInformation = ({
         // 나머지 성별들
         ...genderKeywords
             .map(keyword => ({
-                label: keyword.keyword,
+                label: translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword),
                 value: keyword.keyword
             })),
         // 상관없음을 "기타"로 표시하여 맨 아래로
         ...(anyGenderKeyword 
             ? [{
-                label: '기타',
+                label: translateDB('keyword', 'keyword', anyGenderKeyword.id.toString(), '기타'),
                 value: anyGenderKeyword.keyword  // 실제 DB 값은 '상관없음'
             }]
             : [])
@@ -57,7 +59,7 @@ export const PersonalInformation = ({
         // 비자는 상관없음 제외
         ...visaKeywords
             .map(keyword => ({
-                label: keyword.keyword,
+                label: translateDB('keyword', 'keyword', keyword.id.toString(), keyword.keyword),
                 value: keyword.keyword
             }))
     ];
@@ -69,6 +71,7 @@ export const PersonalInformation = ({
             <TextInput
                 className="border border-gray-300 rounded-lg p-3 h-[50px]"
                 placeholder={t('apply.enter_name', '한국 이름을 입력해주세요')}
+                placeholderTextColor="#6B7280"
                 value={name}
                 onChangeText={setName}
             />
@@ -79,6 +82,7 @@ export const PersonalInformation = ({
                 <TextInput
                     className="border border-gray-300 rounded-lg p-3 h-[50px]"
                     placeholder={t('apply.age', '나이')}
+                    placeholderTextColor="#6B7280"
                     value={age}
                     onChangeText={setAge}
                     keyboardType="numeric"
@@ -94,7 +98,7 @@ export const PersonalInformation = ({
                         borderRadius: 8,
                         paddingHorizontal: 12,
                     }}
-                    placeholderStyle={{fontSize: 14, color: '#9ca3af'}}
+                    placeholderStyle={{fontSize: 14, color: '#6B7280'}}
                     selectedTextStyle={{fontSize: 14}}
                     data={genderOptions}
                     labelField="label"
@@ -115,7 +119,7 @@ export const PersonalInformation = ({
                     borderRadius: 8,
                     paddingHorizontal: 12,
                 }}
-                placeholderStyle={{fontSize: 14, color: '#9ca3af'}}
+                placeholderStyle={{fontSize: 14, color: '#6B7280'}}
                 selectedTextStyle={{fontSize: 14}}
                 data={visaOptions}
                 labelField="label"

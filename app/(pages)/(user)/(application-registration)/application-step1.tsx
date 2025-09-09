@@ -34,7 +34,7 @@ export default function ApplicationStep1() {
     const [hasApplied, setHasApplied] = useState(false)
     const [showDraftModal, setShowDraftModal] = useState(false)
     const { showModal, ModalComponent } = useModal()
-    const { t } = useTranslation()
+    const { t, translateDB } = useTranslation()
     // 프로필 정보 로드
     useEffect(() => {
         if (profile) {
@@ -169,6 +169,7 @@ export default function ApplicationStep1() {
                     {/* 기본 정보 입력 폼 */}
                     <PersonalInformation
                         t={t}
+                        translateDB={translateDB}
                         name={step1Data.name}
                         setName={setName}
                         age={step1Data.age}
