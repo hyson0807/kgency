@@ -67,7 +67,7 @@ const CareerPage = () => {
             <View className="flex-row items-center">
               <Back />
               <Text className="text-lg font-bold ml-4">
-                {t('info.career_title', '경력 정보 입력')}
+                {t('user.career.title', '경력 정보 입력')}
               </Text>
             </View>
             <Text className="text-sm text-gray-500">1/3</Text>
@@ -111,7 +111,7 @@ const CareerPage = () => {
               onPress={handleSkip}
             >
               <Text className="font-semibold text-base text-gray-600">
-                {t('info.skip', '건너뛰기')}
+                {t('common.skip', '건너뛰기')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity

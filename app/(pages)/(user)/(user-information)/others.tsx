@@ -179,7 +179,7 @@ const OthersPage = () => {
                 <Back />
               </TouchableOpacity>
               <Text className="text-lg font-bold ml-4">
-                {t('info.preferences_title', '희망 조건 설정')}
+                {t('user.preferences.title', '희망 조건 설정')}
               </Text>
             </View>
             <Text className="text-sm text-gray-500">{displayStep}</Text>
@@ -193,7 +193,7 @@ const OthersPage = () => {
           {/* 지역 선택 섹션 - 필수 */}
           <View>
             <View className="px-4 mb-2">
-              <Text className="text-red-500 text-xs">* 필수 선택 (지역 또는 지역이동 가능 선택)</Text>
+              <Text className="text-red-500 text-xs">* {t('common.required_select_location', '필수 선택 (지역 또는 지역이동 가능 선택)')}</Text>
             </View>
             <LocationSelector
               keywords={keywords}
@@ -206,7 +206,7 @@ const OthersPage = () => {
           {/* 국가 선택 섹션 - 필수 */}
           <View>
             <View className="px-4 mb-2">
-              <Text className="text-red-500 text-xs">* 필수 선택</Text>
+              <Text className="text-red-500 text-xs">* {t('common.required_select', '필수 선택')}</Text>
             </View>
             <Country 
               keywords={keywords} 
@@ -217,7 +217,7 @@ const OthersPage = () => {
           {/* 희망직종 섹션 - 필수 */}
           <View>
             <View className="px-4 mb-2">
-              <Text className="text-red-500 text-xs">* 필수 선택 (최소 1개)</Text>
+              <Text className="text-red-500 text-xs">* {t('common.required_select_min_one', '필수 선택 (최소 1개)')}</Text>
             </View>
             <JobPreferencesSelector
               jobs={jobKeywords}
@@ -253,7 +253,7 @@ const OthersPage = () => {
               {(!formData.selectedMoveable && formData.selectedLocations.length === 0) || 
                formData.selectedJobs.length === 0 || 
                !formData.selectedCountry
-                ? '필수 항목을 선택해주세요'
+                ? t('common.select_required_items', '필수 항목을 선택해주세요')
                 : t('info.save', '저장하기')
               }
             </Text>

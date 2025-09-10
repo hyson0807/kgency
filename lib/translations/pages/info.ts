@@ -548,5 +548,48 @@ export const infoTranslations: TranslationData = {
         ky: 'Мен өлкө боюнча каалаган жерге бара алам!',
         ha: 'Zan iya matsawa ko\'ina a cikin ƙasa!',
         mn: 'Би улс даяар хаана ч очиж болно!'
+    },
+    // User profile pages
+    'user.profile.title': {
+        en: 'Profile Information',
+        ja: 'プロフィール情報',
+        zh: '个人信息',
+        vi: 'Thông tin hồ sơ',
+        hi: 'प्रोफ़ाइल जानकारी',
+        si: 'පැතිකඩ තොරතුරු',
+        ar: 'معلومات الملف الشخصي',
+        tr: 'Profil Bilgileri',
+        my: 'ပရိုဖိုင်အချက်အလက်',
+        ky: 'Профиль маалыматы',
+        ha: 'Bayanan Martaba',
+        mn: 'Профайлын мэдээлэл'
+    },
+    'user.preferences.title': {
+        en: 'Preference Settings',
+        ja: '希望条件設定',
+        zh: '希望条件设置',
+        vi: 'Cài đặt điều kiện mong muốn',
+        hi: 'प्राथमिकता सेटिंग्स',
+        si: 'මනාප සැකසුම්',
+        ar: 'إعدادات التفضيلات',
+        tr: 'Tercih Ayarları',
+        my: 'နှစ်သက်မှု ဆက်တင်များ',
+        ky: 'Каалоо параметрлери',
+        ha: 'Saitin Zaɓi',
+        mn: 'Хүсэлтийн тохиргоо'
+    },
+    'user.career.title': {
+        en: 'Career Information',
+        ja: '経歴情報入力',
+        zh: '职业信息输入',
+        vi: 'Nhập thông tin nghề nghiệp',
+        hi: 'करियर जानकारी दर्ज करें',
+        si: 'වෘත්තීය තොරතුරු ඇතුළත් කිරීම',
+        ar: 'إدخال معلومات المهنة',
+        tr: 'Kariyer Bilgisi Girişi',
+        my: 'အသက်မွေးဝမ်းကြောင်း အချက်အလက် ထည့်သွင်းခြင်း',
+        ky: 'Карьера маалыматын киргизүү',
+        ha: 'Shigar da Bayanan Aiki',
+        mn: 'Карьерын мэдээлэл оруулах'
     }
 }

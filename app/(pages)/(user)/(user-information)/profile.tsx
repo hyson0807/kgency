@@ -83,7 +83,7 @@ const ProfilePage = () => {
                 <Back />
               </TouchableOpacity>
               <Text className="text-lg font-bold ml-4">
-                {t('info.profile_title', '프로필 정보')}
+                {t('user.profile.title', '프로필 정보')}
               </Text>
             </View>
             <Text className="text-sm text-gray-500">{displayStep}</Text>

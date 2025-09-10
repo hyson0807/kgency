@@ -259,5 +259,79 @@ export const commonTranslations: TranslationData = {
         ky: 'Ырастоо',
         ha: 'Tabbatar',
         mn: 'Баталгаажуулах'
+    },
+    
+    // Skip button
+    'common.skip': {
+        en: 'Skip',
+        ja: 'スキップ',
+        zh: '跳过',
+        vi: 'Bỏ qua',
+        hi: 'छोड़ें',
+        si: 'මග හරින්න',
+        ar: 'تخطي',
+        tr: 'Geç',
+        my: 'ကျော်သွားပါ',
+        ky: 'Өткөрүп жиберүү',
+        ha: 'Tsallake',
+        mn: 'Алгасах'
+    },
+    
+    // Required selection labels
+    'common.required_select': {
+        en: 'Required',
+        ja: '必須選択',
+        zh: '必须选择',
+        vi: 'Bắt buộc chọn',
+        hi: 'आवश्यक चयन',
+        si: 'අනිවාර්ය තේරීම',
+        ar: 'اختيار مطلوب',
+        tr: 'Zorunlu seçim',
+        my: 'မဖြစ်မနေ ရွေးချယ်ရန်',
+        ky: 'Милдеттүү тандоо',
+        ha: 'Zaɓi na Wajibi',
+        mn: 'Заавал сонгох'
+    },
+    'common.required_select_location': {
+        en: 'Required (Select location or moveable)',
+        ja: '必須選択 (地域または地域移動可能選択)',
+        zh: '必须选择（地区或可移动地区）',
+        vi: 'Bắt buộc chọn (Khu vực hoặc có thể di chuyển)',
+        hi: 'आवश्यक चयन (स्थान या स्थानांतरण योग्य)',
+        si: 'අනිවාර්ය තේරීම (ස්ථානය හෝ ගමන් කළ හැකි)',
+        ar: 'اختيار مطلوب (الموقع أو القابل للتنقل)',
+        tr: 'Zorunlu seçim (Konum veya taşınabilir)',
+        my: 'မဖြစ်မနေ ရွေးချယ်ရန် (နေရာ သို့မဟုတ် နေရာပြောင်းနိုင်)',
+        ky: 'Милдеттүү тандоо (Жер же көчүрүлмө)',
+        ha: 'Zaɓi na Wajibi (Wuri ko Motsi)',
+        mn: 'Заавал сонгох (Байршил эсвэл шилжих боломжтой)'
+    },
+    'common.required_select_min_one': {
+        en: 'Required (minimum 1)',
+        ja: '必須選択 (最小1個)',
+        zh: '必须选择（至少1个）',
+        vi: 'Bắt buộc chọn (tối thiểu 1)',
+        hi: 'आवश्यक चयन (न्यूनतम 1)',
+        si: 'අනිවාර්ය තේරීම (අවම 1)',
+        ar: 'اختيار مطلوب (واحد على الأقل)',
+        tr: 'Zorunlu seçim (en az 1)',
+        my: 'မဖြစ်မနေ ရွေးချယ်ရန် (အနည်းဆုံး ၁ ခု)',
+        ky: 'Милдеттүү тандоо (минимум 1)',
+        ha: 'Zaɓi na Wajibi (mafi ƙarancin 1)',
+        mn: 'Заавал сонгох (хамгийн багадаа 1)'
+    },
+    'common.select_required_items': {
+        en: 'Please select required items',
+        ja: '必須項目を選択してください',
+        zh: '请选择必填项',
+        vi: 'Vui lòng chọn các mục bắt buộc',
+        hi: 'कृपया आवश्यक आइटम चुनें',
+        si: 'කරුණාකර අවශ්‍ය අයිතම තෝරන්න',
+        ar: 'يرجى اختيار العناصر المطلوبة',
+        tr: 'Lütfen gerekli öğeleri seçin',
+        my: 'ကျေးဇူးပြု၍ လိုအပ်သော အရာများကို ရွေးချယ်ပါ',
+        ky: 'Талап кылынган нерселерди тандаңыз',
+        ha: 'Da fatan za a zaɓi abubuwan da ake buƙata',
+        mn: 'Шаардлагатай зүйлсийг сонгоно уу'
     }
 };
