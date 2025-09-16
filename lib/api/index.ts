@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 서버 주소 설정
 const SERVER_URL = __DEV__
-    ? process.env.EXPO_PUBLIC_DEV_SERVER_URL || 'http://192.168.0.15:5004'
+    ? process.env.EXPO_PUBLIC_DEV_SERVER_URL || 'http://172.30.1.88:5004'
     : process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgency-server.onrender.com';
 
 // 토큰 메모리 캐시
