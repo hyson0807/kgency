@@ -16,9 +16,9 @@ const Info = () => {
                 setCurrentStep(1);
                 router.replace('/(pages)/(user)/(user-information)/career');
             } else {
-                // onboarding이 완료되지 않은 사용자는 프로필 페이지로
+                // onboarding이 완료되지 않은 사용자는 온보딩 퍼널 페이지로
                 setCurrentStep(1);
-                router.replace('/(pages)/(user)/(user-information)/profile');
+                router.replace('/(pages)/(user)/(onboarding-page)/onboarding-funnel');
             }
         }
     }, [profile, loading]);
