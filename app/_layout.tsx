@@ -24,6 +24,7 @@ export default function RootLayout() {
                                         <Stack
                                             screenOptions={{
                                                 headerShown: false, // ✅ 헤더 숨김
+                                                gestureEnabled: false, // ✅ 스와이프 제스처 비활성화
                                             }}
                                         />
                                     </SafeAreaProvider>
