@@ -120,7 +120,7 @@ const UserLogin = () => {
                     if (response.onboardingStatus.completed) {
                         router.replace('/(user)/home');
                     } else {
-                        router.replace('/(pages)/(user)/(user-information)/info');
+                        router.replace('/(pages)/(user)/(onboarding-page)/onboarding-funnel');
                     }
                 } else {
                     // 인증 시도 플래그 즉시 리셋
