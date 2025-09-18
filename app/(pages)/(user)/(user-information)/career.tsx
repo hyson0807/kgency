@@ -44,7 +44,7 @@ const CareerPage = () => {
   };
   const handleNext = () => {
     nextStep();
-    router.push('/(pages)/(user)/(user-information)/profile');
+    router.push('/(pages)/(user)/(onboarding-page)/onboarding-funnel');
   };
   const handleSkip = () => {
     // 경력 정보를 비우고 다음 단계로
@@ -56,7 +56,7 @@ const CareerPage = () => {
       experienceContent: ''
     });
     nextStep();
-    router.push('/(pages)/(user)/(user-information)/profile');
+    router.push('/(pages)/(user)/(onboarding-page)/onboarding-funnel');
   };
   if (!profile) return <LoadingScreen />;
   return (

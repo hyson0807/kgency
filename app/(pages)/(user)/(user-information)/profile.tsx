@@ -59,7 +59,7 @@ const ProfilePage = () => {
       return;
     }
     nextStep();
-    router.push('/(pages)/(user)/(user-information)/others');
+    router.push('/(pages)/(user)/(onboarding-page)/onboarding-funnel');
   };
   const handleBack = () => {
     // onboarding이 완료된 사용자만 뒤로 갈 수 있음
