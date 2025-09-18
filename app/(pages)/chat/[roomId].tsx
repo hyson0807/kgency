@@ -390,7 +390,19 @@ export default function ChatRoom() {
     />
   );
 
-  const otherParty = profile?.user_type === 'user' ? roomInfo.company : roomInfo.user;
+  const otherParty = profile?.user_type === 'user' ? roomInfo?.company : roomInfo?.user;
+
+  // roomInfo나 otherParty가 없으면 로딩 화면 표시
+  if (!roomInfo || !otherParty) {
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#3B82F6" />
+          <Text className="mt-2 text-gray-500">채팅방 정보를 불러오는 중...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white">

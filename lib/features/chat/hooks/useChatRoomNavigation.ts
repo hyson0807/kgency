@@ -63,13 +63,24 @@ export const useChatRoomNavigation = ({ onError }: UseChatRoomNavigationParams =
         console.log('기존 채팅방 재사용:', roomId)
       } else {
         // 기존 채팅방이 없으면 새로 생성
-        const chatRoomResponse = await api('POST', '/api/chat/create-room', {
-          application_id: applicationId,
-          user_id: actualUserId,
-          company_id: actualCompanyId,
-          job_posting_id: jobPostingId
-        })
-        
+        let chatRoomResponse
+
+        if (jobPostingId && applicationId) {
+          // 지원서 기반 채팅방 생성
+          chatRoomResponse = await api('POST', '/api/chat/create-room', {
+            application_id: applicationId,
+            user_id: actualUserId,
+            company_id: actualCompanyId,
+            job_posting_id: jobPostingId
+          })
+        } else {
+          // 일반 채팅방 생성 (job_posting_id 없이)
+          chatRoomResponse = await api('POST', '/api/chat/create-general-room', {
+            user_id: actualUserId,
+            company_id: actualCompanyId
+          })
+        }
+
         if (chatRoomResponse.success && chatRoomResponse.data?.id) {
           roomId = chatRoomResponse.data.id
           console.log('새 채팅방 생성:', roomId)

@@ -91,7 +91,7 @@ export const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, userType }
         
         {/* 공고 제목 */}
         <Text className="text-sm text-gray-600 mb-1" numberOfLines={1}>
-          {chatRoom.job_postings?.title || '공고 제목 없음'}
+          {chatRoom.job_postings?.title || '일반 채팅'}
         </Text>
         
         {/* 마지막 메시지와 시간 */}

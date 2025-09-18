@@ -56,7 +56,7 @@ export function ChatHeader({
         </Text>
         <View className="flex-row items-center">
           <Text className="text-sm text-gray-500" numberOfLines={1}>
-            {roomInfo.job_postings.title}
+            {roomInfo.job_postings?.title || '일반 채팅'}
           </Text>
           {/* 연결 상태 표시 */}
           <View className="ml-2 flex-row items-center">

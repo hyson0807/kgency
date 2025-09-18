@@ -26,9 +26,9 @@ export interface ChatMessage {
 // 사용자용 채팅방 타입
 export interface UserChatRoom {
   id: string;
-  application_id: string;
+  application_id: string | null;
   company_id: string;
-  job_posting_id: string;
+  job_posting_id: string | null;
   last_message?: string;
   last_message_at?: string;
   user_unread_count: number;
@@ -43,9 +43,9 @@ export interface UserChatRoom {
 // 회사용 채팅방 타입
 export interface CompanyChatRoom {
   id: string;
-  application_id: string;
+  application_id: string | null;
   user_id: string;
-  job_posting_id: string;
+  job_posting_id: string | null;
   last_message?: string;
   last_message_at?: string;
   company_unread_count: number;
@@ -60,8 +60,8 @@ export interface CompanyChatRoom {
 // 통합 채팅방 타입 (공통 속성)
 export interface BaseChatRoom {
   id: string;
-  application_id: string;
-  job_posting_id: string;
+  application_id: string | null;
+  job_posting_id: string | null;
   last_message?: string;
   last_message_at?: string;
   job_postings: {
@@ -74,10 +74,10 @@ export interface ChatRoomInfo {
   id: string;
   user_id: string;
   company_id: string;
-  job_posting_id: string;
+  job_posting_id: string | null;
   user: { name: string };
   company: { name: string };
-  job_postings: { title: string };
+  job_postings: { title: string } | null;
 }
 
 // Socket 이벤트 콜백 타입들
