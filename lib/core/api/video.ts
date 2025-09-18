@@ -1,4 +1,4 @@
-import { api } from '@/lib/api';
+import { api } from '@/lib/core/api';
 import { UserVideo, VideoUploadResponse, VideoListResponse, PresignedUrlResponse } from '@/lib/types/video';
 
 export const videoAPI = {

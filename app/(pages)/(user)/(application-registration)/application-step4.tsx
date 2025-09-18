@@ -7,7 +7,7 @@ import Back from '@/components/shared/common/back'
 import { useAuth } from '@/contexts/AuthContext'
 import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext"
-import {api} from "@/lib/api"
+import {api} from "@/lib/core/api"
 export default function ApplicationStep4() {
     const params = useLocalSearchParams();
     const jobPostingId = Array.isArray(params.jobPostingId) ? params.jobPostingId[0] : params.jobPostingId;

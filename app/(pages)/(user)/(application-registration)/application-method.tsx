@@ -7,7 +7,7 @@ import { useTabBar } from '@/contexts/TabBarContext';
 import { useApplicationFormStore } from '@/stores/applicationFormStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { api } from '@/lib/api';
+import { api } from '@/lib/core/api';
 import { useIAP } from '@/lib/features/payments/hooks/useIAP';
 import { getProductId } from '@/lib/features/payments/types';
 

@@ -19,7 +19,7 @@ import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import HiringFields from "@/components/user/posting-detail/HiringFields";
 import Header from "@/components/user/posting-detail/Header";
 import {WorkCondition} from "@/components/user/posting-detail/WorkCondition";
-import {api} from "@/lib/api"
+import {api} from "@/lib/core/api"
 export default function PostingDetail() {
     const params = useLocalSearchParams()
     const { postingId, companyId, companyName, suitability } = params

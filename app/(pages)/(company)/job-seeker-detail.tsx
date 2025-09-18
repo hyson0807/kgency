@@ -8,7 +8,7 @@ import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import {Info} from "@/components/shared/job-seeker-detail/Info";
 import {UserKeywords} from "@/components/shared/job-seeker-detail/UserKeywords";
-import { api } from "@/lib/api"
+import { api } from "@/lib/core/api"
 import { useChatRoomNavigation } from '@/lib/features/chat/hooks/useChatRoomNavigation'
 import AntDesign from '@expo/vector-icons/AntDesign'
 interface UserInfo {

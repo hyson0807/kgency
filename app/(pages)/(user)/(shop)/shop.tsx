@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { api } from "@/lib/api";
+import { api } from "@/lib/core/api";
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useModal } from '@/lib/shared/ui/hooks/useModal';
 import { useIAP } from '@/lib/features/payments/hooks/useIAP';

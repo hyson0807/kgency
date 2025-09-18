@@ -53,7 +53,7 @@ export const UnreadMessageProvider: React.FC<UnreadMessageProviderProps> = ({ ch
     if (!user?.userId) return;
 
     try {
-      const { api } = await import('@/lib/api');
+      const { api } = await import('@/lib/core/api');
       const response = await api('GET', '/api/chat/unread-count');
       
       if (response.success) {

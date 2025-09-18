@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '@/contexts/AuthContext';
 import { socketManager } from '@/lib/features/chat/services/socketManager';
-import { api } from '@/lib/api';
+import { api } from '@/lib/core/api';
 import type { UserChatRoom, CompanyChatRoom } from '@/types/chat';
 
 type ChatRoom = UserChatRoom | CompanyChatRoom;

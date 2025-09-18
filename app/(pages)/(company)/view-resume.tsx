@@ -8,7 +8,7 @@ import AntDesign from '@expo/vector-icons/AntDesign'
 import Back from '@/components/shared/common/back'
 import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { ActivityIndicator } from 'react-native'
-import {api} from "@/lib/api"
+import {api} from "@/lib/core/api"
 import { useChatRoomNavigation } from '@/lib/features/chat/hooks/useChatRoomNavigation'
 import { useUserProfileImage } from '@/lib/features/profile/hooks/useUserProfileImage'
 import { ProfileImageModal } from '@/components/shared/modals/ProfileImageModal'

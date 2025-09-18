@@ -7,7 +7,7 @@ import LoadingScreen from "@/components/shared/common/LoadingScreen";
 import {PostingCard} from "@/components/company/job-postings/management/PostingCard";
 import {FloatingButton} from "@/components/company/job-postings/management/FloatingButton";
 import {Empty} from "@/components/company/job-postings/management/Empty";
-import { api } from "@/lib/api"
+import { api } from "@/lib/core/api"
 interface MyJobPostings {
     id: string
     title: string

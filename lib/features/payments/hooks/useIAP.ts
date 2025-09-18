@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
-import { api } from '@/lib/api';
+import { api } from '@/lib/core/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { IAPErrorCode } from '@/lib/features/payments/types';
 import type {

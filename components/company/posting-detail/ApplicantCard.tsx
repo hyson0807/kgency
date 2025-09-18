@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import { useMatchedJobPostings } from "@/lib/features/jobs/hooks/useMatchedJobPostings";
 import { useUserProfileImage } from "@/lib/features/profile/hooks/useUserProfileImage";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { api } from "@/lib/api"
+import { api } from "@/lib/core/api"
 import { SuitabilityResult } from "@/lib/features/jobs/matching/types";
 interface Application {
     id: string

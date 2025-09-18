@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router'
 import { useAuth } from '@/contexts/AuthContext'
-import { api } from '@/lib/api'
+import { api } from '@/lib/core/api'
 import { useModal } from '@/lib/shared/ui/hooks/useModal'
 
 interface UseChatRoomNavigationParams {

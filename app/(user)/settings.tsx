@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useModal } from '@/lib/shared/ui/hooks/useModal'
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useNotification } from "@/contexts/NotificationContext";
-import { authAPI } from "@/lib/api/auth"
+import { authAPI } from "@/lib/core/api/auth"
 import AccountManagementModal from '@/components/shared/common/AccountManagementModal';
 import TermsOfService from '@/components/shared/common/TermsOfService';
 import PrivacyPolicy from '@/components/shared/common/PrivacyPolicy';

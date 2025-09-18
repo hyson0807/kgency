@@ -2,7 +2,7 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { api } from '@/lib/api';
+import { api } from '@/lib/core/api';
 // Notification handler is now managed in NotificationContext.tsx to avoid conflicts
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
   let token: string | null = null;

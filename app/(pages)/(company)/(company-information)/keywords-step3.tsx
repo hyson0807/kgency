@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'rea
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "@/contexts/AuthContext"
-import { api } from "@/lib/api"
+import { api } from "@/lib/core/api"
 import { router } from 'expo-router'
 import Back from '@/components/shared/common/back'
 import { useModal } from "@/lib/shared/ui/hooks/useModal"

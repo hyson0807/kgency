@@ -5,7 +5,7 @@ import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import {router} from "expo-router";
 import { removePushToken } from '@/lib/shared/services/notifications';
-import { updateTokenCache } from "@/lib/api";
+import { updateTokenCache } from "@/lib/core/api";
 import { clearAllUserCaches } from '@/lib/shared/utils/storage';
 import { socketManager } from '@/lib/features/chat/services/socketManager';
 // 타입 정의

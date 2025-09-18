@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { router, useLocalSearchParams } from "expo-router"
-import { api } from "@/lib/api"
+import { api } from "@/lib/core/api"
 import Back from '@/components/shared/common/back'
 import { useModal } from "@/lib/shared/ui/hooks/useModal";
 import CustomModal from '@/components/shared/modal/CustomModal'

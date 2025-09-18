@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { api } from "@/lib/api"
+import { api } from "@/lib/core/api"
 interface userType {
     userId: string;
     phone: string;

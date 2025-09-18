@@ -1,10 +1,9 @@
 import axios, { Method } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SERVER_CONFIG } from '../config';
 
-// 서버 주소 설정
-const SERVER_URL = __DEV__
-    ? process.env.EXPO_PUBLIC_DEV_SERVER_URL || 'http://172.30.1.88:5004'
-    : process.env.EXPO_PUBLIC_PROD_SERVER_URL || 'https://kgency-server.onrender.com';
+// 서버 주소 설정 - core/config에서 가져옴
+const SERVER_URL = SERVER_CONFIG.SERVER_URL;
 
 // 토큰 메모리 캐시
 let cachedToken: string | null = null;

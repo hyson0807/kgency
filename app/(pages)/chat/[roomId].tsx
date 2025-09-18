@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useProfile } from '@/lib/features/profile/hooks/useProfile';
 import { useTabBar } from '@/contexts/TabBarContext';
 import { useMessagePagination } from '@/lib/features/chat/hooks/useMessagePagination';
-import { api } from '@/lib/api';
+import { api } from '@/lib/core/api';
 import { socketManager } from '@/lib/features/chat/services/socketManager';
 import { formatMessageTime } from '@/utils/dateUtils';
 import { APP_CONFIG } from '@/lib/core/config';

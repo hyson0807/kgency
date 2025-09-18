@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { translations } from '@/lib/translations';
 import { Language } from '@/lib/translations/types';
-import { api } from "@/lib/api"
+import { api } from "@/lib/core/api"
 interface TranslationCache {
     [key: string]: string;
 }

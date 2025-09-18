@@ -14,7 +14,7 @@ import { Video, ResizeMode } from 'expo-av';
 import * as MediaLibrary from 'expo-media-library';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/AuthContext';
-import { videoAPI } from '@/lib/api/video';
+import { videoAPI } from '@/lib/core/api/video';
 import { UserVideo } from '@/lib/types/video';
 
 export default function VideoRecorder() {
