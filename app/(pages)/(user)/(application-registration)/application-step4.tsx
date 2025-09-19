@@ -111,16 +111,17 @@ ${jobTitle || '귀사의 채용 공고'}에 지원하게 되어 기쁩니다.
         }
     };
     const handleSend = async () => {
-        // 지원 방식 선택 페이지로 이동
+        // 영상 테스트 페이지로 이동
         router.push({
-            pathname: '/(pages)/(user)/(application-registration)/application-method',
+            pathname: '/(pages)/(user)/(application-registration)/video-test',
             params: {
                 resume: resume,
                 editedResume: editedResume,
                 isEditing: isEditing.toString(),
                 companyId: companyId,
                 jobPostingId: jobPostingId,
-                jobTitle: jobTitle || t('apply.job_posting', '채용 공고')
+                jobTitle: jobTitle || t('apply.job_posting', '채용 공고'),
+                companyName: companyName || t('apply.company', '회사')
             }
         });
     };

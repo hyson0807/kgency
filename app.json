@@ -13,7 +13,8 @@
       "bundleIdentifier": "com.welkit.kgency",
       "infoPlist": {
         "NSUserNotificationUsageDescription": "이 앱은 면접 제안 및 지원 상태 알림을 보내기 위해 푸시 알림을 사용합니다.",
-        "NSCameraUsageDescription": "프로필 사진을 촬영하기 위해 카메라 접근 권한이 필요합니다.",
+        "NSCameraUsageDescription": "면접 영상 녹화 및 프로필 사진 촬영을 위해 카메라 접근 권한이 필요합니다.",
+        "NSMicrophoneUsageDescription": "면접 영상 녹화를 위해 마이크 접근 권한이 필요합니다.",
         "NSPhotoLibraryUsageDescription": "프로필 사진을 선택하기 위해 사진 라이브러리 접근 권한이 필요합니다.",
         "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationQueriesSchemes": ["mailto"]
@@ -29,6 +30,7 @@
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ],

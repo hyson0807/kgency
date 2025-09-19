@@ -1,3 +1,1 @@
-export { default as ChatApplicationPromotionModal } from './ChatApplicationPromotionModal';
-export { default as RegularApplicationConfirmModal } from './RegularApplicationConfirmModal';
-export { default as TokenPurchaseModal } from './TokenPurchaseModal';
+// All modals have been removed as chat applications are now free and don't require additional confirmation

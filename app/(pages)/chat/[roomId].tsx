@@ -20,6 +20,7 @@ import { formatMessageTime } from '@/utils/dateUtils';
 import { APP_CONFIG } from '@/lib/core/config';
 import type { ChatMessage, ChatRoomInfo, SocketMessage } from '@/types/chat';
 import { ResumeMessageCard } from '@/components/chat/ResumeMessageCard';
+import { AudioMessageCard } from '@/components/chat/AudioMessageCard';
 import { ChatActionButtons } from '@/components/chat/ChatActionButtons';
 import { ChatHeader } from '@/components/chat/room/ChatHeader';
 import { ChatMessages } from '@/components/chat/room/ChatMessages';
@@ -28,14 +29,15 @@ import { EmptyMessages } from '@/components/chat/room/EmptyMessages';
 import { LoadMoreHeader } from '@/components/chat/room/LoadMoreHeader';
 
 export default function ChatRoom() {
-  const params = useLocalSearchParams<{ 
-    roomId: string; 
-    initialMessage?: string; 
+  const params = useLocalSearchParams<{
+    roomId: string;
+    initialMessage?: string;
     messageType?: string;
     fromApplication?: string;
     fromNotification?: string;
+    audioUrl?: string;
   }>();
-  const { roomId, initialMessage, messageType, fromApplication, fromNotification } = params;
+  const { roomId, initialMessage, messageType, fromApplication, fromNotification, audioUrl } = params;
   const { profile } = useProfile();
   const router = useRouter();
   const navigation = useNavigation();
@@ -221,36 +223,49 @@ export default function ChatRoom() {
   useEffect(() => {
     const sendInitialMessage = async () => {
       if (
-        initialMessage && 
-        messageType === 'resume' && 
-        !initialMessageSent && 
-        isConnected && 
-        isAuthenticated && 
+        !initialMessageSent &&
+        isConnected &&
+        isAuthenticated &&
         profile?.id &&
-        !initialLoading
+        !initialLoading &&
+        (initialMessage || audioUrl)
       ) {
-        console.log('이력서 자동 전송 시작');
+        console.log('자동 메시지 전송 시작');
         setInitialMessageSent(true);
-        
+
         try {
-          const success = await socketManager.sendMessage(initialMessage, 'resume');
-          if (success) {
-            console.log('이력서 자동 전송 성공');
-            // URL 파라미터 정리하지 않고 그대로 유지 (화면 깜빡임 방지)
-          } else {
-            console.error('이력서 자동 전송 실패');
+          // 음성이 있으면 먼저 전송
+          if (audioUrl) {
+            console.log('음성 자동 전송 시작');
+            const audioSuccess = await socketManager.sendMessage(audioUrl, 'audio');
+            if (audioSuccess) {
+              console.log('음성 자동 전송 성공');
+            } else {
+              console.error('음성 자동 전송 실패');
+            }
+          }
+
+          // 이력서 메시지 전송
+          if (initialMessage && messageType === 'resume') {
+            console.log('이력서 자동 전송 시작');
+            const resumeSuccess = await socketManager.sendMessage(initialMessage, 'resume');
+            if (resumeSuccess) {
+              console.log('이력서 자동 전송 성공');
+            } else {
+              console.error('이력서 자동 전송 실패');
+            }
           }
         } catch (error) {
-          console.error('이력서 자동 전송 중 오류:', error);
+          console.error('자동 메시지 전송 중 오류:', error);
         }
       }
     };
 
     // 조건이 충족되면 약간의 딜레이 후 전송 (소켓 연결 안정화)
-    if (initialMessage && messageType === 'resume' && !initialMessageSent && isConnected && isAuthenticated) {
+    if ((initialMessage || audioUrl) && !initialMessageSent && isConnected && isAuthenticated) {
       setTimeout(sendInitialMessage, 1000);
     }
-  }, [initialMessage, messageType, initialMessageSent, isConnected, isAuthenticated, profile?.id, initialLoading, roomId]);
+  }, [initialMessage, messageType, audioUrl, initialMessageSent, isConnected, isAuthenticated, profile?.id, initialLoading, roomId]);
 
   const fetchRoomInfo = async () => {
     try {
@@ -328,13 +343,30 @@ export default function ChatRoom() {
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {
     const isMyMessage = item.sender_id === profile?.id;
-    
+
+    // 음성 메시지인지 확인
+    const isAudioMessage = (
+      (audioUrl && item.message === audioUrl) ||
+      item.message_type === 'audio'
+    );
+
     // 이력서 메시지인지 확인 (messageType이 'resume'이거나 initialMessage와 일치하는 경우)
     const isResumeMessage = (
       (initialMessage && item.message === initialMessage && messageType === 'resume') ||
       item.message_type === 'resume'
     );
-    
+
+    // 음성 메시지면 AudioMessageCard 컴포넌트 사용
+    if (isAudioMessage) {
+      return (
+        <AudioMessageCard
+          audioUrl={item.message}
+          isMyMessage={isMyMessage}
+          timestamp={formatMessageTime(item.created_at)}
+        />
+      );
+    }
+
     // 이력서 메시지면 ResumeMessageCard 컴포넌트 사용
     if (isResumeMessage) {
       return (
@@ -345,14 +377,14 @@ export default function ChatRoom() {
         />
       );
     }
-    
+
     // 일반 메시지면 기존 렌더링
     return (
       <View className={`mb-3 ${isMyMessage ? 'items-end' : 'items-start'}`}>
         <View
           className={`max-w-[80%] px-3 py-2 rounded-2xl ${
-            isMyMessage 
-              ? 'bg-blue-500 rounded-br-md' 
+            isMyMessage
+              ? 'bg-blue-500 rounded-br-md'
               : 'bg-gray-200 rounded-bl-md'
           }`}
         >

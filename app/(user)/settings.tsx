@@ -266,24 +266,6 @@ const Settings = () => {
                     </TouchableOpacity>
                 </View>
 
-                {/* 영상 연습 섹션 */}
-                <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">
-                    <TouchableOpacity
-                        onPress={() => router.push('/(pages)/(user)/video-practice')}
-                        className="flex-row items-center justify-between"
-                    >
-                        <View className="flex-row items-center">
-                            <View className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-full items-center justify-center">
-                                <Ionicons name="videocam" size={20} color="white" />
-                            </View>
-                            <View className="ml-3 flex-1">
-                                <Text className="text-base font-semibold">{t('settings.video_practice', '영상 연습')}</Text>
-                                <Text className="text-xs text-gray-600 mt-0.5">{t('settings.video_practice_desc', '면접 영상 녹화 연습하기')}</Text>
-                            </View>
-                        </View>
-                        <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-                    </TouchableOpacity>
-                </View>
 
                 {/* 정보 섹션 */}
                 <View className="bg-white mx-4 mt-4 p-6 rounded-2xl shadow-sm">

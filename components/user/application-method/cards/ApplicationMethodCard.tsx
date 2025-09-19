@@ -5,49 +5,31 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { RecommendationBadge, ApplicationMethodStats } from '../ui';
 
 interface ApplicationMethodCardProps {
-  type: 'regular' | 'chat';
+  type: 'chat';
   onPress: () => void;
   disabled?: boolean;
   loading?: boolean;
-  userTokens?: number;
 }
 
-const ApplicationMethodCard: React.FC<ApplicationMethodCardProps> = ({ 
-  type, 
-  onPress, 
+const ApplicationMethodCard: React.FC<ApplicationMethodCardProps> = ({
+  type,
+  onPress,
   disabled = false,
-  loading = false,
-  userTokens = 0 
+  loading = false
 }) => {
   const { t } = useTranslation();
   
-  const isChat = type === 'chat';
-  const isPremium = isChat;
-  const hasInsufficientTokens = isChat && userTokens < 1;
-
-  const cardStyle = isPremium 
-    ? 'bg-white border-2 border-blue-500 shadow-md relative' 
-    : 'bg-white border border-gray-200 shadow-sm';
-
-  const gradientStyle = isPremium 
-    ? 'bg-gradient-to-br from-blue-50 to-white' 
-    : 'bg-white';
-
-  const iconBgColor = isChat ? 'bg-green-100' : 'bg-blue-100';
-  const iconColor = isChat ? '#10B981' : '#3B82F6';
-  const iconName = isChat ? 'chatbubbles' : 'document-text';
-
-  const title = isChat 
-    ? t('application.chat_title', '채팅 지원')
-    : t('application.regular_title', '일반 지원');
-
-  const description = isChat 
-    ? t('application.chat_description', '즉시 기업과 1:1 채팅 연결')
-    : t('application.regular_description', '이력서를 첨부하고 기업에 지원합니다');
+  const cardStyle = 'bg-white border-2 border-blue-500 shadow-md relative';
+  const gradientStyle = 'bg-gradient-to-br from-blue-50 to-white';
+  const iconBgColor = 'bg-green-100';
+  const iconColor = '#10B981';
+  const iconName = 'chatbubbles';
+  const title = t('application.chat_title', '채팅 지원');
+  const description = t('application.chat_description', '즉시 기업과 1:1 채팅 연결');
 
   return (
     <View className="relative">
-      {isPremium && <RecommendationBadge />}
+      <RecommendationBadge />
       
       <TouchableOpacity
         className={`${cardStyle} rounded-xl p-5 mb-4 ${gradientStyle} ${disabled || loading ? 'opacity-60' : ''}`}
@@ -65,13 +47,11 @@ const ApplicationMethodCard: React.FC<ApplicationMethodCardProps> = ({
               <Text className="text-lg font-semibold text-gray-800 mb-1">
                 {title}
               </Text>
-              {isChat && (
-                <View className="bg-orange-100 px-2 py-1 rounded-md">
-                  <Text className="text-orange-600 text-xs font-medium">
-                    {t('application.token_price', '토큰 1개')}
-                  </Text>
-                </View>
-              )}
+              <View className="bg-green-100 px-2 py-1 rounded-md">
+                <Text className="text-green-600 text-xs font-medium">
+                  {t('application.free', '무료')}
+                </Text>
+              </View>
             </View>
             
             <Text className="text-sm text-gray-600 mb-2">
@@ -80,13 +60,11 @@ const ApplicationMethodCard: React.FC<ApplicationMethodCardProps> = ({
 
             <ApplicationMethodStats type={type} />
 
-            {isChat && (
-              <View className="bg-orange-50 border border-orange-200 rounded-lg p-3 mt-3">
-                <Text className="text-orange-800 text-xs font-medium text-center">
-                  🛡️ {t('application.guarantee', '답장 없으면 100% 환불')}
-                </Text>
-              </View>
-            )}
+            <View className="bg-green-50 border border-green-200 rounded-lg p-3 mt-3">
+              <Text className="text-green-800 text-xs font-medium text-center">
+                ⚡ {t('application.instant_connection', '즉시 기업과 채팅 연결')}
+              </Text>
+            </View>
 
           </View>
           

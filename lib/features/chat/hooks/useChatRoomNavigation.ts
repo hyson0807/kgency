@@ -19,7 +19,8 @@ export const useChatRoomNavigation = ({ onError }: UseChatRoomNavigationParams =
     applicationId,
     initialMessage,
     messageType = 'text',
-    fromApplication = false
+    fromApplication = false,
+    videoUrl
   }: {
     companyId: string
     userId: string
@@ -28,6 +29,7 @@ export const useChatRoomNavigation = ({ onError }: UseChatRoomNavigationParams =
     initialMessage?: string
     messageType?: 'text' | 'resume'
     fromApplication?: boolean
+    videoUrl?: string
   }) => {
     if (!user?.userId) {
       onError?.('User not authenticated')
@@ -103,6 +105,11 @@ export const useChatRoomNavigation = ({ onError }: UseChatRoomNavigationParams =
         if (initialMessage) {
           navigationParams.params.initialMessage = initialMessage
           navigationParams.params.messageType = messageType
+        }
+
+        // 영상 URL이 있는 경우 파라미터에 추가
+        if (videoUrl) {
+          navigationParams.params.videoUrl = videoUrl
         }
 
         router.replace(navigationParams)
